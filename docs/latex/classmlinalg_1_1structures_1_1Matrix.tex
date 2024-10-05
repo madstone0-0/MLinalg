@@ -1,0 +1,767 @@
+\doxysection{mlinalg\+::structures\+::Matrix\texorpdfstring{$<$}{<} number, m, n \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{classmlinalg_1_1structures_1_1Matrix}{}\label{classmlinalg_1_1structures_1_1Matrix}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+
+
+\doxylink{classmlinalg_1_1structures_1_1Matrix}{Matrix} class for representing NxM matrices.  
+
+
+
+
+{\ttfamily \#include $<$Structures.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{Structures_8hpp_aa89428aa9b1f53329c3de175c9f285d0}{Row}}$<$ number, n $>$ \& \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_ae3f61d6089f2402d9ccca780f43be781}{at}} (size\+\_\+t i)
+\begin{DoxyCompactList}\small\item\em Access the ith row of the matrix. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{Structures_8hpp_aa89428aa9b1f53329c3de175c9f285d0}{Row}}$<$ number, n $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_aa726103754e60a5d28a05778f73c3f02}{at}} (size\+\_\+t i) const
+\begin{DoxyCompactList}\small\item\em Const access the ith row of the matrix. \end{DoxyCompactList}\item 
+number \& \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a60b42965a00d4ad587da9a29adc9669d}{at}} (size\+\_\+t i, size\+\_\+t j)
+\begin{DoxyCompactList}\small\item\em Access the element at the ith row and jth column. \end{DoxyCompactList}\item 
+constexpr \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a6820f387da6ae32207c395a7feda9279}{Matrix}} (const std\+::initializer\+\_\+list$<$ std\+::initializer\+\_\+list$<$ number $>$ $>$ \&rows)
+\begin{DoxyCompactList}\small\item\em Construct a new \doxylink{classmlinalg_1_1structures_1_1Matrix}{Matrix} object from an initializer list of row vectors. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_ab97e35d98329e312dacb2018cca8e32b}{Matrix}} (const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}} \&other)
+\begin{DoxyCompactList}\small\item\em Copy construct a new \doxylink{classmlinalg_1_1structures_1_1Matrix}{Matrix} object. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a869c094118a3a13f2d5f4b361ad20a00}{Matrix}} (\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}} \&\&other) noexcept
+\begin{DoxyCompactList}\small\item\em Move construct a new \doxylink{classmlinalg_1_1structures_1_1Matrix}{Matrix} object. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}} \& \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_ac8922afdff10899e152cf01634aa5082}{operator=}} (const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}} \&other)
+\begin{DoxyCompactList}\small\item\em Copy assignment operator. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}} \& \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a2bb49ec9c8239be191a592c72bba92ff}{operator=}} (\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}} \&\&other) noexcept
+\begin{DoxyCompactList}\small\item\em Move assignment operator. \end{DoxyCompactList}\item 
+vector$<$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, m $>$ $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_afbd5fd29b4043aa95c80b35ff14f6d7d}{col\+To\+Vector\+Set}} () const
+\begin{DoxyCompactList}\small\item\em Convert the columns of the matrix to a vector of column vectors. \end{DoxyCompactList}\item 
+vector$<$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_ab9df2076840133b70a8583680259d843}{row\+To\+Vector\+Set}} () const
+\begin{DoxyCompactList}\small\item\em Convert the rows of the matrix to a vector of row vectors. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}} \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a460ba733b58f7b40e3bfdb1503971fbf}{operator\texorpdfstring{$\ast$}{*}}} (const number \&scalar) const
+\begin{DoxyCompactList}\small\item\em \doxylink{classmlinalg_1_1structures_1_1Matrix}{Matrix} multiplication by a scalar. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}} \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_abadfb2200b0ebb7e68ab2601695c8373}{operator/}} (const number \&scalar) const
+\begin{DoxyCompactList}\small\item\em \doxylink{classmlinalg_1_1structures_1_1Matrix}{Matrix} division by a scalar. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}} \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a95fd4a81d29985b7cd81c84cb0f92b1a}{operator+}} (const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, m, n $>$ \&other) const
+\begin{DoxyCompactList}\small\item\em \doxylink{classmlinalg_1_1structures_1_1Matrix}{Matrix} addition. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}} \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a7af365dc40d0fb9f5c51d6d3b76aa615}{operator-\/}} (const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, m, n $>$ \&other) const
+\begin{DoxyCompactList}\small\item\em \doxylink{classmlinalg_1_1structures_1_1Matrix}{Matrix} subtraction. \end{DoxyCompactList}\item 
+auto \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_ae58e6d8f53d1a6112c8f7be05f49de9c}{operator$<$=$>$}} (const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}} \&other) const =default
+\begin{DoxyCompactList}\small\item\em Spaceship operator implementing the comparison operators. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, m $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a8c26c2d8101f0dee0ef59db8de66bae0}{operator\texorpdfstring{$\ast$}{*}}} (const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \&vec) const
+\begin{DoxyCompactList}\small\item\em \doxylink{classmlinalg_1_1structures_1_1Matrix}{Matrix} multiplication by a vector. \end{DoxyCompactList}\item 
+{\footnotesize template$<$size\+\_\+t n\+Other$>$ }\\\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, m, n\+Other $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a7d7791ad85a7d92cf558dad2cabaae13}{operator\texorpdfstring{$\ast$}{*}}} (const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, n, n\+Other $>$ \&other) const
+\begin{DoxyCompactList}\small\item\em \doxylink{classmlinalg_1_1structures_1_1Matrix}{Matrix} multiplication by a matrix. \end{DoxyCompactList}\item 
+{\footnotesize template$<$size\+\_\+t n\+Other$>$ }\\\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, m, n\+Other $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a6d0694e579576c9358dda2a388bfe06e}{operator\texorpdfstring{$\ast$}{*}}} (const \mbox{\hyperlink{Structures_8hpp_a9db1e022884032860a0840a8f195b2b6}{Transpose\+Variant}}$<$ number, n, n\+Other $>$ \&other) const
+\begin{DoxyCompactList}\small\item\em \doxylink{classmlinalg_1_1structures_1_1Matrix}{Matrix} multiplication by a transposed matrix. \end{DoxyCompactList}\item 
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_a7b458f404aaff1b2bb1cc79626945836}\label{classmlinalg_1_1structures_1_1Matrix_a7b458f404aaff1b2bb1cc79626945836} 
+{\bfseries \texorpdfstring{$\sim$}{\string~}\+Matrix} ()=default
+\begin{DoxyCompactList}\small\item\em Default destructor. \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_adf91eb32796c53d43f2451e143f047b2}{num\+Rows}} () const
+\begin{DoxyCompactList}\small\item\em \doxylink{conceptNumber}{Number} of rows in the matrix. \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_aab739ceb51d07a1aa8b2640e0a96274e}{num\+Cols}} () const
+\begin{DoxyCompactList}\small\item\em \doxylink{conceptNumber}{Number} of columns in the matrix. \end{DoxyCompactList}\item 
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_a69f66211bb5a5b9c6cfbd233db404ce6}\label{classmlinalg_1_1structures_1_1Matrix_a69f66211bb5a5b9c6cfbd233db404ce6} 
+{\bfseries operator std\+::string} () const
+\item 
+\mbox{\hyperlink{Structures_8hpp_a9db1e022884032860a0840a8f195b2b6}{Transpose\+Variant}}$<$ number, m, n $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a74d1a220332a9dc5babccb3e593101a6}{T}} () const
+\begin{DoxyCompactList}\small\item\em Transpose a mxn matrix to a nxm matrix. \end{DoxyCompactList}\item 
+constexpr auto \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a7d6f31eba3cd312d5fcd7b7e4cc23bdf}{begin}} () const
+\begin{DoxyCompactList}\small\item\em Begin iterator for the matrix. \end{DoxyCompactList}\item 
+constexpr auto \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a059ba6035c685cf7d573a72b7a8be601}{end}} () const
+\begin{DoxyCompactList}\small\item\em End iterator for the matrix. \end{DoxyCompactList}\item 
+constexpr auto \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_af5f06cba8d909a5974268380f61b6798}{cbegin}} () const
+\begin{DoxyCompactList}\small\item\em Const begin iterator for the matrix. \end{DoxyCompactList}\item 
+constexpr auto \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_affae5f8593216ba91b56b9ff82b4c93d}{cend}} () const
+\begin{DoxyCompactList}\small\item\em The const end iterator for the matrix. \end{DoxyCompactList}\item 
+constexpr auto \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_ab922ccdace0194bf94c8d0ca18a0a947}{back}} ()
+\begin{DoxyCompactList}\small\item\em Return the last row of the matrix. \end{DoxyCompactList}\item 
+constexpr auto \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_aa98f554e3cb6b7f6e02c706358d5084b}{rbegin}} ()
+\begin{DoxyCompactList}\small\item\em Const reverse begin iterator for the matrix. \end{DoxyCompactList}\item 
+constexpr auto \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_afc263efe08f53863aa03c3cfbf2d5874}{rend}} ()
+\begin{DoxyCompactList}\small\item\em Const reverse end iterator for the matrix. \end{DoxyCompactList}\item 
+{\footnotesize template$<$size\+\_\+t nN$>$ }\\\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, m, nN+n $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a27c88384ec14a6e8463935222e2ec4b7}{augment}} (const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, m, nN $>$ \&other) const
+\begin{DoxyCompactList}\small\item\em Augment the matrix with another matrix. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, m, n+1 $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a1791860a24eb83f7e36f9d31e562d995}{augment}} (const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, m $>$ \&other) const
+\begin{DoxyCompactList}\small\item\em Augment the matrix with a vector. \end{DoxyCompactList}\item 
+number \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a0ef35a6063c76c1a498e96609490d547}{det}} () const
+\begin{DoxyCompactList}\small\item\em Determinant of the matrix. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, m -\/ 1, n -\/ 1 $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_ab64e1f7618b638655bdf194ea25bef97}{subset}} (std\+::optional$<$ size\+\_\+t $>$ i, std\+::optional$<$ size\+\_\+t $>$ j) const
+\begin{DoxyCompactList}\small\item\em Subset the matrix by removing a row and a column. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$\mbox{\hyperlink{conceptNumber}{Number}} num, size\+\_\+t mN, size\+\_\+t nN$>$ }\\static \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ num, nN, mN $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a9d3d521c64c0be953663feb88068c78c}{extract\+Matrix\+From\+Transpose}} (const \mbox{\hyperlink{Structures_8hpp_a9db1e022884032860a0840a8f195b2b6}{Transpose\+Variant}}$<$ num, mN, nN $>$ \&\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a74d1a220332a9dc5babccb3e593101a6}{T}})
+\begin{DoxyCompactList}\small\item\em Extract a matrix object from a Transpose\+Variant. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_a115f992ff0dc273cc413c4cff58815f6}\label{classmlinalg_1_1structures_1_1Matrix_a115f992ff0dc273cc413c4cff58815f6} 
+std\+::ostream \& {\bfseries operator$<$$<$} (std\+::ostream \&os, const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, m, n $>$ \&system)
+\item 
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_aa8992d9e94253a0630ca94ff2524eda5}\label{classmlinalg_1_1structures_1_1Matrix_aa8992d9e94253a0630ca94ff2524eda5} 
+std\+::ostream \& {\bfseries operator$<$$<$} (std\+::ostream \&os, const \mbox{\hyperlink{Structures_8hpp_a9db1e022884032860a0840a8f195b2b6}{Transpose\+Variant}}$<$ number, n, m $>$ \&system)
+\item 
+void \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_ad9db8919079ab4f0b3a3b4981e0d0a43}{swap}} (\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}} \&first, \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}} \&second) noexcept
+\begin{DoxyCompactList}\small\item\em Swap the contents of two matrices for copy swap idiom. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$\newline
+class mlinalg\+::structures\+::\+Matrix$<$ number, m, n $>$}
+\doxylink{classmlinalg_1_1structures_1_1Matrix}{Matrix} class for representing NxM matrices. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em m} & \doxylink{conceptNumber}{Number} of rows \\
+\hline
+{\em n} & \doxylink{conceptNumber}{Number} of columns \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_a6820f387da6ae32207c395a7feda9279}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!Matrix@{Matrix}}
+\index{Matrix@{Matrix}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{Matrix()}{Matrix()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_a6820f387da6ae32207c395a7feda9279} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::\+Matrix (\begin{DoxyParamCaption}\item[{const std\+::initializer\+\_\+list$<$ std\+::initializer\+\_\+list$<$ number $>$ $>$ \&}]{rows}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+
+
+Construct a new \doxylink{classmlinalg_1_1structures_1_1Matrix}{Matrix} object from an initializer list of row vectors. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rows} & Initializer list of row vectors \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_ab97e35d98329e312dacb2018cca8e32b}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!Matrix@{Matrix}}
+\index{Matrix@{Matrix}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{Matrix()}{Matrix()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_ab97e35d98329e312dacb2018cca8e32b} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::\+Matrix (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, m, n $>$ \&}]{other}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Copy construct a new \doxylink{classmlinalg_1_1structures_1_1Matrix}{Matrix} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \doxylink{classmlinalg_1_1structures_1_1Matrix}{Matrix} to copy \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_a869c094118a3a13f2d5f4b361ad20a00}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!Matrix@{Matrix}}
+\index{Matrix@{Matrix}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{Matrix()}{Matrix()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_a869c094118a3a13f2d5f4b361ad20a00} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::\+Matrix (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, m, n $>$ \&\&}]{other}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Move construct a new \doxylink{classmlinalg_1_1structures_1_1Matrix}{Matrix} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \doxylink{classmlinalg_1_1structures_1_1Matrix}{Matrix} to move \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_ae3f61d6089f2402d9ccca780f43be781}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!at@{at}}
+\index{at@{at}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{at()}{at()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_ae3f61d6089f2402d9ccca780f43be781} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+\mbox{\hyperlink{Structures_8hpp_aa89428aa9b1f53329c3de175c9f285d0}{Row}}$<$ number, n $>$ \& \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::at (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{i}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Access the ith row of the matrix. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & The index of the row to access \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A reference to the ith row 
+\end{DoxyReturn}
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=550pt]{classmlinalg_1_1structures_1_1Matrix_ae3f61d6089f2402d9ccca780f43be781_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_aa726103754e60a5d28a05778f73c3f02}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!at@{at}}
+\index{at@{at}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{at()}{at()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_aa726103754e60a5d28a05778f73c3f02} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+\mbox{\hyperlink{Structures_8hpp_aa89428aa9b1f53329c3de175c9f285d0}{Row}}$<$ number, n $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::at (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{i}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Const access the ith row of the matrix. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & The index of the row to access \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A const reference to the ith row 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_a60b42965a00d4ad587da9a29adc9669d}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!at@{at}}
+\index{at@{at}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{at()}{at()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_a60b42965a00d4ad587da9a29adc9669d} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+number \& \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::at (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{i}{, }\item[{size\+\_\+t}]{j}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Access the element at the ith row and jth column. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & The index of the row \\
+\hline
+{\em j} & The index of the column \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A reference to the element at the ith row and jth column 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_a27c88384ec14a6e8463935222e2ec4b7}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!augment@{augment}}
+\index{augment@{augment}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{augment()}{augment()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_a27c88384ec14a6e8463935222e2ec4b7} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+template$<$size\+\_\+t nN$>$ \\
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, m, nN+n $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::augment (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, m, nN $>$ \&}]{other}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Augment the matrix with another matrix. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The matrix to augment with \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The augmented matrix of size mx(n + nN) 
+\end{DoxyReturn}
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=331pt]{classmlinalg_1_1structures_1_1Matrix_a27c88384ec14a6e8463935222e2ec4b7_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_a1791860a24eb83f7e36f9d31e562d995}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!augment@{augment}}
+\index{augment@{augment}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{augment()}{augment()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_a1791860a24eb83f7e36f9d31e562d995} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, m, n+1 $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::augment (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, m $>$ \&}]{other}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Augment the matrix with a vector. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The vector to augment with \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The augmented matrix of size mx(n + 1) 
+\end{DoxyReturn}
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=331pt]{classmlinalg_1_1structures_1_1Matrix_a1791860a24eb83f7e36f9d31e562d995_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_ab922ccdace0194bf94c8d0ca18a0a947}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!back@{back}}
+\index{back@{back}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{back()}{back()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_ab922ccdace0194bf94c8d0ca18a0a947} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+auto \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::back (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+
+
+Return the last row of the matrix. 
+
+\begin{DoxyReturn}{Returns}
+The last row of the matrix 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_a7d6f31eba3cd312d5fcd7b7e4cc23bdf}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!begin@{begin}}
+\index{begin@{begin}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{begin()}{begin()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_a7d6f31eba3cd312d5fcd7b7e4cc23bdf} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+auto \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::begin (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+
+
+Begin iterator for the matrix. 
+
+\begin{DoxyReturn}{Returns}
+the beginning iterator for the matrix 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_af5f06cba8d909a5974268380f61b6798}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!cbegin@{cbegin}}
+\index{cbegin@{cbegin}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{cbegin()}{cbegin()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_af5f06cba8d909a5974268380f61b6798} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+auto \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::cbegin (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+
+
+Const begin iterator for the matrix. 
+
+\begin{DoxyReturn}{Returns}
+The const begin iterator for the matrix 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_affae5f8593216ba91b56b9ff82b4c93d}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!cend@{cend}}
+\index{cend@{cend}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{cend()}{cend()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_affae5f8593216ba91b56b9ff82b4c93d} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+auto \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::cend (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+
+
+The const end iterator for the matrix. 
+
+\begin{DoxyReturn}{Returns}
+The const end iterator for the matrix 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_afbd5fd29b4043aa95c80b35ff14f6d7d}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!colToVectorSet@{colToVectorSet}}
+\index{colToVectorSet@{colToVectorSet}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{colToVectorSet()}{colToVectorSet()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_afbd5fd29b4043aa95c80b35ff14f6d7d} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+vector$<$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, m $>$ $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::col\+To\+Vector\+Set (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Convert the columns of the matrix to a vector of column vectors. 
+
+\begin{DoxyReturn}{Returns}
+A vector of column vectors 
+\end{DoxyReturn}
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classmlinalg_1_1structures_1_1Matrix_afbd5fd29b4043aa95c80b35ff14f6d7d_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classmlinalg_1_1structures_1_1Matrix_afbd5fd29b4043aa95c80b35ff14f6d7d_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_a0ef35a6063c76c1a498e96609490d547}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!det@{det}}
+\index{det@{det}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{det()}{det()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_a0ef35a6063c76c1a498e96609490d547} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+number \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::det (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Determinant of the matrix. 
+
+\begin{DoxyReturn}{Returns}
+The determinant of the matrix 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_a059ba6035c685cf7d573a72b7a8be601}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!end@{end}}
+\index{end@{end}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{end()}{end()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_a059ba6035c685cf7d573a72b7a8be601} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+auto \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::end (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+
+
+End iterator for the matrix. 
+
+\begin{DoxyReturn}{Returns}
+The end iterator for the matrix 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_a9d3d521c64c0be953663feb88068c78c}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!extractMatrixFromTranspose@{extractMatrixFromTranspose}}
+\index{extractMatrixFromTranspose@{extractMatrixFromTranspose}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{extractMatrixFromTranspose()}{extractMatrixFromTranspose()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_a9d3d521c64c0be953663feb88068c78c} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} num, size\+\_\+t mN, size\+\_\+t nN$>$ \\
+static \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ num, nN, mN $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::extract\+Matrix\+From\+Transpose (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{Structures_8hpp_a9db1e022884032860a0840a8f195b2b6}{Transpose\+Variant}}$<$ num, mN, nN $>$ \&}]{T}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Extract a matrix object from a Transpose\+Variant. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em T} & The Transpose\+Variant \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The matrix object 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_aab739ceb51d07a1aa8b2640e0a96274e}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!numCols@{numCols}}
+\index{numCols@{numCols}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{numCols()}{numCols()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_aab739ceb51d07a1aa8b2640e0a96274e} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+size\+\_\+t \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::num\+Cols (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [nodiscard]}}
+
+
+
+\doxylink{conceptNumber}{Number} of columns in the matrix. 
+
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_adf91eb32796c53d43f2451e143f047b2}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!numRows@{numRows}}
+\index{numRows@{numRows}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{numRows()}{numRows()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_adf91eb32796c53d43f2451e143f047b2} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+size\+\_\+t \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::num\+Rows (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [nodiscard]}}
+
+
+
+\doxylink{conceptNumber}{Number} of rows in the matrix. 
+
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_a7d7791ad85a7d92cf558dad2cabaae13}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}}
+\index{operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$\ast$}{*}()}{operator*()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_a7d7791ad85a7d92cf558dad2cabaae13} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+template$<$size\+\_\+t n\+Other$>$ \\
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, m, n\+Other $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::operator\texorpdfstring{$\ast$}{*} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, n, n\+Other $>$ \&}]{other}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxylink{classmlinalg_1_1structures_1_1Matrix}{Matrix} multiplication by a matrix. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_a460ba733b58f7b40e3bfdb1503971fbf}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}}
+\index{operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$\ast$}{*}()}{operator*()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_a460ba733b58f7b40e3bfdb1503971fbf} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}} \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::operator\texorpdfstring{$\ast$}{*} (\begin{DoxyParamCaption}\item[{const number \&}]{scalar}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxylink{classmlinalg_1_1structures_1_1Matrix}{Matrix} multiplication by a scalar. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em scalar} & A scalar of the same type as the matrix \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The matrix resulting from the multiplication 
+\end{DoxyReturn}
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=331pt]{classmlinalg_1_1structures_1_1Matrix_a460ba733b58f7b40e3bfdb1503971fbf_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_a6d0694e579576c9358dda2a388bfe06e}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}}
+\index{operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$\ast$}{*}()}{operator*()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_a6d0694e579576c9358dda2a388bfe06e} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+template$<$size\+\_\+t n\+Other$>$ \\
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, m, n\+Other $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::operator\texorpdfstring{$\ast$}{*} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{Structures_8hpp_a9db1e022884032860a0840a8f195b2b6}{Transpose\+Variant}}$<$ number, n, n\+Other $>$ \&}]{other}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxylink{classmlinalg_1_1structures_1_1Matrix}{Matrix} multiplication by a transposed matrix. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The transposed matrix to multiply by \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The matrix resulting from the multiplication 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_a8c26c2d8101f0dee0ef59db8de66bae0}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}}
+\index{operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$\ast$}{*}()}{operator*()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_a8c26c2d8101f0dee0ef59db8de66bae0} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, m $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::operator\texorpdfstring{$\ast$}{*} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \&}]{vec}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxylink{classmlinalg_1_1structures_1_1Matrix}{Matrix} multiplication by a vector. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em vec} & The vector to multiply by \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The vector resulting from the multiplication of size m 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_a95fd4a81d29985b7cd81c84cb0f92b1a}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!operator+@{operator+}}
+\index{operator+@{operator+}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{operator+()}{operator+()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_a95fd4a81d29985b7cd81c84cb0f92b1a} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}} \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::operator+ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, m, n $>$ \&}]{other}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxylink{classmlinalg_1_1structures_1_1Matrix}{Matrix} addition. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The matrix to add \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The matrix resulting from the addition 
+\end{DoxyReturn}
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=333pt]{classmlinalg_1_1structures_1_1Matrix_a95fd4a81d29985b7cd81c84cb0f92b1a_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_a7af365dc40d0fb9f5c51d6d3b76aa615}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!operator-\/@{operator-\/}}
+\index{operator-\/@{operator-\/}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{operator-\/()}{operator-()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_a7af365dc40d0fb9f5c51d6d3b76aa615} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}} \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::operator-\/ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, m, n $>$ \&}]{other}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxylink{classmlinalg_1_1structures_1_1Matrix}{Matrix} subtraction. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The matrix to subtract \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The matrix resulting from the subtraction 
+\end{DoxyReturn}
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=331pt]{classmlinalg_1_1structures_1_1Matrix_a7af365dc40d0fb9f5c51d6d3b76aa615_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_abadfb2200b0ebb7e68ab2601695c8373}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!operator/@{operator/}}
+\index{operator/@{operator/}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{operator/()}{operator/()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_abadfb2200b0ebb7e68ab2601695c8373} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}} \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::operator/ (\begin{DoxyParamCaption}\item[{const number \&}]{scalar}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxylink{classmlinalg_1_1structures_1_1Matrix}{Matrix} division by a scalar. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em scalar} & A scalar of the same type as the matrix \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The matrix resulting from the division 
+\end{DoxyReturn}
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=331pt]{classmlinalg_1_1structures_1_1Matrix_abadfb2200b0ebb7e68ab2601695c8373_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_ae58e6d8f53d1a6112c8f7be05f49de9c}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!operator$<$=$>$@{operator$<$=$>$}}
+\index{operator$<$=$>$@{operator$<$=$>$}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{operator$<$=$>$()}{operator<=>()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_ae58e6d8f53d1a6112c8f7be05f49de9c} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+auto \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::operator$<$=$>$ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, m, n $>$ \&}]{other}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+Spaceship operator implementing the comparison operators. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The matrix to compare \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_ac8922afdff10899e152cf01634aa5082}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!operator=@{operator=}}
+\index{operator=@{operator=}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_ac8922afdff10899e152cf01634aa5082} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}} \& \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, m, n $>$ \&}]{other}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Copy assignment operator. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \doxylink{classmlinalg_1_1structures_1_1Matrix}{Matrix} to copy \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A reference to the current matrix 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_a2bb49ec9c8239be191a592c72bba92ff}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!operator=@{operator=}}
+\index{operator=@{operator=}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_a2bb49ec9c8239be191a592c72bba92ff} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}} \& \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::operator= (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, m, n $>$ \&\&}]{other}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Move assignment operator. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The matrix to move \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A reference to the current matrix 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_aa98f554e3cb6b7f6e02c706358d5084b}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!rbegin@{rbegin}}
+\index{rbegin@{rbegin}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{rbegin()}{rbegin()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_aa98f554e3cb6b7f6e02c706358d5084b} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+auto \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::rbegin (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+
+
+Const reverse begin iterator for the matrix. 
+
+\begin{DoxyReturn}{Returns}
+The const reverse begin iterator for the matrix 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_afc263efe08f53863aa03c3cfbf2d5874}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!rend@{rend}}
+\index{rend@{rend}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{rend()}{rend()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_afc263efe08f53863aa03c3cfbf2d5874} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+auto \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::rend (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+
+
+Const reverse end iterator for the matrix. 
+
+\begin{DoxyReturn}{Returns}
+The const reverse end iterator for the matrix 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_ab9df2076840133b70a8583680259d843}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!rowToVectorSet@{rowToVectorSet}}
+\index{rowToVectorSet@{rowToVectorSet}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{rowToVectorSet()}{rowToVectorSet()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_ab9df2076840133b70a8583680259d843} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+vector$<$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::row\+To\+Vector\+Set (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Convert the rows of the matrix to a vector of row vectors. 
+
+\begin{DoxyReturn}{Returns}
+A vector of row vectors 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_ab64e1f7618b638655bdf194ea25bef97}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!subset@{subset}}
+\index{subset@{subset}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{subset()}{subset()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_ab64e1f7618b638655bdf194ea25bef97} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, m -\/ 1, n -\/ 1 $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::subset (\begin{DoxyParamCaption}\item[{std\+::optional$<$ size\+\_\+t $>$}]{i}{, }\item[{std\+::optional$<$ size\+\_\+t $>$}]{j}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Subset the matrix by removing a row and a column. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & Row index to remove \\
+\hline
+{\em j} & Column index to remove \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The subsetted matrix of size (m -\/ 1)x(n -\/ 1) 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_a74d1a220332a9dc5babccb3e593101a6}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!T@{T}}
+\index{T@{T}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{T()}{T()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_a74d1a220332a9dc5babccb3e593101a6} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+\mbox{\hyperlink{Structures_8hpp_a9db1e022884032860a0840a8f195b2b6}{Transpose\+Variant}}$<$ number, m, n $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::T (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Transpose a mxn matrix to a nxm matrix. 
+
+\begin{DoxyReturn}{Returns}
+The transposed matrix of size nxm 
+\end{DoxyReturn}
+
+
+\doxysubsection{Friends And Related Symbol Documentation}
+\Hypertarget{classmlinalg_1_1structures_1_1Matrix_ad9db8919079ab4f0b3a3b4981e0d0a43}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!swap@{swap}}
+\index{swap@{swap}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
+\doxysubsubsection{\texorpdfstring{swap}{swap}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_ad9db8919079ab4f0b3a3b4981e0d0a43} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
+void swap (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, m, n $>$ \&}]{first}{, }\item[{\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, m, n $>$ \&}]{second}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [friend]}}
+
+
+
+Swap the contents of two matrices for copy swap idiom. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em first} & The first matrix \\
+\hline
+{\em second} & The second matrix \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/pub/\mbox{\hyperlink{Structures_8hpp}{Structures.\+hpp}}\end{DoxyCompactItemize}

@@ -1,0 +1,10 @@
+get_filename_component(MLINALG_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+include(CMakeFindDependencyMacro)
+
+list(APPEND CMAKE_MODULE_PATH ${MLINALG_CMAKE_DIR})
+
+if(NOT TARGET mlinalg::mlinalg)
+    include("${MLINALG_CMAKE_DIR}/mlinalgTargets.cmake")
+endif()
+
+set(MLINALG_LIBRARIES mlinalg::mlinalg)

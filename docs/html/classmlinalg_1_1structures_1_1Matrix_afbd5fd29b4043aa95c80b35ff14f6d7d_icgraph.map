@@ -1,0 +1,5 @@
+<map id="mlinalg::structures::Matrix::colToVectorSet" name="mlinalg::structures::Matrix::colToVectorSet">
+<area shape="rect" id="Node000001" title="Convert the columns of the matrix to a vector of column vectors." alt="" coords="197,5,372,50"/>
+<area shape="rect" id="Node000002" href="$classmlinalg_1_1structures_1_1Vector.html#ac04a644cee3fde76a101d166ff09b1e0" title="Vector multiplication by a matrix." alt="" coords="5,5,149,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="181,30,149,30,149,25,181,25"/>
+</map>

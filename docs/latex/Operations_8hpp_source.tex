@@ -1,0 +1,341 @@
+\doxysection{Operations.\+hpp}
+\hypertarget{Operations_8hpp_source}{}\label{Operations_8hpp_source}\index{src/pub/Operations.hpp@{src/pub/Operations.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ <algorithm>}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <array>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <cmath>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <map>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <numeric>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <optional>}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ <ostream>}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{Structures_8hpp}{Structures.hpp}}"{}}}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \textcolor{keyword}{using\ }std::vector,\ std::array,\ std::optional;}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \textcolor{keyword}{namespace\ }mlinalg\ \{}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keyword}{using\ namespace\ }structures;}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keyword}{using\ }std::nullopt;}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keyword}{template}\ <Number\ number,\ \textcolor{keywordtype}{size\_t}\ m,\ \textcolor{keywordtype}{size\_t}\ n>}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keyword}{using\ }LinearSystem\ =\ Matrix<number,\ m,\ n>;}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keyword}{template}\ <Number\ number,\ \textcolor{keywordtype}{size\_t}\ n>}
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keyword}{using\ }RowOptional\ =\ Row<optional<number>,\ n\ -\/\ 1>;}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keyword}{template}\ <Number\ number,\ \textcolor{keywordtype}{size\_t}\ m,\ \textcolor{keywordtype}{size\_t}\ n>}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{bool}\ isInEchelonForm(LinearSystem<number,\ m,\ n>\ system,\ Row<optional<number>,\ n\ -\/\ 1>\ pivots)\ \{}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\{\};\ i\ <\ pivots.size();\ i++)}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ j\{i\ +\ 1\};\ j\ <\ m;\ j++)}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (system.at(j).at(i)\ !=\ 0)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00031\ \ \ \ \ \}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keyword}{template}\ <Number\ number,\ \textcolor{keywordtype}{size\_t}\ m,\ \textcolor{keywordtype}{size\_t}\ n>}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keywordtype}{bool}\ isInconsistent(LinearSystem<number,\ m,\ n>\ system)\ \{}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ row\ :\ system)\ \{}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ zeroCount\{\};}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\{\};\ i\ <\ n\ -\/\ 1;\ i++)}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (row.at(i)\ ==\ 0)\ zeroCount++;}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (zeroCount\ ==\ n\ \&\&\ row.back()\ !=\ 0)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00043\ \ \ \ \ \}}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keyword}{template}\ <Number\ number,\ \textcolor{keywordtype}{size\_t}\ m,\ \textcolor{keywordtype}{size\_t}\ n>}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keywordtype}{bool}\ isInReducedEchelonForm(LinearSystem<number,\ m,\ n>\ system,\ Row<optional<number>,\ n\ -\/\ 1>\ pivots)\ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\{1\};\ i\ <\ pivots.size();\ i++)\ \{}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!pivots.at(i).has\_value())\ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j\{i\ -\/\ 1\};\ j\ >=\ 0;\ j-\/-\/)}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (system.at(j).at(i)\ !=\ 0)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00053\ \ \ \ \ \}}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keyword}{template}\ <Number\ number,\ \textcolor{keywordtype}{size\_t}\ n>}
+\DoxyCodeLine{00056\ \ \ \ \ optional<number>\ solveEquation(Row<number,\ n>\ row,\ \textcolor{keywordtype}{size\_t}\ varPos,\ Row<optional<number>,\ n\ -\/\ 1>\ solutions)\ \{}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ vector<number>\ leftSide\{row.begin(),\ row.end()\ -\/\ 1\};}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ vector<number>\ rightSide\{row.back()\};}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\{\};\ i\ <\ leftSide.size();\ i++)\ \{}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ optional<number>\ var\ =\ solutions.at(i);}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (i\ !=\ varPos)\ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ number\ res\ =\ var.has\_value()\ ?\ var.value()\ *\ leftSide.at(i)\ *\ -\/1\ :\ leftSide.at(i)\ *\ -\/1;}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rightSide.push\_back(res);}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ leftSide\ =\ vector\{leftSide.at(varPos)\};}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ rightSimpl\ =\ std::accumulate(rightSide.begin(),\ rightSide.end(),\ number\{0\});}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (leftSide.at(0)\ ==\ 0)\ \{}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rightSimpl\ ==\ 0\ \&\&\ leftSide.at(0)\ ==\ 0)}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::nullopt;}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ number\ sol\ =\ rightSimpl\ /\ leftSide.at(0);}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ sol;}
+\DoxyCodeLine{00077\ \ \ \ \ \}}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keyword}{template}\ <Number\ number,\ \textcolor{keywordtype}{size\_t}\ m,\ \textcolor{keywordtype}{size\_t}\ n>}
+\DoxyCodeLine{00080\ \ \ \ \ RowOptional<number,\ n>\ getPivots(LinearSystem<number,\ m,\ n>\ system)\ \{}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ RowOptional<number,\ n>\ pivots\{\};}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ idx\{\};\ idx\ <\ m;\ idx++)}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\{\};\ i\ <\ n\ -\/\ 1;\ i++)\ \{}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ row\ =\ system.at(idx);}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (row.at(i)\ !=\ 0\ \&\&\ pivots.at(i)\ ==\ nullopt)\ \{}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pivots.at(i)\ =\ row.at(i);}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ pivots;}
+\DoxyCodeLine{00092\ \ \ \ \ \}}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \ \ \ \ \textcolor{keyword}{template}\ <Number\ number,\ \textcolor{keywordtype}{size\_t}\ m,\ \textcolor{keywordtype}{size\_t}\ n>}
+\DoxyCodeLine{00095\ \ \ \ \ optional<size\_t>\ getPivotRow(\textcolor{keyword}{const}\ LinearSystem<number,\ m,\ n>\&\ system,\ \textcolor{keywordtype}{size\_t}\ startRow,\ \textcolor{keywordtype}{size\_t}\ col)\ \{}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ row\ =\ startRow;\ row\ <\ m;\ ++row)\ \{}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (system.at(row).at(col)\ !=\ 0)\ \{}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ row;}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::nullopt;\ \ \textcolor{comment}{//\ No\ pivot\ found\ in\ this\ column}}
+\DoxyCodeLine{00102\ \ \ \ \ \}}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \ \ \ \ \textcolor{keyword}{template}\ <Number\ number,\ \textcolor{keywordtype}{size\_t}\ m,\ \textcolor{keywordtype}{size\_t}\ n>}
+\DoxyCodeLine{00105\ \ \ \ \ LinearSystem<number,\ m,\ n>\ rearrangeSystem(LinearSystem<number,\ m,\ n>\ system)\ \{}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ getZeroCount\ =\ [](\textcolor{keyword}{const}\ Row<number,\ n>\&\ row)\ \{}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ mid\ =\ floor((n\ -\/\ 1)\ /\ 2.);}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ count\{\};}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\{\};\ i\ <\ n\ -\/\ 1;\ i++)}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (row.at(i)\ ==\ 0\ \&\&\ i\ <=\ mid)\ count++;}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ cmp\ =\ [](\textcolor{keyword}{const}\ std::pair<size\_t,\ size\_t>\&\ a,\ \textcolor{keyword}{const}\ std::pair<size\_t,\ size\_t>\&\ b)\ \{}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (a.second\ <\ b.second);}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ getRowSortedCounts\ =\ [\&getZeroCount,\ \&cmp](\textcolor{keyword}{const}\ LinearSystem<number,\ m,\ n>\ sys)\ \{}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ std::multimap<size\_t,\ size\_t>\ rowCounts\{\};}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ vector<std::pair<size\_t,\ size\_t>>\ res\{\};}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\{\};\ i\ <\ m;\ i++)\ rowCounts.emplace(i,\ getZeroCount(sys.at(i)));}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ rowCounts.begin();}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (;\ it\ !=\ rowCounts.end();\ it++)\ res.emplace\_back(it-\/>first,\ it-\/>second);}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ std::sort(res.begin(),\ res.end(),\ cmp);}
+\DoxyCodeLine{00125\ }
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ res;}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ LinearSystem<number,\ m,\ n>\ rearranged\{system\};}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ rowCounts\ =\ getRowSortedCounts(system);}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\{\};\ i\ <\ rowCounts.size();\ i++)\ \{}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ [idx,\ count]\ =\ rowCounts.at(i);}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (i\ !=\ idx)\ \{}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::swap(rearranged.at(i),\ rearranged.at(idx));}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ rowCounts\ =\ getRowSortedCounts(rearranged);}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ rearranged;}
+\DoxyCodeLine{00139\ \ \ \ \ \}}
+\DoxyCodeLine{00140\ }
+\DoxyCodeLine{00141\ \ \ \ \ \textcolor{keyword}{template}\ <Number\ number,\ \textcolor{keywordtype}{size\_t}\ m,\ \textcolor{keywordtype}{size\_t}\ n>}
+\DoxyCodeLine{00142\ \ \ \ \ LinearSystem<number,\ m,\ n>\ refSq(LinearSystem<number,\ m,\ n>\ system)\ \{}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ RowOptional<number,\ n>\ pivots\ =\ getPivots(system);}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (!isInEchelonForm(system,\ pivots))\ \{}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\{\};\ i\ <\ pivots.size();\ i++)\ \{}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pivots\ =\ getPivots(system);}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ pivot\ =\ pivots.at(i);}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!pivot.has\_value())\ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ j\{i\ +\ 1\};\ j\ <\ m;\ j++)\ \{}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ system\ =\ rearrangeSystem(system);}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pivots\ =\ getPivots(system);}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ lower\ =\ system.at(j).at(i);}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (lower\ ==\ 0)\ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pivot\ ==\ 0)\ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00155\ }
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ permute\ =\ lower\ /\ pivot.value();}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ rowItems\ =\ system.at(j);}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Row<number,\ n>\ permuted\{permute\ *\ system.at(i)\};}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ newRow\ =\ permuted\ -\/\ rowItems;}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ system.at(j)\ =\ newRow;}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ system;}
+\DoxyCodeLine{00165\ \ \ \ \ \}}
+\DoxyCodeLine{00166\ }
+\DoxyCodeLine{00167\ \ \ \ \ \textcolor{keyword}{template}\ <Number\ number,\ \textcolor{keywordtype}{size\_t}\ m,\ \textcolor{keywordtype}{size\_t}\ n>}
+\DoxyCodeLine{00168\ \ \ \ \ LinearSystem<number,\ m,\ n>\ refRec(LinearSystem<number,\ m,\ n>\ system)\ \{}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ col\ =\ 0;\ col\ <\ n\ \&\&\ col\ <\ m;\ ++col)\ \{}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ system\ =\ rearrangeSystem(system);}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ pivotRow\ =\ col;}
+\DoxyCodeLine{00172\ }
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ row\ =\ pivotRow\ +\ 1;\ row\ <\ m;\ ++row)\ \{}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (system.at(row).at(col)\ !=\ 0)\ \{}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ factor\ =\ system.at(row).at(col)\ /\ system.at(pivotRow).at(col);}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ j\ =\ col;\ j\ <\ n;\ ++j)\ \{}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ system.at(row).at(j)\ -\/=\ factor\ *\ system.at(pivotRow).at(j);}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ system;}
+\DoxyCodeLine{00183\ \ \ \ \ \}}
+\DoxyCodeLine{00184\ }
+\DoxyCodeLine{00185\ \ \ \ \ \textcolor{keyword}{template}\ <Number\ number,\ \textcolor{keywordtype}{size\_t}\ m,\ \textcolor{keywordtype}{size\_t}\ n>}
+\DoxyCodeLine{00186\ \ \ \ \ LinearSystem<number,\ m,\ n>\ ref(LinearSystem<number,\ m,\ n>\ system)\ \{}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (m\ ==\ n\ \&\&\ m\ >\ 5)\ \textcolor{keywordflow}{return}\ refRec(system);}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (m\ ==\ n)\ \textcolor{keywordflow}{return}\ refSq(system);}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ refRec(system);}
+\DoxyCodeLine{00190\ \ \ \ \ \}}
+\DoxyCodeLine{00191\ }
+\DoxyCodeLine{00192\ \ \ \ \ \textcolor{keyword}{template}\ <Number\ number,\ \textcolor{keywordtype}{size\_t}\ m,\ \textcolor{keywordtype}{size\_t}\ n>}
+\DoxyCodeLine{00193\ \ \ \ \ LinearSystem<number,\ m,\ n>\ rrefRec(LinearSystem<number,\ m,\ n>\ system,\ \textcolor{keywordtype}{bool}\ identity\ =\ \textcolor{keyword}{true})\ \{}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ RowOptional<number,\ n>\ pivots\ =\ getPivots(system);}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!isInEchelonForm(system,\ pivots))\ system\ =\ ref(system);}
+\DoxyCodeLine{00196\ }
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ col\ =\ n;\ col\ >\ 0;\ -\/-\/col)\ \{}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ system\ =\ rearrangeSystem(system);}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ pivotRow\ =\ col\ -\/\ 1;}
+\DoxyCodeLine{00200\ }
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pivotRow\ >=\ m)\ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00202\ }
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (system.at(pivotRow).at(col\ -\/\ 1)\ ==\ 0)\ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00204\ }
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (identity)\ \{}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ pivotValue\ =\ system.at(pivotRow).at(col\ -\/\ 1);}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pivotValue\ !=\ 0)\ \{}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ j\ =\ 0;\ j\ <\ n;\ ++j)\ \{}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ system.at(pivotRow).at(j)\ /=\ pivotValue;}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00213\ }
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ row\ =\ 0;\ row\ <\ pivotRow;\ ++row)\ \{}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ upperValue\ =\ system.at(row).at(col\ -\/\ 1);}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (upperValue\ !=\ 0)\ \{}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ j\ =\ 0;\ j\ <\ n;\ ++j)\ \{}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ system.at(row).at(j)\ -\/=\ upperValue\ *\ system.at(pivotRow).at(j);}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00223\ }
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ system;}
+\DoxyCodeLine{00225\ \ \ \ \ \}}
+\DoxyCodeLine{00226\ }
+\DoxyCodeLine{00227\ \ \ \ \ \textcolor{keyword}{template}\ <Number\ number,\ \textcolor{keywordtype}{size\_t}\ m,\ \textcolor{keywordtype}{size\_t}\ n>}
+\DoxyCodeLine{00228\ \ \ \ \ LinearSystem<number,\ m,\ n>\ rrefSq(LinearSystem<number,\ m,\ n>\ system,\ \textcolor{keywordtype}{bool}\ identity\ =\ \textcolor{keyword}{true})\ \{}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ RowOptional<number,\ n>\ pivots\ =\ getPivots(system);}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!isInEchelonForm(system,\ pivots))\ system\ =\ ref(system);}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ pivots\ =\ getPivots(system);}
+\DoxyCodeLine{00232\ }
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (!isInReducedEchelonForm(system,\ pivots))\ \{}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ size\ =\ pivots.size()\ <\ n\ -\/\ 1\ ?\ pivots.size()\ :\ n\ -\/\ 1;}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\{1\};\ i\ <\ size;\ i++)\ \{}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pivots\ =\ getPivots(system);}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ pivot\ =\ pivots.at(i);}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!pivot.has\_value())\ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j\{i\ -\/\ 1\};\ j\ >=\ 0;\ j-\/-\/)\ \{}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pivots\ =\ getPivots(system);}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ upper\ =\ system.at(j).at(i);}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (upper\ ==\ 0)\ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pivot\ ==\ 0)\ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00244\ }
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ permute\ =\ upper\ /\ pivot.value();}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ rowItems\ =\ system.at(j);}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Row<number,\ n>\ permuted\{permute\ *\ system.at(i)\};}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ newRow\ =\ permuted\ -\/\ rowItems;}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ system.at(j)\ =\ newRow;}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00253\ }
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (identity)}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\{\};\ i\ <\ pivots.size();\ i++)\ \{}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ pivot\{system.at(i).at(i)\};}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pivot\ ==\ 0)\ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pivot\ !=\ 1)\ system.at(i)\ =\ system.at(i)\ *\ (1\ /\ pivot);}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (\textcolor{keyword}{const}\ std::out\_of\_range\&\ e)\ \{}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00264\ }
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ system;}
+\DoxyCodeLine{00266\ \ \ \ \ \}}
+\DoxyCodeLine{00267\ }
+\DoxyCodeLine{00268\ \ \ \ \ \textcolor{keyword}{template}\ <Number\ number,\ \textcolor{keywordtype}{size\_t}\ m,\ \textcolor{keywordtype}{size\_t}\ n>}
+\DoxyCodeLine{00269\ \ \ \ \ LinearSystem<number,\ m,\ n>\ rref(LinearSystem<number,\ m,\ n>\ system,\ \textcolor{keywordtype}{bool}\ identity\ =\ \textcolor{keyword}{true})\ \{}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (m\ ==\ n\ \&\&\ m\ >\ 5)\ \textcolor{keywordflow}{return}\ rrefRec(system,\ identity);}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (m\ ==\ n)\ \textcolor{keywordflow}{return}\ rrefSq(system,\ identity);}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ rrefRec(system,\ identity);}
+\DoxyCodeLine{00273\ \ \ \ \ \}}
+\DoxyCodeLine{00274\ }
+\DoxyCodeLine{00275\ \ \ \ \ \textcolor{keyword}{template}\ <Number\ number,\ \textcolor{keywordtype}{size\_t}\ m,\ \textcolor{keywordtype}{size\_t}\ n>}
+\DoxyCodeLine{00276\ \ \ \ \ optional<RowOptional<number,\ n>>\ findSolutions(LinearSystem<number,\ m,\ n>\ system);}
+\DoxyCodeLine{00277\ }
+\DoxyCodeLine{00278\ \ \ \ \ \textcolor{keyword}{template}\ <Number\ number,\ \textcolor{keywordtype}{size\_t}\ m,\ \textcolor{keywordtype}{size\_t}\ n>}
+\DoxyCodeLine{00279\ \ \ \ \ \textcolor{keyword}{auto}\ findSolutions(Matrix<number,\ m,\ n>\ A,\ Vector<number,\ m>\ b)\ \{}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ system\ =\ A.augment(b);}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ findSolutions(system);}
+\DoxyCodeLine{00282\ \ \ \ \ \}}
+\DoxyCodeLine{00283\ }
+\DoxyCodeLine{00284\ \ \ \ \ \textcolor{keyword}{template}\ <Number\ number,\ \textcolor{keywordtype}{size\_t}\ m,\ \textcolor{keywordtype}{size\_t}\ n>}
+\DoxyCodeLine{00285\ \ \ \ \ optional<RowOptional<number,\ n>>\ findSolutions(LinearSystem<number,\ m,\ n>\ system)\ \{}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ RowOptional<number,\ n>\ solutions\{\};}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ system\ =\ rearrangeSystem(system);}
+\DoxyCodeLine{00288\ }
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ reducedEchelon\ =\ rref(system);}
+\DoxyCodeLine{00290\ }
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (isInconsistent(reducedEchelon))\ \textcolor{keywordflow}{return}\ nullopt;}
+\DoxyCodeLine{00292\ }
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ i\{solutions.rbegin()\};\ i\ !=\ solutions.rend();\ i++)\ \{}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ index\ =\ std::distance(solutions.rbegin(),\ i);}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ solutions.at(index)\ =\ solveEquation(reducedEchelon.at(index),\ index,\ solutions);}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (\textcolor{keyword}{const}\ std::out\_of\_range\&\ e)\ \{}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ solutions;}
+\DoxyCodeLine{00302\ \ \ \ \ \}}
+\DoxyCodeLine{00303\ }
+\DoxyCodeLine{00304\ \ \ \ \ \textcolor{keyword}{template}\ <Number\ num,\ \textcolor{keywordtype}{size\_t}\ mN,\ \textcolor{keywordtype}{size\_t}\ nN>}
+\DoxyCodeLine{00305\ \ \ \ \ Vector<num,\ mN>\ extractVectorFromTranspose(\textcolor{keyword}{const}\ TransposeVariant<num,\ mN,\ nN>\ T)\ \{}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::get<Vector<num,\ mN>>(T);}
+\DoxyCodeLine{00307\ \ \ \ \ \}}
+\DoxyCodeLine{00308\ }
+\DoxyCodeLine{00309\ \ \ \ \ \textcolor{keyword}{template}\ <Number\ number,\ \textcolor{keywordtype}{size\_t}\ m>}
+\DoxyCodeLine{00310\ \ \ \ \ Matrix<number,\ m,\ m>\ I()\ \{}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ Matrix<number,\ m,\ m>\ identity\{\};}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\{\};\ i\ <\ m;\ i++)\ \{}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \ \ \ \ identity.at(i).at(i)\ =\ 1;}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ identity;}
+\DoxyCodeLine{00316\ \ \ \ \ \}}
+\DoxyCodeLine{00317\ }
+\DoxyCodeLine{00318\ \ \ \ \ \textcolor{keyword}{template}\ <Number\ number,\ \textcolor{keywordtype}{size\_t}\ m,\ \textcolor{keywordtype}{size\_t}\ n>}
+\DoxyCodeLine{00319\ \ \ \ \ optional<Matrix<number,\ m,\ n>>\ inverse(\textcolor{keyword}{const}\ LinearSystem<number,\ m,\ n>\&\ system)\ \{}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ det\ =\ system.det();}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (det\ ==\ 0)\ \textcolor{keywordflow}{return}\ std::nullopt;}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (m\ ==\ 2\ \&\&\ n\ ==\ 2)}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (1\ /\ det)\ *\ Matrix<number,\ m,\ n>\{\{system.at(1).at(1),\ -\/system.at(0).at(1)\},}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{-\/system.at(1).at(0),\ system.at(0).at(0)\}\};}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ identity\ =\ I<number,\ m>();}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ augmented\ =\ system.augment(identity);}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ rrefAug\ =\ rref(augmented);}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ inv\ =\ rrefAug.colToVectorSet();}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \ \ \ \ inv.erase(inv.begin(),\ inv.begin()\ +\ m);}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ mlinalg::structures::helpers::fromColVectorSet<number,\ m,\ n>(inv);}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00333\ \ \ \ \ \}}
+\DoxyCodeLine{00334\ }
+\DoxyCodeLine{00335\ \}\ \ \textcolor{comment}{//\ namespace\ mlinalg}}
+
+\end{DoxyCode}

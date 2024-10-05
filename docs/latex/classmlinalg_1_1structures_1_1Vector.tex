@@ -1,0 +1,798 @@
+\doxysection{mlinalg\+::structures\+::Vector\texorpdfstring{$<$}{<} number, n \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{classmlinalg_1_1structures_1_1Vector}{}\label{classmlinalg_1_1structures_1_1Vector}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+
+
+\doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} class for represeting both row and column vectors in n-\/dimensional space.  
+
+
+
+
+{\ttfamily \#include $<$Structures.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_a84433d939f9e515b80442b6ca488499c}{Vector}} (const std\+::initializer\+\_\+list$<$ number $>$ \&list)
+\begin{DoxyCompactList}\small\item\em Construct a new \doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} object from an initializer list. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_aa6a93e903984053d6bc6c95a4f9d640b}{Vector}} (const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}} \&other)
+\begin{DoxyCompactList}\small\item\em Copy construct a new \doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} object. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_a093a58ab65746c1790ddecf9bfd826f6}{Vector}} (\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}} \&\&other) noexcept
+\begin{DoxyCompactList}\small\item\em Move construct a new \doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} object. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}} \& \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_a0ffd39c48fb3ef45af2eff14ef454ae8}{operator=}} (const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}} \&other)
+\begin{DoxyCompactList}\small\item\em Copy assignment operator. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}} \& \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_a2b66dc8547c4a9573a37377622c7f611}{operator=}} (const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, 1, n $>$ \&other)
+\begin{DoxyCompactList}\small\item\em Copy assign a \doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} from a 1xN matrix. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}} \& \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_a476af4ebe68f1c22e7d3138284012b8c}{operator=}} (\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}} \&\&other) noexcept
+\begin{DoxyCompactList}\small\item\em Move assignment operator. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_a94f60b6a012357c2d6b61376efdf3b67}{operator==}} (const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}} \&other) const
+\begin{DoxyCompactList}\small\item\em Equality operator. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_a7aec46c3212a0ac8476b6cd458a997e2}{operator$>$}} (const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}} \&other) const
+\begin{DoxyCompactList}\small\item\em Greater than operator. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_aac9c8d3f7a78d0843cb295ca7b96fdb7}{operator$<$}} (const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}} \&other) const
+\begin{DoxyCompactList}\small\item\em Less than operator. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_a4e8cccd9a0e34fbab64c74069abad3a2}{operator$>$=}} (const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}} \&other) const
+\begin{DoxyCompactList}\small\item\em Greater than or equal to operator. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_a54fdcf611c3ef13b5aa895d410d5d7a3}{operator$<$=}} (const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}} \&other) const
+\begin{DoxyCompactList}\small\item\em Less than or equal to operator. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_a33f43bc4e9169b057beb4acd74425dae}{operator!=}} (const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}} \&other) const
+\begin{DoxyCompactList}\small\item\em Inequalty Operator. \end{DoxyCompactList}\item 
+number \& \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_afd0f74693f19e486ae7b1e6966faf17f}{at}} (size\+\_\+t i)
+\begin{DoxyCompactList}\small\item\em Access the ith element of the vector. \end{DoxyCompactList}\item 
+number \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_a0ef880a91b81d10b49a93c69e0541274}{at}} (size\+\_\+t i) const
+\begin{DoxyCompactList}\small\item\em Const access the ith element of the vector. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_a29e80eafc8134b48459ced64947fa3b5}{dot}} (const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \&other) const
+\begin{DoxyCompactList}\small\item\em Find the dot product of this vector and another vector. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_af32b79842d6a24354caa603c49a84563}{length}} () const
+\begin{DoxyCompactList}\small\item\em Find the length of the vector. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_a1b5cfbbfcdce74b6c0ffdd556579f50f}{dist}} (const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \&other) const
+\begin{DoxyCompactList}\small\item\em Find the distance between this vector and another vector. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_a61154c4cf834c024f4a4ec6ff77906ed}{operator-\/}} (const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \&other) const
+\begin{DoxyCompactList}\small\item\em \doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} subtraction. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_a29a9b87614778dd7dba1e8b3bec0edf3}{operator+}} (const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \&other) const
+\begin{DoxyCompactList}\small\item\em \doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} addition. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \& \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_a2c1b479c612b407139bc0d1a883b621b}{operator+=}} (const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \&other)
+\begin{DoxyCompactList}\small\item\em In-\/place vector addition. \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_a9dd61b95816b6bce90d1fd487b938317}{size}} () const
+\begin{DoxyCompactList}\small\item\em Size of the vector, i.\+e the number of elements in the vector. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_a65795e98606ae7a92e51d637c0ccd9c1}{operator\texorpdfstring{$\ast$}{*}}} (const number \&scalar) const
+\begin{DoxyCompactList}\small\item\em \doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} multiplication by a scalar. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_a3d6bf42c69720c0d54c7ce53afc41774}{operator/}} (const number \&scalar) const
+\begin{DoxyCompactList}\small\item\em \doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} division by a scalar. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \& \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_a89826a7d337ab5517fe3f6f0c8877ad3}{operator\texorpdfstring{$\ast$}{*}=}} (const number \&scalar)
+\begin{DoxyCompactList}\small\item\em In-\/place vector division by a scalar. \end{DoxyCompactList}\item 
+auto \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_a163918120fc8e20b2c29f12ece77fb1b}{operator\texorpdfstring{$\ast$}{*}}} (const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \&vec) const
+\begin{DoxyCompactList}\small\item\em \doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} multiplication by a vector. \end{DoxyCompactList}\item 
+{\footnotesize template$<$size\+\_\+t m$>$ }\\\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_ac04a644cee3fde76a101d166ff09b1e0}{operator\texorpdfstring{$\ast$}{*}}} (const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, m, n $>$ \&mat)
+\begin{DoxyCompactList}\small\item\em \doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} multiplication by a matrix. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, 1, n $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_a3e48b42e45fb1e9337ad2aa74183801c}{T}} () const
+\begin{DoxyCompactList}\small\item\em Transpose a row vector to a column vector. \end{DoxyCompactList}\item 
+constexpr auto \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_a0fdc3f35c0a42118c62e103a794b4fcf}{begin}} () const
+\begin{DoxyCompactList}\small\item\em Begin itertor for the vector. \end{DoxyCompactList}\item 
+constexpr auto \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_a0794b72aa6d670ca9bfca33b7f592d90}{end}} () const
+\begin{DoxyCompactList}\small\item\em End iterator for the vector. \end{DoxyCompactList}\item 
+constexpr auto \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_a7474fcc42efd12c9cd2cbc932accdbd1}{cbegin}} () const
+\begin{DoxyCompactList}\small\item\em Const begin iterator for the vector. \end{DoxyCompactList}\item 
+constexpr auto \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_aac55648d10cbe484cafddb0d35077e15}{cend}} () const
+\begin{DoxyCompactList}\small\item\em Const end iterator for the vector. \end{DoxyCompactList}\item 
+constexpr auto \& \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_a0a81875b502c8503728e4ea920e1ff1a}{back}} ()
+\begin{DoxyCompactList}\small\item\em Last element of the vector. \end{DoxyCompactList}\item 
+constexpr auto \& \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_abe8e33881ef45a8f006e814224a6d63d}{back}} () const
+\begin{DoxyCompactList}\small\item\em Const last element of the vector. \end{DoxyCompactList}\item 
+constexpr auto \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_a85f9bb07938d1e1680ae7a83736e60e7}{rbegin}} ()
+\begin{DoxyCompactList}\small\item\em Reverse begin iterator for the vector. \end{DoxyCompactList}\item 
+constexpr auto \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_ab7d56149ecba17b6f83643bcc4f41dbd}{rend}} ()
+\begin{DoxyCompactList}\small\item\em Reverse end iterator for the vector. \end{DoxyCompactList}\item 
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_af65e50c33bb30eee1103d8fedbd49096}\label{classmlinalg_1_1structures_1_1Vector_af65e50c33bb30eee1103d8fedbd49096} 
+{\bfseries operator std\+::string} () const
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_a6cdb46b85949d6912ece7dc046201c5f}\label{classmlinalg_1_1structures_1_1Vector_a6cdb46b85949d6912ece7dc046201c5f} 
+std\+::ostream \& {\bfseries operator$<$$<$} (std\+::ostream \&os, const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \&row)
+\item 
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_a3cc05c39f3e0c6f91364236a66f75da8}\label{classmlinalg_1_1structures_1_1Vector_a3cc05c39f3e0c6f91364236a66f75da8} 
+std\+::ostream \& {\bfseries operator$<$$<$} (std\+::ostream \&os, const optional$<$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ $>$ \&row\+Pot)
+\item 
+void \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_af951abc2628ece37397a124d269d41ee}{swap}} (\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}} \&first, \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}} \&second) noexcept
+\begin{DoxyCompactList}\small\item\em Swap the contents of two vectors. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$\newline
+class mlinalg\+::structures\+::\+Vector$<$ number, n $>$}
+\doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} class for represeting both row and column vectors in n-\/dimensional space. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em n} & The number of elements in the vector \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_a84433d939f9e515b80442b6ca488499c}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!Vector@{Vector}}
+\index{Vector@{Vector}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{Vector()}{Vector()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_a84433d939f9e515b80442b6ca488499c} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::\+Vector (\begin{DoxyParamCaption}\item[{const std\+::initializer\+\_\+list$<$ number $>$ \&}]{list}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Construct a new \doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} object from an initializer list. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em list} & Initializer list of numbers \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_aa6a93e903984053d6bc6c95a4f9d640b}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!Vector@{Vector}}
+\index{Vector@{Vector}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{Vector()}{Vector()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_aa6a93e903984053d6bc6c95a4f9d640b} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::\+Vector (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \&}]{other}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Copy construct a new \doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} to copy \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_a093a58ab65746c1790ddecf9bfd826f6}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!Vector@{Vector}}
+\index{Vector@{Vector}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{Vector()}{Vector()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_a093a58ab65746c1790ddecf9bfd826f6} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::\+Vector (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \&\&}]{other}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Move construct a new \doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} to move \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_afd0f74693f19e486ae7b1e6966faf17f}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!at@{at}}
+\index{at@{at}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{at()}{at()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_afd0f74693f19e486ae7b1e6966faf17f} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+number \& \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::at (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{i}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Access the ith element of the vector. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & the index of the element to access \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a reference to the ith element 
+\end{DoxyReturn}
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classmlinalg_1_1structures_1_1Vector_afd0f74693f19e486ae7b1e6966faf17f_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_a0ef880a91b81d10b49a93c69e0541274}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!at@{at}}
+\index{at@{at}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{at()}{at()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_a0ef880a91b81d10b49a93c69e0541274} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+number \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::at (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{i}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Const access the ith element of the vector. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & the index of the element to access \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the ith element 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_a0a81875b502c8503728e4ea920e1ff1a}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!back@{back}}
+\index{back@{back}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{back()}{back()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_a0a81875b502c8503728e4ea920e1ff1a} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+auto \& \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::back (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+
+
+Last element of the vector. 
+
+\begin{DoxyReturn}{Returns}
+A reference to the last element of the vector 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_abe8e33881ef45a8f006e814224a6d63d}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!back@{back}}
+\index{back@{back}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{back()}{back()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_abe8e33881ef45a8f006e814224a6d63d} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+auto \& \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::back (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+
+
+Const last element of the vector. 
+
+\begin{DoxyReturn}{Returns}
+A const reference to the last element of the vector 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_a0fdc3f35c0a42118c62e103a794b4fcf}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!begin@{begin}}
+\index{begin@{begin}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{begin()}{begin()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_a0fdc3f35c0a42118c62e103a794b4fcf} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+auto \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::begin (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+
+
+Begin itertor for the vector. 
+
+\begin{DoxyReturn}{Returns}
+An iterator to the beginning of the vector 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_a7474fcc42efd12c9cd2cbc932accdbd1}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!cbegin@{cbegin}}
+\index{cbegin@{cbegin}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{cbegin()}{cbegin()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_a7474fcc42efd12c9cd2cbc932accdbd1} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+auto \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::cbegin (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+
+
+Const begin iterator for the vector. 
+
+\begin{DoxyReturn}{Returns}
+A const iterator to the beginning of the vector 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_aac55648d10cbe484cafddb0d35077e15}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!cend@{cend}}
+\index{cend@{cend}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{cend()}{cend()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_aac55648d10cbe484cafddb0d35077e15} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+auto \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::cend (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+
+
+Const end iterator for the vector. 
+
+\begin{DoxyReturn}{Returns}
+A c onst iterator to the end of the vector 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_a1b5cfbbfcdce74b6c0ffdd556579f50f}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!dist@{dist}}
+\index{dist@{dist}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{dist()}{dist()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_a1b5cfbbfcdce74b6c0ffdd556579f50f} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+double \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::dist (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \&}]{other}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [nodiscard]}}
+
+
+
+Find the distance between this vector and another vector. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The other vector \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the distance between the two vectors 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_a29e80eafc8134b48459ced64947fa3b5}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!dot@{dot}}
+\index{dot@{dot}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{dot()}{dot()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_a29e80eafc8134b48459ced64947fa3b5} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+double \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::dot (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \&}]{other}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Find the dot product of this vector and another vector. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The other vector \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the dot product of the two vectors 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_a0794b72aa6d670ca9bfca33b7f592d90}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!end@{end}}
+\index{end@{end}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{end()}{end()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_a0794b72aa6d670ca9bfca33b7f592d90} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+auto \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::end (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+
+
+End iterator for the vector. 
+
+\begin{DoxyReturn}{Returns}
+An iterator to the end of the vector 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_af32b79842d6a24354caa603c49a84563}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!length@{length}}
+\index{length@{length}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{length()}{length()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_af32b79842d6a24354caa603c49a84563} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+double \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::length (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [nodiscard]}}
+
+
+
+Find the length of the vector. 
+
+\begin{DoxyReturn}{Returns}
+the length of the vector 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_a33f43bc4e9169b057beb4acd74425dae}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!operator"!=@{operator"!=}}
+\index{operator"!=@{operator"!=}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{operator"!=()}{operator!=()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_a33f43bc4e9169b057beb4acd74425dae} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+bool \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::operator!= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \&}]{other}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Inequalty Operator. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} to compare \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if all the entires in the vector are not equal to all the entries in the other vector else false 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_ac04a644cee3fde76a101d166ff09b1e0}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}}
+\index{operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$\ast$}{*}()}{operator*()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_ac04a644cee3fde76a101d166ff09b1e0} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+template$<$size\+\_\+t m$>$ \\
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::operator\texorpdfstring{$\ast$}{*} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, m, n $>$ \&}]{mat}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} multiplication by a matrix. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em mat} & A matrix of size MxN \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The vector resulting from the multiplication 
+\end{DoxyReturn}
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classmlinalg_1_1structures_1_1Vector_ac04a644cee3fde76a101d166ff09b1e0_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_a65795e98606ae7a92e51d637c0ccd9c1}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}}
+\index{operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$\ast$}{*}()}{operator*()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_a65795e98606ae7a92e51d637c0ccd9c1} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::operator\texorpdfstring{$\ast$}{*} (\begin{DoxyParamCaption}\item[{const number \&}]{scalar}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} multiplication by a scalar. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em scalar} & A scalar of the same type as the vector \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the vector resulting from the multiplication 
+\end{DoxyReturn}
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=331pt]{classmlinalg_1_1structures_1_1Vector_a65795e98606ae7a92e51d637c0ccd9c1_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_a163918120fc8e20b2c29f12ece77fb1b}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}}
+\index{operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$\ast$}{*}()}{operator*()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_a163918120fc8e20b2c29f12ece77fb1b} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+auto \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::operator\texorpdfstring{$\ast$}{*} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \&}]{vec}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} multiplication by a vector. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em vec} & Another vector of the same size as the vector \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A 1x1 vector containing the dot product of the two vectors 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_a89826a7d337ab5517fe3f6f0c8877ad3}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!operator\texorpdfstring{$\ast$}{*}=@{operator\texorpdfstring{$\ast$}{*}=}}
+\index{operator\texorpdfstring{$\ast$}{*}=@{operator\texorpdfstring{$\ast$}{*}=}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$\ast$}{*}=()}{operator*=()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_a89826a7d337ab5517fe3f6f0c8877ad3} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \& \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::operator\texorpdfstring{$\ast$}{*}= (\begin{DoxyParamCaption}\item[{const number \&}]{scalar}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+In-\/place vector division by a scalar. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em scalar} & A scalar of the same type as the vector. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_a29a9b87614778dd7dba1e8b3bec0edf3}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!operator+@{operator+}}
+\index{operator+@{operator+}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{operator+()}{operator+()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_a29a9b87614778dd7dba1e8b3bec0edf3} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::operator+ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \&}]{other}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} addition. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & the vector to add \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the vector resulting from the addition 
+\end{DoxyReturn}
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=333pt]{classmlinalg_1_1structures_1_1Vector_a29a9b87614778dd7dba1e8b3bec0edf3_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_a2c1b479c612b407139bc0d1a883b621b}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!operator+=@{operator+=}}
+\index{operator+=@{operator+=}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{operator+=()}{operator+=()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_a2c1b479c612b407139bc0d1a883b621b} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \& \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::operator+= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \&}]{other}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+In-\/place vector addition. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & the vector to add \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A reference to the same vector 
+\end{DoxyReturn}
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=341pt]{classmlinalg_1_1structures_1_1Vector_a2c1b479c612b407139bc0d1a883b621b_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_a61154c4cf834c024f4a4ec6ff77906ed}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!operator-\/@{operator-\/}}
+\index{operator-\/@{operator-\/}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{operator-\/()}{operator-()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_a61154c4cf834c024f4a4ec6ff77906ed} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::operator-\/ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \&}]{other}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} subtraction. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & the vector to subtract \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the vector resulting from the subtraction 
+\end{DoxyReturn}
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=331pt]{classmlinalg_1_1structures_1_1Vector_a61154c4cf834c024f4a4ec6ff77906ed_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_a3d6bf42c69720c0d54c7ce53afc41774}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!operator/@{operator/}}
+\index{operator/@{operator/}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{operator/()}{operator/()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_a3d6bf42c69720c0d54c7ce53afc41774} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::operator/ (\begin{DoxyParamCaption}\item[{const number \&}]{scalar}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} division by a scalar. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em scalar} & A scalar of the same type as the vector \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The vector resulting from the division 
+\end{DoxyReturn}
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=331pt]{classmlinalg_1_1structures_1_1Vector_a3d6bf42c69720c0d54c7ce53afc41774_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_aac9c8d3f7a78d0843cb295ca7b96fdb7}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!operator$<$@{operator$<$}}
+\index{operator$<$@{operator$<$}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{operator$<$()}{operator<()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_aac9c8d3f7a78d0843cb295ca7b96fdb7} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+bool \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::operator$<$ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \&}]{other}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Less than operator. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} to compare \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if all the entries in the other vector are less than all the entries in this vector else false 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_a54fdcf611c3ef13b5aa895d410d5d7a3}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!operator$<$=@{operator$<$=}}
+\index{operator$<$=@{operator$<$=}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{operator$<$=()}{operator<=()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_a54fdcf611c3ef13b5aa895d410d5d7a3} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+bool \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::operator$<$= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \&}]{other}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Less than or equal to operator. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} to compare \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if all the entries in the vector are less than or equal to the entries in the other vector else false 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_a2b66dc8547c4a9573a37377622c7f611}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!operator=@{operator=}}
+\index{operator=@{operator=}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_a2b66dc8547c4a9573a37377622c7f611} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}} \& \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, 1, n $>$ \&}]{other}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Copy assign a \doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} from a 1xN matrix. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & A 1xN matrix \\
+\hline
+\end{DoxyParams}
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=333pt]{classmlinalg_1_1structures_1_1Vector_a2b66dc8547c4a9573a37377622c7f611_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_a0ffd39c48fb3ef45af2eff14ef454ae8}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!operator=@{operator=}}
+\index{operator=@{operator=}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_a0ffd39c48fb3ef45af2eff14ef454ae8} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}} \& \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \&}]{other}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Copy assignment operator. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} to copy \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_a476af4ebe68f1c22e7d3138284012b8c}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!operator=@{operator=}}
+\index{operator=@{operator=}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_a476af4ebe68f1c22e7d3138284012b8c} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}} \& \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::operator= (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \&\&}]{other}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Move assignment operator. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} to move \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_a94f60b6a012357c2d6b61376efdf3b67}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!operator==@{operator==}}
+\index{operator==@{operator==}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{operator==()}{operator==()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_a94f60b6a012357c2d6b61376efdf3b67} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+bool \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::operator== (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \&}]{other}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Equality operator. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} to compare \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if all the entires in the vector are equal to all the entires in the other vector else false 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_a7aec46c3212a0ac8476b6cd458a997e2}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!operator$>$@{operator$>$}}
+\index{operator$>$@{operator$>$}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{operator$>$()}{operator>()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_a7aec46c3212a0ac8476b6cd458a997e2} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+bool \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::operator$>$ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \&}]{other}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Greater than operator. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} to compare \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if all the entries in the vector are greater than all the entries in the other vector else false 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_a4e8cccd9a0e34fbab64c74069abad3a2}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!operator$>$=@{operator$>$=}}
+\index{operator$>$=@{operator$>$=}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{operator$>$=()}{operator>=()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_a4e8cccd9a0e34fbab64c74069abad3a2} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+bool \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::operator$>$= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \&}]{other}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Greater than or equal to operator. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \doxylink{classmlinalg_1_1structures_1_1Vector}{Vector} to compare \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if all the entries in the vector are greater than or equal to the entries in the other vector else false 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_a85f9bb07938d1e1680ae7a83736e60e7}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!rbegin@{rbegin}}
+\index{rbegin@{rbegin}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{rbegin()}{rbegin()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_a85f9bb07938d1e1680ae7a83736e60e7} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+auto \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::rbegin (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+
+
+Reverse begin iterator for the vector. 
+
+\begin{DoxyReturn}{Returns}
+An iterator to the beginning of the vector in reverse 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_ab7d56149ecba17b6f83643bcc4f41dbd}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!rend@{rend}}
+\index{rend@{rend}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{rend()}{rend()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_ab7d56149ecba17b6f83643bcc4f41dbd} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+auto \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::rend (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+
+
+Reverse end iterator for the vector. 
+
+\begin{DoxyReturn}{Returns}
+An iterator to the end of the vector in reverse 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_a9dd61b95816b6bce90d1fd487b938317}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!size@{size}}
+\index{size@{size}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_a9dd61b95816b6bce90d1fd487b938317} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+size\+\_\+t \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::size (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [nodiscard]}}
+
+
+
+Size of the vector, i.\+e the number of elements in the vector. 
+
+\begin{DoxyReturn}{Returns}
+the size of the vector 
+\end{DoxyReturn}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_a3e48b42e45fb1e9337ad2aa74183801c}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!T@{T}}
+\index{T@{T}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{T()}{T()}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_a3e48b42e45fb1e9337ad2aa74183801c} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, 1, n $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{mlinalg\+::structures\+::\+Vector}}$<$ number, n $>$\+::T (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [nodiscard]}}
+
+
+
+Transpose a row vector to a column vector. 
+
+\begin{DoxyReturn}{Returns}
+Column\+Vector$<$number, n$>$ 
+\end{DoxyReturn}
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=331pt]{classmlinalg_1_1structures_1_1Vector_a3e48b42e45fb1e9337ad2aa74183801c_cgraph}
+\end{center}
+\end{figure}
+
+
+\doxysubsection{Friends And Related Symbol Documentation}
+\Hypertarget{classmlinalg_1_1structures_1_1Vector_af951abc2628ece37397a124d269d41ee}\index{mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}!swap@{swap}}
+\index{swap@{swap}!mlinalg::structures::Vector$<$ number, n $>$@{mlinalg::structures::Vector$<$ number, n $>$}}
+\doxysubsubsection{\texorpdfstring{swap}{swap}}
+{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Vector_af951abc2628ece37397a124d269d41ee} 
+template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t n$>$ \\
+void swap (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \&}]{first}{, }\item[{\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector}}$<$ number, n $>$ \&}]{second}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [friend]}}
+
+
+
+Swap the contents of two vectors. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em first} & \\
+\hline
+{\em second} & \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/pub/\mbox{\hyperlink{Structures_8hpp}{Structures.\+hpp}}\end{DoxyCompactItemize}

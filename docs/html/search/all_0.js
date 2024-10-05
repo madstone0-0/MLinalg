@@ -1,0 +1,5 @@
+var searchData=
+[
+  ['at_0',['at',['../classmlinalg_1_1structures_1_1Vector.html#afd0f74693f19e486ae7b1e6966faf17f',1,'mlinalg::structures::Vector::at(size_t i)'],['../classmlinalg_1_1structures_1_1Vector.html#a0ef880a91b81d10b49a93c69e0541274',1,'mlinalg::structures::Vector::at(size_t i) const'],['../classmlinalg_1_1structures_1_1Matrix.html#ae3f61d6089f2402d9ccca780f43be781',1,'mlinalg::structures::Matrix::at(size_t i)'],['../classmlinalg_1_1structures_1_1Matrix.html#aa726103754e60a5d28a05778f73c3f02',1,'mlinalg::structures::Matrix::at(size_t i) const'],['../classmlinalg_1_1structures_1_1Matrix.html#a60b42965a00d4ad587da9a29adc9669d',1,'mlinalg::structures::Matrix::at(size_t i, size_t j)']]],
+  ['augment_1',['augment',['../classmlinalg_1_1structures_1_1Matrix.html#a27c88384ec14a6e8463935222e2ec4b7',1,'mlinalg::structures::Matrix::augment(const Matrix&lt; number, m, nN &gt; &amp;other) const'],['../classmlinalg_1_1structures_1_1Matrix.html#a1791860a24eb83f7e36f9d31e562d995',1,'mlinalg::structures::Matrix::augment(const Vector&lt; number, m &gt; &amp;other) const']]]
+];
