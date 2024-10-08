@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['rbegin_0',['rbegin',['../classmlinalg_1_1structures_1_1Vector.html#a85f9bb07938d1e1680ae7a83736e60e7',1,'mlinalg::structures::Vector::rbegin()'],['../classmlinalg_1_1structures_1_1Matrix.html#aa98f554e3cb6b7f6e02c706358d5084b',1,'mlinalg::structures::Matrix::rbegin()']]],
-  ['rend_1',['rend',['../classmlinalg_1_1structures_1_1Vector.html#ab7d56149ecba17b6f83643bcc4f41dbd',1,'mlinalg::structures::Vector::rend()'],['../classmlinalg_1_1structures_1_1Matrix.html#afc263efe08f53863aa03c3cfbf2d5874',1,'mlinalg::structures::Matrix::rend()']]],
-  ['row_2',['Row',['../Structures_8hpp.html#aa89428aa9b1f53329c3de175c9f285d0',1,'mlinalg::structures']]],
-  ['rowtovectorset_3',['rowToVectorSet',['../classmlinalg_1_1structures_1_1Matrix.html#ab9df2076840133b70a8583680259d843',1,'mlinalg::structures::Matrix']]]
+  ['number_0',['Number',['../conceptNumber.html',1,'']]],
+  ['numcols_1',['numCols',['../classmlinalg_1_1structures_1_1Matrix.html#aab739ceb51d07a1aa8b2640e0a96274e',1,'mlinalg::structures::Matrix']]],
+  ['numrows_2',['numRows',['../classmlinalg_1_1structures_1_1Matrix.html#adf91eb32796c53d43f2451e143f047b2',1,'mlinalg::structures::Matrix']]]
 ];

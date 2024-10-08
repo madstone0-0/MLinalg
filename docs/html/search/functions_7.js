@@ -1,4 +1,8 @@
 var searchData=
 [
-  ['matrix_0',['Matrix',['../classmlinalg_1_1structures_1_1Matrix.html#a6820f387da6ae32207c395a7feda9279',1,'mlinalg::structures::Matrix::Matrix(const std::initializer_list&lt; std::initializer_list&lt; number &gt; &gt; &amp;rows)'],['../classmlinalg_1_1structures_1_1Matrix.html#ab97e35d98329e312dacb2018cca8e32b',1,'mlinalg::structures::Matrix::Matrix(const Matrix &amp;other)'],['../classmlinalg_1_1structures_1_1Matrix.html#a869c094118a3a13f2d5f4b361ad20a00',1,'mlinalg::structures::Matrix::Matrix(Matrix &amp;&amp;other) noexcept']]]
+  ['i_0',['I',['../Operations_8hpp.html#a132d975d3b8930108fa504313c8991cb',1,'mlinalg']]],
+  ['inverse_1',['inverse',['../Operations_8hpp.html#a61dac8383a2c25ace0227f9899511ca8',1,'mlinalg']]],
+  ['isinconsistent_2',['isInconsistent',['../Operations_8hpp.html#a577fb72b9db4a163ad600474e11754a4',1,'mlinalg']]],
+  ['isinechelonform_3',['isInEchelonForm',['../Operations_8hpp.html#a9fb5f07ad9237c0b4d18af88bf28255b',1,'mlinalg']]],
+  ['isinreducedechelonform_4',['isInReducedEchelonForm',['../Operations_8hpp.html#ad6517c004dfe7109973bb4726d0b118e',1,'mlinalg']]]
 ];

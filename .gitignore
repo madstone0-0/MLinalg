@@ -2,3 +2,7 @@ build
 build-release
 .cache
 *.log
+.ccls-cache
+*.srctrlbm
+*.srctrldb
+*.srctrlprj

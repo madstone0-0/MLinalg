@@ -1,0 +1,6 @@
+<map id="mlinalg::structures::Matrix::det" name="mlinalg::structures::Matrix::det">
+<area shape="rect" id="Node000001" title="Determinant of the matrix." alt="" coords="180,21,323,66"/>
+<area shape="rect" id="Node000002" href="$Operations_8hpp.html#a61dac8383a2c25ace0227f9899511ca8" title="Find the inverse of a square linear system." alt="" coords="5,29,132,57"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="164,46,132,46,132,40,164,40"/>
+<area shape="poly" id="edge2_Node000002_Node000002" title=" " alt="" coords="99,16,89,10,68,8,50,10,39,15,37,20,41,27,37,30,32,20,36,11,48,5,69,3,90,5,102,12"/>
+</map>

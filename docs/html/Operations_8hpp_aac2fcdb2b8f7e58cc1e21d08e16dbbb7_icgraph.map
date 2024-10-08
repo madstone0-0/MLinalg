@@ -1,0 +1,12 @@
+<map id="mlinalg::rref" name="mlinalg::rref">
+<area shape="rect" id="Node000001" title="Find the reduced row echelon form of a linear system." alt="" coords="428,68,529,96"/>
+<area shape="poly" id="edge6_Node000001_Node000001" title=" " alt="" coords="509,55,498,49,479,47,460,49,450,53,448,59,452,66,447,69,442,59,446,50,459,43,479,41,500,44,512,50"/>
+<area shape="rect" id="Node000002" href="$Operations_8hpp.html#ad9fb84cef247c42a25e7715a4c61446a" title="Find the solutions to a linear system in the form: [A | b]." alt="" coords="217,29,380,57"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="412,70,365,60,366,55,413,65"/>
+<area shape="rect" id="Node000004" href="$Operations_8hpp.html#a61dac8383a2c25ace0227f9899511ca8" title="Find the inverse of a square linear system." alt="" coords="235,105,362,133"/>
+<area shape="poly" id="edge4_Node000001_Node000004" title=" " alt="" coords="413,98,362,109,361,103,412,93"/>
+<area shape="poly" id="edge2_Node000002_Node000002" title=" " alt="" coords="329,16,318,10,298,8,280,10,270,15,267,20,272,28,267,30,262,20,266,11,278,5,298,3,320,5,331,12"/>
+<area shape="rect" id="Node000003" href="$Operations_8hpp.html#a26fb7199eb0c367cdb15d404b08b1167" title="Find the solutions to a matrix equation in the form: A * x = b." alt="" coords="5,29,169,57"/>
+<area shape="poly" id="edge3_Node000002_Node000003" title=" " alt="" coords="201,46,169,46,169,40,201,40"/>
+<area shape="poly" id="edge5_Node000004_Node000004" title=" " alt="" coords="329,92,318,86,298,84,280,86,270,91,267,96,272,104,267,106,262,96,266,87,278,81,298,79,320,81,331,88"/>
+</map>

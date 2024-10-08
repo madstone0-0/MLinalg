@@ -1,0 +1,30 @@
+<map id="mlinalg::getPivots" name="mlinalg::getPivots">
+<area shape="rect" id="Node000001" title="Gets the pivots of a linear system." alt="" coords="1055,79,1195,106"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="1154,66,1144,60,1125,57,1107,59,1098,64,1095,69,1099,77,1095,79,1090,70,1094,60,1106,54,1125,52,1146,55,1157,61"/>
+<area shape="rect" id="Node000002" href="$Operations_8hpp.html#affd0318fddf0f1101a3cdf497e846d6e" title="Find the row echelon form of a square linear system." alt="" coords="895,79,1007,106"/>
+<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="1040,95,1008,95,1008,90,1040,90"/>
+<area shape="rect" id="Node000004" href="$Operations_8hpp.html#aa6dc1c75852e8e132ab055e44a9d05c9" title="Find the reduced row echelon form of a rectangular linear system." alt="" coords="577,29,703,57"/>
+<area shape="poly" id="edge18_Node000001_Node000004" title=" " alt="" coords="1084,74,1047,58,1007,46,925,35,843,31,767,34,703,38,703,33,767,28,843,26,926,29,1008,41,1049,53,1086,69"/>
+<area shape="rect" id="Node000009" href="$Operations_8hpp.html#ac4901a5827c188f379e043e0f1ccc428" title="Find the reduced row echelon form of a square linear system." alt="" coords="581,105,699,133"/>
+<area shape="poly" id="edge19_Node000001_Node000009" title=" " alt="" coords="1055,113,1008,120,924,127,840,129,699,125,699,120,840,123,924,121,1007,115,1054,108"/>
+<area shape="poly" id="edge17_Node000002_Node000002" title=" " alt="" coords="976,65,967,59,951,57,936,59,927,64,925,69,929,77,924,79,920,70,923,60,934,54,951,52,969,54,979,61"/>
+<area shape="rect" id="Node000003" href="$Operations_8hpp.html#a444bb226d7dc0778b2b96c27e21f48f4" title="Find the row echelon form of a linear system." alt="" coords="751,79,847,106"/>
+<area shape="poly" id="edge3_Node000002_Node000003" title=" " alt="" coords="879,95,847,95,847,90,879,90"/>
+<area shape="poly" id="edge4_Node000003_Node000003" title=" " alt="" coords="824,65,815,59,799,57,783,59,775,64,773,69,777,77,772,79,768,70,771,60,782,54,799,52,817,54,827,61"/>
+<area shape="poly" id="edge5_Node000003_Node000004" title=" " alt="" coords="737,76,686,60,688,55,738,71"/>
+<area shape="poly" id="edge14_Node000003_Node000009" title=" " alt="" coords="736,106,699,112,698,107,735,100"/>
+<area shape="poly" id="edge13_Node000004_Node000004" title=" " alt="" coords="667,16,657,10,640,8,624,10,615,14,613,20,617,28,612,30,608,20,611,11,622,5,640,3,659,5,669,12"/>
+<area shape="rect" id="Node000005" href="$Operations_8hpp.html#aac2fcdb2b8f7e58cc1e21d08e16dbbb7" title="Find the reduced row echelon form of a linear system." alt="" coords="428,68,529,96"/>
+<area shape="poly" id="edge6_Node000004_Node000005" title=" " alt="" coords="565,64,530,72,529,67,564,59"/>
+<area shape="poly" id="edge12_Node000005_Node000005" title=" " alt="" coords="506,55,496,49,479,47,462,49,453,53,451,59,455,66,450,69,446,59,449,50,461,43,479,41,498,44,508,50"/>
+<area shape="rect" id="Node000006" href="$Operations_8hpp.html#ad9fb84cef247c42a25e7715a4c61446a" title="Find the solutions to a linear system in the form: [A | b]." alt="" coords="217,29,380,57"/>
+<area shape="poly" id="edge7_Node000005_Node000006" title=" " alt="" coords="412,70,365,60,366,55,413,65"/>
+<area shape="rect" id="Node000008" href="$Operations_8hpp.html#a61dac8383a2c25ace0227f9899511ca8" title="Find the inverse of a square linear system." alt="" coords="235,105,362,133"/>
+<area shape="poly" id="edge10_Node000005_Node000008" title=" " alt="" coords="413,98,362,109,361,103,412,93"/>
+<area shape="poly" id="edge8_Node000006_Node000006" title=" " alt="" coords="329,16,318,10,298,8,280,10,270,15,267,20,272,28,267,30,262,20,266,11,278,5,298,3,320,5,331,12"/>
+<area shape="rect" id="Node000007" href="$Operations_8hpp.html#a26fb7199eb0c367cdb15d404b08b1167" title="Find the solutions to a matrix equation in the form: A * x = b." alt="" coords="5,29,169,57"/>
+<area shape="poly" id="edge9_Node000006_Node000007" title=" " alt="" coords="201,46,169,46,169,40,201,40"/>
+<area shape="poly" id="edge11_Node000008_Node000008" title=" " alt="" coords="329,92,318,86,298,84,280,86,270,91,267,96,272,104,267,106,262,96,266,87,278,81,298,79,320,81,331,88"/>
+<area shape="poly" id="edge15_Node000009_Node000005" title=" " alt="" coords="565,105,529,96,530,91,567,99"/>
+<area shape="poly" id="edge16_Node000009_Node000009" title=" " alt="" coords="667,92,657,86,640,84,624,86,615,90,613,96,617,104,612,106,608,96,611,87,622,81,640,79,659,81,669,88"/>
+</map>

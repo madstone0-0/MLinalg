@@ -43,7 +43,7 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"MLinalg_8hpp_source.html"
+"MLinalg_8hpp.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['structures_2ehpp_0',['Structures.hpp',['../Structures_8hpp.html',1,'']]]
+  ['mlinalg_2ehpp_0',['MLinalg.hpp',['../MLinalg_8hpp.html',1,'']]]
 ];

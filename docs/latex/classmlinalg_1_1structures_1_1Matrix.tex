@@ -82,11 +82,6 @@ number \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a0ef35a6063c76c1a49
 \begin{DoxyCompactList}\small\item\em Determinant of the matrix. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ number, m -\/ 1, n -\/ 1 $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_ab64e1f7618b638655bdf194ea25bef97}{subset}} (std\+::optional$<$ size\+\_\+t $>$ i, std\+::optional$<$ size\+\_\+t $>$ j) const
 \begin{DoxyCompactList}\small\item\em Subset the matrix by removing a row and a column. \end{DoxyCompactList}\end{DoxyCompactItemize}
-\doxysubsubsection*{Static Public Member Functions}
-\begin{DoxyCompactItemize}
-\item 
-{\footnotesize template$<$\mbox{\hyperlink{conceptNumber}{Number}} num, size\+\_\+t mN, size\+\_\+t nN$>$ }\\static \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ num, nN, mN $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a9d3d521c64c0be953663feb88068c78c}{extract\+Matrix\+From\+Transpose}} (const \mbox{\hyperlink{Structures_8hpp_a9db1e022884032860a0840a8f195b2b6}{Transpose\+Variant}}$<$ num, mN, nN $>$ \&\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a74d1a220332a9dc5babccb3e593101a6}{T}})
-\begin{DoxyCompactList}\small\item\em Extract a matrix object from a Transpose\+Variant. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsubsection*{Friends}
 \begin{DoxyCompactItemize}
 \item 
@@ -185,11 +180,12 @@ Access the ith row of the matrix.
 \begin{DoxyReturn}{Returns}
 A reference to the ith row 
 \end{DoxyReturn}
-Here is the caller graph for this function\+:\nopagebreak
+Here is the caller graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[height=550pt]{classmlinalg_1_1structures_1_1Matrix_ae3f61d6089f2402d9ccca780f43be781_icgraph}
+\includegraphics[width=350pt]{classmlinalg_1_1structures_1_1Matrix_ae3f61d6089f2402d9ccca780f43be781_icgraph}
 \end{center}
 \end{figure}
 \Hypertarget{classmlinalg_1_1structures_1_1Matrix_aa726103754e60a5d28a05778f73c3f02}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!at@{at}}
@@ -257,6 +253,14 @@ Here is the call graph for this function\+:\nopagebreak
 \begin{center}
 \leavevmode
 \includegraphics[width=331pt]{classmlinalg_1_1structures_1_1Matrix_a27c88384ec14a6e8463935222e2ec4b7_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=346pt]{classmlinalg_1_1structures_1_1Matrix_a27c88384ec14a6e8463935222e2ec4b7_icgraph}
 \end{center}
 \end{figure}
 \Hypertarget{classmlinalg_1_1structures_1_1Matrix_a1791860a24eb83f7e36f9d31e562d995}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!augment@{augment}}
@@ -383,6 +387,14 @@ Determinant of the matrix.
 \begin{DoxyReturn}{Returns}
 The determinant of the matrix 
 \end{DoxyReturn}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=318pt]{classmlinalg_1_1structures_1_1Matrix_a0ef35a6063c76c1a498e96609490d547_icgraph}
+\end{center}
+\end{figure}
 \Hypertarget{classmlinalg_1_1structures_1_1Matrix_a059ba6035c685cf7d573a72b7a8be601}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!end@{end}}
 \index{end@{end}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
 \doxysubsubsection{\texorpdfstring{end()}{end()}}
@@ -396,26 +408,6 @@ End iterator for the matrix.
 
 \begin{DoxyReturn}{Returns}
 The end iterator for the matrix 
-\end{DoxyReturn}
-\Hypertarget{classmlinalg_1_1structures_1_1Matrix_a9d3d521c64c0be953663feb88068c78c}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!extractMatrixFromTranspose@{extractMatrixFromTranspose}}
-\index{extractMatrixFromTranspose@{extractMatrixFromTranspose}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}
-\doxysubsubsection{\texorpdfstring{extractMatrixFromTranspose()}{extractMatrixFromTranspose()}}
-{\footnotesize\ttfamily \label{classmlinalg_1_1structures_1_1Matrix_a9d3d521c64c0be953663feb88068c78c} 
-template$<$\mbox{\hyperlink{conceptNumber}{Number}} number, size\+\_\+t m, size\+\_\+t n$>$ \\
-template$<$\mbox{\hyperlink{conceptNumber}{Number}} num, size\+\_\+t mN, size\+\_\+t nN$>$ \\
-static \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}$<$ num, nN, mN $>$ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{mlinalg\+::structures\+::\+Matrix}}$<$ number, m, n $>$\+::extract\+Matrix\+From\+Transpose (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{Structures_8hpp_a9db1e022884032860a0840a8f195b2b6}{Transpose\+Variant}}$<$ num, mN, nN $>$ \&}]{T}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
-
-
-
-Extract a matrix object from a Transpose\+Variant. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em T} & The Transpose\+Variant \\
-\hline
-\end{DoxyParams}
-\begin{DoxyReturn}{Returns}
-The matrix object 
 \end{DoxyReturn}
 \Hypertarget{classmlinalg_1_1structures_1_1Matrix_aab739ceb51d07a1aa8b2640e0a96274e}\index{mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}!numCols@{numCols}}
 \index{numCols@{numCols}!mlinalg::structures::Matrix$<$ number, m, n $>$@{mlinalg::structures::Matrix$<$ number, m, n $>$}}

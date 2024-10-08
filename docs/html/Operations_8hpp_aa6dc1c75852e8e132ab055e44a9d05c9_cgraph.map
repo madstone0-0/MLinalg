@@ -1,0 +1,36 @@
+<map id="mlinalg::rrefRec" name="mlinalg::rrefRec">
+<area shape="rect" id="Node000001" title="Find the reduced row echelon form of a rectangular linear system." alt="" coords="5,146,131,174"/>
+<area shape="poly" id="edge24_Node000001_Node000001" title=" " alt="" coords="40,147,36,137,39,128,50,122,68,120,87,122,97,129,95,133,85,127,68,125,52,127,43,131,41,137,45,145"/>
+<area shape="rect" id="Node000002" href="$classmlinalg_1_1structures_1_1Matrix.html#ae3f61d6089f2402d9ccca780f43be781" title="Access the ith row of the matrix." alt="" coords="730,138,873,182"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="91,143,188,92,258,62,336,34,422,13,510,3,554,4,598,8,641,18,683,32,713,50,740,73,781,123,776,126,736,77,710,54,681,37,640,23,597,13,554,9,510,9,423,19,338,39,260,67,190,97,94,148"/>
+<area shape="rect" id="Node000003" href="$Operations_8hpp.html#aa1859ec6f98985ec36210c7de13e6344" title="Gets the pivots of a linear system." alt="" coords="517,70,656,98"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="131,147,178,139,501,93,502,98,179,144,132,152"/>
+<area shape="rect" id="Node000004" href="$Operations_8hpp.html#a9fb5f07ad9237c0b4d18af88bf28255b" title="Checks if a linear system is in echelon form." alt="" coords="494,146,679,174"/>
+<area shape="poly" id="edge5_Node000001_Node000004" title=" " alt="" coords="131,157,478,157,478,163,131,163"/>
+<area shape="rect" id="Node000005" href="$Operations_8hpp.html#abb03fc491f2bc26563a166e1ec5c29b0" title="Rearrange a linear system to have the most zeros in the bottom rows." alt="" coords="491,461,682,489"/>
+<area shape="poly" id="edge8_Node000001_Node000005" title=" " alt="" coords="80,173,113,222,168,291,239,364,280,396,324,423,361,439,399,451,477,466,476,471,398,457,359,444,322,428,277,401,236,368,164,295,109,225,76,176"/>
+<area shape="rect" id="Node000006" href="$Operations_8hpp.html#a444bb226d7dc0778b2b96c27e21f48f4" title="Find the row echelon form of a linear system." alt="" coords="179,244,275,271"/>
+<area shape="poly" id="edge10_Node000001_Node000006" title=" " alt="" coords="94,172,191,233,188,237,91,177"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="644,96,683,108,736,129,734,134,681,113,642,101"/>
+<area shape="poly" id="edge4_Node000003_Node000003" title=" " alt="" coords="551,71,546,61,550,52,564,46,587,44,611,46,623,53,621,57,609,51,586,49,565,51,554,56,551,61,556,68"/>
+<area shape="poly" id="edge6_Node000004_Node000002" title=" " alt="" coords="680,157,714,157,714,163,680,163"/>
+<area shape="poly" id="edge7_Node000004_Node000004" title=" " alt="" coords="551,147,546,137,550,128,564,122,587,120,611,122,623,129,621,133,609,127,586,125,565,127,554,132,551,137,556,144"/>
+<area shape="poly" id="edge9_Node000005_Node000005" title=" " alt="" coords="551,462,546,452,550,442,564,436,587,434,611,437,623,443,621,448,609,442,586,440,565,442,554,446,551,452,556,459"/>
+<area shape="poly" id="edge11_Node000006_Node000006" title=" " alt="" coords="199,244,195,235,198,225,209,219,227,217,245,219,255,226,253,230,243,224,227,222,211,224,202,229,200,234,204,242"/>
+<area shape="rect" id="Node000007" href="$Operations_8hpp.html#ada30a56b340402b7e751bc2446371cab" title="Find the row echelon form of a rectangular linear system." alt="" coords="323,386,443,414"/>
+<area shape="poly" id="edge12_Node000006_Node000007" title=" " alt="" coords="245,270,357,374,354,378,242,274"/>
+<area shape="rect" id="Node000008" href="$Operations_8hpp.html#affd0318fddf0f1101a3cdf497e846d6e" title="Find the row echelon form of a square linear system." alt="" coords="327,244,439,271"/>
+<area shape="poly" id="edge16_Node000006_Node000008" title=" " alt="" coords="276,255,312,255,312,260,276,260"/>
+<area shape="poly" id="edge13_Node000007_Node000002" title=" " alt="" coords="444,408,498,412,560,410,623,398,652,388,680,373,702,356,721,335,752,288,774,240,789,197,794,198,779,242,757,291,725,339,706,359,683,377,655,392,624,404,560,416,498,417,444,413"/>
+<area shape="poly" id="edge14_Node000007_Node000005" title=" " alt="" coords="424,412,533,453,531,458,422,417"/>
+<area shape="poly" id="edge15_Node000007_Node000007" title=" " alt="" coords="356,387,351,377,355,368,366,362,383,360,402,362,412,368,409,373,400,367,383,365,367,367,359,371,357,377,360,385"/>
+<area shape="poly" id="edge17_Node000008_Node000002" title=" " alt="" coords="440,265,492,271,553,272,618,267,681,252,706,241,729,226,768,192,772,196,732,230,708,246,683,257,619,273,553,278,492,276,439,270"/>
+<area shape="poly" id="edge19_Node000008_Node000003" title=" " alt="" coords="388,242,425,178,454,141,490,109,501,102,504,106,493,113,458,144,429,181,393,245"/>
+<area shape="poly" id="edge20_Node000008_Node000004" title=" " alt="" coords="400,241,440,212,490,183,505,177,507,182,493,188,443,216,404,245"/>
+<area shape="poly" id="edge21_Node000008_Node000005" title=" " alt="" coords="399,270,493,373,564,448,560,452,489,377,395,273"/>
+<area shape="poly" id="edge22_Node000008_Node000008" title=" " alt="" coords="356,244,351,235,355,225,366,219,383,217,402,219,412,226,409,230,400,224,383,222,367,224,359,229,357,234,360,242"/>
+<area shape="rect" id="Node000009" href="$classmlinalg_1_1structures_1_1Vector.html#afd0f74693f19e486ae7b1e6966faf17f" title="Access the ith element of the vector." alt="" coords="515,318,658,362"/>
+<area shape="poly" id="edge18_Node000008_Node000009" title=" " alt="" coords="420,269,516,309,514,314,418,274"/>
+<area shape="rect" id="Node000010" href="$classmlinalg_1_1structures_1_1Vector.html#a9dd61b95816b6bce90d1fd487b938317" title="Size of the vector, i.e the number of elements in the vector." alt="" coords="515,198,658,242"/>
+<area shape="poly" id="edge23_Node000008_Node000010" title=" " alt="" coords="439,245,499,233,500,239,440,250"/>
+</map>

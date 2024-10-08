@@ -1,0 +1,11 @@
+<map id="mlinalg::structures::Vector::end" name="mlinalg::structures::Vector::end">
+<area shape="rect" id="Node000001" title="End iterator for the vector." alt="" coords="646,21,790,66"/>
+<area shape="rect" id="Node000002" href="$Operations_8hpp.html#a568b559ab2982145d79c8b4e1e7733f7" title="Solves a linear equation using the given row and solutions." alt="" coords="428,29,598,57"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="631,46,599,46,599,40,631,40"/>
+<area shape="poly" id="edge5_Node000002_Node000002" title=" " alt="" coords="548,16,536,10,513,8,492,10,480,15,477,20,482,27,478,30,472,20,477,11,491,5,513,3,537,5,550,12"/>
+<area shape="rect" id="Node000003" href="$Operations_8hpp.html#ad9fb84cef247c42a25e7715a4c61446a" title="Find the solutions to a linear system in the form: [A | b]." alt="" coords="217,29,380,57"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="412,46,380,46,380,40,412,40"/>
+<area shape="poly" id="edge3_Node000003_Node000003" title=" " alt="" coords="334,16,322,10,298,8,276,10,264,15,261,20,267,27,262,30,256,20,261,11,275,5,298,3,323,5,337,12"/>
+<area shape="rect" id="Node000004" href="$Operations_8hpp.html#a26fb7199eb0c367cdb15d404b08b1167" title="Find the solutions to a matrix equation in the form: A * x = b." alt="" coords="5,29,169,57"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="201,46,169,46,169,40,201,40"/>
+</map>

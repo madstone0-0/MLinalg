@@ -22,12 +22,27 @@ namespace mlinalg {
     using namespace structures;
     using std::nullopt;
 
+    /**
+     * @brief Linear System type alias.
+     */
     template <Number number, size_t m, size_t n>
     using LinearSystem = Matrix<number, m, n>;
 
+    /**
+     * @brief Row of optional numbers type alias.
+     */
     template <Number number, size_t n>
     using RowOptional = Row<optional<number>, n - 1>;
 
+    /**
+     * @brief Checks if a linear system is in echelon form.
+     *
+     * @param system  The linear system to check.
+     * @param n      The number of columns in the system.
+     * @param m     The number of rows in the system.
+     * @param pivots The pivots of the system.
+     * @return true if the system is in echelon form, false otherwise.
+     */
     template <Number number, size_t m, size_t n>
     bool isInEchelonForm(LinearSystem<number, m, n> system, Row<optional<number>, n - 1> pivots) {
         for (size_t i{}; i < pivots.size(); i++)
@@ -36,6 +51,12 @@ namespace mlinalg {
         return true;
     }
 
+    /**
+     * @brief Checks if a linear system is inconsistent.
+     *
+     * @param system The linear system to check.
+     * @return true if the system is inconsistent, false otherwise.
+     */
     template <Number number, size_t m, size_t n>
     bool isInconsistent(LinearSystem<number, m, n> system) {
         for (const auto& row : system) {
@@ -48,6 +69,15 @@ namespace mlinalg {
         return false;
     }
 
+    /**
+     * @brief Checks if a linear system is in reduced echelon form.
+     *
+     * @param system The linear system to check.
+     * @param n    The number of columns in the system.
+     * @param m  The number of rows in the system.
+     * @param pivots The pivots of the system.
+     * @return true if the system is in reduced echelon form, false otherwise.
+     */
     template <Number number, size_t m, size_t n>
     bool isInReducedEchelonForm(LinearSystem<number, m, n> system, Row<optional<number>, n - 1> pivots) {
         for (int i{1}; i < pivots.size(); i++) {
@@ -58,6 +88,15 @@ namespace mlinalg {
         return true;
     }
 
+    /**
+     * @brief Solves a linear equation using the given row and solutions.
+     *
+     * @param row The row to solve.
+     * @param varPos The position of the variable to solve for.
+     * @param n The number of elements in the row.
+     * @param solutions The already found values of other variables in the row.
+     * @return The solution to the equation if it exists, nullopt otherwise.
+     */
     template <Number number, size_t n>
     optional<number> solveEquation(Row<number, n> row, size_t varPos, Row<optional<number>, n - 1> solutions) {
         vector<number> leftSide{row.begin(), row.end() - 1};
@@ -82,6 +121,12 @@ namespace mlinalg {
         return sol;
     }
 
+    /**
+     * @brief Gets the pivots of a linear system.
+     *
+     * @param system The linear system to get the pivots from.
+     * @return The pivots of the system, if they exist.
+     */
     template <Number number, size_t m, size_t n>
     RowOptional<number, n> getPivots(LinearSystem<number, m, n> system) {
         RowOptional<number, n> pivots{};
@@ -97,6 +142,14 @@ namespace mlinalg {
         return pivots;
     }
 
+    /**
+     * @brief Gets the pivot row of a linear system.
+     *
+     * @param system The linear system to get the pivot row from.
+     * @param startRow The row to start searching from.
+     * @param col The column to search for the pivot in.
+     * @return The pivot row if it exists, nullopt otherwise.
+     */
     template <Number number, size_t m, size_t n>
     optional<size_t> getPivotRow(const LinearSystem<number, m, n>& system, size_t startRow, size_t col) {
         for (size_t row = startRow; row < m; ++row) {
@@ -107,6 +160,12 @@ namespace mlinalg {
         return std::nullopt;  // No pivot found in this column
     }
 
+    /**
+     * @brief Rearrange a linear system to have the most zeros in the bottom rows.
+     *
+     * @param system The linear system to rearrange.
+     * @return The rearranged linear system.
+     */
     template <Number number, size_t m, size_t n>
     LinearSystem<number, m, n> rearrangeSystem(LinearSystem<number, m, n> system) {
         auto getZeroCount = [](const Row<number, n>& row) {
@@ -144,6 +203,12 @@ namespace mlinalg {
         return rearranged;
     }
 
+    /**
+     * @brief Find the row echelon form of a square linear system
+     *
+     * @param system The linear system to find the reduced row echelon form of.
+     * @return The reduced row echelon form of the system.
+     */
     template <Number number, size_t m, size_t n>
     LinearSystem<number, m, n> refSq(LinearSystem<number, m, n> system) {
         RowOptional<number, n> pivots = getPivots(system);
@@ -170,6 +235,12 @@ namespace mlinalg {
         return system;
     }
 
+    /**
+     * @brief Find the row echelon form of a rectangular linear system
+     *
+     * @param system The linear system to find the row echelon form of.
+     * @return The row echelon form of the system.
+     */
     template <Number number, size_t m, size_t n>
     LinearSystem<number, m, n> refRec(LinearSystem<number, m, n> system) {
         for (size_t col = 0; col < n && col < m; ++col) {
@@ -188,6 +259,14 @@ namespace mlinalg {
         return system;
     }
 
+    /**
+     * @brief Find the row echelon form of a linear system
+     *
+     * Chooses the appropriate ref function based on the dimensions of the system.
+     *
+     * @param system The linear system to find the row echelon form of.
+     * @return The row echelon form of the system.
+     */
     template <Number number, size_t m, size_t n>
     LinearSystem<number, m, n> ref(LinearSystem<number, m, n> system) {
         if constexpr (m == n && m > 5) return refRec(system);
@@ -195,6 +274,13 @@ namespace mlinalg {
         return refRec(system);
     }
 
+    /**
+     * @brief Find the reduced row echelon form of a rectangular linear system
+     *
+     * @param system The linear system to find the reduced row echelon form of.
+     * @param identity Whether to convert the system to identity form.
+     * @return The reduced row echelon form of the system.
+     */
     template <Number number, size_t m, size_t n>
     LinearSystem<number, m, n> rrefRec(LinearSystem<number, m, n> system, bool identity = true) {
         RowOptional<number, n> pivots = getPivots(system);
@@ -230,6 +316,13 @@ namespace mlinalg {
         return system;
     }
 
+    /**
+     * @brief Find the reduced row echelon form of a square linear system
+     *
+     * @param system The linear system to find the reduced row echelon form of.
+     * @param identity Whether to convert the system to identity form.
+     * @return The reduced row echelon form of the system.
+     */
     template <Number number, size_t m, size_t n>
     LinearSystem<number, m, n> rrefSq(LinearSystem<number, m, n> system, bool identity = true) {
         RowOptional<number, n> pivots = getPivots(system);
@@ -271,6 +364,15 @@ namespace mlinalg {
         return system;
     }
 
+    /**
+     * @brief Find the reduced row echelon form of a linear system
+     *
+     * Chooses the appropriate rref function based on the dimensions of the system.
+     *
+     * @param system The linear system to find the reduced row echelon form of.
+     * @param identity Whether to convert the system to identity form.
+     * @return The reduced row echelon form of the system.
+     */
     template <Number number, size_t m, size_t n>
     LinearSystem<number, m, n> rref(LinearSystem<number, m, n> system, bool identity = true) {
         if (m == n && m > 5) return rrefRec(system, identity);
@@ -281,12 +383,27 @@ namespace mlinalg {
     template <Number number, size_t m, size_t n>
     optional<RowOptional<number, n>> findSolutions(LinearSystem<number, m, n> system);
 
+    /**
+     * @brief Find the solutions to a matrix equation in the form:
+     * A * x = b
+     *
+     * @param A The matrix of the equation
+     * @param b The vector of the equation
+     * @return The solutions x to the equation
+     */
     template <Number number, size_t m, size_t n>
     auto findSolutions(Matrix<number, m, n> A, Vector<number, m> b) {
         auto system = A.augment(b);
         return findSolutions(system);
     }
 
+    /**
+     * @brief Find the solutions to a linear system in the form:
+     * [A | b]
+     *
+     * @param system The linear system to find the solutions of.
+     * @return The solutions to the system if they exist, nullopt otherwise.
+     */
     template <Number number, size_t m, size_t n>
     optional<RowOptional<number, n>> findSolutions(LinearSystem<number, m, n> system) {
         RowOptional<number, n> solutions{};
@@ -307,11 +424,11 @@ namespace mlinalg {
         return solutions;
     }
 
-    template <Number num, size_t mN, size_t nN>
-    Vector<num, mN> extractVectorFromTranspose(const TransposeVariant<num, mN, nN> T) {
-        return std::get<Vector<num, mN>>(T);
-    }
-
+    /**
+     * @brief Find the identity matrix of a square linear system
+     *
+     * @return  The identity matrix of the system.
+     */
     template <Number number, size_t m>
     Matrix<number, m, m> I() {
         Matrix<number, m, m> identity{};
@@ -321,6 +438,12 @@ namespace mlinalg {
         return identity;
     }
 
+    /**
+     * @brief Find the inverse of a square linear system
+     *
+     * @param system The linear system to find the inverse of.
+     * @return The inverse of the system if it exists, nullopt otherwise.
+     */
     template <Number number, size_t m, size_t n>
     optional<Matrix<number, m, n>> inverse(const LinearSystem<number, m, n>& system) {
         auto det = system.det();

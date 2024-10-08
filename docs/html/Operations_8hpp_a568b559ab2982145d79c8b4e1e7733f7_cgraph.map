@@ -1,0 +1,10 @@
+<map id="mlinalg::solveEquation" name="mlinalg::solveEquation">
+<area shape="rect" id="Node000001" title="Solves a linear equation using the given row and solutions." alt="" coords="5,83,176,111"/>
+<area shape="poly" id="edge4_Node000001_Node000001" title=" " alt="" coords="55,84,49,74,54,65,68,59,91,57,115,59,128,65,125,70,113,64,90,62,69,64,58,69,55,74,60,81"/>
+<area shape="rect" id="Node000002" href="$classmlinalg_1_1structures_1_1Vector.html#a0a81875b502c8503728e4ea920e1ff1a" title="Last element of the vector." alt="" coords="224,5,367,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="133,80,212,53,214,58,135,85"/>
+<area shape="rect" id="Node000003" href="$classmlinalg_1_1structures_1_1Vector.html#a0fdc3f35c0a42118c62e103a794b4fcf" title="Begin itertor for the vector." alt="" coords="224,75,367,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="176,94,208,94,208,100,176,100"/>
+<area shape="rect" id="Node000004" href="$classmlinalg_1_1structures_1_1Vector.html#a0794b72aa6d670ca9bfca33b7f592d90" title="End iterator for the vector." alt="" coords="224,144,367,189"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="135,109,214,136,212,141,133,114"/>
+</map>

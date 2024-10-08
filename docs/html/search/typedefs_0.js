@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['row_0',['Row',['../Structures_8hpp.html#aa89428aa9b1f53329c3de175c9f285d0',1,'mlinalg::structures']]]
+  ['linearsystem_0',['LinearSystem',['../Operations_8hpp.html#a2fb1067f3d6883fbb7782634586064de',1,'mlinalg']]]
 ];

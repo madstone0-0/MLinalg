@@ -72,7 +72,7 @@
 \DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{00102\ }
 \DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}\ <Number\ num,\ \textcolor{keywordtype}{size\_t}\ m,\ \textcolor{keywordtype}{size\_t}\ n>}
-\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector<num,\ m>}}\ extractVectorFromTranspose(\textcolor{keyword}{const}\ \mbox{\hyperlink{Structures_8hpp_a9db1e022884032860a0840a8f195b2b6}{TransposeVariant<num,\ m,\ n>}}\ T)\ \{}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector<num,\ m>}}\ \mbox{\hyperlink{Structures_8hpp_a316b01057d99121eb7ee120ad774adcf}{extractVectorFromTranspose}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{Structures_8hpp_a9db1e022884032860a0840a8f195b2b6}{TransposeVariant<num,\ m,\ n>}}\ T)\ \{}
 \DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::get<Vector<num,\ m>>(T);}
 \DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{00113\ }
@@ -489,254 +489,238 @@
 \DoxyCodeLine{00866\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ res;}
 \DoxyCodeLine{00867\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{00868\ }
-\DoxyCodeLine{00875\ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}\ <Number\ num,\ \textcolor{keywordtype}{size\_t}\ mN,\ \textcolor{keywordtype}{size\_t}\ nN>}
-\DoxyCodeLine{00876\ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix<num,\ nN,\ mN>}}\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a9d3d521c64c0be953663feb88068c78c}{extractMatrixFromTranspose}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{Structures_8hpp_a9db1e022884032860a0840a8f195b2b6}{TransposeVariant<num,\ mN,\ nN>}}\&\ T)\ \{}
-\DoxyCodeLine{00877\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::get<Matrix<num,\ nN,\ mN>>(T);}
-\DoxyCodeLine{00878\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{00879\ }
-\DoxyCodeLine{00880\ \ \ \ \ \ \ \ \ \textcolor{keyword}{friend}\ std::ostream\&\ operator<<(std::ostream\&\ os,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{Structures_8hpp_a9db1e022884032860a0840a8f195b2b6}{TransposeVariant<number,\ n,\ m>}}\&\ system)\ \{}
-\DoxyCodeLine{00881\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (std::holds\_alternative<\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector<number,\ n>}}>(system))\ \{}
-\DoxyCodeLine{00882\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ os\ <<\ std::get<Vector<number,\ n>>(system);}
-\DoxyCodeLine{00883\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (std::holds\_alternative<\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix<number,\ m,\ n>}}>(system))\ \{}
-\DoxyCodeLine{00884\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ os\ <<\ std::get<Matrix<number,\ m,\ n>>(system);}
-\DoxyCodeLine{00885\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{00886\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ os;}
-\DoxyCodeLine{00887\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{00888\ }
-\DoxyCodeLine{00894\ \ \ \ \ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a7d6f31eba3cd312d5fcd7b7e4cc23bdf}{begin}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ matrix.begin();\ \}}
-\DoxyCodeLine{00895\ }
-\DoxyCodeLine{00901\ \ \ \ \ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a059ba6035c685cf7d573a72b7a8be601}{end}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ matrix.end();\ \}}
-\DoxyCodeLine{00902\ }
-\DoxyCodeLine{00908\ \ \ \ \ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_af5f06cba8d909a5974268380f61b6798}{cbegin}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ matrix.cbegin();\ \}}
-\DoxyCodeLine{00909\ }
-\DoxyCodeLine{00915\ \ \ \ \ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_affae5f8593216ba91b56b9ff82b4c93d}{cend}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ matrix.cend();\ \}}
-\DoxyCodeLine{00916\ }
-\DoxyCodeLine{00922\ \ \ \ \ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_ab922ccdace0194bf94c8d0ca18a0a947}{back}}()\ \{\ \textcolor{keywordflow}{return}\ matrix.back();\ \}}
-\DoxyCodeLine{00923\ }
-\DoxyCodeLine{00929\ \ \ \ \ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_aa98f554e3cb6b7f6e02c706358d5084b}{rbegin}}()\ \{\ \textcolor{keywordflow}{return}\ matrix.rbegin();\ \}}
-\DoxyCodeLine{00930\ }
-\DoxyCodeLine{00936\ \ \ \ \ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_afc263efe08f53863aa03c3cfbf2d5874}{rend}}()\ \{\ \textcolor{keywordflow}{return}\ matrix.rend();\ \}}
-\DoxyCodeLine{00937\ }
-\DoxyCodeLine{00944\ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{size\_t}\ nN>}
-\DoxyCodeLine{00945\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix<number,\ m,\ nN\ +\ n>}}\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a27c88384ec14a6e8463935222e2ec4b7}{augment}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix<number,\ m,\ nN>}}\&\ other)\textcolor{keyword}{\ const\ }\{}
-\DoxyCodeLine{00946\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix<number,\ m,\ nN\ +\ n>}}\ res;}
-\DoxyCodeLine{00947\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\{\};\ i\ <\ m;\ i++)\ \{}
-\DoxyCodeLine{00948\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\&\ row\{res.\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_ae3f61d6089f2402d9ccca780f43be781}{at}}(i)\};}
-\DoxyCodeLine{00949\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ thisRow\{this-\/>at(i)\};}
-\DoxyCodeLine{00950\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ otherRow\{other.\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_ae3f61d6089f2402d9ccca780f43be781}{at}}(i)\};}
-\DoxyCodeLine{00951\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j\{\};\ j\ <\ (nN\ +\ n);\ j++)\ \{}
-\DoxyCodeLine{00952\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (j\ <\ n)}
-\DoxyCodeLine{00953\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ row.at(j)\ =\ thisRow.at(j);}
-\DoxyCodeLine{00954\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
-\DoxyCodeLine{00955\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ row.at(j)\ =\ otherRow.at((j\ -\/\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(nN)));}
-\DoxyCodeLine{00956\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{00957\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{00958\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ res;}
-\DoxyCodeLine{00959\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{00960\ }
-\DoxyCodeLine{00967\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix<number,\ m,\ n\ +\ 1>}}\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a1791860a24eb83f7e36f9d31e562d995}{augment}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector<number,\ m>}}\&\ other)\textcolor{keyword}{\ const\ }\{}
-\DoxyCodeLine{00968\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix<number,\ m,\ n\ +\ 1>}}\ res;}
-\DoxyCodeLine{00969\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\{\};\ i\ <\ m;\ i++)\ \{}
-\DoxyCodeLine{00970\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\&\ row\{res.\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_ae3f61d6089f2402d9ccca780f43be781}{at}}(i)\};}
-\DoxyCodeLine{00971\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ thisRow\{this-\/>at(i)\};}
-\DoxyCodeLine{00972\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ j\{\};}
-\DoxyCodeLine{00973\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (;\ j\ <\ n;\ j++)\ \{}
-\DoxyCodeLine{00974\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ row.at(j)\ =\ thisRow.at(j);}
-\DoxyCodeLine{00975\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{00976\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ row.at(j)\ =\ other.\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_afd0f74693f19e486ae7b1e6966faf17f}{at}}(i);}
-\DoxyCodeLine{00977\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{00978\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ res;}
-\DoxyCodeLine{00979\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{00980\ }
-\DoxyCodeLine{00986\ \ \ \ \ \ \ \ \ number\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a0ef35a6063c76c1a498e96609490d547}{det}}()\textcolor{keyword}{\ const\ }\{}
-\DoxyCodeLine{00987\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (m\ !=\ n)\ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Finding\ determinant\ of\ rectangular\ matrices\ not\ implemented"{}});}
-\DoxyCodeLine{00988\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (m\ ==\ 2\ \&\&\ n\ ==\ 2)}
-\DoxyCodeLine{00989\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ det2x2();}
-\DoxyCodeLine{00990\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
-\DoxyCodeLine{00991\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ cofactor();}
-\DoxyCodeLine{00992\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00869\ \ \ \ \ \ \ \ \ \textcolor{keyword}{friend}\ std::ostream\&\ operator<<(std::ostream\&\ os,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{Structures_8hpp_a9db1e022884032860a0840a8f195b2b6}{TransposeVariant<number,\ n,\ m>}}\&\ system)\ \{}
+\DoxyCodeLine{00870\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (std::holds\_alternative<\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector<number,\ n>}}>(system))\ \{}
+\DoxyCodeLine{00871\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ os\ <<\ std::get<Vector<number,\ n>>(system);}
+\DoxyCodeLine{00872\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (std::holds\_alternative<\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix<number,\ m,\ n>}}>(system))\ \{}
+\DoxyCodeLine{00873\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ os\ <<\ std::get<Matrix<number,\ m,\ n>>(system);}
+\DoxyCodeLine{00874\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00875\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ os;}
+\DoxyCodeLine{00876\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00877\ }
+\DoxyCodeLine{00883\ \ \ \ \ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a7d6f31eba3cd312d5fcd7b7e4cc23bdf}{begin}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ matrix.begin();\ \}}
+\DoxyCodeLine{00884\ }
+\DoxyCodeLine{00890\ \ \ \ \ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a059ba6035c685cf7d573a72b7a8be601}{end}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ matrix.end();\ \}}
+\DoxyCodeLine{00891\ }
+\DoxyCodeLine{00897\ \ \ \ \ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_af5f06cba8d909a5974268380f61b6798}{cbegin}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ matrix.cbegin();\ \}}
+\DoxyCodeLine{00898\ }
+\DoxyCodeLine{00904\ \ \ \ \ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_affae5f8593216ba91b56b9ff82b4c93d}{cend}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ matrix.cend();\ \}}
+\DoxyCodeLine{00905\ }
+\DoxyCodeLine{00911\ \ \ \ \ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_ab922ccdace0194bf94c8d0ca18a0a947}{back}}()\ \{\ \textcolor{keywordflow}{return}\ matrix.back();\ \}}
+\DoxyCodeLine{00912\ }
+\DoxyCodeLine{00918\ \ \ \ \ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_aa98f554e3cb6b7f6e02c706358d5084b}{rbegin}}()\ \{\ \textcolor{keywordflow}{return}\ matrix.rbegin();\ \}}
+\DoxyCodeLine{00919\ }
+\DoxyCodeLine{00925\ \ \ \ \ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_afc263efe08f53863aa03c3cfbf2d5874}{rend}}()\ \{\ \textcolor{keywordflow}{return}\ matrix.rend();\ \}}
+\DoxyCodeLine{00926\ }
+\DoxyCodeLine{00933\ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{size\_t}\ nN>}
+\DoxyCodeLine{00934\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix<number,\ m,\ nN\ +\ n>}}\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a27c88384ec14a6e8463935222e2ec4b7}{augment}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix<number,\ m,\ nN>}}\&\ other)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00935\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix<number,\ m,\ nN\ +\ n>}}\ res;}
+\DoxyCodeLine{00936\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\{\};\ i\ <\ m;\ i++)\ \{}
+\DoxyCodeLine{00937\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\&\ row\{res.\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_ae3f61d6089f2402d9ccca780f43be781}{at}}(i)\};}
+\DoxyCodeLine{00938\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ thisRow\{this-\/>at(i)\};}
+\DoxyCodeLine{00939\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ otherRow\{other.\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_ae3f61d6089f2402d9ccca780f43be781}{at}}(i)\};}
+\DoxyCodeLine{00940\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j\{\};\ j\ <\ (nN\ +\ n);\ j++)\ \{}
+\DoxyCodeLine{00941\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (j\ <\ n)}
+\DoxyCodeLine{00942\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ row.at(j)\ =\ thisRow.at(j);}
+\DoxyCodeLine{00943\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00944\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ row.at(j)\ =\ otherRow.at((j\ -\/\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(nN)));}
+\DoxyCodeLine{00945\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00946\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00947\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ res;}
+\DoxyCodeLine{00948\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00949\ }
+\DoxyCodeLine{00956\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix<number,\ m,\ n\ +\ 1>}}\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a1791860a24eb83f7e36f9d31e562d995}{augment}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector}{Vector<number,\ m>}}\&\ other)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00957\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix<number,\ m,\ n\ +\ 1>}}\ res;}
+\DoxyCodeLine{00958\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\{\};\ i\ <\ m;\ i++)\ \{}
+\DoxyCodeLine{00959\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\&\ row\{res.\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_ae3f61d6089f2402d9ccca780f43be781}{at}}(i)\};}
+\DoxyCodeLine{00960\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ thisRow\{this-\/>at(i)\};}
+\DoxyCodeLine{00961\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ j\{\};}
+\DoxyCodeLine{00962\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (;\ j\ <\ n;\ j++)\ \{}
+\DoxyCodeLine{00963\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ row.at(j)\ =\ thisRow.at(j);}
+\DoxyCodeLine{00964\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00965\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ row.at(j)\ =\ other.\mbox{\hyperlink{classmlinalg_1_1structures_1_1Vector_afd0f74693f19e486ae7b1e6966faf17f}{at}}(i);}
+\DoxyCodeLine{00966\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00967\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ res;}
+\DoxyCodeLine{00968\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00969\ }
+\DoxyCodeLine{00975\ \ \ \ \ \ \ \ \ number\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_a0ef35a6063c76c1a498e96609490d547}{det}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00976\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (m\ !=\ n)\ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Finding\ determinant\ of\ rectangular\ matrices\ not\ implemented"{}});}
+\DoxyCodeLine{00977\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (m\ ==\ 2\ \&\&\ n\ ==\ 2)}
+\DoxyCodeLine{00978\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ det2x2();}
+\DoxyCodeLine{00979\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00980\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ cofactor();}
+\DoxyCodeLine{00981\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00982\ }
+\DoxyCodeLine{00990\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}<number,\ m\ -\/\ 1,\ n\ -\/\ 1>\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_ab64e1f7618b638655bdf194ea25bef97}{subset}}(std::optional<size\_t>\ i,\ std::optional<size\_t>\ j)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00991\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_assert}(m\ ==\ n,\ \textcolor{stringliteral}{"{}Not\ a\ square\ matrix"{}});}
+\DoxyCodeLine{00992\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_assert}(m\ >\ 1\ \&\&\ n\ >\ 1,\ \textcolor{stringliteral}{"{}Cannot\ subset"{}});}
 \DoxyCodeLine{00993\ }
-\DoxyCodeLine{01001\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}<number,\ m\ -\/\ 1,\ n\ -\/\ 1>\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_ab64e1f7618b638655bdf194ea25bef97}{subset}}(std::optional<size\_t>\ i,\ std::optional<size\_t>\ j)\textcolor{keyword}{\ const\ }\{}
-\DoxyCodeLine{01002\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_assert}(m\ ==\ n,\ \textcolor{stringliteral}{"{}Not\ a\ square\ matrix"{}});}
-\DoxyCodeLine{01003\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_assert}(m\ >\ 1\ \&\&\ n\ >\ 1,\ \textcolor{stringliteral}{"{}Cannot\ subset"{}});}
-\DoxyCodeLine{01004\ }
-\DoxyCodeLine{01005\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}<number,\ m\ -\/\ 1,\ n\ -\/\ 1>\ res;}
-\DoxyCodeLine{01006\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ resRow\ =\ 0;}
-\DoxyCodeLine{01007\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ k\ =\ 0;\ k\ <\ m;\ ++k)\ \{}
-\DoxyCodeLine{01008\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (i.has\_value()\ \&\&\ i.value()\ ==\ k)\ \textcolor{keywordflow}{continue};\ \ \textcolor{comment}{//\ Skip\ the\ row\ to\ be\ removed}}
-\DoxyCodeLine{01009\ }
-\DoxyCodeLine{01010\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ resCol\ =\ 0;}
-\DoxyCodeLine{01011\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ z\ =\ 0;\ z\ <\ n;\ ++z)\ \{}
-\DoxyCodeLine{01012\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (j.has\_value()\ \&\&\ j.value()\ ==\ z)\ \textcolor{keywordflow}{continue};\ \ \textcolor{comment}{//\ Skip\ the\ column\ to\ be\ removed}}
-\DoxyCodeLine{01013\ }
-\DoxyCodeLine{01014\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ res.at(resRow).at(resCol)\ =\ this-\/>at(k).at(z);}
-\DoxyCodeLine{01015\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ++resCol;}
-\DoxyCodeLine{01016\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{01017\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ++resRow;}
-\DoxyCodeLine{01018\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{01019\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ res;}
-\DoxyCodeLine{01020\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{01021\ }
-\DoxyCodeLine{01022\ \ \ \ \ \ \ \ \textcolor{keyword}{private}:}
-\DoxyCodeLine{01028\ \ \ \ \ \ \ \ \ number\ det2x2()\textcolor{keyword}{\ const\ }\{}
-\DoxyCodeLine{01029\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (this-\/>at(0).at(0)\ *\ this-\/>at(1).at(1))\ -\/\ (this-\/>at(0).at(1)\ *\ this-\/>at(1).at(0));}
-\DoxyCodeLine{01030\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{01031\ }
-\DoxyCodeLine{01032\ \ \ \ \ \ \ \ \ \textcolor{keyword}{enum}\ By\ \{\ ROW\ =\ 0,\ COL\ \};}
-\DoxyCodeLine{01033\ }
-\DoxyCodeLine{01037\ \ \ \ \ \ \ \ \ std::pair<By,\ size\_t>\ pickCofactorRowOrCol()\textcolor{keyword}{\ const\ }\{}
-\DoxyCodeLine{01038\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ maxRowZeros\{\};}
-\DoxyCodeLine{01039\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ rowPos\{\};}
-\DoxyCodeLine{01040\ }
-\DoxyCodeLine{01041\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ maxColZeros\{\};}
-\DoxyCodeLine{01042\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ colPos\{\};}
-\DoxyCodeLine{01043\ }
-\DoxyCodeLine{01044\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ pos\{\};}
-\DoxyCodeLine{01045\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ row\ :\ *\textcolor{keyword}{this})\ \{}
-\DoxyCodeLine{01046\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ count\ =\ rg::count\_if(row,\ [](\textcolor{keyword}{auto}\ x)\ \{\ \textcolor{keywordflow}{return}\ x\ ==\ 0;\ \});}
-\DoxyCodeLine{01047\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (count\ >\ maxRowZeros)\ \{}
-\DoxyCodeLine{01048\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ maxRowZeros\ =\ count;}
-\DoxyCodeLine{01049\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rowPos\ =\ pos;}
-\DoxyCodeLine{01050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{01051\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pos++;}
-\DoxyCodeLine{01052\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{01053\ }
-\DoxyCodeLine{01054\ \ \ \ \ \ \ \ \ \ \ \ \ pos\ =\ 0;}
-\DoxyCodeLine{01055\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ col\ :\ colToVectorSet())\ \{}
-\DoxyCodeLine{01056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ count\ =\ rg::count\_if(col,\ [](\textcolor{keyword}{auto}\ x)\ \{\ \textcolor{keywordflow}{return}\ x\ ==\ 0;\ \});}
-\DoxyCodeLine{01057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (count\ >\ maxColZeros)\ \{}
-\DoxyCodeLine{01058\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ maxColZeros\ =\ count;}
-\DoxyCodeLine{01059\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ colPos\ =\ pos;}
-\DoxyCodeLine{01060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{01061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pos++;}
-\DoxyCodeLine{01062\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{01063\ }
-\DoxyCodeLine{01064\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (maxColZeros\ >=\ maxRowZeros)}
-\DoxyCodeLine{01065\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{COL,\ colPos\};}
-\DoxyCodeLine{01066\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
-\DoxyCodeLine{01067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{ROW,\ rowPos\};}
-\DoxyCodeLine{01068\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{01069\ }
-\DoxyCodeLine{01077\ \ \ \ \ \ \ \ \ \textcolor{keyword}{constexpr}\ number\ cofactorCommon(\textcolor{keywordtype}{size\_t}\ i,\ \textcolor{keywordtype}{size\_t}\ j)\textcolor{keyword}{\ const\ }\{}
-\DoxyCodeLine{01078\ \ \ \ \ \ \ \ \ \ \ \ \ number\ res\{\};}
-\DoxyCodeLine{01079\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ a\ =\ this-\/>at(i).\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_ae3f61d6089f2402d9ccca780f43be781}{at}}(j);}
-\DoxyCodeLine{01080\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (a\ ==\ 0)\ \textcolor{keywordflow}{return}\ 0;}
-\DoxyCodeLine{01081\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ A\_ij\ =\ this-\/>subset(i,\ j);}
-\DoxyCodeLine{01082\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ C\ =\ ((int)std::pow(-\/1,\ ((i\ +\ 1)\ +\ (j\ +\ 1))))\ *\ A\_ij.det();}
-\DoxyCodeLine{01083\ \ \ \ \ \ \ \ \ \ \ \ \ res\ +=\ a\ *\ C;}
-\DoxyCodeLine{01084\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ res;}
-\DoxyCodeLine{01085\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{01086\ }
-\DoxyCodeLine{01093\ \ \ \ \ \ \ \ \ \textcolor{keyword}{constexpr}\ number\ cofactorRow(\textcolor{keywordtype}{size\_t}\ row)\textcolor{keyword}{\ const\ }\{}
-\DoxyCodeLine{01094\ \ \ \ \ \ \ \ \ \ \ \ \ number\ res\{\};}
-\DoxyCodeLine{01095\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ i\{row\};}
-\DoxyCodeLine{01096\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ j\{0\};\ j\ <\ n;\ j++)\ \{}
-\DoxyCodeLine{01097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ res\ +=\ cofactorCommon(i,\ j);}
-\DoxyCodeLine{01098\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{01099\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ res;}
-\DoxyCodeLine{01100\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{01101\ }
-\DoxyCodeLine{01108\ \ \ \ \ \ \ \ \ \textcolor{keyword}{constexpr}\ number\ cofactorCol(\textcolor{keywordtype}{size\_t}\ col)\textcolor{keyword}{\ const\ }\{}
-\DoxyCodeLine{01109\ \ \ \ \ \ \ \ \ \ \ \ \ number\ res\{\};}
-\DoxyCodeLine{01110\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ j\{col\};}
-\DoxyCodeLine{01111\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\{0\};\ i\ <\ n;\ i++)\ \{}
-\DoxyCodeLine{01112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ res\ +=\ cofactorCommon(i,\ j);}
-\DoxyCodeLine{01113\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{01114\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ res;}
-\DoxyCodeLine{01115\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{01116\ }
-\DoxyCodeLine{01122\ \ \ \ \ \ \ \ \ \textcolor{keyword}{constexpr}\ number\ cofactor()\textcolor{keyword}{\ const\ }\{}
-\DoxyCodeLine{01123\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ [by,\ val]\ =\ pickCofactorRowOrCol();}
-\DoxyCodeLine{01124\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (by\ ==\ ROW)}
-\DoxyCodeLine{01125\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ cofactorRow(val);}
-\DoxyCodeLine{01126\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
-\DoxyCodeLine{01127\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ cofactorCol(val);}
-\DoxyCodeLine{01128\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{01129\ }
-\DoxyCodeLine{01136\ \ \ \ \ \ \ \ \ Vector<number,\ m>\ multMatByVec(\textcolor{keyword}{const}\ Vector<number,\ n>\&\ vec)\textcolor{keyword}{\ const\ }\{}
-\DoxyCodeLine{01137\ \ \ \ \ \ \ \ \ \ \ \ \ Vector<number,\ m>\ res;}
-\DoxyCodeLine{01138\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ asCols\{std::move(colToVectorSet())\};}
-\DoxyCodeLine{01139\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ i\{\};}
-\DoxyCodeLine{01140\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ col\ :\ asCols)\ \{}
-\DoxyCodeLine{01141\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ mult\ =\ vec.at(i);}
-\DoxyCodeLine{01142\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ col\ *=\ mult;}
-\DoxyCodeLine{01143\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ i++;}
-\DoxyCodeLine{01144\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{01145\ }
-\DoxyCodeLine{01146\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\{\};\ i\ <\ m;\ i++)\ \{}
-\DoxyCodeLine{01147\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ number\ sumRes\{\};}
-\DoxyCodeLine{01148\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ col\ :\ asCols)\ sumRes\ +=\ col.\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_ae3f61d6089f2402d9ccca780f43be781}{at}}(i);}
-\DoxyCodeLine{01149\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ res.at(i)\ =\ sumRes;}
-\DoxyCodeLine{01150\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{01151\ }
-\DoxyCodeLine{01152\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ res;}
-\DoxyCodeLine{01153\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{01154\ }
-\DoxyCodeLine{01161\ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{size\_t}\ nOther>}
-\DoxyCodeLine{01162\ \ \ \ \ \ \ \ \ Matrix<number,\ m,\ nOther>\ multMatByDef(\textcolor{keyword}{const}\ Matrix<number,\ n,\ nOther>\&\ other)\textcolor{keyword}{\ const\ }\{}
-\DoxyCodeLine{01163\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ otherColVecSet\{std::move(other.colToVectorSet())\};}
-\DoxyCodeLine{01164\ \ \ \ \ \ \ \ \ \ \ \ \ vector<Vector<number,\ m>>\ res;}
-\DoxyCodeLine{01165\ \ \ \ \ \ \ \ \ \ \ \ \ res.reserve(nOther);}
-\DoxyCodeLine{01166\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\{\};\ i\ <\ nOther;\ i++)\ \{}
-\DoxyCodeLine{01167\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ col\{otherColVecSet.at(i)\};}
-\DoxyCodeLine{01168\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ multRes\ =\ *\textcolor{keyword}{this}\ *\ col;}
-\DoxyCodeLine{01169\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ res.emplace\_back(multRes);}
-\DoxyCodeLine{01170\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{01171\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ helpers::fromColVectorSet<number,\ m,\ nOther>(res);}
+\DoxyCodeLine{00994\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}<number,\ m\ -\/\ 1,\ n\ -\/\ 1>\ res;}
+\DoxyCodeLine{00995\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ resRow\ =\ 0;}
+\DoxyCodeLine{00996\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ k\ =\ 0;\ k\ <\ m;\ ++k)\ \{}
+\DoxyCodeLine{00997\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (i.has\_value()\ \&\&\ i.value()\ ==\ k)\ \textcolor{keywordflow}{continue};\ \ \textcolor{comment}{//\ Skip\ the\ row\ to\ be\ removed}}
+\DoxyCodeLine{00998\ }
+\DoxyCodeLine{00999\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ resCol\ =\ 0;}
+\DoxyCodeLine{01000\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ z\ =\ 0;\ z\ <\ n;\ ++z)\ \{}
+\DoxyCodeLine{01001\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (j.has\_value()\ \&\&\ j.value()\ ==\ z)\ \textcolor{keywordflow}{continue};\ \ \textcolor{comment}{//\ Skip\ the\ column\ to\ be\ removed}}
+\DoxyCodeLine{01002\ }
+\DoxyCodeLine{01003\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ res.at(resRow).at(resCol)\ =\ this-\/>at(k).at(z);}
+\DoxyCodeLine{01004\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ++resCol;}
+\DoxyCodeLine{01005\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01006\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ++resRow;}
+\DoxyCodeLine{01007\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01008\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ res;}
+\DoxyCodeLine{01009\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01010\ }
+\DoxyCodeLine{01011\ \ \ \ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{01017\ \ \ \ \ \ \ \ \ number\ det2x2()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01018\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (this-\/>at(0).at(0)\ *\ this-\/>at(1).at(1))\ -\/\ (this-\/>at(0).at(1)\ *\ this-\/>at(1).at(0));}
+\DoxyCodeLine{01019\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01020\ }
+\DoxyCodeLine{01021\ \ \ \ \ \ \ \ \ \textcolor{keyword}{enum}\ By\ \{\ ROW\ =\ 0,\ COL\ \};}
+\DoxyCodeLine{01022\ }
+\DoxyCodeLine{01026\ \ \ \ \ \ \ \ \ std::pair<By,\ size\_t>\ pickCofactorRowOrCol()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01027\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ maxRowZeros\{\};}
+\DoxyCodeLine{01028\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ rowPos\{\};}
+\DoxyCodeLine{01029\ }
+\DoxyCodeLine{01030\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ maxColZeros\{\};}
+\DoxyCodeLine{01031\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ colPos\{\};}
+\DoxyCodeLine{01032\ }
+\DoxyCodeLine{01033\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ pos\{\};}
+\DoxyCodeLine{01034\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ row\ :\ *\textcolor{keyword}{this})\ \{}
+\DoxyCodeLine{01035\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ count\ =\ rg::count\_if(row,\ [](\textcolor{keyword}{auto}\ x)\ \{\ \textcolor{keywordflow}{return}\ x\ ==\ 0;\ \});}
+\DoxyCodeLine{01036\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (count\ >\ maxRowZeros)\ \{}
+\DoxyCodeLine{01037\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ maxRowZeros\ =\ count;}
+\DoxyCodeLine{01038\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rowPos\ =\ pos;}
+\DoxyCodeLine{01039\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01040\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pos++;}
+\DoxyCodeLine{01041\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01042\ }
+\DoxyCodeLine{01043\ \ \ \ \ \ \ \ \ \ \ \ \ pos\ =\ 0;}
+\DoxyCodeLine{01044\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ col\ :\ colToVectorSet())\ \{}
+\DoxyCodeLine{01045\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ count\ =\ rg::count\_if(col,\ [](\textcolor{keyword}{auto}\ x)\ \{\ \textcolor{keywordflow}{return}\ x\ ==\ 0;\ \});}
+\DoxyCodeLine{01046\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (count\ >\ maxColZeros)\ \{}
+\DoxyCodeLine{01047\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ maxColZeros\ =\ count;}
+\DoxyCodeLine{01048\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ colPos\ =\ pos;}
+\DoxyCodeLine{01049\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pos++;}
+\DoxyCodeLine{01051\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01052\ }
+\DoxyCodeLine{01053\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (maxColZeros\ >=\ maxRowZeros)}
+\DoxyCodeLine{01054\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{COL,\ colPos\};}
+\DoxyCodeLine{01055\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{01056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{ROW,\ rowPos\};}
+\DoxyCodeLine{01057\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01058\ }
+\DoxyCodeLine{01066\ \ \ \ \ \ \ \ \ \textcolor{keyword}{constexpr}\ number\ cofactorCommon(\textcolor{keywordtype}{size\_t}\ i,\ \textcolor{keywordtype}{size\_t}\ j)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01067\ \ \ \ \ \ \ \ \ \ \ \ \ number\ res\{\};}
+\DoxyCodeLine{01068\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ a\ =\ this-\/>at(i).\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_ae3f61d6089f2402d9ccca780f43be781}{at}}(j);}
+\DoxyCodeLine{01069\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (a\ ==\ 0)\ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{01070\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ A\_ij\ =\ this-\/>subset(i,\ j);}
+\DoxyCodeLine{01071\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ C\ =\ ((int)std::pow(-\/1,\ ((i\ +\ 1)\ +\ (j\ +\ 1))))\ *\ A\_ij.det();}
+\DoxyCodeLine{01072\ \ \ \ \ \ \ \ \ \ \ \ \ res\ +=\ a\ *\ C;}
+\DoxyCodeLine{01073\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ res;}
+\DoxyCodeLine{01074\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01075\ }
+\DoxyCodeLine{01082\ \ \ \ \ \ \ \ \ \textcolor{keyword}{constexpr}\ number\ cofactorRow(\textcolor{keywordtype}{size\_t}\ row)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01083\ \ \ \ \ \ \ \ \ \ \ \ \ number\ res\{\};}
+\DoxyCodeLine{01084\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ i\{row\};}
+\DoxyCodeLine{01085\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ j\{0\};\ j\ <\ n;\ j++)\ \{}
+\DoxyCodeLine{01086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ res\ +=\ cofactorCommon(i,\ j);}
+\DoxyCodeLine{01087\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01088\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ res;}
+\DoxyCodeLine{01089\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01090\ }
+\DoxyCodeLine{01097\ \ \ \ \ \ \ \ \ \textcolor{keyword}{constexpr}\ number\ cofactorCol(\textcolor{keywordtype}{size\_t}\ col)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01098\ \ \ \ \ \ \ \ \ \ \ \ \ number\ res\{\};}
+\DoxyCodeLine{01099\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ j\{col\};}
+\DoxyCodeLine{01100\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\{0\};\ i\ <\ n;\ i++)\ \{}
+\DoxyCodeLine{01101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ res\ +=\ cofactorCommon(i,\ j);}
+\DoxyCodeLine{01102\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01103\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ res;}
+\DoxyCodeLine{01104\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01105\ }
+\DoxyCodeLine{01111\ \ \ \ \ \ \ \ \ \textcolor{keyword}{constexpr}\ number\ cofactor()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01112\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ [by,\ val]\ =\ pickCofactorRowOrCol();}
+\DoxyCodeLine{01113\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (by\ ==\ ROW)}
+\DoxyCodeLine{01114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ cofactorRow(val);}
+\DoxyCodeLine{01115\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{01116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ cofactorCol(val);}
+\DoxyCodeLine{01117\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01118\ }
+\DoxyCodeLine{01125\ \ \ \ \ \ \ \ \ Vector<number,\ m>\ multMatByVec(\textcolor{keyword}{const}\ Vector<number,\ n>\&\ vec)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01126\ \ \ \ \ \ \ \ \ \ \ \ \ Vector<number,\ m>\ res;}
+\DoxyCodeLine{01127\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ asCols\{std::move(colToVectorSet())\};}
+\DoxyCodeLine{01128\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ i\{\};}
+\DoxyCodeLine{01129\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ col\ :\ asCols)\ \{}
+\DoxyCodeLine{01130\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ mult\ =\ vec.at(i);}
+\DoxyCodeLine{01131\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ col\ *=\ mult;}
+\DoxyCodeLine{01132\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ i++;}
+\DoxyCodeLine{01133\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01134\ }
+\DoxyCodeLine{01135\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\{\};\ i\ <\ m;\ i++)\ \{}
+\DoxyCodeLine{01136\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ number\ sumRes\{\};}
+\DoxyCodeLine{01137\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ col\ :\ asCols)\ sumRes\ +=\ col.\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_ae3f61d6089f2402d9ccca780f43be781}{at}}(i);}
+\DoxyCodeLine{01138\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ res.at(i)\ =\ sumRes;}
+\DoxyCodeLine{01139\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01140\ }
+\DoxyCodeLine{01141\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ res;}
+\DoxyCodeLine{01142\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01143\ }
+\DoxyCodeLine{01150\ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{size\_t}\ nOther>}
+\DoxyCodeLine{01151\ \ \ \ \ \ \ \ \ Matrix<number,\ m,\ nOther>\ multMatByDef(\textcolor{keyword}{const}\ Matrix<number,\ n,\ nOther>\&\ other)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01152\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ otherColVecSet\{std::move(other.colToVectorSet())\};}
+\DoxyCodeLine{01153\ \ \ \ \ \ \ \ \ \ \ \ \ vector<Vector<number,\ m>>\ res;}
+\DoxyCodeLine{01154\ \ \ \ \ \ \ \ \ \ \ \ \ res.reserve(nOther);}
+\DoxyCodeLine{01155\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\{\};\ i\ <\ nOther;\ i++)\ \{}
+\DoxyCodeLine{01156\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ col\{otherColVecSet.at(i)\};}
+\DoxyCodeLine{01157\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ multRes\ =\ *\textcolor{keyword}{this}\ *\ col;}
+\DoxyCodeLine{01158\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ res.emplace\_back(multRes);}
+\DoxyCodeLine{01159\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01160\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ helpers::fromColVectorSet<number,\ m,\ nOther>(res);}
+\DoxyCodeLine{01161\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01162\ }
+\DoxyCodeLine{01169\ \ \ \ \ \ \ \ \ \textcolor{keyword}{friend}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_ad9db8919079ab4f0b3a3b4981e0d0a43}{swap}}(\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}\&\ first,\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}\&\ second)\ \textcolor{keyword}{noexcept}\ \{}
+\DoxyCodeLine{01170\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{using\ }std::swap;}
+\DoxyCodeLine{01171\ \ \ \ \ \ \ \ \ \ \ \ \ swap(first.matrix,\ second.matrix);}
 \DoxyCodeLine{01172\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{01173\ }
-\DoxyCodeLine{01180\ \ \ \ \ \ \ \ \ \textcolor{keyword}{friend}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix_ad9db8919079ab4f0b3a3b4981e0d0a43}{swap}}(\mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}\&\ first,\ \mbox{\hyperlink{classmlinalg_1_1structures_1_1Matrix}{Matrix}}\&\ second)\ \textcolor{keyword}{noexcept}\ \{}
-\DoxyCodeLine{01181\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{using\ }std::swap;}
-\DoxyCodeLine{01182\ \ \ \ \ \ \ \ \ \ \ \ \ swap(first.matrix,\ second.matrix);}
-\DoxyCodeLine{01183\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{01184\ }
-\DoxyCodeLine{01188\ \ \ \ \ \ \ \ \ array<Row<number,\ n>,\ m>\ matrix\{\};}
-\DoxyCodeLine{01189\ \ \ \ \ \};}
-\DoxyCodeLine{01190\ }
-\DoxyCodeLine{01191\ \ \ \ \ \textcolor{comment}{//\ Deduction\ Guide}}
-\DoxyCodeLine{01192\ \ \ \ \ \textcolor{comment}{//\ template\ <typename\ T,\ typename...\ Rows>}}
-\DoxyCodeLine{01193\ \ \ \ \ \textcolor{comment}{//\ Matrix(T,\ Rows...)}}
-\DoxyCodeLine{01194\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ -\/>\ Matrix<T,\ sizeof...(Rows),\ std::tuple\_size\_v<std::decay\_t<decltype(std::get<0>(std::tuple<Rows...>()))>>>;}}
-\DoxyCodeLine{01195\ \ \ \ \ \textcolor{comment}{//}}
-\DoxyCodeLine{01196\ \ \ \ \ \textcolor{comment}{//\ template\ <typename\ T,\ size\_t\ Rows,\ size\_t\ Cols>}}
-\DoxyCodeLine{01197\ \ \ \ \ \textcolor{comment}{//\ Matrix(const\ std::array<std::array<T,\ Cols>,\ Rows>\&)\ -\/>\ Matrix<T,\ Rows,\ Cols>;}}
-\DoxyCodeLine{01198\ }
-\DoxyCodeLine{01199\ \ \ \ \ \textcolor{comment}{//\ Alias\ template\ for\ LinearSystem}}
-\DoxyCodeLine{01200\ }
-\DoxyCodeLine{01201\ \ \ \ \ \textcolor{comment}{//\ template\ <Number\ number,\ size\_t\ n>}}
-\DoxyCodeLine{01202\ \ \ \ \ \textcolor{comment}{//\ Vector(std::array<number,\ n>)\ -\/>\ Vector<number,\ n>;}}
-\DoxyCodeLine{01203\ }
-\DoxyCodeLine{01204\ \ \ \ \ \textcolor{keyword}{template}\ <Number\ number,\ \textcolor{keywordtype}{size\_t}\ m,\ \textcolor{keywordtype}{size\_t}\ n,\ \textcolor{keywordtype}{size\_t}\ nOther>}
-\DoxyCodeLine{01205\ \ \ \ \ Matrix<number,\ m,\ nOther>\ operator*(Matrix<number,\ m,\ n>\ lhs,\ Matrix<number,\ n,\ nOther>\ rhs)\ \{}
-\DoxyCodeLine{01206\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ lhs\ *\ rhs;}
-\DoxyCodeLine{01207\ \ \ \ \ \}}
-\DoxyCodeLine{01208\ }
-\DoxyCodeLine{01209\ \ \ \ \ \textcolor{keyword}{template}\ <Number\ number,\ \textcolor{keywordtype}{size\_t}\ m,\ \textcolor{keywordtype}{size\_t}\ n,\ \textcolor{keywordtype}{size\_t}\ nOther>}
-\DoxyCodeLine{01210\ \ \ \ \ TransposeVariant<number,\ m,\ nOther>\ operator*(TransposeVariant<number,\ m,\ n>\ lhs,\ Matrix<number,\ n,\ nOther>\ rhs)\ \{}
-\DoxyCodeLine{01211\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (std::holds\_alternative<Vector<number,\ m>>(lhs))\ \{}
-\DoxyCodeLine{01212\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ vec\ =\ std::get<Vector<number,\ m>>(lhs);}
-\DoxyCodeLine{01213\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ vec\ *\ rhs;}
-\DoxyCodeLine{01214\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
-\DoxyCodeLine{01215\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ mat\ =\ std::get<Matrix<number,\ m,\ n>>(lhs);}
-\DoxyCodeLine{01216\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ mat\ *\ rhs;}
-\DoxyCodeLine{01217\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{01218\ \ \ \ \ \}}
-\DoxyCodeLine{01219\ }
-\DoxyCodeLine{01220\ \ \ \ \ \textcolor{keyword}{template}\ <Number\ number,\ \textcolor{keywordtype}{size\_t}\ m,\ \textcolor{keywordtype}{size\_t}\ n>}
-\DoxyCodeLine{01221\ \ \ \ \ Matrix<number,\ m,\ n>\ operator*(\textcolor{keyword}{const}\ number\&\ scalar,\ Matrix<number,\ m,\ n>\ rhs)\ \{}
-\DoxyCodeLine{01222\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ rhs\ *\ scalar;}
-\DoxyCodeLine{01223\ \ \ \ \ \}}
-\DoxyCodeLine{01224\ }
-\DoxyCodeLine{01225\ \ \ \ \ \textcolor{keyword}{template}\ <Number\ number,\ \textcolor{keywordtype}{size\_t}\ m,\ \textcolor{keywordtype}{size\_t}\ n>}
-\DoxyCodeLine{01226\ \ \ \ \ Matrix<number,\ m,\ n>\ operator*(Vector<number,\ n>\ vec,\ Matrix<number,\ m,\ n>\ rhs)\ \{}
-\DoxyCodeLine{01227\ \ \ \ \ \ \ \ \ Matrix<number,\ m,\ n>\ res;}
-\DoxyCodeLine{01228\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\{\};\ i\ <\ n;\ i++)\ \{}
-\DoxyCodeLine{01229\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ mult\ =\ vec.at(i);}
-\DoxyCodeLine{01230\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ j\{\};\ j\ <\ m;\ j++)\ res.at(j).at(i)\ =\ mult\ *\ rhs.matrix.at(j).at(i);}
-\DoxyCodeLine{01231\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{01232\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ res;}
-\DoxyCodeLine{01233\ \ \ \ \ \}}
-\DoxyCodeLine{01234\ }
-\DoxyCodeLine{01235\ \}\ \ \textcolor{comment}{//\ namespace\ mlinalg::structures}}
+\DoxyCodeLine{01177\ \ \ \ \ \ \ \ \ array<Row<number,\ n>,\ m>\ matrix\{\};}
+\DoxyCodeLine{01178\ \ \ \ \ \};}
+\DoxyCodeLine{01179\ }
+\DoxyCodeLine{01180\ \ \ \ \ \textcolor{comment}{//\ Vector(std::array<number,\ n>)\ -\/>\ Vector<number,\ n>;}}
+\DoxyCodeLine{01181\ }
+\DoxyCodeLine{01182\ \ \ \ \ \textcolor{keyword}{template}\ <Number\ number,\ \textcolor{keywordtype}{size\_t}\ m,\ \textcolor{keywordtype}{size\_t}\ n,\ \textcolor{keywordtype}{size\_t}\ nOther>}
+\DoxyCodeLine{01183\ \ \ \ \ Matrix<number,\ m,\ nOther>\ operator*(Matrix<number,\ m,\ n>\ lhs,\ Matrix<number,\ n,\ nOther>\ rhs)\ \{}
+\DoxyCodeLine{01184\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ lhs\ *\ rhs;}
+\DoxyCodeLine{01185\ \ \ \ \ \}}
+\DoxyCodeLine{01186\ }
+\DoxyCodeLine{01187\ \ \ \ \ \textcolor{keyword}{template}\ <Number\ number,\ \textcolor{keywordtype}{size\_t}\ m,\ \textcolor{keywordtype}{size\_t}\ n,\ \textcolor{keywordtype}{size\_t}\ nOther>}
+\DoxyCodeLine{01188\ \ \ \ \ TransposeVariant<number,\ m,\ nOther>\ operator*(TransposeVariant<number,\ m,\ n>\ lhs,\ Matrix<number,\ n,\ nOther>\ rhs)\ \{}
+\DoxyCodeLine{01189\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (std::holds\_alternative<Vector<number,\ m>>(lhs))\ \{}
+\DoxyCodeLine{01190\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ vec\ =\ std::get<Vector<number,\ m>>(lhs);}
+\DoxyCodeLine{01191\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ vec\ *\ rhs;}
+\DoxyCodeLine{01192\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{01193\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ mat\ =\ std::get<Matrix<number,\ m,\ n>>(lhs);}
+\DoxyCodeLine{01194\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ mat\ *\ rhs;}
+\DoxyCodeLine{01195\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01196\ \ \ \ \ \}}
+\DoxyCodeLine{01197\ }
+\DoxyCodeLine{01198\ \ \ \ \ \textcolor{keyword}{template}\ <Number\ number,\ \textcolor{keywordtype}{size\_t}\ m,\ \textcolor{keywordtype}{size\_t}\ n>}
+\DoxyCodeLine{01199\ \ \ \ \ Matrix<number,\ m,\ n>\ operator*(\textcolor{keyword}{const}\ number\&\ scalar,\ Matrix<number,\ m,\ n>\ rhs)\ \{}
+\DoxyCodeLine{01200\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ rhs\ *\ scalar;}
+\DoxyCodeLine{01201\ \ \ \ \ \}}
+\DoxyCodeLine{01202\ }
+\DoxyCodeLine{01203\ \ \ \ \ \textcolor{keyword}{template}\ <Number\ number,\ \textcolor{keywordtype}{size\_t}\ m,\ \textcolor{keywordtype}{size\_t}\ n>}
+\DoxyCodeLine{01204\ \ \ \ \ Matrix<number,\ m,\ n>\ operator*(Vector<number,\ n>\ vec,\ Matrix<number,\ m,\ n>\ rhs)\ \{}
+\DoxyCodeLine{01205\ \ \ \ \ \ \ \ \ Matrix<number,\ m,\ n>\ res;}
+\DoxyCodeLine{01206\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\{\};\ i\ <\ n;\ i++)\ \{}
+\DoxyCodeLine{01207\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ mult\ =\ vec.at(i);}
+\DoxyCodeLine{01208\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ j\{\};\ j\ <\ m;\ j++)\ res.at(j).at(i)\ =\ mult\ *\ rhs.matrix.at(j).at(i);}
+\DoxyCodeLine{01209\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01210\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ res;}
+\DoxyCodeLine{01211\ \ \ \ \ \}}
+\DoxyCodeLine{01212\ }
+\DoxyCodeLine{01213\ \}\ \ \textcolor{comment}{//\ namespace\ mlinalg::structures}}
 
 \end{DoxyCode}

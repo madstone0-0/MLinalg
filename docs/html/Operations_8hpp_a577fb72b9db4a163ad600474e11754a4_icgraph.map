@@ -1,0 +1,9 @@
+<map id="mlinalg::isInconsistent" name="mlinalg::isInconsistent">
+<area shape="rect" id="Node000001" title="Checks if a linear system is inconsistent." alt="" coords="428,29,596,57"/>
+<area shape="poly" id="edge4_Node000001_Node000001" title=" " alt="" coords="549,16,536,10,512,8,490,10,478,15,475,20,480,27,475,30,469,20,474,11,489,5,512,3,537,5,551,12"/>
+<area shape="rect" id="Node000002" href="$Operations_8hpp.html#ad9fb84cef247c42a25e7715a4c61446a" title="Find the solutions to a linear system in the form: [A | b]." alt="" coords="217,29,380,57"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="412,46,380,46,380,40,412,40"/>
+<area shape="poly" id="edge2_Node000002_Node000002" title=" " alt="" coords="334,16,322,10,298,8,276,10,264,15,261,20,267,27,262,30,256,20,261,11,275,5,298,3,323,5,337,12"/>
+<area shape="rect" id="Node000003" href="$Operations_8hpp.html#a26fb7199eb0c367cdb15d404b08b1167" title="Find the solutions to a matrix equation in the form: A * x = b." alt="" coords="5,29,169,57"/>
+<area shape="poly" id="edge3_Node000002_Node000003" title=" " alt="" coords="201,46,169,46,169,40,201,40"/>
+</map>

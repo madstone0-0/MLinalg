@@ -179,7 +179,7 @@ $(function(){initNavTree('Structures_8hpp_source.html',''); initResizable(true);
 <div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
 <div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        <span class="keyword">template</span> &lt;Number num, <span class="keywordtype">size_t</span> m, <span class="keywordtype">size_t</span> n&gt;</div>
 <div class="foldopen" id="foldopen00110" data-start="{" data-end="}">
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="Structures_8hpp.html#a316b01057d99121eb7ee120ad774adcf">  110</a></span>        <a class="code hl_class" href="classmlinalg_1_1structures_1_1Vector.html">Vector&lt;num, m&gt;</a> extractVectorFromTranspose(<span class="keyword">const</span> <a class="code hl_typedef" href="Structures_8hpp.html#a9db1e022884032860a0840a8f195b2b6">TransposeVariant&lt;num, m, n&gt;</a> T) {</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="Structures_8hpp.html#a316b01057d99121eb7ee120ad774adcf">  110</a></span>        <a class="code hl_class" href="classmlinalg_1_1structures_1_1Vector.html">Vector&lt;num, m&gt;</a> <a class="code hl_function" href="Structures_8hpp.html#a316b01057d99121eb7ee120ad774adcf">extractVectorFromTranspose</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="Structures_8hpp.html#a9db1e022884032860a0840a8f195b2b6">TransposeVariant&lt;num, m, n&gt;</a> T) {</div>
 <div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>            <span class="keywordflow">return</span> std::get&lt;Vector&lt;num, m&gt;&gt;(T);</div>
 <div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        }</div>
 </div>
@@ -652,277 +652,260 @@ $(function(){initNavTree('Structures_8hpp_source.html',''); initResizable(true);
 <div class="line"><a id="l00867" name="l00867"></a><span class="lineno">  867</span>        }</div>
 </div>
 <div class="line"><a id="l00868" name="l00868"></a><span class="lineno">  868</span> </div>
-<div class="line"><a id="l00875" name="l00875"></a><span class="lineno">  875</span>        <span class="keyword">template</span> &lt;Number num, <span class="keywordtype">size_t</span> mN, <span class="keywordtype">size_t</span> nN&gt;</div>
-<div class="foldopen" id="foldopen00876" data-start="{" data-end="}">
-<div class="line"><a id="l00876" name="l00876"></a><span class="lineno"><a class="line" href="classmlinalg_1_1structures_1_1Matrix.html#a9d3d521c64c0be953663feb88068c78c">  876</a></span>        <span class="keyword">static</span> <a class="code hl_class" href="classmlinalg_1_1structures_1_1Matrix.html">Matrix&lt;num, nN, mN&gt;</a> <a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#a9d3d521c64c0be953663feb88068c78c">extractMatrixFromTranspose</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="Structures_8hpp.html#a9db1e022884032860a0840a8f195b2b6">TransposeVariant&lt;num, mN, nN&gt;</a>&amp; T) {</div>
-<div class="line"><a id="l00877" name="l00877"></a><span class="lineno">  877</span>            <span class="keywordflow">return</span> std::get&lt;Matrix&lt;num, nN, mN&gt;&gt;(T);</div>
-<div class="line"><a id="l00878" name="l00878"></a><span class="lineno">  878</span>        }</div>
+<div class="line"><a id="l00869" name="l00869"></a><span class="lineno">  869</span>        <span class="keyword">friend</span> std::ostream&amp; operator&lt;&lt;(std::ostream&amp; os, <span class="keyword">const</span> <a class="code hl_typedef" href="Structures_8hpp.html#a9db1e022884032860a0840a8f195b2b6">TransposeVariant&lt;number, n, m&gt;</a>&amp; system) {</div>
+<div class="line"><a id="l00870" name="l00870"></a><span class="lineno">  870</span>            <span class="keywordflow">if</span> (std::holds_alternative&lt;<a class="code hl_class" href="classmlinalg_1_1structures_1_1Vector.html">Vector&lt;number, n&gt;</a>&gt;(system)) {</div>
+<div class="line"><a id="l00871" name="l00871"></a><span class="lineno">  871</span>                os &lt;&lt; std::get&lt;Vector&lt;number, n&gt;&gt;(system);</div>
+<div class="line"><a id="l00872" name="l00872"></a><span class="lineno">  872</span>            } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (std::holds_alternative&lt;<a class="code hl_class" href="classmlinalg_1_1structures_1_1Matrix.html">Matrix&lt;number, m, n&gt;</a>&gt;(system)) {</div>
+<div class="line"><a id="l00873" name="l00873"></a><span class="lineno">  873</span>                os &lt;&lt; std::get&lt;Matrix&lt;number, m, n&gt;&gt;(system);</div>
+<div class="line"><a id="l00874" name="l00874"></a><span class="lineno">  874</span>            }</div>
+<div class="line"><a id="l00875" name="l00875"></a><span class="lineno">  875</span>            <span class="keywordflow">return</span> os;</div>
+<div class="line"><a id="l00876" name="l00876"></a><span class="lineno">  876</span>        }</div>
+<div class="line"><a id="l00877" name="l00877"></a><span class="lineno">  877</span> </div>
+<div class="line"><a id="l00883" name="l00883"></a><span class="lineno"><a class="line" href="classmlinalg_1_1structures_1_1Matrix.html#a7d6f31eba3cd312d5fcd7b7e4cc23bdf">  883</a></span>        <span class="keyword">constexpr</span> <span class="keyword">auto</span> <a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#a7d6f31eba3cd312d5fcd7b7e4cc23bdf">begin</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> matrix.begin(); }</div>
+<div class="line"><a id="l00884" name="l00884"></a><span class="lineno">  884</span> </div>
+<div class="line"><a id="l00890" name="l00890"></a><span class="lineno"><a class="line" href="classmlinalg_1_1structures_1_1Matrix.html#a059ba6035c685cf7d573a72b7a8be601">  890</a></span>        <span class="keyword">constexpr</span> <span class="keyword">auto</span> <a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#a059ba6035c685cf7d573a72b7a8be601">end</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> matrix.end(); }</div>
+<div class="line"><a id="l00891" name="l00891"></a><span class="lineno">  891</span> </div>
+<div class="line"><a id="l00897" name="l00897"></a><span class="lineno"><a class="line" href="classmlinalg_1_1structures_1_1Matrix.html#af5f06cba8d909a5974268380f61b6798">  897</a></span>        <span class="keyword">constexpr</span> <span class="keyword">auto</span> <a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#af5f06cba8d909a5974268380f61b6798">cbegin</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> matrix.cbegin(); }</div>
+<div class="line"><a id="l00898" name="l00898"></a><span class="lineno">  898</span> </div>
+<div class="line"><a id="l00904" name="l00904"></a><span class="lineno"><a class="line" href="classmlinalg_1_1structures_1_1Matrix.html#affae5f8593216ba91b56b9ff82b4c93d">  904</a></span>        <span class="keyword">constexpr</span> <span class="keyword">auto</span> <a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#affae5f8593216ba91b56b9ff82b4c93d">cend</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> matrix.cend(); }</div>
+<div class="line"><a id="l00905" name="l00905"></a><span class="lineno">  905</span> </div>
+<div class="line"><a id="l00911" name="l00911"></a><span class="lineno"><a class="line" href="classmlinalg_1_1structures_1_1Matrix.html#ab922ccdace0194bf94c8d0ca18a0a947">  911</a></span>        <span class="keyword">constexpr</span> <span class="keyword">auto</span> <a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#ab922ccdace0194bf94c8d0ca18a0a947">back</a>() { <span class="keywordflow">return</span> matrix.back(); }</div>
+<div class="line"><a id="l00912" name="l00912"></a><span class="lineno">  912</span> </div>
+<div class="line"><a id="l00918" name="l00918"></a><span class="lineno"><a class="line" href="classmlinalg_1_1structures_1_1Matrix.html#aa98f554e3cb6b7f6e02c706358d5084b">  918</a></span>        <span class="keyword">constexpr</span> <span class="keyword">auto</span> <a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#aa98f554e3cb6b7f6e02c706358d5084b">rbegin</a>() { <span class="keywordflow">return</span> matrix.rbegin(); }</div>
+<div class="line"><a id="l00919" name="l00919"></a><span class="lineno">  919</span> </div>
+<div class="line"><a id="l00925" name="l00925"></a><span class="lineno"><a class="line" href="classmlinalg_1_1structures_1_1Matrix.html#afc263efe08f53863aa03c3cfbf2d5874">  925</a></span>        <span class="keyword">constexpr</span> <span class="keyword">auto</span> <a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#afc263efe08f53863aa03c3cfbf2d5874">rend</a>() { <span class="keywordflow">return</span> matrix.rend(); }</div>
+<div class="line"><a id="l00926" name="l00926"></a><span class="lineno">  926</span> </div>
+<div class="line"><a id="l00933" name="l00933"></a><span class="lineno">  933</span>        <span class="keyword">template</span> &lt;<span class="keywordtype">size_t</span> nN&gt;</div>
+<div class="foldopen" id="foldopen00934" data-start="{" data-end="}">
+<div class="line"><a id="l00934" name="l00934"></a><span class="lineno"><a class="line" href="classmlinalg_1_1structures_1_1Matrix.html#a27c88384ec14a6e8463935222e2ec4b7">  934</a></span>        <a class="code hl_class" href="classmlinalg_1_1structures_1_1Matrix.html">Matrix&lt;number, m, nN + n&gt;</a> <a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#a27c88384ec14a6e8463935222e2ec4b7">augment</a>(<span class="keyword">const</span> <a class="code hl_class" href="classmlinalg_1_1structures_1_1Matrix.html">Matrix&lt;number, m, nN&gt;</a>&amp; other)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00935" name="l00935"></a><span class="lineno">  935</span>            <a class="code hl_class" href="classmlinalg_1_1structures_1_1Matrix.html">Matrix&lt;number, m, nN + n&gt;</a> res;</div>
+<div class="line"><a id="l00936" name="l00936"></a><span class="lineno">  936</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i{}; i &lt; m; i++) {</div>
+<div class="line"><a id="l00937" name="l00937"></a><span class="lineno">  937</span>                <span class="keyword">auto</span>&amp; row{res.<a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#ae3f61d6089f2402d9ccca780f43be781">at</a>(i)};</div>
+<div class="line"><a id="l00938" name="l00938"></a><span class="lineno">  938</span>                <span class="keyword">const</span> <span class="keyword">auto</span>&amp; thisRow{this-&gt;at(i)};</div>
+<div class="line"><a id="l00939" name="l00939"></a><span class="lineno">  939</span>                <span class="keyword">const</span> <span class="keyword">auto</span>&amp; otherRow{other.<a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#ae3f61d6089f2402d9ccca780f43be781">at</a>(i)};</div>
+<div class="line"><a id="l00940" name="l00940"></a><span class="lineno">  940</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j{}; j &lt; (nN + n); j++) {</div>
+<div class="line"><a id="l00941" name="l00941"></a><span class="lineno">  941</span>                    <span class="keywordflow">if</span> (j &lt; n)</div>
+<div class="line"><a id="l00942" name="l00942"></a><span class="lineno">  942</span>                        row.at(j) = thisRow.at(j);</div>
+<div class="line"><a id="l00943" name="l00943"></a><span class="lineno">  943</span>                    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00944" name="l00944"></a><span class="lineno">  944</span>                        row.at(j) = otherRow.at((j - <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(nN)));</div>
+<div class="line"><a id="l00945" name="l00945"></a><span class="lineno">  945</span>                }</div>
+<div class="line"><a id="l00946" name="l00946"></a><span class="lineno">  946</span>            }</div>
+<div class="line"><a id="l00947" name="l00947"></a><span class="lineno">  947</span>            <span class="keywordflow">return</span> res;</div>
+<div class="line"><a id="l00948" name="l00948"></a><span class="lineno">  948</span>        }</div>
 </div>
-<div class="line"><a id="l00879" name="l00879"></a><span class="lineno">  879</span> </div>
-<div class="line"><a id="l00880" name="l00880"></a><span class="lineno">  880</span>        <span class="keyword">friend</span> std::ostream&amp; operator&lt;&lt;(std::ostream&amp; os, <span class="keyword">const</span> <a class="code hl_typedef" href="Structures_8hpp.html#a9db1e022884032860a0840a8f195b2b6">TransposeVariant&lt;number, n, m&gt;</a>&amp; system) {</div>
-<div class="line"><a id="l00881" name="l00881"></a><span class="lineno">  881</span>            <span class="keywordflow">if</span> (std::holds_alternative&lt;<a class="code hl_class" href="classmlinalg_1_1structures_1_1Vector.html">Vector&lt;number, n&gt;</a>&gt;(system)) {</div>
-<div class="line"><a id="l00882" name="l00882"></a><span class="lineno">  882</span>                os &lt;&lt; std::get&lt;Vector&lt;number, n&gt;&gt;(system);</div>
-<div class="line"><a id="l00883" name="l00883"></a><span class="lineno">  883</span>            } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (std::holds_alternative&lt;<a class="code hl_class" href="classmlinalg_1_1structures_1_1Matrix.html">Matrix&lt;number, m, n&gt;</a>&gt;(system)) {</div>
-<div class="line"><a id="l00884" name="l00884"></a><span class="lineno">  884</span>                os &lt;&lt; std::get&lt;Matrix&lt;number, m, n&gt;&gt;(system);</div>
-<div class="line"><a id="l00885" name="l00885"></a><span class="lineno">  885</span>            }</div>
-<div class="line"><a id="l00886" name="l00886"></a><span class="lineno">  886</span>            <span class="keywordflow">return</span> os;</div>
-<div class="line"><a id="l00887" name="l00887"></a><span class="lineno">  887</span>        }</div>
-<div class="line"><a id="l00888" name="l00888"></a><span class="lineno">  888</span> </div>
-<div class="line"><a id="l00894" name="l00894"></a><span class="lineno"><a class="line" href="classmlinalg_1_1structures_1_1Matrix.html#a7d6f31eba3cd312d5fcd7b7e4cc23bdf">  894</a></span>        <span class="keyword">constexpr</span> <span class="keyword">auto</span> <a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#a7d6f31eba3cd312d5fcd7b7e4cc23bdf">begin</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> matrix.begin(); }</div>
-<div class="line"><a id="l00895" name="l00895"></a><span class="lineno">  895</span> </div>
-<div class="line"><a id="l00901" name="l00901"></a><span class="lineno"><a class="line" href="classmlinalg_1_1structures_1_1Matrix.html#a059ba6035c685cf7d573a72b7a8be601">  901</a></span>        <span class="keyword">constexpr</span> <span class="keyword">auto</span> <a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#a059ba6035c685cf7d573a72b7a8be601">end</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> matrix.end(); }</div>
-<div class="line"><a id="l00902" name="l00902"></a><span class="lineno">  902</span> </div>
-<div class="line"><a id="l00908" name="l00908"></a><span class="lineno"><a class="line" href="classmlinalg_1_1structures_1_1Matrix.html#af5f06cba8d909a5974268380f61b6798">  908</a></span>        <span class="keyword">constexpr</span> <span class="keyword">auto</span> <a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#af5f06cba8d909a5974268380f61b6798">cbegin</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> matrix.cbegin(); }</div>
-<div class="line"><a id="l00909" name="l00909"></a><span class="lineno">  909</span> </div>
-<div class="line"><a id="l00915" name="l00915"></a><span class="lineno"><a class="line" href="classmlinalg_1_1structures_1_1Matrix.html#affae5f8593216ba91b56b9ff82b4c93d">  915</a></span>        <span class="keyword">constexpr</span> <span class="keyword">auto</span> <a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#affae5f8593216ba91b56b9ff82b4c93d">cend</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> matrix.cend(); }</div>
-<div class="line"><a id="l00916" name="l00916"></a><span class="lineno">  916</span> </div>
-<div class="line"><a id="l00922" name="l00922"></a><span class="lineno"><a class="line" href="classmlinalg_1_1structures_1_1Matrix.html#ab922ccdace0194bf94c8d0ca18a0a947">  922</a></span>        <span class="keyword">constexpr</span> <span class="keyword">auto</span> <a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#ab922ccdace0194bf94c8d0ca18a0a947">back</a>() { <span class="keywordflow">return</span> matrix.back(); }</div>
-<div class="line"><a id="l00923" name="l00923"></a><span class="lineno">  923</span> </div>
-<div class="line"><a id="l00929" name="l00929"></a><span class="lineno"><a class="line" href="classmlinalg_1_1structures_1_1Matrix.html#aa98f554e3cb6b7f6e02c706358d5084b">  929</a></span>        <span class="keyword">constexpr</span> <span class="keyword">auto</span> <a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#aa98f554e3cb6b7f6e02c706358d5084b">rbegin</a>() { <span class="keywordflow">return</span> matrix.rbegin(); }</div>
-<div class="line"><a id="l00930" name="l00930"></a><span class="lineno">  930</span> </div>
-<div class="line"><a id="l00936" name="l00936"></a><span class="lineno"><a class="line" href="classmlinalg_1_1structures_1_1Matrix.html#afc263efe08f53863aa03c3cfbf2d5874">  936</a></span>        <span class="keyword">constexpr</span> <span class="keyword">auto</span> <a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#afc263efe08f53863aa03c3cfbf2d5874">rend</a>() { <span class="keywordflow">return</span> matrix.rend(); }</div>
-<div class="line"><a id="l00937" name="l00937"></a><span class="lineno">  937</span> </div>
-<div class="line"><a id="l00944" name="l00944"></a><span class="lineno">  944</span>        <span class="keyword">template</span> &lt;<span class="keywordtype">size_t</span> nN&gt;</div>
-<div class="foldopen" id="foldopen00945" data-start="{" data-end="}">
-<div class="line"><a id="l00945" name="l00945"></a><span class="lineno"><a class="line" href="classmlinalg_1_1structures_1_1Matrix.html#a27c88384ec14a6e8463935222e2ec4b7">  945</a></span>        <a class="code hl_class" href="classmlinalg_1_1structures_1_1Matrix.html">Matrix&lt;number, m, nN + n&gt;</a> <a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#a27c88384ec14a6e8463935222e2ec4b7">augment</a>(<span class="keyword">const</span> <a class="code hl_class" href="classmlinalg_1_1structures_1_1Matrix.html">Matrix&lt;number, m, nN&gt;</a>&amp; other)<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00946" name="l00946"></a><span class="lineno">  946</span>            <a class="code hl_class" href="classmlinalg_1_1structures_1_1Matrix.html">Matrix&lt;number, m, nN + n&gt;</a> res;</div>
-<div class="line"><a id="l00947" name="l00947"></a><span class="lineno">  947</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i{}; i &lt; m; i++) {</div>
-<div class="line"><a id="l00948" name="l00948"></a><span class="lineno">  948</span>                <span class="keyword">auto</span>&amp; row{res.<a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#ae3f61d6089f2402d9ccca780f43be781">at</a>(i)};</div>
-<div class="line"><a id="l00949" name="l00949"></a><span class="lineno">  949</span>                <span class="keyword">const</span> <span class="keyword">auto</span>&amp; thisRow{this-&gt;at(i)};</div>
-<div class="line"><a id="l00950" name="l00950"></a><span class="lineno">  950</span>                <span class="keyword">const</span> <span class="keyword">auto</span>&amp; otherRow{other.<a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#ae3f61d6089f2402d9ccca780f43be781">at</a>(i)};</div>
-<div class="line"><a id="l00951" name="l00951"></a><span class="lineno">  951</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j{}; j &lt; (nN + n); j++) {</div>
-<div class="line"><a id="l00952" name="l00952"></a><span class="lineno">  952</span>                    <span class="keywordflow">if</span> (j &lt; n)</div>
-<div class="line"><a id="l00953" name="l00953"></a><span class="lineno">  953</span>                        row.at(j) = thisRow.at(j);</div>
-<div class="line"><a id="l00954" name="l00954"></a><span class="lineno">  954</span>                    <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00955" name="l00955"></a><span class="lineno">  955</span>                        row.at(j) = otherRow.at((j - <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(nN)));</div>
-<div class="line"><a id="l00956" name="l00956"></a><span class="lineno">  956</span>                }</div>
-<div class="line"><a id="l00957" name="l00957"></a><span class="lineno">  957</span>            }</div>
-<div class="line"><a id="l00958" name="l00958"></a><span class="lineno">  958</span>            <span class="keywordflow">return</span> res;</div>
-<div class="line"><a id="l00959" name="l00959"></a><span class="lineno">  959</span>        }</div>
+<div class="line"><a id="l00949" name="l00949"></a><span class="lineno">  949</span> </div>
+<div class="foldopen" id="foldopen00956" data-start="{" data-end="}">
+<div class="line"><a id="l00956" name="l00956"></a><span class="lineno"><a class="line" href="classmlinalg_1_1structures_1_1Matrix.html#a1791860a24eb83f7e36f9d31e562d995">  956</a></span>        <a class="code hl_class" href="classmlinalg_1_1structures_1_1Matrix.html">Matrix&lt;number, m, n + 1&gt;</a> <a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#a1791860a24eb83f7e36f9d31e562d995">augment</a>(<span class="keyword">const</span> <a class="code hl_class" href="classmlinalg_1_1structures_1_1Vector.html">Vector&lt;number, m&gt;</a>&amp; other)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00957" name="l00957"></a><span class="lineno">  957</span>            <a class="code hl_class" href="classmlinalg_1_1structures_1_1Matrix.html">Matrix&lt;number, m, n + 1&gt;</a> res;</div>
+<div class="line"><a id="l00958" name="l00958"></a><span class="lineno">  958</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i{}; i &lt; m; i++) {</div>
+<div class="line"><a id="l00959" name="l00959"></a><span class="lineno">  959</span>                <span class="keyword">auto</span>&amp; row{res.<a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#ae3f61d6089f2402d9ccca780f43be781">at</a>(i)};</div>
+<div class="line"><a id="l00960" name="l00960"></a><span class="lineno">  960</span>                <span class="keyword">const</span> <span class="keyword">auto</span>&amp; thisRow{this-&gt;at(i)};</div>
+<div class="line"><a id="l00961" name="l00961"></a><span class="lineno">  961</span>                <span class="keywordtype">size_t</span> j{};</div>
+<div class="line"><a id="l00962" name="l00962"></a><span class="lineno">  962</span>                <span class="keywordflow">for</span> (; j &lt; n; j++) {</div>
+<div class="line"><a id="l00963" name="l00963"></a><span class="lineno">  963</span>                    row.at(j) = thisRow.at(j);</div>
+<div class="line"><a id="l00964" name="l00964"></a><span class="lineno">  964</span>                }</div>
+<div class="line"><a id="l00965" name="l00965"></a><span class="lineno">  965</span>                row.at(j) = other.<a class="code hl_function" href="classmlinalg_1_1structures_1_1Vector.html#afd0f74693f19e486ae7b1e6966faf17f">at</a>(i);</div>
+<div class="line"><a id="l00966" name="l00966"></a><span class="lineno">  966</span>            }</div>
+<div class="line"><a id="l00967" name="l00967"></a><span class="lineno">  967</span>            <span class="keywordflow">return</span> res;</div>
+<div class="line"><a id="l00968" name="l00968"></a><span class="lineno">  968</span>        }</div>
 </div>
-<div class="line"><a id="l00960" name="l00960"></a><span class="lineno">  960</span> </div>
-<div class="foldopen" id="foldopen00967" data-start="{" data-end="}">
-<div class="line"><a id="l00967" name="l00967"></a><span class="lineno"><a class="line" href="classmlinalg_1_1structures_1_1Matrix.html#a1791860a24eb83f7e36f9d31e562d995">  967</a></span>        <a class="code hl_class" href="classmlinalg_1_1structures_1_1Matrix.html">Matrix&lt;number, m, n + 1&gt;</a> <a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#a1791860a24eb83f7e36f9d31e562d995">augment</a>(<span class="keyword">const</span> <a class="code hl_class" href="classmlinalg_1_1structures_1_1Vector.html">Vector&lt;number, m&gt;</a>&amp; other)<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00968" name="l00968"></a><span class="lineno">  968</span>            <a class="code hl_class" href="classmlinalg_1_1structures_1_1Matrix.html">Matrix&lt;number, m, n + 1&gt;</a> res;</div>
-<div class="line"><a id="l00969" name="l00969"></a><span class="lineno">  969</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i{}; i &lt; m; i++) {</div>
-<div class="line"><a id="l00970" name="l00970"></a><span class="lineno">  970</span>                <span class="keyword">auto</span>&amp; row{res.<a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#ae3f61d6089f2402d9ccca780f43be781">at</a>(i)};</div>
-<div class="line"><a id="l00971" name="l00971"></a><span class="lineno">  971</span>                <span class="keyword">const</span> <span class="keyword">auto</span>&amp; thisRow{this-&gt;at(i)};</div>
-<div class="line"><a id="l00972" name="l00972"></a><span class="lineno">  972</span>                <span class="keywordtype">size_t</span> j{};</div>
-<div class="line"><a id="l00973" name="l00973"></a><span class="lineno">  973</span>                <span class="keywordflow">for</span> (; j &lt; n; j++) {</div>
-<div class="line"><a id="l00974" name="l00974"></a><span class="lineno">  974</span>                    row.at(j) = thisRow.at(j);</div>
-<div class="line"><a id="l00975" name="l00975"></a><span class="lineno">  975</span>                }</div>
-<div class="line"><a id="l00976" name="l00976"></a><span class="lineno">  976</span>                row.at(j) = other.<a class="code hl_function" href="classmlinalg_1_1structures_1_1Vector.html#afd0f74693f19e486ae7b1e6966faf17f">at</a>(i);</div>
-<div class="line"><a id="l00977" name="l00977"></a><span class="lineno">  977</span>            }</div>
-<div class="line"><a id="l00978" name="l00978"></a><span class="lineno">  978</span>            <span class="keywordflow">return</span> res;</div>
-<div class="line"><a id="l00979" name="l00979"></a><span class="lineno">  979</span>        }</div>
+<div class="line"><a id="l00969" name="l00969"></a><span class="lineno">  969</span> </div>
+<div class="foldopen" id="foldopen00975" data-start="{" data-end="}">
+<div class="line"><a id="l00975" name="l00975"></a><span class="lineno"><a class="line" href="classmlinalg_1_1structures_1_1Matrix.html#a0ef35a6063c76c1a498e96609490d547">  975</a></span>        number <a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#a0ef35a6063c76c1a498e96609490d547">det</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00976" name="l00976"></a><span class="lineno">  976</span>            <span class="keywordflow">if</span> (m != n) <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Finding determinant of rectangular matrices not implemented&quot;</span>);</div>
+<div class="line"><a id="l00977" name="l00977"></a><span class="lineno">  977</span>            <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (m == 2 &amp;&amp; n == 2)</div>
+<div class="line"><a id="l00978" name="l00978"></a><span class="lineno">  978</span>                <span class="keywordflow">return</span> det2x2();</div>
+<div class="line"><a id="l00979" name="l00979"></a><span class="lineno">  979</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00980" name="l00980"></a><span class="lineno">  980</span>                <span class="keywordflow">return</span> cofactor();</div>
+<div class="line"><a id="l00981" name="l00981"></a><span class="lineno">  981</span>        }</div>
 </div>
-<div class="line"><a id="l00980" name="l00980"></a><span class="lineno">  980</span> </div>
-<div class="foldopen" id="foldopen00986" data-start="{" data-end="}">
-<div class="line"><a id="l00986" name="l00986"></a><span class="lineno"><a class="line" href="classmlinalg_1_1structures_1_1Matrix.html#a0ef35a6063c76c1a498e96609490d547">  986</a></span>        number <a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#a0ef35a6063c76c1a498e96609490d547">det</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00987" name="l00987"></a><span class="lineno">  987</span>            <span class="keywordflow">if</span> (m != n) <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Finding determinant of rectangular matrices not implemented&quot;</span>);</div>
-<div class="line"><a id="l00988" name="l00988"></a><span class="lineno">  988</span>            <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (m == 2 &amp;&amp; n == 2)</div>
-<div class="line"><a id="l00989" name="l00989"></a><span class="lineno">  989</span>                <span class="keywordflow">return</span> det2x2();</div>
-<div class="line"><a id="l00990" name="l00990"></a><span class="lineno">  990</span>            <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00991" name="l00991"></a><span class="lineno">  991</span>                <span class="keywordflow">return</span> cofactor();</div>
-<div class="line"><a id="l00992" name="l00992"></a><span class="lineno">  992</span>        }</div>
-</div>
+<div class="line"><a id="l00982" name="l00982"></a><span class="lineno">  982</span> </div>
+<div class="foldopen" id="foldopen00990" data-start="{" data-end="}">
+<div class="line"><a id="l00990" name="l00990"></a><span class="lineno"><a class="line" href="classmlinalg_1_1structures_1_1Matrix.html#ab64e1f7618b638655bdf194ea25bef97">  990</a></span>        <a class="code hl_class" href="classmlinalg_1_1structures_1_1Matrix.html">Matrix</a>&lt;number, m - 1, n - 1&gt; <a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#ab64e1f7618b638655bdf194ea25bef97">subset</a>(std::optional&lt;size_t&gt; i, std::optional&lt;size_t&gt; j)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00991" name="l00991"></a><span class="lineno">  991</span>            <span class="keyword">static_assert</span>(m == n, <span class="stringliteral">&quot;Not a square matrix&quot;</span>);</div>
+<div class="line"><a id="l00992" name="l00992"></a><span class="lineno">  992</span>            <span class="keyword">static_assert</span>(m &gt; 1 &amp;&amp; n &gt; 1, <span class="stringliteral">&quot;Cannot subset&quot;</span>);</div>
 <div class="line"><a id="l00993" name="l00993"></a><span class="lineno">  993</span> </div>
-<div class="foldopen" id="foldopen01001" data-start="{" data-end="}">
-<div class="line"><a id="l01001" name="l01001"></a><span class="lineno"><a class="line" href="classmlinalg_1_1structures_1_1Matrix.html#ab64e1f7618b638655bdf194ea25bef97"> 1001</a></span>        <a class="code hl_class" href="classmlinalg_1_1structures_1_1Matrix.html">Matrix</a>&lt;number, m - 1, n - 1&gt; <a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#ab64e1f7618b638655bdf194ea25bef97">subset</a>(std::optional&lt;size_t&gt; i, std::optional&lt;size_t&gt; j)<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l01002" name="l01002"></a><span class="lineno"> 1002</span>            <span class="keyword">static_assert</span>(m == n, <span class="stringliteral">&quot;Not a square matrix&quot;</span>);</div>
-<div class="line"><a id="l01003" name="l01003"></a><span class="lineno"> 1003</span>            <span class="keyword">static_assert</span>(m &gt; 1 &amp;&amp; n &gt; 1, <span class="stringliteral">&quot;Cannot subset&quot;</span>);</div>
-<div class="line"><a id="l01004" name="l01004"></a><span class="lineno"> 1004</span> </div>
-<div class="line"><a id="l01005" name="l01005"></a><span class="lineno"> 1005</span>            <a class="code hl_class" href="classmlinalg_1_1structures_1_1Matrix.html">Matrix</a>&lt;number, m - 1, n - 1&gt; res;</div>
-<div class="line"><a id="l01006" name="l01006"></a><span class="lineno"> 1006</span>            <span class="keywordtype">size_t</span> resRow = 0;</div>
-<div class="line"><a id="l01007" name="l01007"></a><span class="lineno"> 1007</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> k = 0; k &lt; m; ++k) {</div>
-<div class="line"><a id="l01008" name="l01008"></a><span class="lineno"> 1008</span>                <span class="keywordflow">if</span> (i.has_value() &amp;&amp; i.value() == k) <span class="keywordflow">continue</span>;  <span class="comment">// Skip the row to be removed</span></div>
-<div class="line"><a id="l01009" name="l01009"></a><span class="lineno"> 1009</span> </div>
-<div class="line"><a id="l01010" name="l01010"></a><span class="lineno"> 1010</span>                <span class="keywordtype">size_t</span> resCol = 0;</div>
-<div class="line"><a id="l01011" name="l01011"></a><span class="lineno"> 1011</span>                <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> z = 0; z &lt; n; ++z) {</div>
-<div class="line"><a id="l01012" name="l01012"></a><span class="lineno"> 1012</span>                    <span class="keywordflow">if</span> (j.has_value() &amp;&amp; j.value() == z) <span class="keywordflow">continue</span>;  <span class="comment">// Skip the column to be removed</span></div>
-<div class="line"><a id="l01013" name="l01013"></a><span class="lineno"> 1013</span> </div>
-<div class="line"><a id="l01014" name="l01014"></a><span class="lineno"> 1014</span>                    res.at(resRow).at(resCol) = this-&gt;at(k).at(z);</div>
-<div class="line"><a id="l01015" name="l01015"></a><span class="lineno"> 1015</span>                    ++resCol;</div>
-<div class="line"><a id="l01016" name="l01016"></a><span class="lineno"> 1016</span>                }</div>
-<div class="line"><a id="l01017" name="l01017"></a><span class="lineno"> 1017</span>                ++resRow;</div>
-<div class="line"><a id="l01018" name="l01018"></a><span class="lineno"> 1018</span>            }</div>
-<div class="line"><a id="l01019" name="l01019"></a><span class="lineno"> 1019</span>            <span class="keywordflow">return</span> res;</div>
-<div class="line"><a id="l01020" name="l01020"></a><span class="lineno"> 1020</span>        }</div>
+<div class="line"><a id="l00994" name="l00994"></a><span class="lineno">  994</span>            <a class="code hl_class" href="classmlinalg_1_1structures_1_1Matrix.html">Matrix</a>&lt;number, m - 1, n - 1&gt; res;</div>
+<div class="line"><a id="l00995" name="l00995"></a><span class="lineno">  995</span>            <span class="keywordtype">size_t</span> resRow = 0;</div>
+<div class="line"><a id="l00996" name="l00996"></a><span class="lineno">  996</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> k = 0; k &lt; m; ++k) {</div>
+<div class="line"><a id="l00997" name="l00997"></a><span class="lineno">  997</span>                <span class="keywordflow">if</span> (i.has_value() &amp;&amp; i.value() == k) <span class="keywordflow">continue</span>;  <span class="comment">// Skip the row to be removed</span></div>
+<div class="line"><a id="l00998" name="l00998"></a><span class="lineno">  998</span> </div>
+<div class="line"><a id="l00999" name="l00999"></a><span class="lineno">  999</span>                <span class="keywordtype">size_t</span> resCol = 0;</div>
+<div class="line"><a id="l01000" name="l01000"></a><span class="lineno"> 1000</span>                <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> z = 0; z &lt; n; ++z) {</div>
+<div class="line"><a id="l01001" name="l01001"></a><span class="lineno"> 1001</span>                    <span class="keywordflow">if</span> (j.has_value() &amp;&amp; j.value() == z) <span class="keywordflow">continue</span>;  <span class="comment">// Skip the column to be removed</span></div>
+<div class="line"><a id="l01002" name="l01002"></a><span class="lineno"> 1002</span> </div>
+<div class="line"><a id="l01003" name="l01003"></a><span class="lineno"> 1003</span>                    res.at(resRow).at(resCol) = this-&gt;at(k).at(z);</div>
+<div class="line"><a id="l01004" name="l01004"></a><span class="lineno"> 1004</span>                    ++resCol;</div>
+<div class="line"><a id="l01005" name="l01005"></a><span class="lineno"> 1005</span>                }</div>
+<div class="line"><a id="l01006" name="l01006"></a><span class="lineno"> 1006</span>                ++resRow;</div>
+<div class="line"><a id="l01007" name="l01007"></a><span class="lineno"> 1007</span>            }</div>
+<div class="line"><a id="l01008" name="l01008"></a><span class="lineno"> 1008</span>            <span class="keywordflow">return</span> res;</div>
+<div class="line"><a id="l01009" name="l01009"></a><span class="lineno"> 1009</span>        }</div>
 </div>
-<div class="line"><a id="l01021" name="l01021"></a><span class="lineno"> 1021</span> </div>
-<div class="line"><a id="l01022" name="l01022"></a><span class="lineno"> 1022</span>       <span class="keyword">private</span>:</div>
-<div class="line"><a id="l01028" name="l01028"></a><span class="lineno"> 1028</span>        number det2x2()<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l01029" name="l01029"></a><span class="lineno"> 1029</span>            <span class="keywordflow">return</span> (this-&gt;at(0).at(0) * this-&gt;at(1).at(1)) - (this-&gt;at(0).at(1) * this-&gt;at(1).at(0));</div>
-<div class="line"><a id="l01030" name="l01030"></a><span class="lineno"> 1030</span>        }</div>
-<div class="line"><a id="l01031" name="l01031"></a><span class="lineno"> 1031</span> </div>
-<div class="line"><a id="l01032" name="l01032"></a><span class="lineno"> 1032</span>        <span class="keyword">enum</span> By { ROW = 0, COL };</div>
-<div class="line"><a id="l01033" name="l01033"></a><span class="lineno"> 1033</span> </div>
-<div class="line"><a id="l01037" name="l01037"></a><span class="lineno"> 1037</span>        std::pair&lt;By, size_t&gt; pickCofactorRowOrCol()<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l01038" name="l01038"></a><span class="lineno"> 1038</span>            <span class="keywordtype">size_t</span> maxRowZeros{};</div>
-<div class="line"><a id="l01039" name="l01039"></a><span class="lineno"> 1039</span>            <span class="keywordtype">size_t</span> rowPos{};</div>
-<div class="line"><a id="l01040" name="l01040"></a><span class="lineno"> 1040</span> </div>
-<div class="line"><a id="l01041" name="l01041"></a><span class="lineno"> 1041</span>            <span class="keywordtype">size_t</span> maxColZeros{};</div>
-<div class="line"><a id="l01042" name="l01042"></a><span class="lineno"> 1042</span>            <span class="keywordtype">size_t</span> colPos{};</div>
-<div class="line"><a id="l01043" name="l01043"></a><span class="lineno"> 1043</span> </div>
-<div class="line"><a id="l01044" name="l01044"></a><span class="lineno"> 1044</span>            <span class="keywordtype">int</span> pos{};</div>
-<div class="line"><a id="l01045" name="l01045"></a><span class="lineno"> 1045</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; row : *<span class="keyword">this</span>) {</div>
-<div class="line"><a id="l01046" name="l01046"></a><span class="lineno"> 1046</span>                <span class="keyword">auto</span> count = rg::count_if(row, [](<span class="keyword">auto</span> x) { <span class="keywordflow">return</span> x == 0; });</div>
-<div class="line"><a id="l01047" name="l01047"></a><span class="lineno"> 1047</span>                <span class="keywordflow">if</span> (count &gt; maxRowZeros) {</div>
-<div class="line"><a id="l01048" name="l01048"></a><span class="lineno"> 1048</span>                    maxRowZeros = count;</div>
-<div class="line"><a id="l01049" name="l01049"></a><span class="lineno"> 1049</span>                    rowPos = pos;</div>
-<div class="line"><a id="l01050" name="l01050"></a><span class="lineno"> 1050</span>                }</div>
-<div class="line"><a id="l01051" name="l01051"></a><span class="lineno"> 1051</span>                pos++;</div>
-<div class="line"><a id="l01052" name="l01052"></a><span class="lineno"> 1052</span>            }</div>
-<div class="line"><a id="l01053" name="l01053"></a><span class="lineno"> 1053</span> </div>
-<div class="line"><a id="l01054" name="l01054"></a><span class="lineno"> 1054</span>            pos = 0;</div>
-<div class="line"><a id="l01055" name="l01055"></a><span class="lineno"> 1055</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; col : colToVectorSet()) {</div>
-<div class="line"><a id="l01056" name="l01056"></a><span class="lineno"> 1056</span>                <span class="keyword">auto</span> count = rg::count_if(col, [](<span class="keyword">auto</span> x) { <span class="keywordflow">return</span> x == 0; });</div>
-<div class="line"><a id="l01057" name="l01057"></a><span class="lineno"> 1057</span>                <span class="keywordflow">if</span> (count &gt; maxColZeros) {</div>
-<div class="line"><a id="l01058" name="l01058"></a><span class="lineno"> 1058</span>                    maxColZeros = count;</div>
-<div class="line"><a id="l01059" name="l01059"></a><span class="lineno"> 1059</span>                    colPos = pos;</div>
-<div class="line"><a id="l01060" name="l01060"></a><span class="lineno"> 1060</span>                }</div>
-<div class="line"><a id="l01061" name="l01061"></a><span class="lineno"> 1061</span>                pos++;</div>
-<div class="line"><a id="l01062" name="l01062"></a><span class="lineno"> 1062</span>            }</div>
-<div class="line"><a id="l01063" name="l01063"></a><span class="lineno"> 1063</span> </div>
-<div class="line"><a id="l01064" name="l01064"></a><span class="lineno"> 1064</span>            <span class="keywordflow">if</span> (maxColZeros &gt;= maxRowZeros)</div>
-<div class="line"><a id="l01065" name="l01065"></a><span class="lineno"> 1065</span>                <span class="keywordflow">return</span> {COL, colPos};</div>
-<div class="line"><a id="l01066" name="l01066"></a><span class="lineno"> 1066</span>            <span class="keywordflow">else</span></div>
-<div class="line"><a id="l01067" name="l01067"></a><span class="lineno"> 1067</span>                <span class="keywordflow">return</span> {ROW, rowPos};</div>
-<div class="line"><a id="l01068" name="l01068"></a><span class="lineno"> 1068</span>        }</div>
-<div class="line"><a id="l01069" name="l01069"></a><span class="lineno"> 1069</span> </div>
-<div class="line"><a id="l01077" name="l01077"></a><span class="lineno"> 1077</span>        <span class="keyword">constexpr</span> number cofactorCommon(<span class="keywordtype">size_t</span> i, <span class="keywordtype">size_t</span> j)<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l01078" name="l01078"></a><span class="lineno"> 1078</span>            number res{};</div>
-<div class="line"><a id="l01079" name="l01079"></a><span class="lineno"> 1079</span>            <span class="keyword">auto</span> a = this-&gt;at(i).<a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#ae3f61d6089f2402d9ccca780f43be781">at</a>(j);</div>
-<div class="line"><a id="l01080" name="l01080"></a><span class="lineno"> 1080</span>            <span class="keywordflow">if</span> (a == 0) <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a id="l01081" name="l01081"></a><span class="lineno"> 1081</span>            <span class="keyword">auto</span> A_ij = this-&gt;subset(i, j);</div>
-<div class="line"><a id="l01082" name="l01082"></a><span class="lineno"> 1082</span>            <span class="keyword">auto</span> C = ((int)std::pow(-1, ((i + 1) + (j + 1)))) * A_ij.det();</div>
-<div class="line"><a id="l01083" name="l01083"></a><span class="lineno"> 1083</span>            res += a * C;</div>
-<div class="line"><a id="l01084" name="l01084"></a><span class="lineno"> 1084</span>            <span class="keywordflow">return</span> res;</div>
-<div class="line"><a id="l01085" name="l01085"></a><span class="lineno"> 1085</span>        }</div>
-<div class="line"><a id="l01086" name="l01086"></a><span class="lineno"> 1086</span> </div>
-<div class="line"><a id="l01093" name="l01093"></a><span class="lineno"> 1093</span>        <span class="keyword">constexpr</span> number cofactorRow(<span class="keywordtype">size_t</span> row)<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l01094" name="l01094"></a><span class="lineno"> 1094</span>            number res{};</div>
-<div class="line"><a id="l01095" name="l01095"></a><span class="lineno"> 1095</span>            <span class="keywordtype">size_t</span> i{row};</div>
-<div class="line"><a id="l01096" name="l01096"></a><span class="lineno"> 1096</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j{0}; j &lt; n; j++) {</div>
-<div class="line"><a id="l01097" name="l01097"></a><span class="lineno"> 1097</span>                res += cofactorCommon(i, j);</div>
-<div class="line"><a id="l01098" name="l01098"></a><span class="lineno"> 1098</span>            }</div>
-<div class="line"><a id="l01099" name="l01099"></a><span class="lineno"> 1099</span>            <span class="keywordflow">return</span> res;</div>
-<div class="line"><a id="l01100" name="l01100"></a><span class="lineno"> 1100</span>        }</div>
-<div class="line"><a id="l01101" name="l01101"></a><span class="lineno"> 1101</span> </div>
-<div class="line"><a id="l01108" name="l01108"></a><span class="lineno"> 1108</span>        <span class="keyword">constexpr</span> number cofactorCol(<span class="keywordtype">size_t</span> col)<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l01109" name="l01109"></a><span class="lineno"> 1109</span>            number res{};</div>
-<div class="line"><a id="l01110" name="l01110"></a><span class="lineno"> 1110</span>            <span class="keywordtype">size_t</span> j{col};</div>
-<div class="line"><a id="l01111" name="l01111"></a><span class="lineno"> 1111</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i{0}; i &lt; n; i++) {</div>
-<div class="line"><a id="l01112" name="l01112"></a><span class="lineno"> 1112</span>                res += cofactorCommon(i, j);</div>
-<div class="line"><a id="l01113" name="l01113"></a><span class="lineno"> 1113</span>            }</div>
-<div class="line"><a id="l01114" name="l01114"></a><span class="lineno"> 1114</span>            <span class="keywordflow">return</span> res;</div>
-<div class="line"><a id="l01115" name="l01115"></a><span class="lineno"> 1115</span>        }</div>
-<div class="line"><a id="l01116" name="l01116"></a><span class="lineno"> 1116</span> </div>
-<div class="line"><a id="l01122" name="l01122"></a><span class="lineno"> 1122</span>        <span class="keyword">constexpr</span> number cofactor()<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l01123" name="l01123"></a><span class="lineno"> 1123</span>            <span class="keyword">auto</span> [by, val] = pickCofactorRowOrCol();</div>
-<div class="line"><a id="l01124" name="l01124"></a><span class="lineno"> 1124</span>            <span class="keywordflow">if</span> (by == ROW)</div>
-<div class="line"><a id="l01125" name="l01125"></a><span class="lineno"> 1125</span>                <span class="keywordflow">return</span> cofactorRow(val);</div>
-<div class="line"><a id="l01126" name="l01126"></a><span class="lineno"> 1126</span>            <span class="keywordflow">else</span></div>
-<div class="line"><a id="l01127" name="l01127"></a><span class="lineno"> 1127</span>                <span class="keywordflow">return</span> cofactorCol(val);</div>
-<div class="line"><a id="l01128" name="l01128"></a><span class="lineno"> 1128</span>        }</div>
-<div class="line"><a id="l01129" name="l01129"></a><span class="lineno"> 1129</span> </div>
-<div class="line"><a id="l01136" name="l01136"></a><span class="lineno"> 1136</span>        Vector&lt;number, m&gt; multMatByVec(<span class="keyword">const</span> Vector&lt;number, n&gt;&amp; vec)<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l01137" name="l01137"></a><span class="lineno"> 1137</span>            Vector&lt;number, m&gt; res;</div>
-<div class="line"><a id="l01138" name="l01138"></a><span class="lineno"> 1138</span>            <span class="keyword">auto</span> asCols{std::move(colToVectorSet())};</div>
-<div class="line"><a id="l01139" name="l01139"></a><span class="lineno"> 1139</span>            <span class="keywordtype">int</span> i{};</div>
-<div class="line"><a id="l01140" name="l01140"></a><span class="lineno"> 1140</span>            <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; col : asCols) {</div>
-<div class="line"><a id="l01141" name="l01141"></a><span class="lineno"> 1141</span>                <span class="keyword">const</span> <span class="keyword">auto</span>&amp; mult = vec.at(i);</div>
-<div class="line"><a id="l01142" name="l01142"></a><span class="lineno"> 1142</span>                col *= mult;</div>
-<div class="line"><a id="l01143" name="l01143"></a><span class="lineno"> 1143</span>                i++;</div>
-<div class="line"><a id="l01144" name="l01144"></a><span class="lineno"> 1144</span>            }</div>
-<div class="line"><a id="l01145" name="l01145"></a><span class="lineno"> 1145</span> </div>
-<div class="line"><a id="l01146" name="l01146"></a><span class="lineno"> 1146</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i{}; i &lt; m; i++) {</div>
-<div class="line"><a id="l01147" name="l01147"></a><span class="lineno"> 1147</span>                number sumRes{};</div>
-<div class="line"><a id="l01148" name="l01148"></a><span class="lineno"> 1148</span>                <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; col : asCols) sumRes += col.<a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#ae3f61d6089f2402d9ccca780f43be781">at</a>(i);</div>
-<div class="line"><a id="l01149" name="l01149"></a><span class="lineno"> 1149</span>                res.at(i) = sumRes;</div>
-<div class="line"><a id="l01150" name="l01150"></a><span class="lineno"> 1150</span>            }</div>
-<div class="line"><a id="l01151" name="l01151"></a><span class="lineno"> 1151</span> </div>
-<div class="line"><a id="l01152" name="l01152"></a><span class="lineno"> 1152</span>            <span class="keywordflow">return</span> res;</div>
-<div class="line"><a id="l01153" name="l01153"></a><span class="lineno"> 1153</span>        }</div>
-<div class="line"><a id="l01154" name="l01154"></a><span class="lineno"> 1154</span> </div>
-<div class="line"><a id="l01161" name="l01161"></a><span class="lineno"> 1161</span>        <span class="keyword">template</span> &lt;<span class="keywordtype">size_t</span> nOther&gt;</div>
-<div class="line"><a id="l01162" name="l01162"></a><span class="lineno"> 1162</span>        Matrix&lt;number, m, nOther&gt; multMatByDef(<span class="keyword">const</span> Matrix&lt;number, n, nOther&gt;&amp; other)<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l01163" name="l01163"></a><span class="lineno"> 1163</span>            <span class="keyword">auto</span> otherColVecSet{std::move(other.colToVectorSet())};</div>
-<div class="line"><a id="l01164" name="l01164"></a><span class="lineno"> 1164</span>            vector&lt;Vector&lt;number, m&gt;&gt; res;</div>
-<div class="line"><a id="l01165" name="l01165"></a><span class="lineno"> 1165</span>            res.reserve(nOther);</div>
-<div class="line"><a id="l01166" name="l01166"></a><span class="lineno"> 1166</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i{}; i &lt; nOther; i++) {</div>
-<div class="line"><a id="l01167" name="l01167"></a><span class="lineno"> 1167</span>                <span class="keyword">const</span> <span class="keyword">auto</span>&amp; col{otherColVecSet.at(i)};</div>
-<div class="line"><a id="l01168" name="l01168"></a><span class="lineno"> 1168</span>                <span class="keyword">auto</span> multRes = *<span class="keyword">this</span> * col;</div>
-<div class="line"><a id="l01169" name="l01169"></a><span class="lineno"> 1169</span>                res.emplace_back(multRes);</div>
-<div class="line"><a id="l01170" name="l01170"></a><span class="lineno"> 1170</span>            }</div>
-<div class="line"><a id="l01171" name="l01171"></a><span class="lineno"> 1171</span>            <span class="keywordflow">return</span> helpers::fromColVectorSet&lt;number, m, nOther&gt;(res);</div>
+<div class="line"><a id="l01010" name="l01010"></a><span class="lineno"> 1010</span> </div>
+<div class="line"><a id="l01011" name="l01011"></a><span class="lineno"> 1011</span>       <span class="keyword">private</span>:</div>
+<div class="line"><a id="l01017" name="l01017"></a><span class="lineno"> 1017</span>        number det2x2()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l01018" name="l01018"></a><span class="lineno"> 1018</span>            <span class="keywordflow">return</span> (this-&gt;at(0).at(0) * this-&gt;at(1).at(1)) - (this-&gt;at(0).at(1) * this-&gt;at(1).at(0));</div>
+<div class="line"><a id="l01019" name="l01019"></a><span class="lineno"> 1019</span>        }</div>
+<div class="line"><a id="l01020" name="l01020"></a><span class="lineno"> 1020</span> </div>
+<div class="line"><a id="l01021" name="l01021"></a><span class="lineno"> 1021</span>        <span class="keyword">enum</span> By { ROW = 0, COL };</div>
+<div class="line"><a id="l01022" name="l01022"></a><span class="lineno"> 1022</span> </div>
+<div class="line"><a id="l01026" name="l01026"></a><span class="lineno"> 1026</span>        std::pair&lt;By, size_t&gt; pickCofactorRowOrCol()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l01027" name="l01027"></a><span class="lineno"> 1027</span>            <span class="keywordtype">size_t</span> maxRowZeros{};</div>
+<div class="line"><a id="l01028" name="l01028"></a><span class="lineno"> 1028</span>            <span class="keywordtype">size_t</span> rowPos{};</div>
+<div class="line"><a id="l01029" name="l01029"></a><span class="lineno"> 1029</span> </div>
+<div class="line"><a id="l01030" name="l01030"></a><span class="lineno"> 1030</span>            <span class="keywordtype">size_t</span> maxColZeros{};</div>
+<div class="line"><a id="l01031" name="l01031"></a><span class="lineno"> 1031</span>            <span class="keywordtype">size_t</span> colPos{};</div>
+<div class="line"><a id="l01032" name="l01032"></a><span class="lineno"> 1032</span> </div>
+<div class="line"><a id="l01033" name="l01033"></a><span class="lineno"> 1033</span>            <span class="keywordtype">int</span> pos{};</div>
+<div class="line"><a id="l01034" name="l01034"></a><span class="lineno"> 1034</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; row : *<span class="keyword">this</span>) {</div>
+<div class="line"><a id="l01035" name="l01035"></a><span class="lineno"> 1035</span>                <span class="keyword">auto</span> count = rg::count_if(row, [](<span class="keyword">auto</span> x) { <span class="keywordflow">return</span> x == 0; });</div>
+<div class="line"><a id="l01036" name="l01036"></a><span class="lineno"> 1036</span>                <span class="keywordflow">if</span> (count &gt; maxRowZeros) {</div>
+<div class="line"><a id="l01037" name="l01037"></a><span class="lineno"> 1037</span>                    maxRowZeros = count;</div>
+<div class="line"><a id="l01038" name="l01038"></a><span class="lineno"> 1038</span>                    rowPos = pos;</div>
+<div class="line"><a id="l01039" name="l01039"></a><span class="lineno"> 1039</span>                }</div>
+<div class="line"><a id="l01040" name="l01040"></a><span class="lineno"> 1040</span>                pos++;</div>
+<div class="line"><a id="l01041" name="l01041"></a><span class="lineno"> 1041</span>            }</div>
+<div class="line"><a id="l01042" name="l01042"></a><span class="lineno"> 1042</span> </div>
+<div class="line"><a id="l01043" name="l01043"></a><span class="lineno"> 1043</span>            pos = 0;</div>
+<div class="line"><a id="l01044" name="l01044"></a><span class="lineno"> 1044</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; col : colToVectorSet()) {</div>
+<div class="line"><a id="l01045" name="l01045"></a><span class="lineno"> 1045</span>                <span class="keyword">auto</span> count = rg::count_if(col, [](<span class="keyword">auto</span> x) { <span class="keywordflow">return</span> x == 0; });</div>
+<div class="line"><a id="l01046" name="l01046"></a><span class="lineno"> 1046</span>                <span class="keywordflow">if</span> (count &gt; maxColZeros) {</div>
+<div class="line"><a id="l01047" name="l01047"></a><span class="lineno"> 1047</span>                    maxColZeros = count;</div>
+<div class="line"><a id="l01048" name="l01048"></a><span class="lineno"> 1048</span>                    colPos = pos;</div>
+<div class="line"><a id="l01049" name="l01049"></a><span class="lineno"> 1049</span>                }</div>
+<div class="line"><a id="l01050" name="l01050"></a><span class="lineno"> 1050</span>                pos++;</div>
+<div class="line"><a id="l01051" name="l01051"></a><span class="lineno"> 1051</span>            }</div>
+<div class="line"><a id="l01052" name="l01052"></a><span class="lineno"> 1052</span> </div>
+<div class="line"><a id="l01053" name="l01053"></a><span class="lineno"> 1053</span>            <span class="keywordflow">if</span> (maxColZeros &gt;= maxRowZeros)</div>
+<div class="line"><a id="l01054" name="l01054"></a><span class="lineno"> 1054</span>                <span class="keywordflow">return</span> {COL, colPos};</div>
+<div class="line"><a id="l01055" name="l01055"></a><span class="lineno"> 1055</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l01056" name="l01056"></a><span class="lineno"> 1056</span>                <span class="keywordflow">return</span> {ROW, rowPos};</div>
+<div class="line"><a id="l01057" name="l01057"></a><span class="lineno"> 1057</span>        }</div>
+<div class="line"><a id="l01058" name="l01058"></a><span class="lineno"> 1058</span> </div>
+<div class="line"><a id="l01066" name="l01066"></a><span class="lineno"> 1066</span>        <span class="keyword">constexpr</span> number cofactorCommon(<span class="keywordtype">size_t</span> i, <span class="keywordtype">size_t</span> j)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l01067" name="l01067"></a><span class="lineno"> 1067</span>            number res{};</div>
+<div class="line"><a id="l01068" name="l01068"></a><span class="lineno"> 1068</span>            <span class="keyword">auto</span> a = this-&gt;at(i).<a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#ae3f61d6089f2402d9ccca780f43be781">at</a>(j);</div>
+<div class="line"><a id="l01069" name="l01069"></a><span class="lineno"> 1069</span>            <span class="keywordflow">if</span> (a == 0) <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l01070" name="l01070"></a><span class="lineno"> 1070</span>            <span class="keyword">auto</span> A_ij = this-&gt;subset(i, j);</div>
+<div class="line"><a id="l01071" name="l01071"></a><span class="lineno"> 1071</span>            <span class="keyword">auto</span> C = ((int)std::pow(-1, ((i + 1) + (j + 1)))) * A_ij.det();</div>
+<div class="line"><a id="l01072" name="l01072"></a><span class="lineno"> 1072</span>            res += a * C;</div>
+<div class="line"><a id="l01073" name="l01073"></a><span class="lineno"> 1073</span>            <span class="keywordflow">return</span> res;</div>
+<div class="line"><a id="l01074" name="l01074"></a><span class="lineno"> 1074</span>        }</div>
+<div class="line"><a id="l01075" name="l01075"></a><span class="lineno"> 1075</span> </div>
+<div class="line"><a id="l01082" name="l01082"></a><span class="lineno"> 1082</span>        <span class="keyword">constexpr</span> number cofactorRow(<span class="keywordtype">size_t</span> row)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l01083" name="l01083"></a><span class="lineno"> 1083</span>            number res{};</div>
+<div class="line"><a id="l01084" name="l01084"></a><span class="lineno"> 1084</span>            <span class="keywordtype">size_t</span> i{row};</div>
+<div class="line"><a id="l01085" name="l01085"></a><span class="lineno"> 1085</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j{0}; j &lt; n; j++) {</div>
+<div class="line"><a id="l01086" name="l01086"></a><span class="lineno"> 1086</span>                res += cofactorCommon(i, j);</div>
+<div class="line"><a id="l01087" name="l01087"></a><span class="lineno"> 1087</span>            }</div>
+<div class="line"><a id="l01088" name="l01088"></a><span class="lineno"> 1088</span>            <span class="keywordflow">return</span> res;</div>
+<div class="line"><a id="l01089" name="l01089"></a><span class="lineno"> 1089</span>        }</div>
+<div class="line"><a id="l01090" name="l01090"></a><span class="lineno"> 1090</span> </div>
+<div class="line"><a id="l01097" name="l01097"></a><span class="lineno"> 1097</span>        <span class="keyword">constexpr</span> number cofactorCol(<span class="keywordtype">size_t</span> col)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l01098" name="l01098"></a><span class="lineno"> 1098</span>            number res{};</div>
+<div class="line"><a id="l01099" name="l01099"></a><span class="lineno"> 1099</span>            <span class="keywordtype">size_t</span> j{col};</div>
+<div class="line"><a id="l01100" name="l01100"></a><span class="lineno"> 1100</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i{0}; i &lt; n; i++) {</div>
+<div class="line"><a id="l01101" name="l01101"></a><span class="lineno"> 1101</span>                res += cofactorCommon(i, j);</div>
+<div class="line"><a id="l01102" name="l01102"></a><span class="lineno"> 1102</span>            }</div>
+<div class="line"><a id="l01103" name="l01103"></a><span class="lineno"> 1103</span>            <span class="keywordflow">return</span> res;</div>
+<div class="line"><a id="l01104" name="l01104"></a><span class="lineno"> 1104</span>        }</div>
+<div class="line"><a id="l01105" name="l01105"></a><span class="lineno"> 1105</span> </div>
+<div class="line"><a id="l01111" name="l01111"></a><span class="lineno"> 1111</span>        <span class="keyword">constexpr</span> number cofactor()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l01112" name="l01112"></a><span class="lineno"> 1112</span>            <span class="keyword">auto</span> [by, val] = pickCofactorRowOrCol();</div>
+<div class="line"><a id="l01113" name="l01113"></a><span class="lineno"> 1113</span>            <span class="keywordflow">if</span> (by == ROW)</div>
+<div class="line"><a id="l01114" name="l01114"></a><span class="lineno"> 1114</span>                <span class="keywordflow">return</span> cofactorRow(val);</div>
+<div class="line"><a id="l01115" name="l01115"></a><span class="lineno"> 1115</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l01116" name="l01116"></a><span class="lineno"> 1116</span>                <span class="keywordflow">return</span> cofactorCol(val);</div>
+<div class="line"><a id="l01117" name="l01117"></a><span class="lineno"> 1117</span>        }</div>
+<div class="line"><a id="l01118" name="l01118"></a><span class="lineno"> 1118</span> </div>
+<div class="line"><a id="l01125" name="l01125"></a><span class="lineno"> 1125</span>        Vector&lt;number, m&gt; multMatByVec(<span class="keyword">const</span> Vector&lt;number, n&gt;&amp; vec)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l01126" name="l01126"></a><span class="lineno"> 1126</span>            Vector&lt;number, m&gt; res;</div>
+<div class="line"><a id="l01127" name="l01127"></a><span class="lineno"> 1127</span>            <span class="keyword">auto</span> asCols{std::move(colToVectorSet())};</div>
+<div class="line"><a id="l01128" name="l01128"></a><span class="lineno"> 1128</span>            <span class="keywordtype">int</span> i{};</div>
+<div class="line"><a id="l01129" name="l01129"></a><span class="lineno"> 1129</span>            <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; col : asCols) {</div>
+<div class="line"><a id="l01130" name="l01130"></a><span class="lineno"> 1130</span>                <span class="keyword">const</span> <span class="keyword">auto</span>&amp; mult = vec.at(i);</div>
+<div class="line"><a id="l01131" name="l01131"></a><span class="lineno"> 1131</span>                col *= mult;</div>
+<div class="line"><a id="l01132" name="l01132"></a><span class="lineno"> 1132</span>                i++;</div>
+<div class="line"><a id="l01133" name="l01133"></a><span class="lineno"> 1133</span>            }</div>
+<div class="line"><a id="l01134" name="l01134"></a><span class="lineno"> 1134</span> </div>
+<div class="line"><a id="l01135" name="l01135"></a><span class="lineno"> 1135</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i{}; i &lt; m; i++) {</div>
+<div class="line"><a id="l01136" name="l01136"></a><span class="lineno"> 1136</span>                number sumRes{};</div>
+<div class="line"><a id="l01137" name="l01137"></a><span class="lineno"> 1137</span>                <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; col : asCols) sumRes += col.<a class="code hl_function" href="classmlinalg_1_1structures_1_1Matrix.html#ae3f61d6089f2402d9ccca780f43be781">at</a>(i);</div>
+<div class="line"><a id="l01138" name="l01138"></a><span class="lineno"> 1138</span>                res.at(i) = sumRes;</div>
+<div class="line"><a id="l01139" name="l01139"></a><span class="lineno"> 1139</span>            }</div>
+<div class="line"><a id="l01140" name="l01140"></a><span class="lineno"> 1140</span> </div>
+<div class="line"><a id="l01141" name="l01141"></a><span class="lineno"> 1141</span>            <span class="keywordflow">return</span> res;</div>
+<div class="line"><a id="l01142" name="l01142"></a><span class="lineno"> 1142</span>        }</div>
+<div class="line"><a id="l01143" name="l01143"></a><span class="lineno"> 1143</span> </div>
+<div class="line"><a id="l01150" name="l01150"></a><span class="lineno"> 1150</span>        <span class="keyword">template</span> &lt;<span class="keywordtype">size_t</span> nOther&gt;</div>
+<div class="line"><a id="l01151" name="l01151"></a><span class="lineno"> 1151</span>        Matrix&lt;number, m, nOther&gt; multMatByDef(<span class="keyword">const</span> Matrix&lt;number, n, nOther&gt;&amp; other)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l01152" name="l01152"></a><span class="lineno"> 1152</span>            <span class="keyword">auto</span> otherColVecSet{std::move(other.colToVectorSet())};</div>
+<div class="line"><a id="l01153" name="l01153"></a><span class="lineno"> 1153</span>            vector&lt;Vector&lt;number, m&gt;&gt; res;</div>
+<div class="line"><a id="l01154" name="l01154"></a><span class="lineno"> 1154</span>            res.reserve(nOther);</div>
+<div class="line"><a id="l01155" name="l01155"></a><span class="lineno"> 1155</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i{}; i &lt; nOther; i++) {</div>
+<div class="line"><a id="l01156" name="l01156"></a><span class="lineno"> 1156</span>                <span class="keyword">const</span> <span class="keyword">auto</span>&amp; col{otherColVecSet.at(i)};</div>
+<div class="line"><a id="l01157" name="l01157"></a><span class="lineno"> 1157</span>                <span class="keyword">auto</span> multRes = *<span class="keyword">this</span> * col;</div>
+<div class="line"><a id="l01158" name="l01158"></a><span class="lineno"> 1158</span>                res.emplace_back(multRes);</div>
+<div class="line"><a id="l01159" name="l01159"></a><span class="lineno"> 1159</span>            }</div>
+<div class="line"><a id="l01160" name="l01160"></a><span class="lineno"> 1160</span>            <span class="keywordflow">return</span> helpers::fromColVectorSet&lt;number, m, nOther&gt;(res);</div>
+<div class="line"><a id="l01161" name="l01161"></a><span class="lineno"> 1161</span>        }</div>
+<div class="line"><a id="l01162" name="l01162"></a><span class="lineno"> 1162</span> </div>
+<div class="foldopen" id="foldopen01169" data-start="{" data-end="};">
+<div class="line"><a id="l01169" name="l01169"></a><span class="lineno"><a class="line" href="classmlinalg_1_1structures_1_1Matrix.html#ad9db8919079ab4f0b3a3b4981e0d0a43"> 1169</a></span>        <span class="keyword">friend</span> <span class="keywordtype">void</span> <a class="code hl_friend" href="classmlinalg_1_1structures_1_1Matrix.html#ad9db8919079ab4f0b3a3b4981e0d0a43">swap</a>(<a class="code hl_class" href="classmlinalg_1_1structures_1_1Matrix.html">Matrix</a>&amp; first, <a class="code hl_class" href="classmlinalg_1_1structures_1_1Matrix.html">Matrix</a>&amp; second) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l01170" name="l01170"></a><span class="lineno"> 1170</span>            <span class="keyword">using </span>std::swap;</div>
+<div class="line"><a id="l01171" name="l01171"></a><span class="lineno"> 1171</span>            swap(first.matrix, second.matrix);</div>
 <div class="line"><a id="l01172" name="l01172"></a><span class="lineno"> 1172</span>        }</div>
+</div>
 <div class="line"><a id="l01173" name="l01173"></a><span class="lineno"> 1173</span> </div>
-<div class="foldopen" id="foldopen01180" data-start="{" data-end="};">
-<div class="line"><a id="l01180" name="l01180"></a><span class="lineno"><a class="line" href="classmlinalg_1_1structures_1_1Matrix.html#ad9db8919079ab4f0b3a3b4981e0d0a43"> 1180</a></span>        <span class="keyword">friend</span> <span class="keywordtype">void</span> <a class="code hl_friend" href="classmlinalg_1_1structures_1_1Matrix.html#ad9db8919079ab4f0b3a3b4981e0d0a43">swap</a>(<a class="code hl_class" href="classmlinalg_1_1structures_1_1Matrix.html">Matrix</a>&amp; first, <a class="code hl_class" href="classmlinalg_1_1structures_1_1Matrix.html">Matrix</a>&amp; second) <span class="keyword">noexcept</span> {</div>
-<div class="line"><a id="l01181" name="l01181"></a><span class="lineno"> 1181</span>            <span class="keyword">using </span>std::swap;</div>
-<div class="line"><a id="l01182" name="l01182"></a><span class="lineno"> 1182</span>            swap(first.matrix, second.matrix);</div>
-<div class="line"><a id="l01183" name="l01183"></a><span class="lineno"> 1183</span>        }</div>
+<div class="line"><a id="l01177" name="l01177"></a><span class="lineno"> 1177</span>        array&lt;Row&lt;number, n&gt;, m&gt; matrix{};</div>
+<div class="line"><a id="l01178" name="l01178"></a><span class="lineno"> 1178</span>    };</div>
 </div>
-<div class="line"><a id="l01184" name="l01184"></a><span class="lineno"> 1184</span> </div>
-<div class="line"><a id="l01188" name="l01188"></a><span class="lineno"> 1188</span>        array&lt;Row&lt;number, n&gt;, m&gt; matrix{};</div>
-<div class="line"><a id="l01189" name="l01189"></a><span class="lineno"> 1189</span>    };</div>
-</div>
-<div class="line"><a id="l01190" name="l01190"></a><span class="lineno"> 1190</span> </div>
-<div class="line"><a id="l01191" name="l01191"></a><span class="lineno"> 1191</span>    <span class="comment">// Deduction Guide</span></div>
-<div class="line"><a id="l01192" name="l01192"></a><span class="lineno"> 1192</span>    <span class="comment">// template &lt;typename T, typename... Rows&gt;</span></div>
-<div class="line"><a id="l01193" name="l01193"></a><span class="lineno"> 1193</span>    <span class="comment">// Matrix(T, Rows...)</span></div>
-<div class="line"><a id="l01194" name="l01194"></a><span class="lineno"> 1194</span>    <span class="comment">//     -&gt; Matrix&lt;T, sizeof...(Rows), std::tuple_size_v&lt;std::decay_t&lt;decltype(std::get&lt;0&gt;(std::tuple&lt;Rows...&gt;()))&gt;&gt;&gt;;</span></div>
-<div class="line"><a id="l01195" name="l01195"></a><span class="lineno"> 1195</span>    <span class="comment">//</span></div>
-<div class="line"><a id="l01196" name="l01196"></a><span class="lineno"> 1196</span>    <span class="comment">// template &lt;typename T, size_t Rows, size_t Cols&gt;</span></div>
-<div class="line"><a id="l01197" name="l01197"></a><span class="lineno"> 1197</span>    <span class="comment">// Matrix(const std::array&lt;std::array&lt;T, Cols&gt;, Rows&gt;&amp;) -&gt; Matrix&lt;T, Rows, Cols&gt;;</span></div>
-<div class="line"><a id="l01198" name="l01198"></a><span class="lineno"> 1198</span> </div>
-<div class="line"><a id="l01199" name="l01199"></a><span class="lineno"> 1199</span>    <span class="comment">// Alias template for LinearSystem</span></div>
-<div class="line"><a id="l01200" name="l01200"></a><span class="lineno"> 1200</span> </div>
-<div class="line"><a id="l01201" name="l01201"></a><span class="lineno"> 1201</span>    <span class="comment">// template &lt;Number number, size_t n&gt;</span></div>
-<div class="line"><a id="l01202" name="l01202"></a><span class="lineno"> 1202</span>    <span class="comment">// Vector(std::array&lt;number, n&gt;) -&gt; Vector&lt;number, n&gt;;</span></div>
-<div class="line"><a id="l01203" name="l01203"></a><span class="lineno"> 1203</span> </div>
-<div class="line"><a id="l01204" name="l01204"></a><span class="lineno"> 1204</span>    <span class="keyword">template</span> &lt;Number number, <span class="keywordtype">size_t</span> m, <span class="keywordtype">size_t</span> n, <span class="keywordtype">size_t</span> nOther&gt;</div>
-<div class="line"><a id="l01205" name="l01205"></a><span class="lineno"> 1205</span>    Matrix&lt;number, m, nOther&gt; operator*(Matrix&lt;number, m, n&gt; lhs, Matrix&lt;number, n, nOther&gt; rhs) {</div>
-<div class="line"><a id="l01206" name="l01206"></a><span class="lineno"> 1206</span>        <span class="keywordflow">return</span> lhs * rhs;</div>
-<div class="line"><a id="l01207" name="l01207"></a><span class="lineno"> 1207</span>    }</div>
-<div class="line"><a id="l01208" name="l01208"></a><span class="lineno"> 1208</span> </div>
-<div class="line"><a id="l01209" name="l01209"></a><span class="lineno"> 1209</span>    <span class="keyword">template</span> &lt;Number number, <span class="keywordtype">size_t</span> m, <span class="keywordtype">size_t</span> n, <span class="keywordtype">size_t</span> nOther&gt;</div>
-<div class="line"><a id="l01210" name="l01210"></a><span class="lineno"> 1210</span>    TransposeVariant&lt;number, m, nOther&gt; operator*(TransposeVariant&lt;number, m, n&gt; lhs, Matrix&lt;number, n, nOther&gt; rhs) {</div>
-<div class="line"><a id="l01211" name="l01211"></a><span class="lineno"> 1211</span>        <span class="keywordflow">if</span> (std::holds_alternative&lt;Vector&lt;number, m&gt;&gt;(lhs)) {</div>
-<div class="line"><a id="l01212" name="l01212"></a><span class="lineno"> 1212</span>            <span class="keyword">auto</span> vec = std::get&lt;Vector&lt;number, m&gt;&gt;(lhs);</div>
-<div class="line"><a id="l01213" name="l01213"></a><span class="lineno"> 1213</span>            <span class="keywordflow">return</span> vec * rhs;</div>
-<div class="line"><a id="l01214" name="l01214"></a><span class="lineno"> 1214</span>        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l01215" name="l01215"></a><span class="lineno"> 1215</span>            <span class="keyword">auto</span> mat = std::get&lt;Matrix&lt;number, m, n&gt;&gt;(lhs);</div>
-<div class="line"><a id="l01216" name="l01216"></a><span class="lineno"> 1216</span>            <span class="keywordflow">return</span> mat * rhs;</div>
-<div class="line"><a id="l01217" name="l01217"></a><span class="lineno"> 1217</span>        }</div>
-<div class="line"><a id="l01218" name="l01218"></a><span class="lineno"> 1218</span>    }</div>
-<div class="line"><a id="l01219" name="l01219"></a><span class="lineno"> 1219</span> </div>
-<div class="line"><a id="l01220" name="l01220"></a><span class="lineno"> 1220</span>    <span class="keyword">template</span> &lt;Number number, <span class="keywordtype">size_t</span> m, <span class="keywordtype">size_t</span> n&gt;</div>
-<div class="line"><a id="l01221" name="l01221"></a><span class="lineno"> 1221</span>    Matrix&lt;number, m, n&gt; operator*(<span class="keyword">const</span> number&amp; scalar, Matrix&lt;number, m, n&gt; rhs) {</div>
-<div class="line"><a id="l01222" name="l01222"></a><span class="lineno"> 1222</span>        <span class="keywordflow">return</span> rhs * scalar;</div>
-<div class="line"><a id="l01223" name="l01223"></a><span class="lineno"> 1223</span>    }</div>
-<div class="line"><a id="l01224" name="l01224"></a><span class="lineno"> 1224</span> </div>
-<div class="line"><a id="l01225" name="l01225"></a><span class="lineno"> 1225</span>    <span class="keyword">template</span> &lt;Number number, <span class="keywordtype">size_t</span> m, <span class="keywordtype">size_t</span> n&gt;</div>
-<div class="line"><a id="l01226" name="l01226"></a><span class="lineno"> 1226</span>    Matrix&lt;number, m, n&gt; operator*(Vector&lt;number, n&gt; vec, Matrix&lt;number, m, n&gt; rhs) {</div>
-<div class="line"><a id="l01227" name="l01227"></a><span class="lineno"> 1227</span>        Matrix&lt;number, m, n&gt; res;</div>
-<div class="line"><a id="l01228" name="l01228"></a><span class="lineno"> 1228</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i{}; i &lt; n; i++) {</div>
-<div class="line"><a id="l01229" name="l01229"></a><span class="lineno"> 1229</span>            <span class="keyword">const</span> <span class="keyword">auto</span>&amp; mult = vec.at(i);</div>
-<div class="line"><a id="l01230" name="l01230"></a><span class="lineno"> 1230</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j{}; j &lt; m; j++) res.at(j).at(i) = mult * rhs.matrix.at(j).at(i);</div>
-<div class="line"><a id="l01231" name="l01231"></a><span class="lineno"> 1231</span>        }</div>
-<div class="line"><a id="l01232" name="l01232"></a><span class="lineno"> 1232</span>        <span class="keywordflow">return</span> res;</div>
-<div class="line"><a id="l01233" name="l01233"></a><span class="lineno"> 1233</span>    }</div>
-<div class="line"><a id="l01234" name="l01234"></a><span class="lineno"> 1234</span> </div>
-<div class="line"><a id="l01235" name="l01235"></a><span class="lineno"> 1235</span>}  <span class="comment">// namespace mlinalg::structures</span></div>
+<div class="line"><a id="l01179" name="l01179"></a><span class="lineno"> 1179</span> </div>
+<div class="line"><a id="l01180" name="l01180"></a><span class="lineno"> 1180</span>    <span class="comment">// Vector(std::array&lt;number, n&gt;) -&gt; Vector&lt;number, n&gt;;</span></div>
+<div class="line"><a id="l01181" name="l01181"></a><span class="lineno"> 1181</span> </div>
+<div class="line"><a id="l01182" name="l01182"></a><span class="lineno"> 1182</span>    <span class="keyword">template</span> &lt;Number number, <span class="keywordtype">size_t</span> m, <span class="keywordtype">size_t</span> n, <span class="keywordtype">size_t</span> nOther&gt;</div>
+<div class="line"><a id="l01183" name="l01183"></a><span class="lineno"> 1183</span>    Matrix&lt;number, m, nOther&gt; operator*(Matrix&lt;number, m, n&gt; lhs, Matrix&lt;number, n, nOther&gt; rhs) {</div>
+<div class="line"><a id="l01184" name="l01184"></a><span class="lineno"> 1184</span>        <span class="keywordflow">return</span> lhs * rhs;</div>
+<div class="line"><a id="l01185" name="l01185"></a><span class="lineno"> 1185</span>    }</div>
+<div class="line"><a id="l01186" name="l01186"></a><span class="lineno"> 1186</span> </div>
+<div class="line"><a id="l01187" name="l01187"></a><span class="lineno"> 1187</span>    <span class="keyword">template</span> &lt;Number number, <span class="keywordtype">size_t</span> m, <span class="keywordtype">size_t</span> n, <span class="keywordtype">size_t</span> nOther&gt;</div>
+<div class="line"><a id="l01188" name="l01188"></a><span class="lineno"> 1188</span>    TransposeVariant&lt;number, m, nOther&gt; operator*(TransposeVariant&lt;number, m, n&gt; lhs, Matrix&lt;number, n, nOther&gt; rhs) {</div>
+<div class="line"><a id="l01189" name="l01189"></a><span class="lineno"> 1189</span>        <span class="keywordflow">if</span> (std::holds_alternative&lt;Vector&lt;number, m&gt;&gt;(lhs)) {</div>
+<div class="line"><a id="l01190" name="l01190"></a><span class="lineno"> 1190</span>            <span class="keyword">auto</span> vec = std::get&lt;Vector&lt;number, m&gt;&gt;(lhs);</div>
+<div class="line"><a id="l01191" name="l01191"></a><span class="lineno"> 1191</span>            <span class="keywordflow">return</span> vec * rhs;</div>
+<div class="line"><a id="l01192" name="l01192"></a><span class="lineno"> 1192</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l01193" name="l01193"></a><span class="lineno"> 1193</span>            <span class="keyword">auto</span> mat = std::get&lt;Matrix&lt;number, m, n&gt;&gt;(lhs);</div>
+<div class="line"><a id="l01194" name="l01194"></a><span class="lineno"> 1194</span>            <span class="keywordflow">return</span> mat * rhs;</div>
+<div class="line"><a id="l01195" name="l01195"></a><span class="lineno"> 1195</span>        }</div>
+<div class="line"><a id="l01196" name="l01196"></a><span class="lineno"> 1196</span>    }</div>
+<div class="line"><a id="l01197" name="l01197"></a><span class="lineno"> 1197</span> </div>
+<div class="line"><a id="l01198" name="l01198"></a><span class="lineno"> 1198</span>    <span class="keyword">template</span> &lt;Number number, <span class="keywordtype">size_t</span> m, <span class="keywordtype">size_t</span> n&gt;</div>
+<div class="line"><a id="l01199" name="l01199"></a><span class="lineno"> 1199</span>    Matrix&lt;number, m, n&gt; operator*(<span class="keyword">const</span> number&amp; scalar, Matrix&lt;number, m, n&gt; rhs) {</div>
+<div class="line"><a id="l01200" name="l01200"></a><span class="lineno"> 1200</span>        <span class="keywordflow">return</span> rhs * scalar;</div>
+<div class="line"><a id="l01201" name="l01201"></a><span class="lineno"> 1201</span>    }</div>
+<div class="line"><a id="l01202" name="l01202"></a><span class="lineno"> 1202</span> </div>
+<div class="line"><a id="l01203" name="l01203"></a><span class="lineno"> 1203</span>    <span class="keyword">template</span> &lt;Number number, <span class="keywordtype">size_t</span> m, <span class="keywordtype">size_t</span> n&gt;</div>
+<div class="line"><a id="l01204" name="l01204"></a><span class="lineno"> 1204</span>    Matrix&lt;number, m, n&gt; operator*(Vector&lt;number, n&gt; vec, Matrix&lt;number, m, n&gt; rhs) {</div>
+<div class="line"><a id="l01205" name="l01205"></a><span class="lineno"> 1205</span>        Matrix&lt;number, m, n&gt; res;</div>
+<div class="line"><a id="l01206" name="l01206"></a><span class="lineno"> 1206</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i{}; i &lt; n; i++) {</div>
+<div class="line"><a id="l01207" name="l01207"></a><span class="lineno"> 1207</span>            <span class="keyword">const</span> <span class="keyword">auto</span>&amp; mult = vec.at(i);</div>
+<div class="line"><a id="l01208" name="l01208"></a><span class="lineno"> 1208</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j{}; j &lt; m; j++) res.at(j).at(i) = mult * rhs.matrix.at(j).at(i);</div>
+<div class="line"><a id="l01209" name="l01209"></a><span class="lineno"> 1209</span>        }</div>
+<div class="line"><a id="l01210" name="l01210"></a><span class="lineno"> 1210</span>        <span class="keywordflow">return</span> res;</div>
+<div class="line"><a id="l01211" name="l01211"></a><span class="lineno"> 1211</span>    }</div>
+<div class="line"><a id="l01212" name="l01212"></a><span class="lineno"> 1212</span> </div>
+<div class="line"><a id="l01213" name="l01213"></a><span class="lineno"> 1213</span>}  <span class="comment">// namespace mlinalg::structures</span></div>
+<div class="ttc" id="aStructures_8hpp_html_a316b01057d99121eb7ee120ad774adcf"><div class="ttname"><a href="Structures_8hpp.html#a316b01057d99121eb7ee120ad774adcf">mlinalg::structures::helpers::extractVectorFromTranspose</a></div><div class="ttdeci">Vector&lt; num, m &gt; extractVectorFromTranspose(const TransposeVariant&lt; num, m, n &gt; T)</div><div class="ttdoc">Extract a vector from a TransposeVariant.</div><div class="ttdef"><b>Definition</b> Structures.hpp:110</div></div>
 <div class="ttc" id="aStructures_8hpp_html_a33bf53b6584f67cfd235fdcec961e330"><div class="ttname"><a href="Structures_8hpp.html#a33bf53b6584f67cfd235fdcec961e330">mlinalg::structures::helpers::fromRowVectorSet</a></div><div class="ttdeci">Matrix&lt; num, m, n &gt; fromRowVectorSet(const vector&lt; Vector&lt; num, n &gt; &gt; &amp;vecSet)</div><div class="ttdoc">Generate a matrix from a vector of row vectors.</div><div class="ttdef"><b>Definition</b> Structures.hpp:84</div></div>
 <div class="ttc" id="aStructures_8hpp_html_a9db1e022884032860a0840a8f195b2b6"><div class="ttname"><a href="Structures_8hpp.html#a9db1e022884032860a0840a8f195b2b6">mlinalg::structures::TransposeVariant</a></div><div class="ttdeci">std::variant&lt; Vector&lt; number, m &gt;, Matrix&lt; number, n, m &gt; &gt; TransposeVariant</div><div class="ttdoc">Type alias for a variant of a Vector and a Matrix.</div><div class="ttdef"><b>Definition</b> Structures.hpp:52</div></div>
 <div class="ttc" id="aStructures_8hpp_html_adf033f74c4814b668395fd678c5f5d19"><div class="ttname"><a href="Structures_8hpp.html#adf033f74c4814b668395fd678c5f5d19">mlinalg::structures::helpers::extractMatrixFromTranspose</a></div><div class="ttdeci">Matrix&lt; num, n, m &gt; extractMatrixFromTranspose(const TransposeVariant&lt; num, m, n &gt; T)</div><div class="ttdoc">Extract a matrix from a TransposeVariant.</div><div class="ttdef"><b>Definition</b> Structures.hpp:99</div></div>
 <div class="ttc" id="aStructures_8hpp_html_ae874de0762872176dc72ff843713d36b"><div class="ttname"><a href="Structures_8hpp.html#ae874de0762872176dc72ff843713d36b">mlinalg::structures::helpers::fromColVectorSet</a></div><div class="ttdeci">Matrix&lt; num, m, n &gt; fromColVectorSet(const vector&lt; Vector&lt; num, m &gt; &gt; &amp;vecSet)</div><div class="ttdoc">Generate a matrix from a vector of column vectors.</div><div class="ttdef"><b>Definition</b> Structures.hpp:66</div></div>
 <div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html">mlinalg::structures::Matrix</a></div><div class="ttdoc">Matrix class for representing NxM matrices.</div><div class="ttdef"><b>Definition</b> Structures.hpp:576</div></div>
-<div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_a059ba6035c685cf7d573a72b7a8be601"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#a059ba6035c685cf7d573a72b7a8be601">mlinalg::structures::Matrix::end</a></div><div class="ttdeci">constexpr auto end() const</div><div class="ttdoc">End iterator for the matrix.</div><div class="ttdef"><b>Definition</b> Structures.hpp:901</div></div>
-<div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_a0ef35a6063c76c1a498e96609490d547"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#a0ef35a6063c76c1a498e96609490d547">mlinalg::structures::Matrix::det</a></div><div class="ttdeci">number det() const</div><div class="ttdoc">Determinant of the matrix.</div><div class="ttdef"><b>Definition</b> Structures.hpp:986</div></div>
-<div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_a1791860a24eb83f7e36f9d31e562d995"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#a1791860a24eb83f7e36f9d31e562d995">mlinalg::structures::Matrix::augment</a></div><div class="ttdeci">Matrix&lt; number, m, n+1 &gt; augment(const Vector&lt; number, m &gt; &amp;other) const</div><div class="ttdoc">Augment the matrix with a vector.</div><div class="ttdef"><b>Definition</b> Structures.hpp:967</div></div>
-<div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_a27c88384ec14a6e8463935222e2ec4b7"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#a27c88384ec14a6e8463935222e2ec4b7">mlinalg::structures::Matrix::augment</a></div><div class="ttdeci">Matrix&lt; number, m, nN+n &gt; augment(const Matrix&lt; number, m, nN &gt; &amp;other) const</div><div class="ttdoc">Augment the matrix with another matrix.</div><div class="ttdef"><b>Definition</b> Structures.hpp:945</div></div>
+<div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_a059ba6035c685cf7d573a72b7a8be601"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#a059ba6035c685cf7d573a72b7a8be601">mlinalg::structures::Matrix::end</a></div><div class="ttdeci">constexpr auto end() const</div><div class="ttdoc">End iterator for the matrix.</div><div class="ttdef"><b>Definition</b> Structures.hpp:890</div></div>
+<div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_a0ef35a6063c76c1a498e96609490d547"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#a0ef35a6063c76c1a498e96609490d547">mlinalg::structures::Matrix::det</a></div><div class="ttdeci">number det() const</div><div class="ttdoc">Determinant of the matrix.</div><div class="ttdef"><b>Definition</b> Structures.hpp:975</div></div>
+<div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_a1791860a24eb83f7e36f9d31e562d995"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#a1791860a24eb83f7e36f9d31e562d995">mlinalg::structures::Matrix::augment</a></div><div class="ttdeci">Matrix&lt; number, m, n+1 &gt; augment(const Vector&lt; number, m &gt; &amp;other) const</div><div class="ttdoc">Augment the matrix with a vector.</div><div class="ttdef"><b>Definition</b> Structures.hpp:956</div></div>
+<div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_a27c88384ec14a6e8463935222e2ec4b7"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#a27c88384ec14a6e8463935222e2ec4b7">mlinalg::structures::Matrix::augment</a></div><div class="ttdeci">Matrix&lt; number, m, nN+n &gt; augment(const Matrix&lt; number, m, nN &gt; &amp;other) const</div><div class="ttdoc">Augment the matrix with another matrix.</div><div class="ttdef"><b>Definition</b> Structures.hpp:934</div></div>
 <div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_a2bb49ec9c8239be191a592c72bba92ff"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#a2bb49ec9c8239be191a592c72bba92ff">mlinalg::structures::Matrix::operator=</a></div><div class="ttdeci">Matrix &amp; operator=(Matrix &amp;&amp;other) noexcept</div><div class="ttdoc">Move assignment operator.</div><div class="ttdef"><b>Definition</b> Structures.hpp:646</div></div>
 <div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_a460ba733b58f7b40e3bfdb1503971fbf"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#a460ba733b58f7b40e3bfdb1503971fbf">mlinalg::structures::Matrix::operator*</a></div><div class="ttdeci">Matrix operator*(const number &amp;scalar) const</div><div class="ttdoc">Matrix multiplication by a scalar.</div><div class="ttdef"><b>Definition</b> Structures.hpp:687</div></div>
 <div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_a60b42965a00d4ad587da9a29adc9669d"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#a60b42965a00d4ad587da9a29adc9669d">mlinalg::structures::Matrix::at</a></div><div class="ttdeci">number &amp; at(size_t i, size_t j)</div><div class="ttdoc">Access the element at the ith row and jth column.</div><div class="ttdef"><b>Definition</b> Structures.hpp:601</div></div>
@@ -931,29 +914,28 @@ $(function(){initNavTree('Structures_8hpp_source.html',''); initResizable(true);
 <div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_a74d1a220332a9dc5babccb3e593101a6"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#a74d1a220332a9dc5babccb3e593101a6">mlinalg::structures::Matrix::T</a></div><div class="ttdeci">TransposeVariant&lt; number, m, n &gt; T() const</div><div class="ttdoc">Transpose a mxn matrix to a nxm matrix.</div><div class="ttdef"><b>Definition</b> Structures.hpp:842</div></div>
 <div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_a7af365dc40d0fb9f5c51d6d3b76aa615"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#a7af365dc40d0fb9f5c51d6d3b76aa615">mlinalg::structures::Matrix::operator-</a></div><div class="ttdeci">Matrix operator-(const Matrix&lt; number, m, n &gt; &amp;other) const</div><div class="ttdoc">Matrix subtraction.</div><div class="ttdef"><b>Definition</b> Structures.hpp:727</div></div>
 <div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_a7b458f404aaff1b2bb1cc79626945836"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#a7b458f404aaff1b2bb1cc79626945836">mlinalg::structures::Matrix::~Matrix</a></div><div class="ttdeci">~Matrix()=default</div><div class="ttdoc">Default destructor.</div></div>
-<div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_a7d6f31eba3cd312d5fcd7b7e4cc23bdf"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#a7d6f31eba3cd312d5fcd7b7e4cc23bdf">mlinalg::structures::Matrix::begin</a></div><div class="ttdeci">constexpr auto begin() const</div><div class="ttdoc">Begin iterator for the matrix.</div><div class="ttdef"><b>Definition</b> Structures.hpp:894</div></div>
+<div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_a7d6f31eba3cd312d5fcd7b7e4cc23bdf"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#a7d6f31eba3cd312d5fcd7b7e4cc23bdf">mlinalg::structures::Matrix::begin</a></div><div class="ttdeci">constexpr auto begin() const</div><div class="ttdoc">Begin iterator for the matrix.</div><div class="ttdef"><b>Definition</b> Structures.hpp:883</div></div>
 <div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_a7d7791ad85a7d92cf558dad2cabaae13"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#a7d7791ad85a7d92cf558dad2cabaae13">mlinalg::structures::Matrix::operator*</a></div><div class="ttdeci">Matrix&lt; number, m, nOther &gt; operator*(const Matrix&lt; number, n, nOther &gt; &amp;other) const</div><div class="ttdoc">Matrix multiplication by a matrix.</div><div class="ttdef"><b>Definition</b> Structures.hpp:759</div></div>
 <div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_a869c094118a3a13f2d5f4b361ad20a00"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#a869c094118a3a13f2d5f4b361ad20a00">mlinalg::structures::Matrix::Matrix</a></div><div class="ttdeci">Matrix(Matrix &amp;&amp;other) noexcept</div><div class="ttdoc">Move construct a new Matrix object.</div><div class="ttdef"><b>Definition</b> Structures.hpp:626</div></div>
 <div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_a8c26c2d8101f0dee0ef59db8de66bae0"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#a8c26c2d8101f0dee0ef59db8de66bae0">mlinalg::structures::Matrix::operator*</a></div><div class="ttdeci">Vector&lt; number, m &gt; operator*(const Vector&lt; number, n &gt; &amp;vec) const</div><div class="ttdoc">Matrix multiplication by a vector.</div><div class="ttdef"><b>Definition</b> Structures.hpp:750</div></div>
 <div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_a95fd4a81d29985b7cd81c84cb0f92b1a"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#a95fd4a81d29985b7cd81c84cb0f92b1a">mlinalg::structures::Matrix::operator+</a></div><div class="ttdeci">Matrix operator+(const Matrix&lt; number, m, n &gt; &amp;other) const</div><div class="ttdoc">Matrix addition.</div><div class="ttdef"><b>Definition</b> Structures.hpp:715</div></div>
-<div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_a9d3d521c64c0be953663feb88068c78c"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#a9d3d521c64c0be953663feb88068c78c">mlinalg::structures::Matrix::extractMatrixFromTranspose</a></div><div class="ttdeci">static Matrix&lt; num, nN, mN &gt; extractMatrixFromTranspose(const TransposeVariant&lt; num, mN, nN &gt; &amp;T)</div><div class="ttdoc">Extract a matrix object from a TransposeVariant.</div><div class="ttdef"><b>Definition</b> Structures.hpp:876</div></div>
 <div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_aa726103754e60a5d28a05778f73c3f02"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#aa726103754e60a5d28a05778f73c3f02">mlinalg::structures::Matrix::at</a></div><div class="ttdeci">Row&lt; number, n &gt; at(size_t i) const</div><div class="ttdoc">Const access the ith row of the matrix.</div><div class="ttdef"><b>Definition</b> Structures.hpp:592</div></div>
-<div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_aa98f554e3cb6b7f6e02c706358d5084b"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#aa98f554e3cb6b7f6e02c706358d5084b">mlinalg::structures::Matrix::rbegin</a></div><div class="ttdeci">constexpr auto rbegin()</div><div class="ttdoc">Const reverse begin iterator for the matrix.</div><div class="ttdef"><b>Definition</b> Structures.hpp:929</div></div>
+<div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_aa98f554e3cb6b7f6e02c706358d5084b"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#aa98f554e3cb6b7f6e02c706358d5084b">mlinalg::structures::Matrix::rbegin</a></div><div class="ttdeci">constexpr auto rbegin()</div><div class="ttdoc">Const reverse begin iterator for the matrix.</div><div class="ttdef"><b>Definition</b> Structures.hpp:918</div></div>
 <div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_aab739ceb51d07a1aa8b2640e0a96274e"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#aab739ceb51d07a1aa8b2640e0a96274e">mlinalg::structures::Matrix::numCols</a></div><div class="ttdeci">size_t numCols() const</div><div class="ttdoc">Number of columns in the matrix.</div><div class="ttdef"><b>Definition</b> Structures.hpp:791</div></div>
-<div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_ab64e1f7618b638655bdf194ea25bef97"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#ab64e1f7618b638655bdf194ea25bef97">mlinalg::structures::Matrix::subset</a></div><div class="ttdeci">Matrix&lt; number, m - 1, n - 1 &gt; subset(std::optional&lt; size_t &gt; i, std::optional&lt; size_t &gt; j) const</div><div class="ttdoc">Subset the matrix by removing a row and a column.</div><div class="ttdef"><b>Definition</b> Structures.hpp:1001</div></div>
-<div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_ab922ccdace0194bf94c8d0ca18a0a947"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#ab922ccdace0194bf94c8d0ca18a0a947">mlinalg::structures::Matrix::back</a></div><div class="ttdeci">constexpr auto back()</div><div class="ttdoc">Return the last row of the matrix.</div><div class="ttdef"><b>Definition</b> Structures.hpp:922</div></div>
+<div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_ab64e1f7618b638655bdf194ea25bef97"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#ab64e1f7618b638655bdf194ea25bef97">mlinalg::structures::Matrix::subset</a></div><div class="ttdeci">Matrix&lt; number, m - 1, n - 1 &gt; subset(std::optional&lt; size_t &gt; i, std::optional&lt; size_t &gt; j) const</div><div class="ttdoc">Subset the matrix by removing a row and a column.</div><div class="ttdef"><b>Definition</b> Structures.hpp:990</div></div>
+<div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_ab922ccdace0194bf94c8d0ca18a0a947"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#ab922ccdace0194bf94c8d0ca18a0a947">mlinalg::structures::Matrix::back</a></div><div class="ttdeci">constexpr auto back()</div><div class="ttdoc">Return the last row of the matrix.</div><div class="ttdef"><b>Definition</b> Structures.hpp:911</div></div>
 <div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_ab97e35d98329e312dacb2018cca8e32b"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#ab97e35d98329e312dacb2018cca8e32b">mlinalg::structures::Matrix::Matrix</a></div><div class="ttdeci">Matrix(const Matrix &amp;other)</div><div class="ttdoc">Copy construct a new Matrix object.</div><div class="ttdef"><b>Definition</b> Structures.hpp:619</div></div>
 <div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_ab9df2076840133b70a8583680259d843"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#ab9df2076840133b70a8583680259d843">mlinalg::structures::Matrix::rowToVectorSet</a></div><div class="ttdeci">vector&lt; Vector&lt; number, n &gt; &gt; rowToVectorSet() const</div><div class="ttdoc">Convert the rows of the matrix to a vector of row vectors.</div><div class="ttdef"><b>Definition</b> Structures.hpp:674</div></div>
 <div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_abadfb2200b0ebb7e68ab2601695c8373"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#abadfb2200b0ebb7e68ab2601695c8373">mlinalg::structures::Matrix::operator/</a></div><div class="ttdeci">Matrix operator/(const number &amp;scalar) const</div><div class="ttdoc">Matrix division by a scalar.</div><div class="ttdef"><b>Definition</b> Structures.hpp:702</div></div>
 <div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_ac8922afdff10899e152cf01634aa5082"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#ac8922afdff10899e152cf01634aa5082">mlinalg::structures::Matrix::operator=</a></div><div class="ttdeci">Matrix &amp; operator=(const Matrix &amp;other)</div><div class="ttdoc">Copy assignment operator.</div><div class="ttdef"><b>Definition</b> Structures.hpp:634</div></div>
-<div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_ad9db8919079ab4f0b3a3b4981e0d0a43"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#ad9db8919079ab4f0b3a3b4981e0d0a43">mlinalg::structures::Matrix::swap</a></div><div class="ttdeci">friend void swap(Matrix &amp;first, Matrix &amp;second) noexcept</div><div class="ttdoc">Swap the contents of two matrices for copy swap idiom.</div><div class="ttdef"><b>Definition</b> Structures.hpp:1180</div></div>
+<div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_ad9db8919079ab4f0b3a3b4981e0d0a43"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#ad9db8919079ab4f0b3a3b4981e0d0a43">mlinalg::structures::Matrix::swap</a></div><div class="ttdeci">friend void swap(Matrix &amp;first, Matrix &amp;second) noexcept</div><div class="ttdoc">Swap the contents of two matrices for copy swap idiom.</div><div class="ttdef"><b>Definition</b> Structures.hpp:1169</div></div>
 <div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_adf91eb32796c53d43f2451e143f047b2"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#adf91eb32796c53d43f2451e143f047b2">mlinalg::structures::Matrix::numRows</a></div><div class="ttdeci">size_t numRows() const</div><div class="ttdoc">Number of rows in the matrix.</div><div class="ttdef"><b>Definition</b> Structures.hpp:784</div></div>
 <div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_ae3f61d6089f2402d9ccca780f43be781"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#ae3f61d6089f2402d9ccca780f43be781">mlinalg::structures::Matrix::at</a></div><div class="ttdeci">Row&lt; number, n &gt; &amp; at(size_t i)</div><div class="ttdoc">Access the ith row of the matrix.</div><div class="ttdef"><b>Definition</b> Structures.hpp:584</div></div>
 <div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_ae58e6d8f53d1a6112c8f7be05f49de9c"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#ae58e6d8f53d1a6112c8f7be05f49de9c">mlinalg::structures::Matrix::operator&lt;=&gt;</a></div><div class="ttdeci">auto operator&lt;=&gt;(const Matrix &amp;other) const =default</div><div class="ttdoc">Spaceship operator implementing the comparison operators.</div></div>
-<div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_af5f06cba8d909a5974268380f61b6798"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#af5f06cba8d909a5974268380f61b6798">mlinalg::structures::Matrix::cbegin</a></div><div class="ttdeci">constexpr auto cbegin() const</div><div class="ttdoc">Const begin iterator for the matrix.</div><div class="ttdef"><b>Definition</b> Structures.hpp:908</div></div>
+<div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_af5f06cba8d909a5974268380f61b6798"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#af5f06cba8d909a5974268380f61b6798">mlinalg::structures::Matrix::cbegin</a></div><div class="ttdeci">constexpr auto cbegin() const</div><div class="ttdoc">Const begin iterator for the matrix.</div><div class="ttdef"><b>Definition</b> Structures.hpp:897</div></div>
 <div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_afbd5fd29b4043aa95c80b35ff14f6d7d"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#afbd5fd29b4043aa95c80b35ff14f6d7d">mlinalg::structures::Matrix::colToVectorSet</a></div><div class="ttdeci">vector&lt; Vector&lt; number, m &gt; &gt; colToVectorSet() const</div><div class="ttdoc">Convert the columns of the matrix to a vector of column vectors.</div><div class="ttdef"><b>Definition</b> Structures.hpp:656</div></div>
-<div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_afc263efe08f53863aa03c3cfbf2d5874"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#afc263efe08f53863aa03c3cfbf2d5874">mlinalg::structures::Matrix::rend</a></div><div class="ttdeci">constexpr auto rend()</div><div class="ttdoc">Const reverse end iterator for the matrix.</div><div class="ttdef"><b>Definition</b> Structures.hpp:936</div></div>
-<div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_affae5f8593216ba91b56b9ff82b4c93d"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#affae5f8593216ba91b56b9ff82b4c93d">mlinalg::structures::Matrix::cend</a></div><div class="ttdeci">constexpr auto cend() const</div><div class="ttdoc">The const end iterator for the matrix.</div><div class="ttdef"><b>Definition</b> Structures.hpp:915</div></div>
+<div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_afc263efe08f53863aa03c3cfbf2d5874"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#afc263efe08f53863aa03c3cfbf2d5874">mlinalg::structures::Matrix::rend</a></div><div class="ttdeci">constexpr auto rend()</div><div class="ttdoc">Const reverse end iterator for the matrix.</div><div class="ttdef"><b>Definition</b> Structures.hpp:925</div></div>
+<div class="ttc" id="aclassmlinalg_1_1structures_1_1Matrix_html_affae5f8593216ba91b56b9ff82b4c93d"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Matrix.html#affae5f8593216ba91b56b9ff82b4c93d">mlinalg::structures::Matrix::cend</a></div><div class="ttdeci">constexpr auto cend() const</div><div class="ttdoc">The const end iterator for the matrix.</div><div class="ttdef"><b>Definition</b> Structures.hpp:904</div></div>
 <div class="ttc" id="aclassmlinalg_1_1structures_1_1Vector_html"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Vector.html">mlinalg::structures::Vector</a></div><div class="ttdoc">Vector class for represeting both row and column vectors in n-dimensional space.</div><div class="ttdef"><b>Definition</b> Structures.hpp:130</div></div>
 <div class="ttc" id="aclassmlinalg_1_1structures_1_1Vector_html_a0794b72aa6d670ca9bfca33b7f592d90"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Vector.html#a0794b72aa6d670ca9bfca33b7f592d90">mlinalg::structures::Vector::end</a></div><div class="ttdeci">constexpr auto end() const</div><div class="ttdoc">End iterator for the vector.</div><div class="ttdef"><b>Definition</b> Structures.hpp:412</div></div>
 <div class="ttc" id="aclassmlinalg_1_1structures_1_1Vector_html_a093a58ab65746c1790ddecf9bfd826f6"><div class="ttname"><a href="classmlinalg_1_1structures_1_1Vector.html#a093a58ab65746c1790ddecf9bfd826f6">mlinalg::structures::Vector::Vector</a></div><div class="ttdeci">Vector(Vector &amp;&amp;other) noexcept</div><div class="ttdoc">Move construct a new Vector object.</div><div class="ttdef"><b>Definition</b> Structures.hpp:155</div></div>
