@@ -1,8 +1,0 @@
-<map id="src/pub/Structures.hpp" name="src/pub/Structures.hpp">
-<area shape="rect" id="Node000001" title="Declaration and implementation of templated Vector and Matrix classes." alt="" coords="5,5,172,33"/>
-<area shape="rect" id="Node000002" href="$MLinalg_8hpp.html" title="This file includes all the necessary files for the MLinalg library." alt="" coords="13,157,164,184"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="72,47,55,82,53,95,55,108,66,134,80,155,76,158,61,136,50,109,47,95,50,80,67,45"/>
-<area shape="rect" id="Node000003" href="$Operations_8hpp.html" title="Declarations and implementations of the operations that can be performed on the structures defined in..." alt="" coords="64,81,236,109"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="111,43,141,79,137,82,107,47"/>
-<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="131,122,101,158,97,155,127,119"/>
-</map>

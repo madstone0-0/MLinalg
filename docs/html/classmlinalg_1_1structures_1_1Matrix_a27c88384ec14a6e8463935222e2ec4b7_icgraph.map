@@ -1,8 +1,0 @@
-<map id="mlinalg::structures::Matrix::augment" name="mlinalg::structures::Matrix::augment">
-<area shape="rect" id="Node000001" title="Augment the matrix with another matrix." alt="" coords="217,36,360,80"/>
-<area shape="rect" id="Node000002" href="$Operations_8hpp.html#a26fb7199eb0c367cdb15d404b08b1167" title="Find the solutions to a matrix equation in the form: A * x = b." alt="" coords="5,5,169,33"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="201,44,162,36,163,31,202,39"/>
-<area shape="rect" id="Node000003" href="$Operations_8hpp.html#a61dac8383a2c25ace0227f9899511ca8" title="Find the inverse of a square linear system." alt="" coords="24,81,150,109"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="202,77,151,86,150,81,201,71"/>
-<area shape="poly" id="edge3_Node000003_Node000003" title=" " alt="" coords="121,68,109,62,87,60,66,62,55,67,52,72,57,79,52,82,47,72,51,63,65,57,87,55,111,57,124,64"/>
-</map>

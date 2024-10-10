@@ -6,3 +6,4 @@ build-release
 *.srctrlbm
 *.srctrldb
 *.srctrlprj
+docs
