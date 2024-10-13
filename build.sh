@@ -13,7 +13,7 @@ build_release() {
 build_debug() {
 	echo "Building Debug"
 	mkdir -p "$OUT_DIR"
-	doxygen Doxyfile &>"$LOCAL_OUT_DIR"/doxygen.log
+	doxygen Doxyfile &>./doxygen.log
 	CXX=clang++ cmake -G 'Ninja' -S . -B "$OUT_DIR" -DCMAKE_BUILD_TYPE=Debug && ninja -C $OUT_DIR/ &>"$OUT_DIR".log
 }
 
