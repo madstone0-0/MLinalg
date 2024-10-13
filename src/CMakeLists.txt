@@ -13,6 +13,7 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
 file(
     GLOB HPP
     CONFIGURE_DEPENDS
+    ${CMAKE_SOURCE_DIR}/src/pub/structures/*.hpp
     ${CMAKE_SOURCE_DIR}/src/pub/*.hpp
     ${CMAKE_SOURCE_DIR}/src/*.hpp
 )
