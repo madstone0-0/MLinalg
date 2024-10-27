@@ -39,7 +39,19 @@ install(
 )
 
 set_target_properties(mlinalg PROPERTIES EXPORT_NAME mlinalg)
-install(FILES ${HPP} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/mlinalg)
+# Preserve the directory structure in the installation directory
+install(
+    DIRECTORY ${CMAKE_SOURCE_DIR}/src/pub/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/mlinalg
+    FILES_MATCHING
+    PATTERN "*.hpp"
+)
+install(
+    DIRECTORY ${CMAKE_SOURCE_DIR}/src/pub/structures/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/mlinalg/structures
+    FILES_MATCHING
+    PATTERN "*.hpp"
+)
 install(
     EXPORT mlinalgTargets
     FILE mlinalgTargets.cmake
