@@ -486,7 +486,7 @@ namespace mlinalg::structures {
             if (nRows <= 1 || nCols <= 1) throw std::runtime_error("Matrix must be at least 2x2 to find a subset");
 
             if constexpr (n == 0 || m == 0) {
-                Matrix<number, Dynamic, Dynamic> res(nRows, nCols);
+                Matrix<number, Dynamic, Dynamic> res(nRows - 1, nCols - 1);
                 int resRow = 0;
                 for (int k = 0; k < nRows; ++k) {
                     if (i.has_value() && i.value() == k) continue;  // Skip the row to be removed
