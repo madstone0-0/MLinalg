@@ -14,7 +14,7 @@
 #include <utility>
 #include <vector>
 
-#include "Concepts.hpp"
+#include "../Concepts.hpp"
 
 using std::vector, std::array, std::optional, std::unique_ptr, std::shared_ptr;
 namespace rg = std::ranges;
@@ -260,6 +260,10 @@ namespace mlinalg::structures {
     class Vector {
        public:
         Vector() { checkDimensions(); }
+
+        // Constructor to keep consistency with the Dynamic Vector specialization to allow them to be used
+        // interchangeably
+        explicit Vector(size_t size) {}
 
         /**
          * @brief Construct a new Vector object from an initializer list

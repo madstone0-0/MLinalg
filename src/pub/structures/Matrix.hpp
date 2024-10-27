@@ -16,8 +16,8 @@
 #include <variant>
 #include <vector>
 
-#include "Concepts.hpp"
-#include "Helpers.hpp"
+#include "../Concepts.hpp"
+#include "../Helpers.hpp"
 #include "Vector.hpp"
 
 using std::vector, std::array, std::optional, std::unique_ptr, std::shared_ptr;
@@ -672,6 +672,10 @@ namespace mlinalg::structures {
         number& at(int i, int j) { return matrixAt<number>(matrix, i, j); }
 
         Matrix() = default;
+
+        // Constructor to keep consistency with the Dynamic Matrix specialization to allow them to be used
+        // interchangeably
+        Matrix(int nRows, int nCols) {}
 
         /**
          * @brief Construct a new Matrix object from an initializer list of row vectors
