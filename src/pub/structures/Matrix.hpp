@@ -1111,14 +1111,18 @@ namespace mlinalg::structures {
          *
          * @return A vector of column vectors
          */
-        vector<Vector<number, Dynamic>> colToVectorSet() const { return matrixColsToVectorSet<number, m, n>(matrix); }
+        vector<Vector<number, Dynamic>> colToVectorSet() const {
+            return matrixColsToVectorSet<number, Dynamic, Dynamic>(matrix);
+        }
 
         /**
          * @brief Convert the rows of the matrix to a vector of row vectors
          *
          * @return A vector of row vectors
          */
-        vector<Vector<number, Dynamic>> rowToVectorSet() const { return matrixRowsToVectorSet<number, m, n>(matrix); }
+        vector<Vector<number, Dynamic>> rowToVectorSet() const {
+            return matrixRowsToVectorSet<number, Dynamic, Dynamic>(matrix);
+        }
 
         /**
          * @brief Matrix multiplication by a scalar
