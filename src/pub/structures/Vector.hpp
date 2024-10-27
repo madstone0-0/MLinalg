@@ -81,6 +81,7 @@ namespace mlinalg::structures {
         template <Number number, int n, typename Container>
         Vector<number, n> vectorSub(const Container& row, const Container& otherRow) {
             checkOperandSize(row, otherRow);
+            constexpr int vSize = (n != 1) ? n : -1;
             if constexpr (n != -1) {
                 Vector<number, n> res{};
                 for (int i{}; i < n; i++) res.at(i) = row.at(i) - otherRow.at(i);
@@ -636,16 +637,12 @@ namespace mlinalg::structures {
         Vector() = delete;
         explicit Vector(size_t size) : row{new VectorRowDynamic<number>(size)}, n{size} {}
 
-        Vector(const std::initializer_list<number>& list) : n{list.size()} {
-            row->resize(list.size());
-            std::copy(list.begin(), list.end(), row->begin());
-        }
+        Vector(const std::initializer_list<number>& list)
+            : n{list.size()}, row{std::make_unique<VectorRowDynamic<number>>(list)} {}
 
         template <typename Iterator>
-        Vector(Iterator begin, Iterator end) : n(std::distance(begin, end)) {
-            row->resize(n);
-            std::copy(begin, end, row->begin());
-        }
+        Vector(Iterator begin, Iterator end)
+            : n(std::distance(begin, end)), row{std::make_unique<VectorRowDynamic<number>>(begin, end)} {}
 
         /**
          * @brief Copy construct a new Vector object
@@ -995,6 +992,6 @@ namespace mlinalg::structures {
         }
 
         size_t n;
-        VectorRowDynamicPtr<number> row{new VectorRowDynamic<number>{}};
+        VectorRowDynamicPtr<number> row{std::make_unique<VectorRowDynamic<number>>()};
     };
 }  // namespace mlinalg::structures

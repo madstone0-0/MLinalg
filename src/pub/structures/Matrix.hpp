@@ -1018,24 +1018,24 @@ namespace mlinalg::structures {
     class Matrix<number, -1, -1> {
        public:
         Matrix(int m, int n) : m(m), n(n) {
+            if (m <= 0) throw std::invalid_argument("Matrix must have at least one row");
+            if (n <= 0) throw std::invalid_argument("Matrix must have at least one column");
             matrix.reserve(m);
             matrix.resize(m, Vector<number, Dynamic>(n));
         }
 
-        Matrix(const std::initializer_list<std::initializer_list<number>>& rows) : m{rows.size()} {
-            const auto& m = rows.size();
-            if (m == 0) throw std::invalid_argument("Matrix must have at least one row");
-            const auto& n = rows.begin()->size();
-            if (n == 0) throw std::invalid_argument("Matrix must have at least one column");
+        Matrix(const std::initializer_list<std::initializer_list<number>>& rows)
+            : m{rows.size()}, n{rows.begin()->size()} {
+            if (m <= 0) throw std::invalid_argument("Matrix must have at least one row");
+            if (n <= 0) throw std::invalid_argument("Matrix must have at least one column");
 
             for (const auto& row : rows) {
                 if (row.size() != n) throw std::invalid_argument("All rows must have the same number of columns");
             }
 
-            this->n = n;
             matrix.reserve(m);
-            for (int i{}; i < rows.size(); i++) {
-                matrix.emplace_back(*(rows.begin() + i));
+            for (const auto& row : rows) {
+                matrix.emplace_back(row);
             }
         }
 
