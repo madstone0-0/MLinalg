@@ -23,6 +23,8 @@
 using std::vector, std::array, std::optional, std::unique_ptr, std::shared_ptr;
 namespace rg = std::ranges;
 
+using SizePair = std::pair<int, int>;
+
 namespace mlinalg::structures {
     template <Number number, int m, int n>
     class Matrix;
@@ -78,6 +80,7 @@ namespace mlinalg::structures {
 
         template <Number number, int m, int n, typename Container>
         vector<Vector<number, m>> matrixColsToVectorSet(const Container& matrix) {
+            // TODO: Fix this not actually checking dynamic arrays when cofactoring
             if constexpr (m == -1 || n == -1) {
                 const auto& nRows = matrix.size();
                 const auto& nCols = matrix.at(0).size();
@@ -107,100 +110,56 @@ namespace mlinalg::structures {
 
         template <Number number, int m, int n, typename Container>
         vector<Vector<number, m>> matrixRowsToVectorSet(const Container& matrix) {
-            if constexpr (m == -1 || n == -1) {
-                const auto& nRows = matrix.size();
-                vector<Vector<number, Dynamic>> res;
-                res.reserve(nRows);
-                for (const auto& row : matrix) res.emplace_back(row);
-                return res;
-            } else {
-                vector<Vector<number, n>> res;
-                res.reserve(m);
-                for (const auto& row : matrix) res.emplace_back(row);
-                return res;
-            }
+            constexpr int vSize = (m == -1 || n == -1) ? Dynamic : n;
+            const auto& nRows = matrix.size();
+            vector<Vector<number, vSize>> res;
+            res.reserve(nRows);
+            for (const auto& row : matrix) res.emplace_back(row);
+            return res;
         }
 
         template <Number number, int m, int n, typename Container>
         Matrix<number, m, n> matrixScalarMult(const Container& matrix, const number& scalar) {
-            if constexpr (m == -1 || n == -1) {
-                const auto& nRows = matrix.size();
-                const auto& nCols = matrix.at(0).size();
-                Matrix<number, m, n> res(nRows, nCols);
-                auto asRowVectorSet{std::move(matrixRowsToVectorSet<number, m, n>(matrix))};
-                for (int i{}; i < nRows; i++) {
-                    res.at(i) = asRowVectorSet.at(i) * scalar;
-                }
-                return res;
-            } else {
-                const auto& nRows = matrix.size();
-                const auto& nCols = matrix.at(0).size();
-                Matrix<number, m, n> res;
-                auto asRowVectorSet{std::move(matrixRowsToVectorSet<number, m, n>(matrix))};
-                for (int i{}; i < nRows; i++) {
-                    res.at(i) = asRowVectorSet.at(i) * scalar;
-                }
-                return res;
+            const auto& nRows = matrix.size();
+            const auto& nCols = matrix.at(0).size();
+            Matrix<number, m, n> res(nRows, nCols);
+            auto asRowVectorSet{std::move(matrixRowsToVectorSet<number, m, n>(matrix))};
+            for (int i{}; i < nRows; i++) {
+                res.at(i) = asRowVectorSet.at(i) * scalar;
             }
+            return res;
         }
 
         template <Number number, int m, int n, typename Container>
         Matrix<number, m, n> matrixScalarDiv(const Container& matrix, const number& scalar) {
-            if constexpr (m == -1 || n == -1) {
-                const auto& nRows = matrix.size();
-                const auto& nCols = matrix.at(0).size();
-                Matrix<number, m, n> res(nRows, nCols);
-                auto asRowVectorSet{std::move(matrixRowsToVectorSet<number, m, n>(matrix))};
-                for (int i{}; i < nRows; i++) {
-                    res.at(i) = asRowVectorSet.at(i) / scalar;
-                }
-                return res;
-            } else {
-                const auto& nRows = matrix.size();
-                const auto& nCols = matrix.at(0).size();
-                Matrix<number, m, n> res;
-                auto asRowVectorSet{std::move(matrixRowsToVectorSet<number, m, n>(matrix))};
-                for (int i{}; i < nRows; i++) {
-                    res.at(i) = asRowVectorSet.at(i) / scalar;
-                }
-                return res;
+            const auto& nRows = matrix.size();
+            const auto& nCols = matrix.at(0).size();
+            Matrix<number, m, n> res(nRows, nCols);
+            auto asRowVectorSet{std::move(matrixRowsToVectorSet<number, m, n>(matrix))};
+            for (int i{}; i < nRows; i++) {
+                res.at(i) = asRowVectorSet.at(i) / scalar;
             }
+            return res;
         }
 
         template <Number number, int m, int n, typename Container>
         Matrix<number, m, n> matrixAdd(const Container& matrix, const Container& otherMatrix) {
             checkMatrixOperandSize(matrix, otherMatrix);
-            if constexpr (m == -1 || n == -1) {
-                const auto& nRows = matrix.size();
-                const auto& nCols = matrix.at(0).size();
-                Matrix<number, m, n> res(nRows, nCols);
-                for (int i{}; i < nRows; i++) res.at(i) = matrix.at(i) + otherMatrix.at(i);
-                return res;
-            } else {
-                const auto& nRows = matrix.size();
-                const auto& nCols = matrix.at(0).size();
-                Matrix<number, m, n> res;
-                for (int i{}; i < nRows; i++) res.at(i) = matrix.at(i) + otherMatrix.at(i);
-                return res;
-            }
+            const auto& nRows = matrix.size();
+            const auto& nCols = matrix.at(0).size();
+            Matrix<number, m, n> res(nRows, nCols);
+            for (int i{}; i < nRows; i++) res.at(i) = matrix.at(i) + otherMatrix.at(i);
+            return res;
         }
 
         template <Number number, int m, int n, typename Container>
         Matrix<number, m, n> matrixSub(const Container& matrix, const Container& otherMatrix) {
             checkMatrixOperandSize(matrix, otherMatrix);
-            if constexpr (m == -1 || n == -1) {
-                const auto& nRows = matrix.size();
-                const auto& nCols = matrix.at(0).size();
-                Matrix<number, m, n> res(nRows, nCols);
-                for (int i{}; i < nRows; i++) res.at(i) = matrix.at(i) - otherMatrix.at(i);
-                return res;
-            } else {
-                const auto& nRows = matrix.size();
-                const auto& nCols = matrix.at(0).size();
-                Matrix<number, m, n> res;
-                for (int i{}; i < nRows; i++) res.at(i) = matrix.at(i) - otherMatrix.at(i);
-                return res;
-            }
+            const auto& nRows = matrix.size();
+            const auto& nCols = matrix.at(0).size();
+            Matrix<number, m, n> res(nRows, nCols);
+            for (int i{}; i < nRows; i++) res.at(i) = matrix.at(i) - otherMatrix.at(i);
+            return res;
         }
 
         template <typename Container>
@@ -253,45 +212,26 @@ namespace mlinalg::structures {
         Vector<number, m> multMatByVec(const Container& matrix, const Vector<number, n>& vec) {
             if (matrix.at(0).size() != vec.size())
                 throw std::invalid_argument("The columns of the matrix must be equal to the size of the vector");
-            if constexpr (m == -1 || n == -1) {
-                const auto& nRows = matrix.size();
-                const auto& nCols = matrix.at(0).size();
-                Vector<number, Dynamic> res(nRows);
-                auto asCols{std::move(matrixColsToVectorSet<number, m, n>(matrix))};
-                int i{};
-                for (auto& col : asCols) {
-                    const auto& mult = vec.at(i);
-                    col *= mult;
-                    i++;
-                }
 
-                for (int i{}; i < nRows; i++) {
-                    number sumRes{};
-                    for (const auto& col : asCols) sumRes += col.at(i);
-                    res.at(i) = sumRes;
-                }
-
-                return res;
-            } else {
-                const auto& nRows = matrix.size();
-                const auto& nCols = matrix.at(0).size();
-                Vector<number, m> res;
-                auto asCols{std::move(matrixColsToVectorSet<number, m, n>(matrix))};
-                int i{};
-                for (auto& col : asCols) {
-                    const auto& mult = vec.at(i);
-                    col *= mult;
-                    i++;
-                }
-
-                for (int i{}; i < nRows; i++) {
-                    number sumRes{};
-                    for (const auto& col : asCols) sumRes += col.at(i);
-                    res.at(i) = sumRes;
-                }
-
-                return res;
+            constexpr int vSize = (m == -1 || n == -1) ? Dynamic : m;
+            const auto& nRows = matrix.size();
+            const auto& nCols = matrix.at(0).size();
+            Vector<number, vSize> res(nRows);
+            auto asCols{std::move(matrixColsToVectorSet<number, m, n>(matrix))};
+            int i{};
+            for (auto& col : asCols) {
+                const auto& mult = vec.at(i);
+                col *= mult;
+                i++;
             }
+
+            for (int i{}; i < nRows; i++) {
+                number sumRes{};
+                for (const auto& col : asCols) sumRes += col.at(i);
+                res.at(i) = sumRes;
+            }
+
+            return res;
         }
 
         /**
@@ -305,26 +245,23 @@ namespace mlinalg::structures {
             if (matrix.at(0).size() != otherMatrix.size())
                 throw std::invalid_argument(
                     "The columns of the first matrix must be equal to the rows of the second matrix");
-            if constexpr (n == -1 || m == -1) {
-                auto otherColVecSet{std::move(matrixColsToVectorSet<number, m, n>(otherMatrix))};
-                vector<Vector<number, Dynamic>> res;
-                const auto& nOtherCols = otherMatrix.at(0).size();
-                res.reserve(nOtherCols);
-                for (const auto& col : otherColVecSet) {
-                    auto multRes{multMatByVec<number, Dynamic, Dynamic>(matrix, col)};
-                    res.emplace_back(multRes);
-                }
-                return helpers::fromColVectorSet<number, Dynamic, Dynamic>(res);
-            } else {
-                auto otherColVecSet{std::move(matrixColsToVectorSet<number, m, n>(otherMatrix))};
-                vector<Vector<number, m>> res;
-                res.reserve(nOther);
-                for (const auto& col : otherColVecSet) {
-                    auto multRes{multMatByVec<number, m, n>(matrix, col)};
-                    res.emplace_back(multRes);
-                }
-                return helpers::fromColVectorSet<number, m, nOther>(res);
+
+            constexpr auto isDynamic = m == -1 || n == -1;
+            constexpr auto DynamicPair = SizePair{Dynamic, Dynamic};
+
+            constexpr int vSize = isDynamic ? Dynamic : m;
+            constexpr auto resSizeP = isDynamic ? DynamicPair : SizePair{m, nOther};
+            constexpr auto sizeP = isDynamic ? DynamicPair : SizePair{m, n};
+
+            auto otherColVecSet{std::move(matrixColsToVectorSet<number, m, n>(otherMatrix))};
+            vector<Vector<number, vSize>> res;
+            const auto& nOtherCols = otherMatrix.at(0).size();
+            res.reserve(nOtherCols);
+            for (const auto& col : otherColVecSet) {
+                auto multRes{multMatByVec<number, sizeP.first, sizeP.second>(matrix, col)};
+                res.emplace_back(multRes);
             }
+            return helpers::fromColVectorSet<number, resSizeP.first, resSizeP.second>(res);
         }
 
         /**
@@ -334,59 +271,40 @@ namespace mlinalg::structures {
          */
         template <Number number, int m, int n, typename Container>
         TransposeVariant<number, m, n> TransposeMatrix(const Container& matrix) {
-            if constexpr (m == -1 || n == -1) {
-                const auto& nRows = matrix.size();
-                const auto& nCols = matrix.at(0).size();
-                auto mutateMatrix = [&matrix, &nRows, &nCols](auto& variant) {
-                    if constexpr (std::is_same_v<std::decay_t<decltype(variant)>, Matrix<number, Dynamic, Dynamic>>) {
-                        for (int i{}; i < nRows; i++)
-                            for (int j{}; j < nCols; j++) variant.at(j).at(i) = matrix.at(i).at(j);
-                    }
-                };
+            constexpr auto isDynamic = m == -1 || n == -1;
+            constexpr auto DynamicPair = SizePair{Dynamic, Dynamic};
 
-                auto mutateVector = [&matrix, &nRows, &nCols](auto& variant) {
-                    if constexpr (std::is_same_v<std::decay_t<decltype(variant)>, Vector<number, Dynamic>>) {
-                        for (int i{}; i < nRows; i++) variant.at(i) = matrix.at(i).at(0);
-                    }
-                };
+            constexpr int vSize = isDynamic ? Dynamic : m;
+            constexpr auto sizeP = isDynamic ? DynamicPair : SizePair{m, n};
 
-                TransposeVariant<number, Dynamic, Dynamic> res(std::in_place_index<1>,
-                                                               Matrix<number, Dynamic, Dynamic>(nCols, nRows));
-                if (nCols != 1) {
-                    res = Matrix<number, Dynamic, Dynamic>(nCols, nRows);
-                    std::visit(mutateMatrix, res);
-                    return res;
+            const auto& nRows = matrix.size();
+            const auto& nCols = matrix.at(0).size();
+
+            auto mutateMatrix = [&matrix, &nRows, &nCols, &sizeP](auto& variant) {
+                if constexpr (std::is_same_v<std::decay_t<decltype(variant)>,
+                                             Matrix<number, sizeP.first, sizeP.second>>) {
+                    for (int i{}; i < nRows; i++)
+                        for (int j{}; j < nCols; j++) variant.at(j).at(i) = matrix.at(i).at(j);
                 }
+            };
 
-                res = Vector<number, Dynamic>(nRows);
-                std::visit(mutateVector, res);
-                return res;
-
-            } else {
-                auto mutateMatrix = [&matrix](auto& variant) {
-                    if constexpr (std::is_same_v<std::decay_t<decltype(variant)>, Matrix<number, n, m>>) {
-                        for (int i{}; i < m; i++)
-                            for (int j{}; j < n; j++) variant.at(j).at(i) = matrix.at(i).at(j);
-                    }
-                };
-
-                auto mutateVector = [&matrix](auto& variant) {
-                    if constexpr (std::is_same_v<std::decay_t<decltype(variant)>, Vector<number, m>>) {
-                        for (int i{}; i < m; i++) variant.at(i) = matrix.at(i).at(0);
-                    }
-                };
-                TransposeVariant<number, m, n> res;
-
-                if (n != 1) {
-                    res = Matrix<number, n, m>{};
-                    std::visit(mutateMatrix, res);
-                    return res;
+            auto mutateVector = [&matrix, &nRows, &nCols, &vSize](auto& variant) {
+                if constexpr (std::is_same_v<std::decay_t<decltype(variant)>, Vector<number, vSize>>) {
+                    for (int i{}; i < nRows; i++) variant.at(i) = matrix.at(i).at(0);
                 }
+            };
 
-                res = Vector<number, m>{};
-                std::visit(mutateVector, res);
+            TransposeVariant<number, sizeP.first, sizeP.second> res(
+                std::in_place_index<1>, Matrix<number, sizeP.first, sizeP.second>(nCols, nRows));
+            if (nCols != 1) {
+                res = Matrix<number, sizeP.second, sizeP.first>(nCols, nRows);
+                std::visit(mutateMatrix, res);
                 return res;
             }
+
+            res = Vector<number, vSize>(nRows);
+            std::visit(mutateVector, res);
+            return res;
         }
 
         /**
@@ -398,38 +316,28 @@ namespace mlinalg::structures {
         template <Number number, int m, int n, int nN, typename Container>
         Matrix<number, m, nN + n> MatrixAugmentMatrix(const Container& matrix, const Container& otherMatrix) {
             checkMatrixOperandRowSize(matrix, otherMatrix);
-            if constexpr (n == -1 || m == -1 || nN == -1) {
-                const auto& nRows = matrix.size();
-                const auto& nCols = matrix.at(0).size();
-                const auto& nOtherCols = otherMatrix.at(0).size();
-                Matrix<number, Dynamic, Dynamic> res(nRows, nCols + nOtherCols);
-                for (int i{}; i < nRows; i++) {
-                    auto& row{res.at(i)};
-                    const auto& thisRow{matrix.at(i)};
-                    const auto& otherRow{otherMatrix.at(i)};
-                    for (int j{}; j < (nCols + nOtherCols); j++) {
-                        if (j < nCols)
-                            row.at(j) = thisRow.at(j);
-                        else
-                            row.at(j) = otherRow.at((j - static_cast<int>(nOtherCols)));
-                    }
+            constexpr auto isDynamic = m == -1 || n == -1;
+            constexpr auto DynamicPair = SizePair{Dynamic, Dynamic};
+
+            constexpr int vSize = isDynamic ? Dynamic : m;
+            constexpr auto sizeP = isDynamic ? DynamicPair : SizePair{m, n + nN};
+
+            const auto& nRows = matrix.size();
+            const auto& nCols = matrix.at(0).size();
+            const auto& nOtherCols = otherMatrix.at(0).size();
+            Matrix<number, sizeP.first, sizeP.second> res(nRows, nCols + nOtherCols);
+            for (int i{}; i < nRows; i++) {
+                auto& row{res.at(i)};
+                const auto& thisRow{matrix.at(i)};
+                const auto& otherRow{otherMatrix.at(i)};
+                for (int j{}; j < (nCols + nOtherCols); j++) {
+                    if (j < nCols)
+                        row.at(j) = thisRow.at(j);
+                    else
+                        row.at(j) = otherRow.at((j - static_cast<int>(nOtherCols)));
                 }
-                return res;
-            } else {
-                Matrix<number, m, nN + n> res;
-                for (int i{}; i < m; i++) {
-                    auto& row{res.at(i)};
-                    const auto& thisRow{matrix.at(i)};
-                    const auto& otherRow{otherMatrix.at(i)};
-                    for (int j{}; j < (nN + n); j++) {
-                        if (j < n)
-                            row.at(j) = thisRow.at(j);
-                        else
-                            row.at(j) = otherRow.at((j - static_cast<int>(nN)));
-                    }
-                }
-                return res;
             }
+            return res;
         }
 
         /**
@@ -440,34 +348,25 @@ namespace mlinalg::structures {
          */
         template <Number number, int m, int n, typename MatrixContainer, typename VectorContainer>
         Matrix<number, m, n + 1> MatrixAugmentVector(const MatrixContainer& matrix, const VectorContainer& vec) {
-            if constexpr (n == -1 || m == -1) {
-                const auto& nRows = matrix.size();
-                const auto& nCols = matrix.at(0).size();
-                const auto& nSize = vec.size();
-                Matrix<number, Dynamic, Dynamic> res(nRows, nCols + 1);
-                for (int i{}; i < nRows; i++) {
-                    auto& row{res.at(i)};
-                    const auto& thisRow{matrix.at(i)};
-                    int j{};
-                    for (; j < nCols; j++) {
-                        row.at(j) = thisRow.at(j);
-                    }
-                    row.at(j) = vec.at(i);
+            constexpr auto isDynamic = m == -1 || n == -1;
+            constexpr auto DynamicPair = SizePair{Dynamic, Dynamic};
+
+            constexpr auto sizeP = isDynamic ? DynamicPair : SizePair{m, n + 1};
+
+            const auto& nRows = matrix.size();
+            const auto& nCols = matrix.at(0).size();
+            const auto& nSize = vec.size();
+            Matrix<number, sizeP.first, sizeP.second> res(nRows, nCols + 1);
+            for (int i{}; i < nRows; i++) {
+                auto& row{res.at(i)};
+                const auto& thisRow{matrix.at(i)};
+                int j{};
+                for (; j < nCols; j++) {
+                    row.at(j) = thisRow.at(j);
                 }
-                return res;
-            } else {
-                Matrix<number, m, n + 1> res;
-                for (int i{}; i < m; i++) {
-                    auto& row{res.at(i)};
-                    const auto& thisRow{matrix.at(i)};
-                    int j{};
-                    for (; j < n; j++) {
-                        row.at(j) = thisRow.at(j);
-                    }
-                    row.at(j) = vec.at(i);
-                }
-                return res;
+                row.at(j) = vec.at(i);
             }
+            return res;
         }
 
         /**
@@ -478,6 +377,7 @@ namespace mlinalg::structures {
          * @return The subsetted matrix of size (m - 1)x(n - 1)
          */
         template <Number number, int m, int n, typename Container>
+        // TODO: Find a way to account for negatives and do nothing when they are found
         Matrix<number, m - 1, n - 1> MatrixSubset(const Container& matrix, const std::optional<int>& i,
                                                   const std::optional<int> j) {
             const auto& nRows = matrix.size();
@@ -485,39 +385,26 @@ namespace mlinalg::structures {
             if (nRows != nCols) throw std::runtime_error("Matrix must be square to find a subset");
             if (nRows <= 1 || nCols <= 1) throw std::runtime_error("Matrix must be at least 2x2 to find a subset");
 
-            if constexpr (n == 0 || m == 0) {
-                Matrix<number, Dynamic, Dynamic> res(nRows - 1, nCols - 1);
-                int resRow = 0;
-                for (int k = 0; k < nRows; ++k) {
-                    if (i.has_value() && i.value() == k) continue;  // Skip the row to be removed
+            constexpr auto isDynamic = m == 0 || n == 0;
+            constexpr auto DynamicPair = SizePair{Dynamic, Dynamic};
 
-                    int resCol = 0;
-                    for (int z = 0; z < nCols; ++z) {
-                        if (j.has_value() && j.value() == z) continue;  // Skip the column to be removed
+            constexpr auto sizeP = isDynamic ? DynamicPair : SizePair{m - 1, n - 1};
 
-                        res.at(resRow, resCol) = matrix.at(k).at(z);
-                        ++resCol;
-                    }
-                    ++resRow;
+            Matrix<number, sizeP.first, sizeP.second> res(nRows - 1, nCols - 1);
+            int resRow = 0;
+            for (int k = 0; k < nRows; ++k) {
+                if (i.has_value() && i.value() == k) continue;  // Skip the row to be removed
+
+                int resCol = 0;
+                for (int z = 0; z < nCols; ++z) {
+                    if (j.has_value() && j.value() == z) continue;  // Skip the column to be removed
+
+                    res.at(resRow, resCol) = matrix.at(k).at(z);
+                    ++resCol;
                 }
-                return res;
-            } else {
-                Matrix<number, m - 1, n - 1> res;
-                int resRow = 0;
-                for (int k = 0; k < m; ++k) {
-                    if (i.has_value() && i.value() == k) continue;  // Skip the row to be removed
-
-                    int resCol = 0;
-                    for (int z = 0; z < n; ++z) {
-                        if (j.has_value() && j.value() == z) continue;  // Skip the column to be removed
-
-                        res.at(resRow, resCol) = matrix.at(k).at(z);
-                        ++resCol;
-                    }
-                    ++resRow;
-                }
-                return res;
+                ++resRow;
             }
+            return res;
         }
 
         /**
@@ -938,7 +825,8 @@ namespace mlinalg::structures {
             if constexpr (m == 2 && n == 2)
                 return MatrixDet2x2<number>(matrix);
             else
-                return MatrixCofactor<number, m, n>(matrix);
+                // TODO: Find a fix for this that allows dynamic matrices to the subset without m and n going to -2
+                return MatrixCofactor<number, 0, 0>(matrix);
         }
 
         /**

@@ -11,6 +11,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -82,31 +83,20 @@ namespace mlinalg::structures {
         Vector<number, n> vectorSub(const Container& row, const Container& otherRow) {
             checkOperandSize(row, otherRow);
             constexpr int vSize = (n != 1) ? n : -1;
-            if constexpr (n != -1) {
-                Vector<number, n> res{};
-                for (int i{}; i < n; i++) res.at(i) = row.at(i) - otherRow.at(i);
-                return res;
-            } else {
-                auto size = row.size();
-                Vector<number, -1> res(size);
-                for (int i{}; i < size; i++) res.at(i) = row.at(i) - otherRow.at(i);
-                return res;
-            }
+            auto size = row.size();
+            Vector<number, vSize> res(size);
+            for (int i{}; i < size; i++) res.at(i) = row.at(i) - otherRow.at(i);
+            return res;
         }
 
         template <Number number, int n, typename Container>
         Vector<number, n> vectorAdd(const Container& row, const Container& otherRow) {
             checkOperandSize(row, otherRow);
-            if constexpr (n != -1) {
-                Vector<number, n> res{};
-                for (int i{}; i < n; i++) res.at(i) = row.at(i) + otherRow.at(i);
-                return res;
-            } else {
-                auto size = row.size();
-                Vector<number, -1> res(size);
-                for (int i{}; i < size; i++) res.at(i) = row.at(i) + otherRow.at(i);
-                return res;
-            }
+            constexpr int vSize = (n != 1) ? n : -1;
+            auto size = row.size();
+            Vector<number, vSize> res(size);
+            for (int i{}; i < size; i++) res.at(i) = row.at(i) + otherRow.at(i);
+            return res;
         }
 
         template <Number number, typename Container>
@@ -117,31 +107,21 @@ namespace mlinalg::structures {
 
         template <Number number, int n, typename Container>
         Vector<number, n> vectorScalarMult(const Container& row, const number& scalar) {
-            if constexpr (n != -1) {
-                Vector<number, n> res;
-                for (int i{}; i < n; i++) res.at(i) = scalar * row.at(i);
-                return res;
-            } else {
-                auto size = row.size();
-                Vector<number, -1> res(size);
-                for (int i{}; i < size; i++) res.at(i) = scalar * row.at(i);
-                return res;
-            }
+            constexpr int vSize = (n != 1) ? n : -1;
+            auto size = row.size();
+            Vector<number, vSize> res(size);
+            for (int i{}; i < size; i++) res.at(i) = scalar * row.at(i);
+            return res;
         }
 
         template <Number number, int n, typename Container>
         Vector<number, n> vectorScalarDiv(const Container& row, const number& scalar) {
             if (scalar == 0) throw std::domain_error("Division by zero");
-            if constexpr (n != -1) {
-                Vector<number, n> res;
-                for (int i{}; i < n; i++) res.at(i) = row.at(i) / scalar;
-                return res;
-            } else {
-                auto size = row.size();
-                Vector<number, -1> res(size);
-                for (int i{}; i < size; i++) res.at(i) = row.at(i) / scalar;
-                return res;
-            }
+            constexpr int vSize = (n != 1) ? n : -1;
+            auto size = row.size();
+            Vector<number, vSize> res(size);
+            for (int i{}; i < size; i++) res.at(i) = row.at(i) / scalar;
+            return res;
         }
 
         template <Number number, typename Container>
@@ -222,16 +202,11 @@ namespace mlinalg::structures {
 
         template <Number number, int m, int n, typename Container>
         Matrix<number, m, n> vectorTranspose(const Container& row) {
-            if constexpr (n != -1) {
-                Matrix<number, 1, n> res;
-                for (int i{}; i < n; i++) res.at(0, i) = row.at(i);
-                return res;
-            } else {
-                const auto size = row.size();
-                Matrix<number, -1, -1> res(1, size);
-                for (int i{}; i < size; i++) res.at(0, i) = row.at(i);
-                return res;
-            }
+            constexpr auto sizeP = (n == -1) ? std::pair<int, int>{-1, -1} : std::pair<int, int>{1, n};
+            const auto size = row.size();
+            Matrix<number, sizeP.first, sizeP.second> res(1, size);
+            for (int i{}; i < size; i++) res.at(0, i) = row.at(i);
+            return res;
         }
 
     }  // namespace

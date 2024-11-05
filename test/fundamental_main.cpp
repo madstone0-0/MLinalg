@@ -6,6 +6,7 @@ using namespace std;
 using namespace mlinalg::structures;
 
 using namespace mlinalg::structures;
+using namespace mlinalg;
 using namespace std;
 
 static int allocs{};
@@ -44,20 +45,35 @@ int main() {
         Vector<int, Dynamic> v{vec.begin(), vec.end()};
         // for (int i{}; i < vec.size(); i++) v.at(i) = vec.at(i);
         Vector<int, Dynamic> v2{v * 2};
+        Matrix<int, Dynamic, Dynamic> A{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+        auto B = Matrix<double, Dynamic, Dynamic>{{1, -2, 1}, {0, 2, -8}, {5, 0, -5}};
         cout << v << '\n';
         cout << v2 << '\n';
-    }
-    {
-        int size{};
-        cout << "Enter number of elements: ";
-        cin >> size;
-        Vector<double, Dynamic> v(size);
-        for (int i{}; i < size; i++) {
-            cout << "v[" << i << "]: ";
-            cin >> v.at(i);
+        auto inv = inverse(A);
+        auto inv2 = inverse(B);
+        if (inv2.has_value()) {
+            cout << inv2.value() << '\n';
+        } else {
+            cout << "Matrix is not invertible\n";
         }
-        cout << v << '\n';
+
+        if (inv.has_value()) {
+            cout << inv.value() << '\n';
+        } else {
+            cout << "Matrix is not invertible\n";
+        }
     }
+    // {
+    //     int size{};
+    //     cout << "Enter number of elements: ";
+    //     cin >> size;
+    //     Vector<double, Dynamic> v(size);
+    //     for (int i{}; i < size; i++) {
+    //         cout << "v[" << i << "]: ";
+    //         cin >> v.at(i);
+    //     }
+    //     cout << v << '\n';
+    // }
     // {
     //     auto A = Matrix<int, Dynamic, Dynamic>{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
     //     cout << 2 * A << '\n';
