@@ -28,59 +28,59 @@ namespace mlinalg::structures {
     class Vector;
 
     namespace {
-        template <typename Container>
-        void checkOperandSize(const Container& row, const Container& otherRow) {
+        template <Container T, Container U>
+        void checkOperandSize(const T& row, const U& otherRow) {
             if (row.size() != otherRow.size()) throw std::invalid_argument("Vectors must be of the same size");
         }
 
-        template <typename Container>
-        bool vectorEqual(const Container& row, const Container& otherRow) {
+        template <Container T, Container U>
+        bool vectorEqual(const T& row, const U& otherRow) {
             checkOperandSize(row, otherRow);
             return row == otherRow;
         }
 
-        template <typename Container>
-        bool vectorGreater(const Container& row, const Container& otherRow) {
+        template <Container T, Container U>
+        bool vectorGreater(const T& row, const U& otherRow) {
             checkOperandSize(row, otherRow);
             return row > otherRow;
         }
 
-        template <typename Container>
-        bool vectorGreaterEqual(const Container& row, const Container& otherRow) {
+        template <Container T, Container U>
+        bool vectorGreaterEqual(const T& row, const U& otherRow) {
             checkOperandSize(row, otherRow);
             return row >= otherRow;
         }
 
-        template <typename Container>
-        bool vectorLess(const Container& row, const Container& otherRow) {
+        template <Container T, Container U>
+        bool vectorLess(const T& row, const U& otherRow) {
             checkOperandSize(row, otherRow);
             return row < otherRow;
         }
 
-        template <typename Container>
-        bool vectorLessEqual(const Container& row, const Container& otherRow) {
+        template <Container T, Container U>
+        bool vectorLessEqual(const T& row, const U& otherRow) {
             checkOperandSize(row, otherRow);
             return row <= otherRow;
         }
 
-        template <typename Container>
-        bool vectorNotEqual(const Container& row, const Container& otherRow) {
+        template <Container T, Container U>
+        bool vectorNotEqual(const T& row, const U& otherRow) {
             checkOperandSize(row, otherRow);
             return row != otherRow;
         }
 
-        template <Number number, typename Container>
-        number& vectorAt(Container& row, int i) {
+        template <Number number, Container T>
+        number& vectorAt(T& row, int i) {
             return row.at(i);
         }
 
-        template <Number number, typename Container>
-        number vectorConstAt(const Container& row, int i) {
+        template <Number number, Container T>
+        number vectorConstAt(const T& row, int i) {
             return row.at(i);
         }
 
-        template <Number number, int n, typename Container>
-        Vector<number, n> vectorSub(const Container& row, const Container& otherRow) {
+        template <Number number, int n, Container T, Container U>
+        Vector<number, n> vectorSub(const T& row, const U& otherRow) {
             checkOperandSize(row, otherRow);
             constexpr int vSize = (n != 1) ? n : -1;
             auto size = row.size();
@@ -89,33 +89,36 @@ namespace mlinalg::structures {
             return res;
         }
 
-        template <Number number, int n, typename Container>
-        Vector<number, n> vectorAdd(const Container& row, const Container& otherRow) {
+        template <Number number, Container T, Container U>
+        void vectorSubI(T& row, const U& otherRow) {
             checkOperandSize(row, otherRow);
             constexpr int vSize = (n != 1) ? n : -1;
+
+        template <Number number, int n, Container T, Container U>
+        Vector<number, n> vectorAdd(const T& row, const U& otherRow) {
             auto size = row.size();
             Vector<number, vSize> res(size);
             for (int i{}; i < size; i++) res.at(i) = row.at(i) + otherRow.at(i);
             return res;
         }
 
-        template <Number number, typename Container>
-        void vectorAddI(Container& row, const Container& otherRow) {
+        template <Number number, Container T, Container U>
+        void vectorAddI(T& row, const U& otherRow) {
             checkOperandSize(row, otherRow);
             for (int i{}; i < row.size(); i++) row.at(i) += otherRow.at(i);
         }
 
-        template <Number number, int n, typename Container>
-        Vector<number, n> vectorScalarMult(const Container& row, const number& scalar) {
             constexpr int vSize = (n != 1) ? n : -1;
+        template <Number number, int n, Container T>
+        Vector<number, n> vectorScalarMult(const T& row, const number& scalar) {
             auto size = row.size();
             Vector<number, vSize> res(size);
             for (int i{}; i < size; i++) res.at(i) = scalar * row.at(i);
             return res;
         }
 
-        template <Number number, int n, typename Container>
-        Vector<number, n> vectorScalarDiv(const Container& row, const number& scalar) {
+        template <Number number, int n, Container T>
+        Vector<number, n> vectorScalarDiv(const T& row, const number& scalar) {
             if (scalar == 0) throw std::domain_error("Division by zero");
             constexpr int vSize = (n != 1) ? n : -1;
             auto size = row.size();
@@ -124,18 +127,18 @@ namespace mlinalg::structures {
             return res;
         }
 
-        template <Number number, typename Container>
-        void vectorScalarMultI(Container& row, const number& scalar) {
+        template <Number number, Container T>
+        void vectorScalarMultI(T& row, const number& scalar) {
             for (int i{}; i < row.size(); i++) row.at(i) *= scalar;
         }
 
-        template <Number number, typename Container>
-        void vectorScalarDivI(Container& row, const number& scalar) {
+        template <Number number, Container T>
+        void vectorScalarDivI(T& row, const number& scalar) {
             for (int i{}; i < row.size(); i++) row.at(i) /= scalar;
         }
 
-        template <typename Container>
-        std::string vectorStringRepr(const Container& row) {
+        template <Container T>
+        std::string vectorStringRepr(const T& row) {
             std::stringstream ss{};
 
             size_t maxWidth = 0;
@@ -159,8 +162,8 @@ namespace mlinalg::structures {
             return ss.str();
         }
 
-        template <typename Container>
-        std::ostream& vectorOptionalRepr(std::ostream& os, const Container& row) {
+        template <Container T>
+        std::ostream& vectorOptionalRepr(std::ostream& os, const T& row) {
             const auto& size = row.size();
 
             auto hasVal = [](auto rowVal) {
@@ -200,8 +203,8 @@ namespace mlinalg::structures {
             return os;
         }
 
-        template <Number number, int m, int n, typename Container>
-        Matrix<number, m, n> vectorTranspose(const Container& row) {
+        template <Number number, int m, int n, Container T>
+        Matrix<number, m, n> vectorTranspose(const T& row) {
             constexpr auto sizeP = (n == -1) ? std::pair<int, int>{-1, -1} : std::pair<int, int>{1, n};
             const auto size = row.size();
             Matrix<number, sizeP.first, sizeP.second> res(1, size);

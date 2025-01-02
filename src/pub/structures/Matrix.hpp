@@ -48,14 +48,14 @@ namespace mlinalg::structures {
     using RowDynamic = Vector<number, -1>;
 
     namespace {
-        template <typename Container>
-        void checkMatrixOperandRowSize(const Container& matrix, const Container& otherMatrix) {
+        template <Container T, Container U>
+        void checkMatrixOperandRowSize(const T& matrix, const U& otherMatrix) {
             if (matrix.size() != otherMatrix.size())
                 throw std::invalid_argument("Matrices must be of the same dimensions");
         }
 
-        template <typename Container>
-        void checkMatrixOperandSize(const Container& matrix, const Container& otherMatrix) {
+        template <Container T, Container U>
+        void checkMatrixOperandSize(const T& matrix, const U& otherMatrix) {
             if (matrix.size() != otherMatrix.size())
                 throw std::invalid_argument("Matrices must be of the same dimensions");
 
@@ -63,23 +63,23 @@ namespace mlinalg::structures {
                 throw std::invalid_argument("Matrices must be of the same dimensions");
         }
 
-        template <typename Container>
-        auto& matrixRowAt(Container& matrix, int i) {
+        template <Container T>
+        auto& matrixRowAt(T& matrix, int i) {
             return matrix.at(i);
         }
 
-        template <typename Container>
-        auto matrixRowAtConst(const Container& matrix, int i) {
+        template <Container T>
+        auto matrixRowAtConst(const T& matrix, int i) {
             return matrix.at(i);
         }
 
-        template <Number number, typename Container>
-        number& matrixAt(Container& matrix, int i, int j) {
+        template <Number number, Container T>
+        number& matrixAt(T& matrix, int i, int j) {
             return matrix.at(i).at(j);
         }
 
-        template <Number number, int m, int n, typename Container>
-        vector<Vector<number, m>> matrixColsToVectorSet(const Container& matrix) {
+        template <Number number, int m, int n, Container T>
+        vector<Vector<number, m>> matrixColsToVectorSet(const T& matrix) {
             // TODO: Fix this not actually checking dynamic arrays when cofactoring
             if constexpr (m == -1 || n == -1) {
                 const auto& nRows = matrix.size();
@@ -108,8 +108,8 @@ namespace mlinalg::structures {
             }
         }
 
-        template <Number number, int m, int n, typename Container>
-        vector<Vector<number, m>> matrixRowsToVectorSet(const Container& matrix) {
+        template <Number number, int m, int n, Container T>
+        vector<Vector<number, m>> matrixRowsToVectorSet(const T& matrix) {
             constexpr int vSize = (m == -1 || n == -1) ? Dynamic : n;
             const auto& nRows = matrix.size();
             vector<Vector<number, vSize>> res;
@@ -118,8 +118,8 @@ namespace mlinalg::structures {
             return res;
         }
 
-        template <Number number, int m, int n, typename Container>
-        Matrix<number, m, n> matrixScalarMult(const Container& matrix, const number& scalar) {
+        template <Number number, int m, int n, Container T>
+        Matrix<number, m, n> matrixScalarMult(const T& matrix, const number& scalar) {
             const auto& nRows = matrix.size();
             const auto& nCols = matrix.at(0).size();
             Matrix<number, m, n> res(nRows, nCols);
@@ -130,8 +130,8 @@ namespace mlinalg::structures {
             return res;
         }
 
-        template <Number number, int m, int n, typename Container>
-        Matrix<number, m, n> matrixScalarDiv(const Container& matrix, const number& scalar) {
+        template <Number number, int m, int n, Container T>
+        Matrix<number, m, n> matrixScalarDiv(const T& matrix, const number& scalar) {
             const auto& nRows = matrix.size();
             const auto& nCols = matrix.at(0).size();
             Matrix<number, m, n> res(nRows, nCols);
@@ -142,8 +142,8 @@ namespace mlinalg::structures {
             return res;
         }
 
-        template <Number number, int m, int n, typename Container>
-        Matrix<number, m, n> matrixAdd(const Container& matrix, const Container& otherMatrix) {
+        template <Number number, int m, int n, Container T, Container U>
+        Matrix<number, m, n> matrixAdd(const T& matrix, const U& otherMatrix) {
             checkMatrixOperandSize(matrix, otherMatrix);
             const auto& nRows = matrix.size();
             const auto& nCols = matrix.at(0).size();
@@ -152,8 +152,8 @@ namespace mlinalg::structures {
             return res;
         }
 
-        template <Number number, int m, int n, typename Container>
-        Matrix<number, m, n> matrixSub(const Container& matrix, const Container& otherMatrix) {
+        template <Number number, int m, int n, Container T, Container U>
+        Matrix<number, m, n> matrixSub(const T& matrix, const U& otherMatrix) {
             checkMatrixOperandSize(matrix, otherMatrix);
             const auto& nRows = matrix.size();
             const auto& nCols = matrix.at(0).size();
@@ -162,8 +162,8 @@ namespace mlinalg::structures {
             return res;
         }
 
-        template <typename Container>
-        std::string matrixStringRepr(const Container& matrix) {
+        template <Container T>
+        std::string matrixStringRepr(const T& matrix) {
             std::stringstream ss{};
             const auto& nRows = matrix.size();
 
@@ -208,8 +208,8 @@ namespace mlinalg::structures {
          * @param vec The vector to multiply by
          * @return The vector resulting from the multiplication
          */
-        template <Number number, int m, int n, typename Container>
-        Vector<number, m> multMatByVec(const Container& matrix, const Vector<number, n>& vec) {
+        template <Number number, int m, int n, int mRes = m, Container T>
+        Vector<number, mRes> multMatByVec(const T& matrix, const Vector<number, n>& vec) {
             if (matrix.at(0).size() != vec.size())
                 throw std::invalid_argument("The columns of the matrix must be equal to the size of the vector");
 
@@ -240,8 +240,8 @@ namespace mlinalg::structures {
          * @param other The matrix to multiply by
          * @return The matrix resulting from the multiplication
          */
-        template <Number number, int m, int n, int nOther, typename Container>
-        Matrix<number, m, nOther> multMatByDef(const Container& matrix, const Container& otherMatrix) {
+        template <Number number, int m, int n, int nOther, Container T, Container U>
+        Matrix<number, m, nOther> multMatByDef(const T& matrix, const U& otherMatrix) {
             if (matrix.at(0).size() != otherMatrix.size())
                 throw std::invalid_argument(
                     "The columns of the first matrix must be equal to the rows of the second matrix");
@@ -269,8 +269,8 @@ namespace mlinalg::structures {
          *
          * @return The transposed matrix of size nxm
          */
-        template <Number number, int m, int n, typename Container>
-        TransposeVariant<number, m, n> TransposeMatrix(const Container& matrix) {
+        template <Number number, int m, int n, Container T>
+        TransposeVariant<number, m, n> TransposeMatrix(const T& matrix) {
             constexpr auto isDynamic = m == -1 || n == -1;
             constexpr auto DynamicPair = SizePair{Dynamic, Dynamic};
 
@@ -313,8 +313,8 @@ namespace mlinalg::structures {
          * @param other The matrix to augment with
          * @return The augmented matrix of size mx(n + nN)
          */
-        template <Number number, int m, int n, int nN, typename Container>
-        Matrix<number, m, nN + n> MatrixAugmentMatrix(const Container& matrix, const Container& otherMatrix) {
+        template <Number number, int m, int n, int nN, Container T, Container U>
+        Matrix<number, m, nN + n> MatrixAugmentMatrix(const T& matrix, const U& otherMatrix) {
             checkMatrixOperandRowSize(matrix, otherMatrix);
             constexpr auto isDynamic = m == -1 || n == -1;
             constexpr auto DynamicPair = SizePair{Dynamic, Dynamic};
@@ -346,7 +346,7 @@ namespace mlinalg::structures {
          * @param other The vector to augment with
          * @return The augmented matrix of size mx(n + 1)
          */
-        template <Number number, int m, int n, typename MatrixContainer, typename VectorContainer>
+        template <Number number, int m, int n, Container MatrixContainer, Container VectorContainer>
         Matrix<number, m, n + 1> MatrixAugmentVector(const MatrixContainer& matrix, const VectorContainer& vec) {
             constexpr auto isDynamic = m == -1 || n == -1;
             constexpr auto DynamicPair = SizePair{Dynamic, Dynamic};
@@ -376,9 +376,9 @@ namespace mlinalg::structures {
          * @param j Column index to remove
          * @return The subsetted matrix of size (m - 1)x(n - 1)
          */
-        template <Number number, int m, int n, typename Container>
+        template <Number number, int m, int n, Container T>
         // TODO: Find a way to account for negatives and do nothing when they are found
-        Matrix<number, m - 1, n - 1> MatrixSubset(const Container& matrix, const std::optional<int>& i,
+        Matrix<number, m - 1, n - 1> MatrixSubset(const T& matrix, const std::optional<int>& i,
                                                   const std::optional<int> j) {
             const auto& nRows = matrix.size();
             const auto& nCols = matrix.at(0).size();
@@ -412,8 +412,8 @@ namespace mlinalg::structures {
          *
          * @return The determinant of the matrix
          */
-        template <Number number, typename Container>
-        number MatrixDet2x2(const Container& matrix) {
+        template <Number number, Container T>
+        number MatrixDet2x2(const T& matrix) {
             return (matrix.at(0).at(0) * matrix.at(1).at(1)) - (matrix.at(0).at(1) * matrix.at(1).at(0));
         }
 
@@ -422,8 +422,8 @@ namespace mlinalg::structures {
         /**
          * @brief Pick the row or column with the most zeros as a cofactor row or column
          */
-        template <Number number, int m, int n, typename Container>
-        std::pair<By, int> pickCofactorRowOrCol(const Container& matrix) {
+        template <Number number, int m, int n, Container T>
+        std::pair<By, int> pickCofactorRowOrCol(const T& matrix) {
             int maxRowZeros{};
             int rowPos{};
 
@@ -463,8 +463,8 @@ namespace mlinalg::structures {
          * @param j The column index
          * @return The cofactor for the row or column
          */
-        template <Number number, int m, int n, typename Container>
-        number cofactorCommon(const Container& matrix, int i, int j) {
+        template <Number number, int m, int n, Container T>
+        number cofactorCommon(const T& matrix, int i, int j) {
             number res{};
             auto a = matrix.at(i).at(j);
             if (a == 0) return 0;
@@ -480,8 +480,8 @@ namespace mlinalg::structures {
          * @param row The row index
          * @return The cofactor for the row
          */
-        template <Number number, int m, int n, typename Container>
-        number cofactorRow(const Container& matrix, int row) {
+        template <Number number, int m, int n, Container T>
+        number cofactorRow(const T& matrix, int row) {
             number res{};
             const auto& nCols = matrix.at(0).size();
             int i{row};
@@ -497,8 +497,8 @@ namespace mlinalg::structures {
          * @param col The column index
          * @return The cofactor for the column
          */
-        template <Number number, int m, int n, typename Container>
-        number cofactorCol(const Container& matrix, int col) {
+        template <Number number, int m, int n, Container T>
+        number cofactorCol(const T& matrix, int col) {
             number res{};
             const auto& nCols = matrix.at(0).size();
             int j{col};
@@ -513,8 +513,8 @@ namespace mlinalg::structures {
          *
          * @return The determinant of the matrix
          */
-        template <Number number, int m, int n, typename Container>
-        number MatrixCofactor(const Container& matrix) {
+        template <Number number, int m, int n, Container T>
+        number MatrixCofactor(const T& matrix) {
             auto [by, val] = pickCofactorRowOrCol<number, m, n>(matrix);
             if (by == ROW)
                 return cofactorRow<number, m, n>(matrix, val);
