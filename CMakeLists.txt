@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.20)
 
 project(mlinalg LANGUAGES CXX VERSION 0.5)
 
@@ -11,7 +11,8 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
-add_compile_options(-Wall -Wextra -Werror=return-type)
+# add_compile_options(-Wall -Wextra -Werror=return-type)
+add_compile_options(-Werror=return-type)
 set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -fsanitize=address")
 
 set(CMAKE_CXX_FLAGS_RELEASE "-Os -fno-ident")
