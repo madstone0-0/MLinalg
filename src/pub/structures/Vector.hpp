@@ -82,7 +82,7 @@ namespace mlinalg::structures {
         template <Number number, int n, Container T, Container U>
         Vector<number, n> vectorSub(const T& row, const U& otherRow) {
             checkOperandSize(row, otherRow);
-            constexpr int vSize = (n != 1) ? n : -1;
+            constexpr int vSize = (n != -1) ? n : -1;
             auto size = row.size();
             Vector<number, vSize> res(size);
             for (int i{}; i < size; i++) res.at(i) = row.at(i) - otherRow.at(i);
@@ -96,6 +96,8 @@ namespace mlinalg::structures {
 
         template <Number number, int n, Container T, Container U>
         Vector<number, n> vectorAdd(const T& row, const U& otherRow) {
+            checkOperandSize(row, otherRow);
+            constexpr int vSize = (n != -1) ? n : -1;
             auto size = row.size();
             Vector<number, vSize> res(size);
             for (int i{}; i < size; i++) res.at(i) = row.at(i) + otherRow.at(i);
@@ -108,9 +110,9 @@ namespace mlinalg::structures {
             for (int i{}; i < row.size(); i++) row.at(i) += otherRow.at(i);
         }
 
-            constexpr int vSize = (n != 1) ? n : -1;
         template <Number number, int n, Container T>
         Vector<number, n> vectorScalarMult(const T& row, const number& scalar) {
+            constexpr int vSize = (n != -1) ? n : -1;
             auto size = row.size();
             Vector<number, vSize> res(size);
             for (int i{}; i < size; i++) res.at(i) = scalar * row.at(i);
@@ -120,7 +122,7 @@ namespace mlinalg::structures {
         template <Number number, int n, Container T>
         Vector<number, n> vectorScalarDiv(const T& row, const number& scalar) {
             if (scalar == 0) throw std::domain_error("Division by zero");
-            constexpr int vSize = (n != 1) ? n : -1;
+            constexpr int vSize = (n != -1) ? n : -1;
             auto size = row.size();
             Vector<number, vSize> res(size);
             for (int i{}; i < size; i++) res.at(i) = row.at(i) / scalar;
