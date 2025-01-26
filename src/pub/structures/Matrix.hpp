@@ -2,10 +2,11 @@
 
 #include <algorithm>
 #include <array>
+#include <cctype>
 #include <cmath>
+#include <cstdint>
 #include <iomanip>
 #include <memory>
-#include <numeric>
 #include <optional>
 #include <ostream>
 #include <sstream>
@@ -75,6 +76,11 @@ namespace mlinalg::structures {
 
         template <Number number, Container T>
         number& matrixAt(T& matrix, int i, int j) {
+            return matrix.at(i).at(j);
+        }
+
+        template <Number number, Container T>
+        number matrixAtConst(const T& matrix, int i, int j) {
             return matrix.at(i).at(j);
         }
 
@@ -240,20 +246,20 @@ namespace mlinalg::structures {
          * @param other The matrix to multiply by
          * @return The matrix resulting from the multiplication
          */
-        template <Number number, int m, int n, int nOther, Container T, Container U>
+        template <Number number, int m, int n, int mOther, int nOther, Container T, Container U>
         Matrix<number, m, nOther> multMatByDef(const T& matrix, const U& otherMatrix) {
             if (matrix.at(0).size() != otherMatrix.size())
                 throw std::invalid_argument(
                     "The columns of the first matrix must be equal to the rows of the second matrix");
 
-            constexpr auto isDynamic = m == -1 || n == -1;
+            constexpr bool isDynamic = m == Dynamic || n == Dynamic || mOther == Dynamic || nOther == Dynamic;
             constexpr auto DynamicPair = SizePair{Dynamic, Dynamic};
 
             constexpr int vSize = isDynamic ? Dynamic : m;
             constexpr auto resSizeP = isDynamic ? DynamicPair : SizePair{m, nOther};
             constexpr auto sizeP = isDynamic ? DynamicPair : SizePair{m, n};
 
-            auto otherColVecSet{std::move(matrixColsToVectorSet<number, m, n>(otherMatrix))};
+            auto otherColVecSet{std::move(matrixColsToVectorSet<number, mOther, nOther>(otherMatrix))};
             vector<Vector<number, vSize>> res;
             const auto& nOtherCols = otherMatrix.at(0).size();
             res.reserve(nOtherCols);
@@ -261,7 +267,141 @@ namespace mlinalg::structures {
                 auto multRes{multMatByVec<number, sizeP.first, sizeP.second>(matrix, col)};
                 res.emplace_back(multRes);
             }
+
             return helpers::fromColVectorSet<number, resSizeP.first, resSizeP.second>(res);
+        }
+
+        template <Number number, int m, int n, Container T>
+        Matrix<number, m - 1, n - 1> MatrixSubset(const T& matrix, const std::optional<int>& i,
+                                                  const std::optional<int> j);
+
+        template <size_t i0, size_t i1, size_t j0, size_t j1, Number number, int m, int n, Container T>
+        Matrix<number, (i1 - i0), (j1 - j0)> MatrixSlice(const T& matrix) {
+            if constexpr (rg::any_of(array<size_t, 4>{i0, i1, j0, j1}, [](auto x) { return x < 0; }))
+                throw std::invalid_argument("Negative slicing not supported");
+
+            if constexpr (rg::any_of(array<size_t, 2>{i1, j1}, [](auto x) { return x > n; }))
+                throw std::invalid_argument("Cannot slice past matrix bounds");
+
+            if constexpr (i0 > i1 || j0 > j1)
+                throw std::invalid_argument("Start position cannot be greater than end position");
+            constexpr size_t mSize{i1 - i0};
+            constexpr size_t nSize{j1 - j0};
+            Matrix<number, mSize, nSize> res{};
+
+            auto isInRange = [](auto x0, auto x1, auto y) { return y >= x0 && y < x1; };
+
+            size_t insJ{};
+            for (int i{}; i < m; i++) {
+                if (!isInRange(i0, i1, i)) continue;
+                insJ = 0;
+                for (int j{}; j < n; j++) {
+                    if (!isInRange(j0, j1, j)) continue;
+                    res.at(i - i0).at(insJ) = matrix.at(i).at(j);
+                    insJ++;
+                }
+            }
+            return res;
+        }
+
+        template <Number number, int m, int n, int nOther, Container T, Container U>
+        auto strassen(const T& A, const U& B) {
+            if constexpr (n == 2 && m == 2 && nOther == 2) {
+                auto m1 = [](const T& A, const U& B) {
+                    return (A.at(0).at(0) + A.at(1).at(1)) * (B.at(0).at(0) + B.at(1).at(1));
+                };
+                auto m2 = [](const T& A, const U& B) {  //
+                    return (A.at(1).at(0) + A.at(1).at(1)) * B.at(0).at(0);
+                };
+                auto m3 = [](const T& A, const U& B) {  //
+                    return A.at(0).at(0) * (B.at(0).at(1) - B.at(1).at(1));
+                };
+                auto m4 = [](const T& A, const U& B) {  //
+                    return A.at(1).at(1) * (B.at(1).at(0) - B.at(0).at(0));
+                };
+                auto m5 = [](const T& A, const U& B) {  //
+                    return (A.at(0).at(0) + A.at(0).at(1)) * B.at(1).at(1);
+                };
+                auto m6 = [](const T& A, const U& B) {  //
+                    return (A.at(1).at(0) - A.at(0).at(0)) * (B.at(0).at(0) + B.at(0).at(1));
+                };
+                auto m7 = [](const T& A, const U& B) {  //
+                    return (A.at(0).at(1) - A.at(1).at(1)) * (B.at(1).at(0) + B.at(1).at(1));
+                };
+                // Base case
+                if (A.size() <= 2 && A[0].size() <= 2 && B.size() <= 2 && B[0].size() <= 2) {
+                    auto M1 = m1(A, B);
+                    auto M2 = m2(A, B);
+                    auto M3 = m3(A, B);
+                    auto M4 = m4(A, B);
+                    auto M5 = m5(A, B);
+                    auto M6 = m6(A, B);
+                    auto M7 = m7(A, B);
+                    return Matrix<number, 2, 2>{
+                        {M1 + M4 - M5 + M7, M3 + M5},  //
+                        {M2 + M4, M1 + M3 - M2 + M6}   //
+                    };
+                }
+            }  //
+            else {
+                auto merge = []<int nSize>(const auto& A00, const auto& A01, const auto& A10, const auto& A11) {
+                    Matrix<number, nSize, nSize> res{};
+                    for (int i = 0; i < nSize / 2; i++) {
+                        for (int j = 0; j < nSize / 2; j++) {
+                            res.at(i, j) = A00.at(i, j);
+                            res.at(i, j + (nSize / 2)) = A01.at(i, j);
+                            res.at(i + (nSize / 2), j) = A10.at(i, j);
+                            res.at(i + (nSize / 2), j + (nSize / 2)) = A11.at(i, j);
+                        }
+                    }
+                    return res;
+                };
+
+                constexpr int halfM = m / 2;
+                constexpr int halfN = n / 2;
+                constexpr int halfNOther = nOther / 2;
+
+                // Split matrix A into 4 submatrices
+                auto A00 = MatrixSlice<0, halfM, 0, halfN, number, m, n>(A);
+                auto A01 = MatrixSlice<0, halfM, halfN, n, number, m, n>(A);
+                auto A10 = MatrixSlice<halfM, m, 0, halfN, number, m, n>(A);
+                auto A11 = MatrixSlice<halfM, m, halfN, n, number, m, n>(A);
+
+                // Split matrix B into 4 submatrices
+                auto B00 = MatrixSlice<0, halfM, 0, halfNOther, number, m, nOther>(B);
+                auto B01 = MatrixSlice<0, halfM, halfNOther, nOther, number, m, nOther>(B);
+                auto B10 = MatrixSlice<halfM, m, 0, halfNOther, number, m, nOther>(B);
+                auto B11 = MatrixSlice<halfM, m, halfNOther, nOther, number, m, nOther>(B);
+
+                auto AB00 =
+                    strassen<number, A00.numRows(), A00.numCols(), B00.numCols()>(A00.getMatrix(), B00.getMatrix());
+                auto AB11 =
+                    strassen<number, A11.numRows(), A11.numCols(), B11.numCols()>(A11.getMatrix(), B11.getMatrix());
+
+                auto C00 = AB00 + strassen<number, A01.numRows(), A01.numCols(), B10.numCols()>(A01.getMatrix(),
+                                                                                                B10.getMatrix());
+                auto C01 =
+                    strassen<number, A00.numRows(), A00.numCols(), B01.numCols()>(A00.getMatrix(), B01.getMatrix()) +
+                    strassen<number, A01.numRows(), A01.numCols(), B11.numCols()>(A01.getMatrix(), B11.getMatrix());
+                auto C10 =
+                    strassen<number, A10.numRows(), A10.numCols(), B00.numCols()>(A10.getMatrix(), B00.getMatrix()) +
+                    strassen<number, A11.numRows(), A11.numCols(), B10.numCols()>(A11.getMatrix(), B10.getMatrix());
+                auto C11 =
+                    strassen<number, A10.numRows(), A10.numCols(), B01.numCols()>(A10.getMatrix(), B01.getMatrix()) +
+                    AB11;
+
+                constexpr int nSize{A00.numRows() * 2};
+                return merge.template operator()<nSize>(C00, C01, C10, C11);
+            }
+        }
+
+        template <Number number, int m, int n, int nOther, Container T, Container U>
+        Matrix<number, m, nOther> multMatStrassen(const T& matrix, const U& otherMatrix) {
+            if (matrix.at(0).size() != otherMatrix.size())
+                throw std::invalid_argument(
+                    "The columns of the first matrix must be equal to the rows of the second matrix");
+
+            return strassen<number, m, n, nOther>(matrix, otherMatrix);
         }
 
         /**
@@ -417,7 +557,7 @@ namespace mlinalg::structures {
             return (matrix.at(0).at(0) * matrix.at(1).at(1)) - (matrix.at(0).at(1) * matrix.at(1).at(0));
         }
 
-        enum By { ROW = 0, COL };
+        enum By : uint8_t { ROW = 0, COL };
 
         /**
          * @brief Pick the row or column with the most zeros as a cofactor row or column
@@ -558,6 +698,8 @@ namespace mlinalg::structures {
          */
         number& at(int i, int j) { return matrixAt<number>(matrix, i, j); }
 
+        number at(int i, int j) const { return matrixAtConst<number>(matrix, i, j); }
+
         Matrix() = default;
 
         // Constructor to keep consistency with the Dynamic Matrix specialization to allow them to be used
@@ -677,7 +819,10 @@ namespace mlinalg::structures {
          * @param vec The vector to multiply by
          * @return The vector resulting from the multiplication of size m
          */
-        Vector<number, m> operator*(const Vector<number, n>& vec) const {
+        template <int nOther>
+        Vector<number, m> operator*(const Vector<number, nOther>& vec) const {
+            if (nOther != n)
+                throw std::runtime_error("The columns of the matrix must be equal to the size of the vector");
             return multMatByVec<number, m, n>(matrix, vec);
         }
 
@@ -687,9 +832,25 @@ namespace mlinalg::structures {
          * @param other
          * @return
          */
-        template <int nOther>
-        Matrix<number, m, nOther> operator*(const Matrix<number, n, nOther>& other) const {
-            return multMatByDef<number, m, n, nOther>(matrix, other.matrix);
+        template <int mOther, int nOther>
+        Matrix<number, m, nOther> operator*(const Matrix<number, mOther, nOther>& other) const
+            requires(m != Dynamic && n != Dynamic && mOther != Dynamic && nOther != Dynamic)
+        {
+            constexpr bool isDynamic = m == Dynamic || n == Dynamic || mOther == Dynamic || nOther == Dynamic;
+            constexpr bool isNotSquare = m != n || m != mOther && n != nOther;
+            constexpr bool isNotPow2 = (size_t(n) & (size_t(n) - 1)) != 0;  // Checks if n is not a power of 2
+
+            if constexpr (isDynamic || isNotSquare || isNotPow2)
+                return multMatByDef<number, m, n, mOther, nOther>(matrix, other.matrix);
+            else
+                return multMatStrassen<number, m, n, nOther>(matrix, other.matrix);
+        }
+
+        template <int mOther, int nOther>
+        Matrix<number, Dynamic, Dynamic> operator*(const Matrix<number, mOther, nOther>& other) const
+            requires((n == Dynamic && m == Dynamic) || (mOther == Dynamic && nOther == Dynamic))
+        {
+            return multMatByDef<number, Dynamic, Dynamic, Dynamic, Dynamic>(matrix, other.matrix);
         }
 
         /**
@@ -713,14 +874,14 @@ namespace mlinalg::structures {
          *
          * @return
          */
-        [[nodiscard]] int numRows() const { return m; }
+        [[nodiscard]] constexpr int numRows() const { return m; }
 
         /**
          * @brief Number of columns in the matrix
          *
          * @return
          */
-        [[nodiscard]] int numCols() const { return n; }
+        [[nodiscard]] constexpr int numCols() const { return n; }
 
         explicit operator std::string() const { return matrixStringRepr(matrix); }
 
@@ -840,9 +1001,27 @@ namespace mlinalg::structures {
             return MatrixSubset<number, m, n>(matrix, i, j);
         }
 
+        /**
+         * @brief Slice the matrix
+         *
+         * @return The sliced matrix of size (m - (i1 - i0))x(n - (j1 - j0))
+         */
+        template <size_t i0, size_t i1, size_t j0, size_t j1>
+        Matrix<number, (i1 - i0), (j1 - j0)> slice() {
+            return MatrixSlice<i0, i1, j0, j1, number, m, n>(matrix);
+        }
+
+        auto getMatrix() const { return matrix; }
+
        private:
+        template <Number num, int mM, int nN>
+        friend class Matrix;
+
         template <Number num, int nN>
         friend class Vector;
+
+        template <Number num, int mM, int nN, int nOther, Container T, Container U>
+        friend Matrix<number, m, nOther> strassen(const T& A, const U& B);
 
         /**
          * @brief Swap the contents of two matrices for copy swap idiom
@@ -964,8 +1143,10 @@ namespace mlinalg::structures {
          *
          * @param other  Matrix to move
          */
-        Matrix(Matrix&& other) noexcept
-            : matrix{std::move(other.matrix)}, m{std::move(other.m)}, n{std::move(other.n)} {}
+        Matrix(Matrix&& other) noexcept : matrix{std::move(other.matrix)}, m{other.m}, n{other.n} {
+            other.m = 0;
+            other.n = 0;
+        }
 
         /**
          * @brief Copy assignment operator
@@ -989,8 +1170,10 @@ namespace mlinalg::structures {
          */
         Matrix& operator=(Matrix&& other) noexcept {
             matrix = std::move(other.matrix);
-            m = std::move(other.m);
-            n = std::move(other.n);
+            m = other.m;
+            n = other.n;
+            other.m = 0;
+            other.n = 0;
             return *this;
         }
 
@@ -1038,8 +1221,17 @@ namespace mlinalg::structures {
          * @param other The matrix to add
          * @return The matrix resulting from the addition
          */
-        Matrix<number, Dynamic, Dynamic> operator+(const Matrix<number, Dynamic, Dynamic>& other) const {
+        template <int otherM, int otherN>
+        Matrix<number, Dynamic, Dynamic> operator+(const Matrix<number, otherM, otherN>& other) const {
             return matrixAdd<number, Dynamic, Dynamic>(matrix, other.matrix);
+        }
+
+        template <int m, int n, int otherM, int otherN>
+        friend Matrix<number, Dynamic, Dynamic> operator+(const Matrix<number, otherM, otherN>& lhs,
+                                                          const Matrix<number, m, n> rhs)
+            requires((n == Dynamic && m == Dynamic) && (otherN != Dynamic && otherM != Dynamic))
+        {
+            return matrixAdd<number, Dynamic, Dynamic>(lhs.matrix, rhs.matrix);
         }
 
         /**
@@ -1048,8 +1240,17 @@ namespace mlinalg::structures {
          * @param other The matrix to subtract
          * @return The matrix resulting from the subtraction
          */
-        Matrix<number, Dynamic, Dynamic> operator-(const Matrix<number, Dynamic, Dynamic>& other) const {
+        template <int otherM, int otherN>
+        Matrix<number, Dynamic, Dynamic> operator-(const Matrix<number, otherM, otherN>& other) const {
             return matrixSub<number, Dynamic, Dynamic>(matrix, other.matrix);
+        }
+
+        template <int m, int n, int otherM, int otherN>
+        friend Matrix<number, Dynamic, Dynamic> operator-(const Matrix<number, otherM, otherN>& lhs,
+                                                          const Matrix<number, m, n> rhs)
+            requires((n == Dynamic && m == Dynamic) && (otherN != Dynamic && otherM != Dynamic))
+        {
+            return matrixSub<number, Dynamic, Dynamic>(lhs.matrix, rhs.matrix);
         }
 
         // friend number operator*(Matrix<number, 1, n> columnVector, Vector<number, n> vector) {
@@ -1069,8 +1270,10 @@ namespace mlinalg::structures {
          * @param vec The vector to multiply by
          * @return The vector resulting from the multiplication of size m
          */
-        Vector<number, Dynamic> operator*(const Vector<number, Dynamic>& vec) const {
-            return multMatByVec<number, Dynamic, Dynamic>(matrix, vec);
+
+        template <int nOther>
+        Vector<number, Dynamic> operator*(const Vector<number, nOther>& vec) const {
+            return multMatByVec<number, Dynamic, Dynamic, Dynamic>(matrix, vec);
         }
 
         /**
@@ -1079,8 +1282,17 @@ namespace mlinalg::structures {
          * @param other
          * @return
          */
-        Matrix<number, Dynamic, Dynamic> operator*(const Matrix<number, Dynamic, Dynamic>& other) const {
-            return multMatByDef<number, Dynamic, Dynamic, Dynamic>(matrix, other.matrix);
+        template <int otherM, int otherN>
+        Matrix<number, Dynamic, Dynamic> operator*(const Matrix<number, otherM, otherN>& other) const {
+            return multMatByDef<number, Dynamic, Dynamic, Dynamic, Dynamic>(matrix, other.matrix);
+        }
+
+        template <int m, int n, int otherM, int otherN>
+        friend Matrix<number, Dynamic, Dynamic> operator*(const Matrix<number, otherM, otherN>& lhs,
+                                                          const Matrix<number, m, n> rhs)
+            requires((n == Dynamic && m == Dynamic) && (otherN != Dynamic && otherM != Dynamic))
+        {
+            return multMatByDef<number, Dynamic, Dynamic, Dynamic>(lhs.matrix, rhs.matrix);
         }
 
         /**
@@ -1089,9 +1301,18 @@ namespace mlinalg::structures {
          * @param other The transposed matrix to multiply by
          * @return The matrix resulting from the multiplication
          */
-        template <int nOther>
-        Matrix<number, Dynamic, Dynamic> operator*(const TransposeVariant<number, Dynamic, Dynamic>& other) const {
+        template <int otherM, int otherN>
+        Matrix<number, Dynamic, Dynamic> operator*(const TransposeVariant<number, otherM, Dynamic>& other) const {
             return multMatByDef<number, Dynamic, Dynamic, Dynamic>(helpers::extractMatrixFromTranspose(other));
+        }
+
+        template <int m, int n, int otherM, int otherN>
+        friend Matrix<number, Dynamic, Dynamic> operator*(const TransposeVariant<number, otherM, otherN>& lhs,
+                                                          const Matrix<number, m, n> rhs)
+            requires((n == Dynamic && m == Dynamic) && (otherN != Dynamic && otherM != Dynamic))
+        {
+            return multMatByDef<number, Dynamic, Dynamic, Dynamic>(helpers::extractMatrixFromTranspose(lhs),
+                                                                   rhs.matrix);
         }
 
         /**
@@ -1223,6 +1444,9 @@ namespace mlinalg::structures {
         }
 
        private:
+        template <Number num, int mM, int nN>
+        friend class Matrix;
+
         template <Number num, int nN>
         friend class Vector;
 
