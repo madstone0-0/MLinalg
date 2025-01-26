@@ -19,7 +19,7 @@ namespace mlinalg::structures::helpers {
      */
     template <Number num, int m, int n>
     Matrix<num, m, n> fromColVectorSet(const vector<Vector<num, m>>& vecSet) {
-        if constexpr (m == -1 || n == -1) {
+        if constexpr (m == Dynamic || n == Dynamic) {
             const auto& nRows{vecSet.size()};
             const auto& nCols{vecSet.at(0).size()};
             Matrix<num, Dynamic, Dynamic> res(nRows, nCols);

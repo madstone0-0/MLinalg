@@ -647,7 +647,7 @@ namespace mlinalg::structures {
     static const int Dynamic{-1};
 
     template <Number number>
-    class Vector<number, -1> {
+    class Vector<number, Dynamic> {
        public:
         Vector() = delete;
         explicit Vector(size_t size) : row{new VectorRowDynamic<number>(size)}, n{size} {}
@@ -671,21 +671,21 @@ namespace mlinalg::structures {
          *
          * @param other Vector to copy
          */
-        Vector(const Vector<number, -1>& other) : row{new VectorRowDynamic<number>{*other.row}}, n{other.n} {}
+        Vector(const Vector<number, Dynamic>& other) : row{new VectorRowDynamic<number>{*other.row}}, n{other.n} {}
 
         /**
          * @brief Move construct a new Vector object
          *
          * @param other Vector to move
          */
-        Vector(Vector<number, -1>&& other) noexcept : row{std::move(other.row)}, n{other.n} { other.n = 0; }
+        Vector(Vector<number, Dynamic>&& other) noexcept : row{std::move(other.row)}, n{other.n} { other.n = 0; }
 
         /**
          * @brief Copy assignment operator
          *
          * @param other Vector to copy
          */
-        Vector& operator=(const Vector<number, -1>& other) {
+        Vector& operator=(const Vector<number, Dynamic>& other) {
             if (this == &other) return *this;
             row = VectorRowDynamicPtr<number>{new VectorRowDynamic<number>{*other.row}};
             n = other.n;
@@ -710,7 +710,7 @@ namespace mlinalg::structures {
          *
          * @param other Vector to move
          */
-        Vector& operator=(Vector<number, -1>&& other) noexcept {
+        Vector& operator=(Vector<number, Dynamic>&& other) noexcept {
             row = std::move(other.row);
             n = std::move(other.n);
             return *this;
@@ -729,8 +729,10 @@ namespace mlinalg::structures {
             return vectorEqual(*row, *other.row);
         }
 
-        template <int n, int otherN, typename = std::enable_if_t<n == Dynamic && otherN != Dynamic>>
-        friend bool operator==(const Vector<number, otherN>& lhs, const Vector<number, n> rhs) {
+        template <int n, int otherN>
+        friend bool operator==(const Vector<number, otherN>& lhs, const Vector<number, n> rhs)
+            requires(n == Dynamic && otherN != Dynamic)
+        {
             return vectorEqual(*lhs.row, *rhs.row);
         }
 
@@ -876,15 +878,15 @@ namespace mlinalg::structures {
          * @return the vector resulting from the subtraction
          */
         template <int otherN>
-        Vector<number, -1> operator-(const Vector<number, otherN>& other) const {
-            return vectorSub<number, -1>(*row, *other.row);
+        Vector<number, Dynamic> operator-(const Vector<number, otherN>& other) const {
+            return vectorSub<number, Dynamic>(*row, *other.row);
         }
 
         template <int n, int otherN>
-        friend Vector<number, -1> operator-(const Vector<number, otherN>& lhs, const Vector<number, n> rhs)
+        friend Vector<number, Dynamic> operator-(const Vector<number, otherN>& lhs, const Vector<number, n> rhs)
             requires(n == Dynamic && otherN != Dynamic)
         {
-            return vectorSub<number, -1>(*lhs.row, *rhs.row);
+            return vectorSub<number, Dynamic>(*lhs.row, *rhs.row);
         }
 
         /**
@@ -894,13 +896,13 @@ namespace mlinalg::structures {
          * @return the vector resulting from the addition
          */
         template <int otherN>
-        Vector<number, -1> operator+(const Vector<number, otherN>& other) const {
-            return vectorAdd<number, -1>(*row, *other.row);
+        Vector<number, Dynamic> operator+(const Vector<number, otherN>& other) const {
+            return vectorAdd<number, Dynamic>(*row, *other.row);
         }
 
         template <int n, int otherN, typename = std::enable_if_t<n == Dynamic && otherN != Dynamic>>
-        friend Vector<number, -1> operator+(const Vector<number, otherN>& lhs, const Vector<number, n> rhs) {
-            return vectorAdd<number, -1>(*lhs.row, *rhs.row);
+        friend Vector<number, Dynamic> operator+(const Vector<number, otherN>& lhs, const Vector<number, n> rhs) {
+            return vectorAdd<number, Dynamic>(*lhs.row, *rhs.row);
         }
 
         /**
@@ -910,8 +912,8 @@ namespace mlinalg::structures {
          * @return A reference to the same vector
          */
         template <int otherN>
-        Vector<number, -1>& operator+=(const Vector<number, otherN>& other) {
-            vectorAddI<number, -1>(*row, *other.row);
+        Vector<number, Dynamic>& operator+=(const Vector<number, otherN>& other) {
+            vectorAddI<number, Dynamic>(*row, *other.row);
             return *this;
         }
 
@@ -928,7 +930,9 @@ namespace mlinalg::structures {
          * @param scalar A scalar of the same type as the vector
          * @return the vector resulting from the multiplication
          */
-        Vector<number, -1> operator*(const number& scalar) const { return vectorScalarMult<number, -1>(*row, scalar); }
+        Vector<number, Dynamic> operator*(const number& scalar) const {
+            return vectorScalarMult<number, Dynamic>(*row, scalar);
+        }
 
         /**
          * @brief Vector division by a scalar
@@ -936,7 +940,9 @@ namespace mlinalg::structures {
          * @param scalar A scalar of the same type as the vector
          * @return  The vector resulting from the division
          */
-        Vector<number, -1> operator/(const number& scalar) const { return vectorScalarDiv<number, -1>(*row, scalar); }
+        Vector<number, Dynamic> operator/(const number& scalar) const {
+            return vectorScalarDiv<number, Dynamic>(*row, scalar);
+        }
 
         /**
          * @brief In-place vector multiplication by a scalar.
@@ -944,7 +950,7 @@ namespace mlinalg::structures {
          * @param scalar A scalar of the same type as the vector.
          * @return
          */
-        Vector<number, -1>& operator*=(const number& scalar) {
+        Vector<number, Dynamic>& operator*=(const number& scalar) {
             vectorScalarMultI<number>(*row, scalar);
             return *this;
         }
@@ -1048,12 +1054,12 @@ namespace mlinalg::structures {
 
         explicit operator std::string() const { return vectorStringRepr(*row); }
 
-        friend std::ostream& operator<<(std::ostream& os, const Vector<number, -1>& row) {
+        friend std::ostream& operator<<(std::ostream& os, const Vector<number, Dynamic>& row) {
             os << std::string(row);
             return os;
         }
 
-        friend std::ostream& operator<<(std::ostream& os, const optional<Vector<number, -1>>& rowPot) {
+        friend std::ostream& operator<<(std::ostream& os, const optional<Vector<number, Dynamic>>& rowPot) {
             if (!rowPot.has_value()) {
                 os << "Empty Vector";
                 return os;
