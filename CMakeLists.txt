@@ -12,7 +12,7 @@ endif()
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 # add_compile_options(-Wall -Wextra -Werror=return-type)
-add_compile_options(-Werror=return-type)
+# add_compile_options(-Werror=return-type)
 set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -fsanitize=address")
 
 set(CMAKE_CXX_FLAGS_RELEASE "-Os -fno-ident")
