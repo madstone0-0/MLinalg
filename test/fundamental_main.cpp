@@ -9,60 +9,60 @@ using namespace mlinalg::structures;
 using namespace mlinalg;
 using namespace std;
 
-static int allocs{};
-
-void* operator new(size_t size) {
-    allocs++;
-    return malloc(size);
-}
-
-void operator delete(void* p) { free(p); }
+// static int allocs{};
+//
+// void* operator new(size_t size) {
+//     allocs++;
+//     return malloc(size);
+// }
+//
+// void operator delete(void* p) { free(p); }
 
 int main() {
-    {
-        Vector<double, Dynamic> e1{1, 0};
-        Vector<double, Dynamic> e2{0, 1};
-        auto A = Matrix<double, Dynamic, Dynamic>{{1, -2, 1}, {0, 2, -8}, {5, 0, -5}};
-        auto b = Vector<double, Dynamic>{1, 0, -1};
-        cout << "Vectors\n\n";
-        cout << e1 + e2 << '\n';
-        cout << e2 + e1 << '\n';
-        cout << A << '\n';
-        cout << (A * b).T() << '\n';
-        cout << e1.T() * e2 << '\n';
-        cout << e1 * e2 << '\n';
-        cout << e2 - e1 << '\n';
-        cout << e1.T() << '\n';
-        cout << e2.T() << '\n';
-        e1 = e2.T();
-        cout << e1 << '\n';
-        cout << e1.dist(e2) << '\n';
-        cout << e1.dot(e1) << '\n';
-        cout << (e1.T() * e1).at(0) << '\n';
-    }
-    {
-        vector<int> vec{1, 2, 3, 4, 5};
-        Vector<int, Dynamic> v{vec.begin(), vec.end()};
-        // for (int i{}; i < vec.size(); i++) v.at(i) = vec.at(i);
-        Vector<int, Dynamic> v2{v * 2};
-        Matrix<int, Dynamic, Dynamic> A{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
-        auto B = Matrix<double, Dynamic, Dynamic>{{1, -2, 1}, {0, 2, -8}, {5, 0, -5}};
-        cout << v << '\n';
-        cout << v2 << '\n';
-        auto inv = inverse(A);
-        auto inv2 = inverse(B);
-        if (inv2.has_value()) {
-            cout << inv2.value() << '\n';
-        } else {
-            cout << "Matrix is not invertible\n";
-        }
-
-        if (inv.has_value()) {
-            cout << inv.value() << '\n';
-        } else {
-            cout << "Matrix is not invertible\n";
-        }
-    }
+    // {
+    //     Vector<double, Dynamic> e1{1, 0};
+    //     Vector<double, Dynamic> e2{0, 1};
+    //     auto A = Matrix<double, Dynamic, Dynamic>{{1, -2, 1}, {0, 2, -8}, {5, 0, -5}};
+    //     auto b = Vector<double, Dynamic>{1, 0, -1};
+    //     cout << "Vectors\n\n";
+    //     cout << e1 + e2 << '\n';
+    //     cout << e2 + e1 << '\n';
+    //     cout << A << '\n';
+    //     cout << (A * b).T() << '\n';
+    //     cout << e1.T() * e2 << '\n';
+    //     cout << e1 * e2 << '\n';
+    //     cout << e2 - e1 << '\n';
+    //     cout << e1.T() << '\n';
+    //     cout << e2.T() << '\n';
+    //     e1 = e2.T();
+    //     cout << e1 << '\n';
+    //     cout << e1.dist(e2) << '\n';
+    //     cout << e1.dot(e1) << '\n';
+    //     cout << (e1.T() * e1).at(0) << '\n';
+    // }
+    // {
+    //     vector<int> vec{1, 2, 3, 4, 5};
+    //     Vector<int, Dynamic> v{vec.begin(), vec.end()};
+    //     // for (int i{}; i < vec.size(); i++) v.at(i) = vec.at(i);
+    //     Vector<int, Dynamic> v2{v * 2};
+    //     Matrix<int, Dynamic, Dynamic> A{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+    //     auto B = Matrix<double, Dynamic, Dynamic>{{1, -2, 1}, {0, 2, -8}, {5, 0, -5}};
+    //     cout << v << '\n';
+    //     cout << v2 << '\n';
+    //     auto inv = inverse(A);
+    //     auto inv2 = inverse(B);
+    //     if (inv2.has_value()) {
+    //         cout << inv2.value() << '\n';
+    //     } else {
+    //         cout << "Matrix is not invertible\n";
+    //     }
+    //
+    //     if (inv.has_value()) {
+    //         cout << inv.value() << '\n';
+    //     } else {
+    //         cout << "Matrix is not invertible\n";
+    //     }
+    // }
     // {
     //     int size{};
     //     cout << "Enter number of elements: ";
@@ -81,6 +81,39 @@ int main() {
     //     cout << A * v << '\n';
     //     cout << v.T() << '\n';
     // }
-    cout << allocs << " allocations\n";
+    // {
+    //     Vector<double, Dynamic> e1{1, 0};
+    //     Vector<double, 2> e2{0, 1};
+    //     cout << e1 - e2 << '\n';
+    //     cout << e1 + e2 << '\n';
+    //     // cout << e1 * e2 << '\n';
+    // }
+    {
+        // auto A = Matrix<int, Dynamic, Dynamic>{
+        //     {0, 1, 1, 1},  //
+        //     {1, 0, 0, 0},  //
+        //     {1, 0, 0, 1},  //
+        //     {1, 0, 1, 0},  //
+        // };
+        // auto A3 = A * A * A;
+        // cout << A3 << '\n';
+        // auto m1 = Matrix<int, 3, 3>{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+        // auto sliced = m1.slice<0, 2, 0, 2>();
+        // cout << sliced << '\n';
+
+        auto m2 = Matrix<int, 4, 4>{
+            {1, 2, 5, 6},      //
+            {3, 4, 7, 8},      //
+            {9, 10, 13, 14},   //
+            {11, 12, 15, 16},  //
+        };
+        constexpr int i1{m2.numRows() / 2};
+        constexpr int j1{m2.numCols() / 2};
+        auto sliced2 = m2.slice<0, i1, 0, j1>();
+        cout << sliced2.at(1, 0) << '\n';
+        cout << sliced2 << '\n';
+        cout << m2 * m2 << '\n';
+    }
+    // cout << allocs << " allocations\n";
     return 0;
 }

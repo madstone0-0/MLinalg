@@ -1,6 +1,7 @@
 #include <MLinalg.hpp>
 #include <catch2/catch_all.hpp>
 #include <catch2/catch_test_macros.hpp>
+#include <cmath>
 
 #include "Structures.hpp"
 #include "structures/Vector.hpp"
@@ -118,6 +119,11 @@ TEST_CASE("Vector", "[vector]") {
                 auto v3 = v1 + v2;
                 REQUIRE(v3.at(0) == 4);
                 REQUIRE(v3.at(1) == 6);
+
+                auto u1 = Vector<int, 1>{1};
+                auto u2 = Vector<int, 1>{2};
+                auto u3 = u1 + u2;
+                REQUIRE(u3.at(0) == 3);
             }
 
             SECTION("Subtraction") {
@@ -126,6 +132,11 @@ TEST_CASE("Vector", "[vector]") {
                 auto v3 = v1 - v2;
                 REQUIRE(v3.at(0) == -2);
                 REQUIRE(v3.at(1) == -2);
+
+                auto u1 = Vector<int, 1>{1};
+                auto u2 = Vector<int, 1>{2};
+                auto u3 = u1 - u2;
+                REQUIRE(u3.at(0) == -1);
             }
 
             SECTION("Vector Multiplication") {
@@ -133,6 +144,11 @@ TEST_CASE("Vector", "[vector]") {
                 auto v2 = Vector<int, 2>{3, 4};
                 auto v3 = v1 * v2;
                 REQUIRE(v3.at(0) == 11);
+
+                auto u1 = Vector<int, 1>{1};
+                auto u2 = Vector<int, 1>{2};
+                auto u3 = u1 * u2;
+                REQUIRE(u3.at(0) == 2);
             }
 
             // SECTION("Division") {
@@ -148,6 +164,10 @@ TEST_CASE("Vector", "[vector]") {
                 auto v2 = v1 * 2;
                 REQUIRE(v2.at(0) == 2);
                 REQUIRE(v2.at(1) == 4);
+
+                auto u1 = Vector<int, 1>{1};
+                auto u2 = u1 * 2;
+                REQUIRE(u2.at(0) == 2);
             }
 
             SECTION("Scalar division") {
@@ -155,6 +175,10 @@ TEST_CASE("Vector", "[vector]") {
                 auto v2 = v1 / 2;
                 REQUIRE(v2.at(0) == 0);
                 REQUIRE(v2.at(1) == 1);
+
+                auto u1 = Vector<int, 1>{1};
+                auto u2 = u1 / 2;
+                REQUIRE(u2.at(0) == 0);
             }
 
             SECTION("Dot product") {
@@ -162,6 +186,11 @@ TEST_CASE("Vector", "[vector]") {
                 auto v2 = Vector<int, 2>{3, 4};
                 auto dot = v1.dot(v2);
                 REQUIRE(dot == 11);
+
+                auto u1 = Vector<int, 1>{1};
+                auto u2 = Vector<int, 1>{2};
+                auto dot2 = u1.dot(u2);
+                REQUIRE(dot2 == 2);
             }
 
             SECTION("Distance") {
@@ -182,6 +211,10 @@ TEST_CASE("Vector", "[vector]") {
                 auto v2 = v.T();
                 REQUIRE(v2.at(0).at(0) == 1);
                 REQUIRE(v2.at(0).at(1) == 2);
+
+                auto u = Vector<int, 1>{1};
+                auto u2 = u.T();
+                REQUIRE(u2.at(0).at(0) == 1);
             }
 
             SECTION("Iteration") {
@@ -240,6 +273,11 @@ TEST_CASE("Vector", "[vector]") {
                 auto v3 = v1 + v2;
                 REQUIRE(v3.at(0) == 4);
                 REQUIRE(v3.at(1) == 6);
+
+                auto u1 = Vector<int, Dynamic>{1};
+                auto u2 = Vector<int, Dynamic>{2};
+                auto u3 = u1 + u2;
+                REQUIRE(u3.at(0) == 3);
             }
 
             SECTION("Subtraction") {
@@ -248,6 +286,11 @@ TEST_CASE("Vector", "[vector]") {
                 auto v3 = v1 - v2;
                 REQUIRE(v3.at(0) == -2);
                 REQUIRE(v3.at(1) == -2);
+
+                auto u1 = Vector<int, Dynamic>{1};
+                auto u2 = Vector<int, Dynamic>{2};
+                auto u3 = u1 - u2;
+                REQUIRE(u3.at(0) == -1);
             }
 
             SECTION("Vector Multiplication") {
@@ -255,6 +298,10 @@ TEST_CASE("Vector", "[vector]") {
                 auto v2 = Vector<int, Dynamic>{3, 4};
                 auto v3 = v1 * v2;
                 REQUIRE(v3.at(0) == 11);
+
+                auto u1 = Vector<int, Dynamic>{1};
+                auto u2 = Vector<int, Dynamic>{2};
+                auto u3 = u1 * u2;
             }
 
             // SECTION("Division") {
@@ -270,6 +317,10 @@ TEST_CASE("Vector", "[vector]") {
                 auto v2 = v1 * 2;
                 REQUIRE(v2.at(0) == 2);
                 REQUIRE(v2.at(1) == 4);
+
+                auto u1 = Vector<int, Dynamic>{1};
+                auto u2 = u1 * 2;
+                REQUIRE(u2.at(0) == 2);
             }
 
             SECTION("Scalar division") {
@@ -277,6 +328,10 @@ TEST_CASE("Vector", "[vector]") {
                 auto v2 = v1 / 2;
                 REQUIRE(v2.at(0) == 0);
                 REQUIRE(v2.at(1) == 1);
+
+                auto u1 = Vector<int, Dynamic>{1};
+                auto u2 = u1 / 2;
+                REQUIRE(u2.at(0) == 0);
             }
 
             SECTION("Dot product") {
@@ -284,6 +339,10 @@ TEST_CASE("Vector", "[vector]") {
                 auto v2 = Vector<int, Dynamic>{3, 4};
                 auto dot = v1.dot(v2);
                 REQUIRE(dot == 11);
+
+                auto u1 = Vector<int, Dynamic>{1};
+                auto u2 = Vector<int, Dynamic>{2};
+                auto dot2 = u1.dot(u2);
             }
 
             SECTION("Distance") {
@@ -304,6 +363,10 @@ TEST_CASE("Vector", "[vector]") {
                 auto v2 = v.T();
                 REQUIRE(v2.at(0).at(0) == 1);
                 REQUIRE(v2.at(0).at(1) == 2);
+
+                auto u = Vector<int, Dynamic>{1};
+                auto u2 = u.T();
+                REQUIRE(u2.at(0).at(0) == 1);
             }
 
             SECTION("Iteration") {
@@ -351,6 +414,103 @@ TEST_CASE("Vector", "[vector]") {
                     auto v1 = Vector<int, Dynamic>{1, 2};
                     auto v2 = Vector<int, Dynamic>{1, 2};
                     REQUIRE(v1 >= v2);
+                }
+            }
+        }
+
+        SECTION("Cross") {
+            SECTION("Addition") {
+                auto v1 = Vector<int, Dynamic>{1, 2};
+                auto v2 = Vector<int, 2>{3, 4};
+                auto v3 = v1 + v2;
+                auto v4 = v2 + v1;
+                REQUIRE(v3.at(0) == 4);
+                REQUIRE(v3.at(1) == 6);
+                REQUIRE(v4.at(0) == 4);
+                REQUIRE(v4.at(1) == 6);
+            }
+
+            SECTION("Subtraction") {
+                auto v1 = Vector<int, Dynamic>{1, 2};
+                auto v2 = Vector<int, 2>{3, 4};
+                auto v3 = v1 - v2;
+                auto v4 = v2 - v1;
+                REQUIRE(v3.at(0) == -2);
+                REQUIRE(v3.at(1) == -2);
+                REQUIRE(v4.at(0) == 2);
+                REQUIRE(v4.at(1) == 2);
+            }
+
+            SECTION("Vector Multiplication") {
+                auto v1 = Vector<int, Dynamic>{1, 2};
+                auto v2 = Vector<int, 2>{3, 4};
+                auto v3 = v1 * v2;
+                REQUIRE(v3.at(0) == 11);
+            }
+
+            // SECTION("Division") {
+            //   auto v1 = Vector<int, 2>{1, 2};
+            //   auto v2 = Vector<int, 2>{3, 4};
+            //   auto v3 = v1 / v2;
+            //   REQUIRE(v3.at(0) == 0);
+            //   REQUIRE(v3.at(1) == 0);
+            // }
+
+            SECTION("Dot product") {
+                auto v1 = Vector<int, Dynamic>{1, 2};
+                auto v2 = Vector<int, 2>{3, 4};
+                auto dot = v1.dot(v2);
+                REQUIRE(dot == 11);
+            }
+
+            SECTION("Distance") {
+                auto v1 = Vector<int, Dynamic>{1, 2};
+                auto v2 = Vector<int, 2>{3, 4};
+                auto dist = v1.dist(v2);
+                REQUIRE(dist == Approx(2.8284271247461903));
+            }
+
+            SECTION("Comparisions") {
+                SECTION("Equality") {
+                    auto v1 = Vector<int, Dynamic>{1, 2};
+                    auto v2 = Vector<int, 2>{1, 2};
+                    REQUIRE(v1 == v2);
+                    REQUIRE(v2 == v1);
+                }
+
+                SECTION("Inequality") {
+                    auto v1 = Vector<int, Dynamic>{1, 2};
+                    auto v2 = Vector<int, 2>{3, 4};
+                    REQUIRE(v1 != v2);
+                    REQUIRE(v2 != v1);
+                }
+
+                SECTION("Less than") {
+                    auto v1 = Vector<int, Dynamic>{1, 2};
+                    auto v2 = Vector<int, 2>{3, 4};
+                    REQUIRE(v1 < v2);
+                    REQUIRE(v2 > v1);
+                }
+
+                SECTION("Less than or equal") {
+                    auto v1 = Vector<int, Dynamic>{1, 2};
+                    auto v2 = Vector<int, 2>{1, 2};
+                    REQUIRE(v1 <= v2);
+                    REQUIRE(v2 >= v1);
+                }
+
+                SECTION("Greater than") {
+                    auto v1 = Vector<int, Dynamic>{3, 4};
+                    auto v2 = Vector<int, 2>{1, 2};
+                    REQUIRE(v1 > v2);
+                    REQUIRE(v2 < v1);
+                }
+
+                SECTION("Greater than or equal") {
+                    auto v1 = Vector<int, Dynamic>{1, 2};
+                    auto v2 = Vector<int, 2>{1, 2};
+                    REQUIRE(v1 >= v2);
+                    REQUIRE(v2 <= v1);
                 }
             }
         }
@@ -721,13 +881,106 @@ TEST_CASE("Matrix", "[matrix]") {
             }
 
             SECTION("Matrix Multiplication") {
-                auto m1 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
-                auto m2 = Matrix<int, 2, 2>{{5, 6}, {7, 8}};
-                auto m3 = m1 * m2;
-                REQUIRE(m3.at(0, 0) == 19);
-                REQUIRE(m3.at(0, 1) == 22);
-                REQUIRE(m3.at(1, 0) == 43);
-                REQUIRE(m3.at(1, 1) == 50);
+                // Test case 1: Multiply two 2x2 matrices
+                {
+                    auto m1 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
+                    auto m2 = Matrix<int, 2, 2>{{5, 6}, {7, 8}};
+                    auto m3 = m1 * m2;
+
+                    // Expected result
+                    Matrix<int, 2, 2> expected{{19, 22}, {43, 50}};
+
+                    // Verify the result
+                    for (int i = 0; i < m3.numRows(); i++) {
+                        for (int j = 0; j < m3.numCols(); j++) {
+                            REQUIRE(m3.at(i, j) == expected.at(i, j));
+                        }
+                    }
+                }
+
+                // Test case 2: Multiply by identity matrix
+                {
+                    auto m1 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
+                    auto identity = Matrix<int, 2, 2>{{1, 0}, {0, 1}};
+                    auto m2 = m1 * identity;
+
+                    // Verify that the result is the same as the original matrix
+                    for (int i = 0; i < m1.numRows(); i++) {
+                        for (int j = 0; j < m1.numCols(); j++) {
+                            REQUIRE(m2.at(i, j) == m1.at(i, j));
+                        }
+                    }
+                }
+
+                // Test case 3: Multiply by zero matrix
+                {
+                    auto m1 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
+                    auto zero = Matrix<int, 2, 2>{{0, 0}, {0, 0}};
+                    auto m2 = m1 * zero;
+
+                    // Verify that the result is a zero matrix
+                    for (int i = 0; i < m2.numRows(); i++) {
+                        for (int j = 0; j < m2.numCols(); j++) {
+                            REQUIRE(m2.at(i, j) == 0);
+                        }
+                    }
+                }
+
+                // Test case 4: Multiply non-square matrices (if supported)
+                {
+                    auto m1 = Matrix<int, 2, 3>{
+                        {1, 2, 3},  //
+                        {4, 5, 6}   //
+                    };
+                    auto m2 = Matrix<int, 3, 2>{
+                        {7, 8},   //
+                        {9, 10},  //
+                        {11, 12}  //
+                    };
+                    auto m3 = m1 * m2;
+
+                    // Expected result
+                    Matrix<int, 2, 2> expected{{58, 64}, {139, 154}};
+
+                    // Verify the result
+                    for (int i = 0; i < m3.numRows(); i++) {
+                        for (int j = 0; j < m3.numCols(); j++) {
+                            REQUIRE(m3.at(i, j) == expected.at(i, j));
+                        }
+                    }
+                }
+
+                // Test case 5: Multiply larger matrices (e.g., 4x4)
+                {
+                    auto m1 = Matrix<int, 4, 4>{
+                        {1, 2, 3, 4},     //
+                        {5, 6, 7, 8},     //
+                        {9, 10, 11, 12},  //
+                        {13, 14, 15, 16}  //
+                    };
+                    auto m2 = Matrix<int, 4, 4>{
+                        {17, 18, 19, 20},  //
+                        {21, 22, 23, 24},  //
+                        {25, 26, 27, 28},  //
+                        {29, 30, 31, 32}   //
+                    };
+                    auto m3 = m1 * m2;
+
+                    // Expected result
+                    Matrix<int, 4, 4> expected{
+                        {250, 260, 270, 280},     //
+                        {618, 644, 670, 696},     //
+                        {986, 1028, 1070, 1112},  //
+                        {1354, 1412, 1470, 1528}  //
+                    };
+
+                    // Verify the result
+                    for (int i = 0; i < m3.numRows(); i++) {
+                        for (int j = 0; j < m3.numCols(); j++) {
+                            REQUIRE(m3.at(i, j) == expected.at(i, j));
+                        }
+                    }
+                }
             }
 
             SECTION("Scalar multiplication") {
@@ -858,6 +1111,105 @@ TEST_CASE("Matrix", "[matrix]") {
                 REQUIRE(m2.at(1, 0) == 7);
                 REQUIRE(m2.at(1, 1) == 9);
             }
+
+            SECTION("Slice") {
+                // Test case 1: Slice a 3x3 matrix to get a 2x2 submatrix
+
+                auto m1 = Matrix<int, 3, 3>{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+                auto sliced1 = m1.slice<0, 2, 0, 2>();
+                REQUIRE(sliced1.numRows() == 2);
+                REQUIRE(sliced1.numCols() == 2);
+                REQUIRE(sliced1.at(0, 0) == 1);
+                REQUIRE(sliced1.at(0, 1) == 2);
+                REQUIRE(sliced1.at(1, 0) == 4);
+                REQUIRE(sliced1.at(1, 1) == 5);
+
+                // Test case 2: Slice a 4x4 matrix to get a 2x2 submatrix from the top-left corner
+
+                auto m2 = Matrix<int, 4, 4>{
+                    {1, 2, 5, 6},      //
+                    {3, 4, 7, 8},      //
+                    {9, 10, 13, 14},   //
+                    {11, 12, 15, 16},  //
+                };
+                constexpr int i1{m2.numRows() / 2};
+                constexpr int j1{m2.numCols() / 2};
+                auto sliced2 = m2.slice<0, i1, 0, j1>();
+                REQUIRE(sliced2.numRows() == 2);
+                REQUIRE(sliced2.numCols() == 2);
+                REQUIRE(sliced2.at(0, 0) == 1);
+                REQUIRE(sliced2.at(0, 1) == 2);
+                REQUIRE(sliced2.at(1, 0) == 3);
+                REQUIRE(sliced2.at(1, 1) == 4);
+
+                // Test case 3: Slice a 4x4 matrix to get a single row
+
+                auto m3 = Matrix<int, 4, 4>{
+                    {1, 2, 3, 4},
+                    {5, 6, 7, 8},
+                    {9, 10, 11, 12},
+                    {13, 14, 15, 16},
+                };
+                auto sliced3 = m3.slice<1, 2, 0, 4>();
+                REQUIRE(sliced3.numRows() == 1);
+                REQUIRE(sliced3.numCols() == 4);
+                REQUIRE(sliced3.at(0, 0) == 5);
+                REQUIRE(sliced3.at(0, 1) == 6);
+                REQUIRE(sliced3.at(0, 2) == 7);
+                REQUIRE(sliced3.at(0, 3) == 8);
+
+                // Test case 4: Slice a 4x4 matrix to get a single column
+
+                auto m4 = Matrix<int, 4, 4>{
+                    {1, 2, 3, 4},
+                    {5, 6, 7, 8},
+                    {9, 10, 11, 12},
+                    {13, 14, 15, 16},
+                };
+                auto sliced4 = m4.slice<0, 4, 2, 3>();
+                REQUIRE(sliced4.numRows() == 4);
+                REQUIRE(sliced4.numCols() == 1);
+                REQUIRE(sliced4.at(0, 0) == 3);
+                REQUIRE(sliced4.at(1, 0) == 7);
+                REQUIRE(sliced4.at(2, 0) == 11);
+                REQUIRE(sliced4.at(3, 0) == 15);
+
+                // Test case 5: Slice the entire matrix
+
+                auto m5 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
+                auto sliced5 = m5.slice<0, 2, 0, 2>();
+                REQUIRE(sliced5.numRows() == 2);
+                REQUIRE(sliced5.numCols() == 2);
+                REQUIRE(sliced5.at(0, 0) == 1);
+                REQUIRE(sliced5.at(0, 1) == 2);
+                REQUIRE(sliced5.at(1, 0) == 3);
+                REQUIRE(sliced5.at(1, 1) == 4);
+
+                // Test case 6: Slice with invalid range (i0 > i1)
+                // {
+                //     auto m6 = Matrix<int, 3, 3>{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+                //     REQUIRE_THROWS_AS(m6.slice<2, 1, 0, 2>(), std::invalid_argument);
+                // }
+                //
+                // // Test case 7: Slice with invalid range (j0 > j1)
+                // {
+                //     auto m7 = Matrix<int, 3, 3>{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+                //     REQUIRE_THROWS_AS(m7.slice<0, 2, 2, 1>(), std::invalid_argument);
+                // }
+                //
+                // // Test case 8: Slice with indices out of bounds
+                // {
+                //     auto m8 = Matrix<int, 3, 3>{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+                //     REQUIRE_THROWS_AS(m8.slice<0, 4, 0, 2>(), std::invalid_argument);
+                //     REQUIRE_THROWS_AS(m8.slice<0, 2, 0, 4>(), std::invalid_argument);
+                // }
+
+                // Test case 9: Slice with negative indices (should be caught at compile time)
+
+                auto m9 = Matrix<int, 3, 3>{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+                // This should fail at compile time, so it's not included in the runtime tests.
+                // static_assert(!std::is_invocable_v<decltype(m9.slice<-1, 2, 0, 2>()), decltype(m9)>);
+            }
         }
 
         SECTION("Dynamic") {
@@ -882,13 +1234,16 @@ TEST_CASE("Matrix", "[matrix]") {
             }
 
             SECTION("Matrix Multiplication") {
-                auto m1 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
-                auto m2 = Matrix<int, Dynamic, Dynamic>{{5, 6}, {7, 8}};
-                auto m3 = m1 * m2;
-                REQUIRE(m3.at(0, 0) == 19);
-                REQUIRE(m3.at(0, 1) == 22);
-                REQUIRE(m3.at(1, 0) == 43);
-                REQUIRE(m3.at(1, 1) == 50);
+                // Auto detect
+                {
+                    auto m1 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
+                    auto m2 = Matrix<int, Dynamic, Dynamic>{{5, 6}, {7, 8}};
+                    auto m3 = m1 * m2;
+                    REQUIRE(m3.at(0, 0) == 19);
+                    REQUIRE(m3.at(0, 1) == 22);
+                    REQUIRE(m3.at(1, 0) == 43);
+                    REQUIRE(m3.at(1, 1) == 50);
+                }
             }
 
             SECTION("Scalar multiplication") {
@@ -1011,7 +1366,6 @@ TEST_CASE("Matrix", "[matrix]") {
                 }
             }
 
-
             SECTION("Subset") {
                 auto m1 = Matrix<int, Dynamic, Dynamic>{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
                 auto m2 = m1.subset(1, 1);
@@ -1020,6 +1374,143 @@ TEST_CASE("Matrix", "[matrix]") {
                 REQUIRE(m2.at(1, 0) == 7);
                 REQUIRE(m2.at(1, 1) == 9);
             }
+        }
+
+        SECTION("Cross") {
+            SECTION("Addition") {
+                auto m1 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
+                auto m2 = Matrix<int, 2, 2>{{5, 6}, {7, 8}};
+                auto m3 = m1 + m2;
+                auto m4 = m2 + m1;
+                REQUIRE(m3.at(0, 0) == 6);
+                REQUIRE(m3.at(0, 1) == 8);
+                REQUIRE(m3.at(1, 0) == 10);
+                REQUIRE(m3.at(1, 1) == 12);
+
+                REQUIRE(m4.at(0, 0) == 6);
+                REQUIRE(m4.at(0, 1) == 8);
+                REQUIRE(m4.at(1, 0) == 10);
+                REQUIRE(m4.at(1, 1) == 12);
+            }
+
+            SECTION("Subtraction") {
+                auto m1 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
+                auto m2 = Matrix<int, 2, 2>{{5, 6}, {7, 8}};
+                auto m3 = m1 - m2;
+                auto m4 = m2 - m1;
+                REQUIRE(m3.at(0, 0) == -4);
+                REQUIRE(m3.at(0, 1) == -4);
+                REQUIRE(m3.at(1, 0) == -4);
+                REQUIRE(m3.at(1, 1) == -4);
+
+                REQUIRE(m4.at(0, 0) == 4);
+                REQUIRE(m4.at(0, 1) == 4);
+                REQUIRE(m4.at(1, 0) == 4);
+                REQUIRE(m4.at(1, 0) == 4);
+            }
+
+            SECTION("Matrix Multiplication") {
+                auto m1 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
+                auto m2 = Matrix<int, 2, 2>{{5, 6}, {7, 8}};
+                auto m3 = m1 * m2;
+                auto m4 = m2 * m1;
+                REQUIRE(m3.at(0, 0) == 19);
+                REQUIRE(m3.at(0, 1) == 22);
+                REQUIRE(m3.at(1, 0) == 43);
+                REQUIRE(m3.at(1, 1) == 50);
+
+                REQUIRE(m4.at(0, 0) == 23);
+                REQUIRE(m4.at(0, 1) == 34);
+                REQUIRE(m4.at(1, 0) == 31);
+                REQUIRE(m4.at(1, 1) == 46);
+            }
+
+            SECTION("Matrix Vector Multiplication") {
+                auto m1 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
+                auto v1 = Vector<int, 2>{1, 2};
+                auto r1 = m1 * v1;
+                // auto m2 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
+                // auto v2 = Vector<int, Dynamic>{1, 2};
+                // auto r2 = m2 * v2;
+
+                REQUIRE(r1.at(0) == 5);
+                REQUIRE(r1.at(1) == 11);
+
+                // REQUIRE(r2.at(0) == 5);
+                // REQUIRE(r2.at(1) == 11);
+            }
+            //
+            // SECTION("Augment") {
+            //     SECTION("Matrix") {
+            //         auto m1 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
+            //         auto m2 = Matrix<int, 2, 2>{{5, 6}, {7, 8}};
+            //         auto m3 = m1.augment(m2);
+            //         REQUIRE(m3.at(0, 0) == 1);
+            //         REQUIRE(m3.at(0, 1) == 2);
+            //         REQUIRE(m3.at(0, 2) == 5);
+            //         REQUIRE(m3.at(0, 3) == 6);
+            //         REQUIRE(m3.at(1, 0) == 3);
+            //         REQUIRE(m3.at(1, 1) == 4);
+            //         REQUIRE(m3.at(1, 2) == 7);
+            //         REQUIRE(m3.at(1, 3) == 8);
+            //     }
+            //
+            //     SECTION("Vector") {
+            //         auto m1 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
+            //         auto v = Vector<int, 2>{5, 6};
+            //         auto m2 = m1.augment(v);
+            //         REQUIRE(m2.at(0, 0) == 1);
+            //         REQUIRE(m2.at(0, 1) == 2);
+            //         REQUIRE(m2.at(0, 2) == 5);
+            //         REQUIRE(m2.at(1, 0) == 3);
+            //         REQUIRE(m2.at(1, 1) == 4);
+            //         REQUIRE(m2.at(1, 2) == 6);
+            //     }
+            // }
+
+            // SECTION("Comparisions") {
+            //     SECTION("Equality") {
+            //         auto m1 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
+            //         auto m2 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
+            //         REQUIRE(m1 == m2);
+            //         REQUIRE(m2 == m1);
+            //     }
+            //
+            //     SECTION("Inequality") {
+            //         auto m1 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
+            //         auto m2 = Matrix<int, 2, 2>{{5, 6}, {7, 8}};
+            //         REQUIRE(m1 != m2);
+            //         REQUIRE(m2 != m1);
+            //     }
+            //
+            //     SECTION("Less than") {
+            //         auto m1 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
+            //         auto m2 = Matrix<int, 2, 2>{{5, 6}, {7, 8}};
+            //         REQUIRE(m1 < m2);
+            //         REQUIRE_FALSE(m2 < m1);
+            //     }
+            //
+            //     SECTION("Less than or equal") {
+            //         auto m1 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
+            //         auto m2 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
+            //         REQUIRE(m1 <= m2);
+            //         REQUIRE(m2 <= m1);
+            //     }
+            //
+            //     SECTION("Greater than") {
+            //         auto m1 = Matrix<int, Dynamic, Dynamic>{{5, 6}, {7, 8}};
+            //         auto m2 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
+            //         REQUIRE(m1 > m2);
+            //         REQUIRE_FALSE(m2 > m1);
+            //     }
+            //
+            //     SECTION("Greater than or equal") {
+            //         auto m1 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
+            //         auto m2 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
+            //         REQUIRE(m1 >= m2);
+            //         REQUIRE(m2 >= m1);
+            //     }
+            // }
         }
     }
 
