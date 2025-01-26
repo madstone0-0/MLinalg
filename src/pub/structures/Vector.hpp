@@ -12,6 +12,7 @@
 #include <stdexcept>
 #include <string>
 #include <tuple>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -36,37 +37,55 @@ namespace mlinalg::structures {
         template <Container T, Container U>
         bool vectorEqual(const T& row, const U& otherRow) {
             checkOperandSize(row, otherRow);
-            return row == otherRow;
+            auto n = row.size();
+            for (size_t i{}; i < n; i++)
+                if (row.at(i) != otherRow.at(i)) return false;
+            return true;
         }
 
         template <Container T, Container U>
         bool vectorGreater(const T& row, const U& otherRow) {
             checkOperandSize(row, otherRow);
-            return row > otherRow;
+            auto n = row.size();
+            for (size_t i{}; i < n; i++)
+                if (row.at(i) <= otherRow.at(i)) return false;
+            return true;
         }
 
         template <Container T, Container U>
         bool vectorGreaterEqual(const T& row, const U& otherRow) {
             checkOperandSize(row, otherRow);
-            return row >= otherRow;
+            auto n = row.size();
+            for (size_t i{}; i < n; i++)
+                if (row.at(i) < otherRow.at(i)) return false;
+            return true;
         }
 
         template <Container T, Container U>
         bool vectorLess(const T& row, const U& otherRow) {
             checkOperandSize(row, otherRow);
-            return row < otherRow;
+            auto n = row.size();
+            for (size_t i{}; i < n; i++)
+                if (row.at(i) >= otherRow.at(i)) return false;
+            return true;
         }
 
         template <Container T, Container U>
         bool vectorLessEqual(const T& row, const U& otherRow) {
             checkOperandSize(row, otherRow);
-            return row <= otherRow;
+            auto n = row.size();
+            for (size_t i{}; i < n; i++)
+                if (row.at(i) > otherRow.at(i)) return false;
+            return true;
         }
 
         template <Container T, Container U>
         bool vectorNotEqual(const T& row, const U& otherRow) {
             checkOperandSize(row, otherRow);
-            return row != otherRow;
+            auto n = row.size();
+            for (size_t i{}; i < n; i++)
+                if (row.at(i) == otherRow.at(i)) return false;
+            return true;
         }
 
         template <Number number, Container T>
@@ -92,7 +111,8 @@ namespace mlinalg::structures {
         template <Number number, Container T, Container U>
         void vectorSubI(T& row, const U& otherRow) {
             checkOperandSize(row, otherRow);
-            constexpr int vSize = (n != 1) ? n : -1;
+            for (int i{}; i < row.size(); i++) row.at(i) -= otherRow.at(i);
+        }
 
         template <Number number, int n, Container T, Container U>
         Vector<number, n> vectorAdd(const T& row, const U& otherRow) {
@@ -410,6 +430,17 @@ namespace mlinalg::structures {
         }
 
         /**
+         * @brief In-place vector subtraction
+         *
+         * @param other  the vector to add
+         * @return A reference to the same vector
+         */
+        Vector<number, n>& operator-=(const Vector<number, n>& other) {
+            vectorSubI<number>(*row, *other.row);
+            return *this;
+        }
+
+        /**
          * @brief Vector addition
          *
          * @param other the vector to add
@@ -571,6 +602,10 @@ namespace mlinalg::structures {
        private:
         template <Number num, int mM, int nN>
         friend class Matrix;
+
+        template <Number num, int nN>
+        friend class Vector;
+
         /**
          * @brief Swap the contents of two vectors
          *
@@ -624,6 +659,13 @@ namespace mlinalg::structures {
         Vector(Iterator begin, Iterator end)
             : n(std::distance(begin, end)), row{std::make_unique<VectorRowDynamic<number>>(begin, end)} {}
 
+        template <int nN>
+        Vector(const Vector<number, nN>& other) : row{new VectorRowDynamic<number>(nN)}, n{nN} {
+            for (int i{}; i < nN; i++) {
+                this->at(i) = other.at(i);
+            }
+        }
+
         /**
          * @brief Copy construct a new Vector object
          *
@@ -636,7 +678,7 @@ namespace mlinalg::structures {
          *
          * @param other Vector to move
          */
-        Vector(Vector<number, -1>&& other) noexcept : row{std::move(other.row)}, n{other.n} {}
+        Vector(Vector<number, -1>&& other) noexcept : row{std::move(other.row)}, n{other.n} { other.n = 0; }
 
         /**
          * @brief Copy assignment operator
@@ -682,7 +724,15 @@ namespace mlinalg::structures {
          * @param other Vector to compare
          * @return true if all the entires in the vector are equal to all the entires in the other vector else false
          */
-        bool operator==(const Vector<number, -1>& other) const { return vectorEqual(*row, *other.row); }
+        template <int otherN>
+        bool operator==(const Vector<number, otherN>& other) const {
+            return vectorEqual(*row, *other.row);
+        }
+
+        template <int n, int otherN, typename = std::enable_if_t<n == Dynamic && otherN != Dynamic>>
+        friend bool operator==(const Vector<number, otherN>& lhs, const Vector<number, n> rhs) {
+            return vectorEqual(*lhs.row, *rhs.row);
+        }
 
         /**
          * @brief Greater than operator
@@ -690,7 +740,15 @@ namespace mlinalg::structures {
          * @param other Vector to compare
          * @return true if all the entries in the vector are greater than all the entries in the other vector else false
          */
-        bool operator>(const Vector<number, -1>& other) const { return vectorGreater(*row, *other.row); }
+        template <int otherN>
+        bool operator>(const Vector<number, otherN>& other) const {
+            return vectorGreater(*row, *other.row);
+        }
+
+        template <int n, int otherN, typename = std::enable_if_t<n == Dynamic && otherN != Dynamic>>
+        friend bool operator>(const Vector<number, otherN>& lhs, const Vector<number, n> rhs) {
+            return vectorGreater(*lhs.row, *rhs.row);
+        }
 
         /**
          * @brief Less than operator
@@ -698,7 +756,15 @@ namespace mlinalg::structures {
          * @param other Vector to compare
          * @return true if all the entries in the other vector are less than all the entries in this vector else false
          */
-        bool operator<(const Vector<number, -1>& other) const { return vectorLess(*row, *other.row); }
+        template <int otherN>
+        bool operator<(const Vector<number, otherN>& other) const {
+            return vectorLess(*row, *other.row);
+        }
+
+        template <int n, int otherN, typename = std::enable_if_t<n == Dynamic && otherN != Dynamic>>
+        friend bool operator<(const Vector<number, otherN>& lhs, const Vector<number, n> rhs) {
+            return vectorLess(*lhs.row, *rhs.row);
+        }
 
         /**
          * @brief Greater than or equal to operator
@@ -707,7 +773,15 @@ namespace mlinalg::structures {
          * @return true if all the entries in the vector are greater than or equal to the entries in the other vector
          * else false
          */
-        bool operator>=(const Vector<number, -1>& other) const { return vectorGreaterEqual(*row, *other.row); }
+        template <int otherN>
+        bool operator>=(const Vector<number, otherN>& other) const {
+            return vectorGreaterEqual(*row, *other.row);
+        }
+
+        template <int n, int otherN, typename = std::enable_if_t<n == Dynamic && otherN != Dynamic>>
+        friend bool operator>=(const Vector<number, otherN>& lhs, const Vector<number, n> rhs) {
+            return vectorGreaterEqual(*lhs.row, *rhs.row);
+        }
 
         /**
          * @brief Less than or equal to operator
@@ -716,7 +790,15 @@ namespace mlinalg::structures {
          * @return true if all the entries in the vector are less than or equal to the entries in the other vector else
          * false
          */
-        bool operator<=(const Vector<number, -1>& other) const { return vectorLessEqual(*row, *other.row); }
+        template <int otherN>
+        bool operator<=(const Vector<number, otherN>& other) const {
+            return vectorLessEqual(*row, *other.row);
+        }
+
+        template <int n, int otherN, typename = std::enable_if_t<n == Dynamic && otherN != Dynamic>>
+        friend bool operator<=(const Vector<number, otherN>& lhs, const Vector<number, n> rhs) {
+            return vectorLessEqual(*lhs.row, *rhs.row);
+        }
 
         /**
          * @brief Inequalty Operator
@@ -724,7 +806,15 @@ namespace mlinalg::structures {
          * @param other Vector to compare
          * @return true if all the entires in the vector are not equal to all the entries in the other vector else false
          */
-        bool operator!=(const Vector<number, -1>& other) const { return vectorNotEqual(*row, *other.row); }
+        template <int otherN>
+        bool operator!=(const Vector<number, otherN>& other) const {
+            return vectorNotEqual(*row, *other.row);
+        }
+
+        template <int n, int otherN, typename = std::enable_if_t<n == Dynamic && otherN != Dynamic>>
+        friend bool operator!=(const Vector<number, otherN>& lhs, const Vector<number, n> rhs) {
+            return vectorNotEqual(*lhs.row, *rhs.row);
+        }
 
         /*bool operator==(const Vector<number, n>& other) const { return row == other.row; }*/
 
@@ -752,8 +842,9 @@ namespace mlinalg::structures {
          * @param other The other vector
          * @return the dot product of the two vectors
          */
-        double dot(const Vector<number, -1>& other) const {
-            checkOperandSize(other);
+        template <int otherN>
+        double dot(const Vector<number, otherN>& other) const {
+            checkOperandSize(*row, *(other.row));
             return (this->T() * other).at(0);
         }
 
@@ -770,8 +861,10 @@ namespace mlinalg::structures {
          * @param other The other vector
          * @return the distance between the two vectors
          */
-        [[nodiscard]] double dist(const Vector<number, -1>& other) const {
-            checkOperandSize(other);
+
+        template <int otherN>
+        [[nodiscard]] double dist(const Vector<number, otherN>& other) const {
+            checkOperandSize(*row, *(other.row));
             auto diff = *this - other;
             return std::sqrt(diff.dot(diff));
         }
@@ -782,8 +875,16 @@ namespace mlinalg::structures {
          * @param other the vector to subtract
          * @return the vector resulting from the subtraction
          */
-        Vector<number, -1> operator-(const Vector<number, -1>& other) const {
+        template <int otherN>
+        Vector<number, -1> operator-(const Vector<number, otherN>& other) const {
             return vectorSub<number, -1>(*row, *other.row);
+        }
+
+        template <int n, int otherN>
+        friend Vector<number, -1> operator-(const Vector<number, otherN>& lhs, const Vector<number, n> rhs)
+            requires(n == Dynamic && otherN != Dynamic)
+        {
+            return vectorSub<number, -1>(*lhs.row, *rhs.row);
         }
 
         /**
@@ -792,8 +893,14 @@ namespace mlinalg::structures {
          * @param other the vector to add
          * @return the vector resulting from the addition
          */
-        Vector<number, -1> operator+(const Vector<number, -1>& other) const {
+        template <int otherN>
+        Vector<number, -1> operator+(const Vector<number, otherN>& other) const {
             return vectorAdd<number, -1>(*row, *other.row);
+        }
+
+        template <int n, int otherN, typename = std::enable_if_t<n == Dynamic && otherN != Dynamic>>
+        friend Vector<number, -1> operator+(const Vector<number, otherN>& lhs, const Vector<number, n> rhs) {
+            return vectorAdd<number, -1>(*lhs.row, *rhs.row);
         }
 
         /**
@@ -802,7 +909,8 @@ namespace mlinalg::structures {
          * @param other  the vector to add
          * @return A reference to the same vector
          */
-        Vector<number, -1>& operator+=(const Vector<number, -1>& other) {
+        template <int otherN>
+        Vector<number, -1>& operator+=(const Vector<number, otherN>& other) {
             vectorAddI<number, -1>(*row, *other.row);
             return *this;
         }
@@ -847,8 +955,9 @@ namespace mlinalg::structures {
          * @param vec Another vector of the same size as the vector
          * @return  A 1x1 vector containing the dot product of the two vectors
          */
-        auto operator*(const Vector<number, Dynamic>& vec) const {
-            checkOperandSize(vec);
+        template <int otherN>
+        auto operator*(const Vector<number, otherN>& vec) const {
+            checkOperandSize(*row, *(vec.row));
             return this->T() * vec;
         }
 
@@ -956,6 +1065,10 @@ namespace mlinalg::structures {
        private:
         template <Number num, int mM, int nN>
         friend class Matrix;
+
+        template <Number num, int nN>
+        friend class Vector;
+
         /**
          * @brief Swap the contents of two vectors
          *
@@ -967,9 +1080,10 @@ namespace mlinalg::structures {
             swap(first.row, second.row);
         }
 
-        void checkOperandSize(const Vector<number, -1>& other) const {
-            if (other.size() != this->size()) throw std::invalid_argument("Vectors must be of the same size");
-        }
+        // template <int otherN>
+        // void checkOperandSize(const Vector<number, otherN>& other) const {
+        //     if (other.size() != this->size()) throw std::invalid_argument("Vectors must be of the same size");
+        // }
 
         size_t n;
         VectorRowDynamicPtr<number> row{std::make_unique<VectorRowDynamic<number>>()};
