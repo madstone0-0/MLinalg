@@ -79,4 +79,9 @@ namespace mlinalg::structures::helpers {
         return std::get<Vector<num, m>>(T);
     }
 
+    template <Number num, int m, int n>
+    Matrix<num, Dynamic, Dynamic> toDynamic(const Matrix<num, m, n> matrix) {
+        return {matrix};
+    }
+
 }  // namespace mlinalg::structures::helpers

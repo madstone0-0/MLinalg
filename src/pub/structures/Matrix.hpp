@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef DEBUG
+#include "../Logging.hpp"
+#endif
+
 #include <algorithm>
 #include <array>
 #include <cctype>
@@ -122,6 +126,20 @@ namespace mlinalg::structures {
             res.reserve(nRows);
             for (const auto& row : matrix) res.emplace_back(row);
             return res;
+        }
+
+        template <Number number, Container T, Container U>
+        bool matrixEqual(const T& matrix, const U& otherMatrix) {
+            const auto& nRows{matrix.size()};
+            const auto& nCols{matrix.at(0).size()};
+            const auto& nRowsOther{otherMatrix.size()};
+            const auto& nColsOther{otherMatrix.at(0).size()};
+            if (nRows != nRowsOther || nCols != nColsOther) return false;
+            for (size_t i{}; i < nRows; i++)
+                for (size_t j{}; j < nCols; j++) {
+                    if (matrix.at(i).at(j) != otherMatrix.at(i).at(j)) return false;
+                }
+            return true;
         }
 
         template <Number number, int m, int n, Container T>
@@ -811,7 +829,19 @@ namespace mlinalg::structures {
          *
          * @param other The matrix to compare
          */
-        auto operator<=>(const Matrix& other) const = default;
+        // auto operator<=>(const Matrix& other) const = default;
+
+        /**
+         * @brief Equality operator for the matrix
+         *
+         * @param other The matrix to compare
+         * @return True if the matrices are equal, i.e. are of the same dimensions and have the same elements
+         */
+
+        template <int otherM, int otherN>
+        bool operator==(const Matrix<number, otherM, otherN>& other) const {
+            return matrixEqual<number>(this->matrix, other.matrix);
+        }
 
         /**
          * @brief Matrix multiplication by a vector
@@ -824,6 +854,15 @@ namespace mlinalg::structures {
             if (nOther != n)
                 throw std::runtime_error("The columns of the matrix must be equal to the size of the vector");
             return multMatByVec<number, m, n>(matrix, vec);
+        }
+
+        template <int nOther>
+        Vector<number, Dynamic> operator*(const Vector<number, nOther>& vec) const
+            requires(nOther == Dynamic)
+        {
+            if (this->numCols() != vec.size())
+                throw std::runtime_error("The columns of the matrix must be equal to the size of the vector");
+            return multMatByVec<number, Dynamic, Dynamic>(matrix, vec);
         }
 
         /**
@@ -840,10 +879,18 @@ namespace mlinalg::structures {
             constexpr bool isNotSquare = m != n || m != mOther && n != nOther;
             constexpr bool isNotPow2 = (size_t(n) & (size_t(n) - 1)) != 0;  // Checks if n is not a power of 2
 
-            if constexpr (isDynamic || isNotSquare || isNotPow2)
+            if constexpr (isDynamic || isNotSquare || isNotPow2) {
+#ifdef DEBUG
+                logging::log("Using default matrix multiplication algorithm", "Matrix operator*", logging::Level::INF);
+#endif
                 return multMatByDef<number, m, n, mOther, nOther>(matrix, other.matrix);
-            else
+            } else {
+#ifdef DEBUG
+                logging::log("Using strassen's matrix multiplication algorithm", "Matrix operator*",
+                             logging::Level::INF);
+#endif
                 return multMatStrassen<number, m, n, nOther>(matrix, other.matrix);
+            }
         }
 
         template <int mOther, int nOther>
@@ -1106,6 +1153,14 @@ namespace mlinalg::structures {
             }
         }
 
+        template <int m, int n>
+        Matrix(const Matrix<number, m, n>& other)
+            requires(m != -1 && n != -1)
+            : m{m}, n{n} {
+            matrix.reserve(m);
+            for (const auto& row : other.matrix) matrix.emplace_back(row);
+        }
+
         /**
          * @brief Access the ith row of the matrix
          *
@@ -1262,7 +1317,17 @@ namespace mlinalg::structures {
          *
          * @param other The matrix to compare
          */
-        auto operator<=>(const Matrix& other) const = default;
+        // auto operator<=>(const Matrix& other) const = default;
+        /**
+         * @brief Equality operator for the matrix
+         *
+         * @param other The matrix to compare
+         * @return True if the matrices are equal, i.e. are of the same dimensions and have the same elements
+         */
+        template <int otherM, int otherN>
+        bool operator==(const Matrix<number, otherM, otherN>& other) const {
+            return matrixEqual<number>(this->matrix, other.matrix);
+        }
 
         /**
          * @brief Matrix multiplication by a vector

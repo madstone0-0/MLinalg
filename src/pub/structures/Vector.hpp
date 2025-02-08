@@ -331,48 +331,52 @@ namespace mlinalg::structures {
          */
         bool operator==(const Vector& other) const { return vectorEqual(*row, *other.row); }
 
-        /**
-         * @brief Greater than operator
-         *
-         * @param other Vector to compare
-         * @return true if all the entries in the vector are greater than all the entries in the other vector else false
-         */
-        bool operator>(const Vector& other) const { return vectorGreater(*row, *other.row); }
-
-        /**
-         * @brief Less than operator
-         *
-         * @param other Vector to compare
-         * @return true if all the entries in the other vector are less than all the entries in this vector else false
-         */
-        bool operator<(const Vector& other) const { return vectorLess(*row, *other.row); }
-
-        /**
-         * @brief Greater than or equal to operator
-         *
-         * @param other Vector to compare
-         * @return true if all the entries in the vector are greater than or equal to the entries in the other vector
-         * else false
-         */
-        bool operator>=(const Vector& other) const { return vectorGreaterEqual(*row, *other.row); }
-
-        /**
-         * @brief Less than or equal to operator
-         *
-         * @param other Vector to compare
-         * @return true if all the entries in the vector are less than or equal to the entries in the other vector else
-         * false
-         */
-        bool operator<=(const Vector& other) const { return vectorLessEqual(*row, *other.row); }
-
-        /**
-         * @brief Inequalty Operator
-         *
-         * @param other Vector to compare
-         * @return true if all the entires in the vector are not equal to all the entries in the other vector else false
-         */
-        bool operator!=(const Vector& other) const { return vectorNotEqual(*row, *other.row); }
-
+        // /**
+        //  * @brief Greater than operator
+        //  *
+        //  * @param other Vector to compare
+        //  * @return true if all the entries in the vector are greater than all the entries in the other vector else
+        //  false
+        //  */
+        // bool operator>(const Vector& other) const { return vectorGreater(*row, *other.row); }
+        //
+        // /**
+        //  * @brief Less than operator
+        //  *
+        //  * @param other Vector to compare
+        //  * @return true if all the entries in the other vector are less than all the entries in this vector else
+        //  false
+        //  */
+        // bool operator<(const Vector& other) const { return vectorLess(*row, *other.row); }
+        //
+        // /**
+        //  * @brief Greater than or equal to operator
+        //  *
+        //  * @param other Vector to compare
+        //  * @return true if all the entries in the vector are greater than or equal to the entries in the other vector
+        //  * else false
+        //  */
+        // bool operator>=(const Vector& other) const { return vectorGreaterEqual(*row, *other.row); }
+        //
+        // /**
+        //  * @brief Less than or equal to operator
+        //  *
+        //  * @param other Vector to compare
+        //  * @return true if all the entries in the vector are less than or equal to the entries in the other vector
+        //  else
+        //  * false
+        //  */
+        // bool operator<=(const Vector& other) const { return vectorLessEqual(*row, *other.row); }
+        //
+        // /**
+        //  * @brief Inequalty Operator
+        //  *
+        //  * @param other Vector to compare
+        //  * @return true if all the entires in the vector are not equal to all the entries in the other vector else
+        //  false
+        //  */
+        // bool operator!=(const Vector& other) const { return vectorNotEqual(*row, *other.row); }
+        //
         /*bool operator==(const Vector<number, n>& other) const { return row == other.row; }*/
 
         ~Vector() { row.reset(); }
@@ -660,7 +664,9 @@ namespace mlinalg::structures {
             : n(std::distance(begin, end)), row{std::make_unique<VectorRowDynamic<number>>(begin, end)} {}
 
         template <int nN>
-        Vector(const Vector<number, nN>& other) : row{new VectorRowDynamic<number>(nN)}, n{nN} {
+        Vector(const Vector<number, nN>& other)
+            requires(nN != Dynamic)
+            : row{new VectorRowDynamic<number>(nN)}, n{nN} {
             for (int i{}; i < nN; i++) {
                 this->at(i) = other.at(i);
             }
@@ -900,8 +906,10 @@ namespace mlinalg::structures {
             return vectorAdd<number, Dynamic>(*row, *other.row);
         }
 
-        template <int n, int otherN, typename = std::enable_if_t<n == Dynamic && otherN != Dynamic>>
-        friend Vector<number, Dynamic> operator+(const Vector<number, otherN>& lhs, const Vector<number, n> rhs) {
+        template <int n, int otherN>
+        friend Vector<number, Dynamic> operator+(const Vector<number, otherN>& lhs, const Vector<number, n> rhs)
+            requires(n == Dynamic && otherN != Dynamic)
+        {
             return vectorAdd<number, Dynamic>(*lhs.row, *rhs.row);
         }
 
@@ -914,6 +922,18 @@ namespace mlinalg::structures {
         template <int otherN>
         Vector<number, Dynamic>& operator+=(const Vector<number, otherN>& other) {
             vectorAddI<number, Dynamic>(*row, *other.row);
+            return *this;
+        }
+
+        /**
+         * @brief In-place vector subtraction
+         *
+         * @param other  the vector to add
+         * @return A reference to the same vector
+         */
+        template <int otherN>
+        Vector<number, Dynamic>& operator-=(const Vector<number, otherN>& other) {
+            vectorSubI<number>(*row, *other.row);
             return *this;
         }
 

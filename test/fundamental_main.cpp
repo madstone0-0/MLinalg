@@ -1,6 +1,10 @@
 #include <MLinalg.hpp>
 #include <boost/rational.hpp>
+#include <chrono>
 #include <iostream>
+#include <random>
+
+#include "Operations.hpp"
 
 using namespace std;
 using namespace mlinalg::structures;
@@ -114,6 +118,125 @@ int main() {
         cout << sliced2 << '\n';
         cout << m2 * m2 << '\n';
     }
+
+    {
+        const int N = 100;  // Matrix multiplication is more expensive, smaller N
+        Matrix<long long, N, N> m1{};
+        Matrix<long long, N, N> m2{};
+
+        // Initialize matrices with large data
+        for (int i{}; i < N; i++) {
+            for (int j{}; j < N; j++) {
+                m1.at(i, j) = i + j;
+                m2.at(i, j) = i - j;
+            }
+        }
+
+        // cout << m1 << '\n';
+        // cout << m2 << '\n';
+        auto res{m1 * m2};
+        // cout << res << '\n';
+    }
+
+    // {
+    //     auto A = Matrix<boost::rational<double>, 4, 4>{
+    //         // auto A = Matrix<double, 4, 4>{
+    //         {5., 6., 6., 8.},  //
+    //         {2., 2., 2., 8.},  //
+    //         {6., 6., 2., 8.},  //
+    //         {2., 3., 6., 7.},  //
+    //     };
+    //     cout << A << '\n';
+    //     auto AInv = inverse(A);
+    //     if (AInv.has_value()) {
+    //         cout << AInv.value() << '\n';
+    //         cout << A * AInv.value() << '\n';
+    //     } else {
+    //         cout << "Matrix has no inverse\n";
+    //     }
+    // }
     // cout << allocs << " allocations\n";
+
+    // {
+    //     LinearSystem<double, 4, 6> system5{
+    //         {1, -3, 0, -1, 0, -2},
+    //         {0, 1, 0, 0, -4, 1},
+    //         {0, 0, 0, 1, 9, 4},
+    //         {0, 0, 0, 0, 0, 10},
+    //     };
+    //     cout << system5 << '\n';
+    //     isInconsistent(system5);
+    // }
+
+    {
+        LinearSystem<double, 3, 4> system1{{
+            {1, 2, 3, 4},
+            {0, 0, 2, 3},
+            {0, 0, 0, 0},
+        }};
+
+        cout << system1 << '\n';
+        auto res = getPivots(system1);
+        for (const auto& val : res) {
+            if (val.has_value())
+                cout << val.value() << ' ';
+            else
+                cout << "None ";
+        }
+        cout << '\n';
+        cout << res.size() << '\n';
+    }
+
+    {
+        LinearSystem<double, 3, 5> system4{
+            {1, -7, 0, 6, 5},
+            {0, 0, 1, -2, -3},
+            {-1, 7, -4, 2, 7},
+        };
+
+        cout << system4 << '\n';
+        auto res = getPivots(system4);
+        for (const auto& val : res) {
+            if (val.has_value())
+                cout << val.value() << ' ';
+            else
+                cout << "None ";
+        }
+        cout << '\n';
+        cout << res.size() << '\n';
+    }
+    // {
+    //     LinearSystem<double, 2, 2> squareSystem({
+    //         {3, 1},
+    //         {1, 2},
+    //     });
+    //     cout << squareSystem << '\n';
+    //     auto res = getPivots(squareSystem);
+    //     for (const auto& val : res) {
+    //         if (val.has_value())
+    //             cout << val.value() << ' ';
+    //         else
+    //             cout << "None ";
+    //     }
+    //     cout << '\n';
+    //     cout << res.size() << '\n';
+    // }
+    {
+        // Create random 1000x300 matrix
+        std::mt19937 gen{std::random_device{}()};
+        std::uniform_int_distribution<int> dist{-100, 100};
+        constexpr int N = 512;
+        Matrix<int, N, N> m1{};
+        for (int i{}; i < N; i++) {
+            for (int j{}; j < N; j++) {
+                m1.at(i, j) = dist(gen);
+            }
+        }
+
+        // auto start = std::chrono::high_resolution_clock::now();
+        // auto mult = m1 * m1;
+        // auto end = std::chrono::high_resolution_clock::now() - start;
+        // cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end).count() << "ms\n";
+    }
     return 0;
 }

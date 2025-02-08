@@ -8,15 +8,20 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <cstdlib>
 #include <map>
 #include <numeric>
 #include <optional>
 #include <ostream>
+#include <set>
+#include <stdexcept>
 #include <vector>
 
 #include "Structures.hpp"
 
 using std::vector, std::array, std::optional;
+
+constexpr double EPSILON = std::numeric_limits<double>::epsilon();
 
 namespace mlinalg {
     using namespace structures;
@@ -31,8 +36,8 @@ namespace mlinalg {
     /**
      * @brief Row of optional numbers type alias.
      */
-    template <Number number, int n>
-    using RowOptional = std::conditional_t<n == -1, RowDynamic<optional<number>>, Row<optional<number>, n - 1>>;
+    template <Number number, int m>
+    using RowOptional = std::conditional_t<m == -1, RowDynamic<optional<number>>, Row<optional<number>, m>>;
 
     /**
      * @brief Checks if a linear system is in echelon form.
@@ -44,7 +49,7 @@ namespace mlinalg {
      * @return true if the system is in echelon form, false otherwise.
      */
     template <Number number, int m, int n>
-    bool isInEchelonForm(const LinearSystem<number, m, n>& system, const RowOptional<number, n>& pivots) {
+    bool isInEchelonForm(const LinearSystem<number, m, n>& system, const RowOptional<number, m>& pivots) {
         const auto& nRows = system.numRows();
 
         for (size_t i{}; i < pivots.size(); i++)
@@ -54,7 +59,7 @@ namespace mlinalg {
     }
 
     /**
-     * @brief Checks if a linear system is inconsistent.
+     * @brief Checks if a linear system is inconsistent. Assumes the linear system is in the form [A | b].
      *
      * @param system The linear system to check.
      * @return true if the system is inconsistent, false otherwise.
@@ -66,9 +71,9 @@ namespace mlinalg {
         for (const auto& row : system) {
             size_t zeroCount{};
             for (size_t i{}; i < nCols - 1; i++)
-                if (row.at(i) == 0) zeroCount++;
+                if (std::abs(row.at(i)) <= EPSILON) zeroCount++;
 
-            if (zeroCount == nCols && row.back() != 0) return true;
+            if (zeroCount == nCols - 1 && row.back() != 0) return true;
         }
         return false;
     }
@@ -83,7 +88,7 @@ namespace mlinalg {
      * @return true if the system is in reduced echelon form, false otherwise.
      */
     template <Number number, int m, int n>
-    bool isInReducedEchelonForm(const LinearSystem<number, m, n>& system, const RowOptional<number, n>& pivots) {
+    bool isInReducedEchelonForm(const LinearSystem<number, m, n>& system, const RowOptional<number, m>& pivots) {
         for (int i{1}; i < pivots.size(); i++) {
             if (!pivots.at(i).has_value()) continue;
             for (int j{i - 1}; j >= 0; j--)
@@ -115,8 +120,8 @@ namespace mlinalg {
         }
         leftSide = vector{leftSide.at(varPos)};
         auto rightSimpl = std::accumulate(rightSide.begin(), rightSide.end(), number{0});
-        if (leftSide.at(0) == 0) {
-            if (rightSimpl == 0 && leftSide.at(0) == 0)
+        if (std::abs(leftSide.at(0)) <= EPSILON) {
+            if (std::abs(rightSimpl) <= EPSILON && std::abs(leftSide.at(0)) <= EPSILON)
                 return 0;
             else
                 return std::nullopt;
@@ -133,19 +138,25 @@ namespace mlinalg {
      * @return The pivots of the system, if they exist.
      */
     template <Number number, int m, int n>
-    RowOptional<number, n> getPivots(const LinearSystem<number, m, n>& system) {
+    RowOptional<number, m> getPivots(const LinearSystem<number, m, n>& system) {
         const auto& nRows = system.numRows();
         const auto& nCols = system.numCols();
 
-        RowOptional<number, n> pivots(nCols - 1);
-        for (size_t idx{}; idx < nRows; idx++)
-            for (size_t i{}; i < nCols - 1; i++) {
-                const auto& row = system.at(idx);
-                if (row.at(i) != 0 && pivots.at(i) == nullopt) {
-                    pivots.at(i) = row.at(i);
+        std::set<size_t> seenCols{};
+        size_t pivIdx{};
+        size_t colPos{};
+        RowOptional<number, m> pivots(nRows);
+        for (size_t idx{}; idx < nRows; idx++) {
+            const auto& row = system.at(idx);
+            for (size_t i{colPos}; i < nCols - 1; i++) {
+                colPos++;
+                if (std::abs(row.at(i)) > EPSILON) {
+                    pivots.at(pivIdx) = row.at(i);
+                    pivIdx++;
                     break;
                 }
             }
+        }
         return pivots;
     }
 
@@ -186,7 +197,7 @@ namespace mlinalg {
             int mid = floor((size - 1) / 2.);
             size_t count{};
             for (size_t i{}; i < size - 1; i++)
-                if (row.at(i) == 0 && i <= mid) count++;
+                if (std::abs(row.at(i)) <= EPSILON && i <= mid) count++;
             return count;
         };
 
@@ -230,27 +241,37 @@ namespace mlinalg {
     LinearSystem<number, m, n> refSq(const LinearSystem<number, m, n>& sys) {
         LinearSystem<number, m, n> system{sys};
         const auto& nRows = system.numRows();
+        const auto& nCols = system.numCols();
 
-        RowOptional<number, n> pivots = getPivots(system);
+        for (size_t j{}; j < nCols; j++) {
+            if (system.at(j, j) == 0) {
+                number big{std::abs(system.at(j, j))};
+                size_t kRow{j};
 
-        while (!isInEchelonForm(system, pivots)) {
-            for (size_t i{}; i < pivots.size(); i++) {
-                pivots = getPivots(system);
-                const auto& pivot = pivots.at(i);
-                if (!pivot.has_value()) continue;
-                for (size_t j{i + 1}; j < nRows; j++) {
-                    system = rearrangeSystem(system);
-                    pivots = getPivots(system);
-                    auto lower = system.at(j).at(i);
-                    if (lower == 0) continue;
-                    if (pivot == 0) continue;
-
-                    auto permute = lower / pivot.value();
-                    auto rowItems = system.at(j);
-                    Row<number, n> permuted{permute * system.at(i)};
-                    auto newRow = permuted - rowItems;
-                    system.at(j) = newRow;
+                for (size_t k{j + 1}; k < nCols - 1; k++) {
+                    auto val = std::abs(system.at(k, j));
+                    if (val > big) {
+                        big = val;
+                        kRow = k;
+                    }
                 }
+
+                if (kRow != j) {
+                    auto temp = system.at(j);
+                    system.at(j) = system.at(kRow);
+                    system.at(kRow) = temp;
+                }
+            }
+
+            auto pivot = system.at(j, j);
+
+            if (std::abs(pivot) <= EPSILON) {
+                throw std::runtime_error("Matrix is singular or numerically unstable");
+            }
+
+            for (size_t i{j + 1}; i < nCols; i++) {
+                auto permute = system.at(i, j) / pivot;
+                system.at(i) -= permute * system.at(j);
             }
         }
         return system;
@@ -269,18 +290,39 @@ namespace mlinalg {
         const auto& nRows = system.numRows();
         const auto& nCols = system.numCols();
 
-        for (size_t col = 0; col < nCols && col < nRows; ++col) {
-            system = rearrangeSystem(system);
-            size_t pivotRow = col;
+        size_t pivRow{};
+        size_t pivCol{};
+        while (pivRow < nRows && pivCol < nCols) {
+            number big{std::abs(system.at(pivRow, pivCol))};
+            size_t kRow{pivRow};
 
-            for (size_t row = pivotRow + 1; row < nRows; ++row) {
-                if (system.at(row).at(col) != 0) {
-                    auto factor = system.at(row).at(col) / system.at(pivotRow).at(col);
-                    for (size_t j = col; j < nCols; ++j) {
-                        system.at(row).at(j) -= factor * system.at(pivotRow).at(j);
+            // Check if current pivot is (effectively) zero
+            if (std::abs(system.at(pivRow, pivCol)) < EPSILON) {
+                // Find the first row below with a non-zero entry in this column
+                size_t kRow = pivRow;
+                for (kRow = pivRow + 1; kRow < nRows; kRow++) {
+                    if (std::abs(system.at(kRow, pivCol)) >= EPSILON) {
+                        break;
                     }
                 }
+
+                if (kRow == nRows) {  // No non-zero found; move to next column
+                    pivCol++;
+                    continue;
+                } else {  // Swap rows to bring the non-zero entry up
+                    auto temp = system.at(pivRow);
+                    system.at(pivRow) = system.at(kRow);
+                    system.at(kRow) = temp;
+                }
             }
+
+            for (size_t i{pivRow + 1}; i < nRows; i++) {
+                auto permute = system.at(i, pivCol) / system.at(pivRow, pivCol);
+                system.at(i) -= permute * system.at(pivRow);
+            }
+
+            pivRow++;
+            pivCol++;
         }
         return system;
     }
@@ -326,7 +368,7 @@ namespace mlinalg {
 
             if (pivotRow >= nRows) continue;
 
-            if (system.at(pivotRow).at(col - 1) == 0) continue;
+            if (std::abs(system.at(pivotRow).at(col - 1)) <= EPSILON) continue;
 
             if (identity) {
                 auto pivotValue = system.at(pivotRow).at(col - 1);
@@ -364,7 +406,7 @@ namespace mlinalg {
         const auto& nRows = system.numRows();
         const auto& nCols = system.numCols();
 
-        RowOptional<number, n> pivots = getPivots(system);
+        RowOptional<number, m> pivots = getPivots(system);
         if (!isInEchelonForm(system, pivots)) system = ref(system);
         pivots = getPivots(system);
 
@@ -372,13 +414,13 @@ namespace mlinalg {
             auto size = pivots.size() < nCols - 1 ? pivots.size() : nCols - 1;
             for (int i{1}; i < size; i++) {
                 pivots = getPivots(system);
-                const auto& pivot = pivots.at(i);
-                if (!pivot.has_value()) continue;
+                if (!pivots.at(i).has_value()) continue;
                 for (int j{i - 1}; j >= 0; j--) {
                     pivots = getPivots(system);
+                    const auto& pivot = pivots.at(i);
                     auto upper = system.at(j).at(i);
-                    if (upper == 0) continue;
-                    if (pivot == 0) continue;
+                    if (std::abs(upper) <= EPSILON) continue;
+                    if (std::abs(pivot.value()) <= EPSILON) continue;
 
                     auto permute = upper / pivot.value();
                     auto rowItems = system.at(j);
@@ -393,8 +435,8 @@ namespace mlinalg {
             for (size_t i{}; i < pivots.size(); i++) {
                 try {
                     const auto& pivot{system.at(i).at(i)};
-                    if (pivot == 0) continue;
-                    if (pivot != 1) system.at(i) = system.at(i) * (1 / pivot);
+                    if (std::abs(pivot) <= EPSILON) continue;
+                    if (std::abs(pivot - 1) > EPSILON) system.at(i) = system.at(i) * (1 / pivot);
                 } catch (const std::out_of_range& e) {
                     continue;
                 }
@@ -423,7 +465,7 @@ namespace mlinalg {
     }
 
     template <Number number, int m, int n>
-    optional<RowOptional<number, n>> findSolutions(const LinearSystem<number, m, n>& system);
+    optional<RowOptional<number, m>> findSolutions(const LinearSystem<number, m, n>& system);
 
     /**
      * @brief Find the solutions to a matrix equation in the form:
@@ -447,8 +489,8 @@ namespace mlinalg {
      * @return The solutions to the system if they exist, nullopt otherwise.
      */
     template <Number number, int m, int n>
-    optional<RowOptional<number, n>> findSolutions(const LinearSystem<number, m, n>& system) {
-        RowOptional<number, n> solutions{};
+    optional<RowOptional<number, m>> findSolutions(const LinearSystem<number, m, n>& system) {
+        RowOptional<number, m> solutions{};
         system = rearrangeSystem(system);
 
         auto reducedEchelon = rref(system);
@@ -507,10 +549,10 @@ namespace mlinalg {
     template <Number number, int m, int n>
     optional<Matrix<number, m, n>> inverse(const LinearSystem<number, m, n>& system) {
         auto det = system.det();
-        if (det == 0) return std::nullopt;
+        if (std::abs(det) <= EPSILON) return std::nullopt;
         if (m == 2 && n == 2)
-            return (1 / det) * Matrix<number, m, n>{{system.at(1).at(1), -system.at(0).at(1)},
-                                                    {-system.at(1).at(0), system.at(0).at(0)}};
+            return (1. / det) * Matrix<number, m, n>{{system.at(1).at(1), -system.at(0).at(1)},
+                                                     {-system.at(1).at(0), system.at(0).at(0)}};
         else {
             const auto& nRows = system.numRows();
             auto identity = I<number, m>(nRows);
