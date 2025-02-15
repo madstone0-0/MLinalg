@@ -20,7 +20,7 @@
 #include <vector>
 
 #include "../Concepts.hpp"
-#include "Numeric.hpp"
+#include "../Numeric.hpp"
 
 using std::vector, std::array, std::optional, std::unique_ptr, std::shared_ptr;
 
