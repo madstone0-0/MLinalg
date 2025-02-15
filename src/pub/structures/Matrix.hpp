@@ -1,3 +1,8 @@
+/**
+ * @file Matrix.hpp
+ * @brief Header file for the Matrix class
+ */
+
 #pragma once
 
 #include <cstddef>
@@ -823,17 +828,6 @@ namespace mlinalg::structures {
             return matrixSub<number, m, n>(matrix, other.matrix);
         }
 
-        // friend number operator*(Matrix<number, 1, n> columnVector, Vector<number, n> vector) {
-        //     return columnVector.multMatByVec(vector).at(0);
-        // }
-
-        /**
-         * @brief Spaceship operator implementing the comparison operators
-         *
-         * @param other The matrix to compare
-         */
-        // auto operator<=>(const Matrix& other) const = default;
-
         /**
          * @brief Equality operator for the matrix
          *
@@ -1095,13 +1089,6 @@ namespace mlinalg::structures {
         array<Row<number, n>, m> matrix{};
     };
 
-    // Vector(std::array<number, n>) -> Vector<number, n>;
-
-    // template <Number number, int m, int n, int nOther>
-    // Matrix<number, m, nOther> operator*(Matrix<number, m, n> lhs, Matrix<number, n, nOther> rhs) {
-    //     return lhs * rhs;
-    // }
-
     template <Number number, int m, int n, int nOther>
     TransposeVariant<number, m, nOther> operator*(TransposeVariant<number, m, n> lhs, Matrix<number, n, nOther> rhs) {
         if (std::holds_alternative<Vector<number, m>>(lhs)) {
@@ -1131,6 +1118,12 @@ namespace mlinalg::structures {
 }  // namespace mlinalg::structures
 
 namespace mlinalg::structures {
+    /**
+     * @brief Dynamic Matrix class for representing NxM matrices
+     *
+     * @param m  Number of rows
+     * @param n  Number of columns
+     */
     template <Number number>
     class Matrix<number, Dynamic, Dynamic> {
        public:
@@ -1313,16 +1306,6 @@ namespace mlinalg::structures {
             return matrixSub<number, Dynamic, Dynamic>(lhs.matrix, rhs.matrix);
         }
 
-        // friend number operator*(Matrix<number, 1, n> columnVector, Vector<number, n> vector) {
-        //     return columnVector.multMatByVec(vector).at(0);
-        // }
-
-        /**
-         * @brief Spaceship operator implementing the comparison operators
-         *
-         * @param other The matrix to compare
-         */
-        // auto operator<=>(const Matrix& other) const = default;
         /**
          * @brief Equality operator for the matrix
          *
@@ -1525,9 +1508,4 @@ namespace mlinalg::structures {
         vector<RowDynamic<number>> matrix;
     };
 
-    // template <Number number>
-    // Matrix<number, Dynamic, Dynamic> operator*(const Matrix<number, Dynamic, Dynamic>& lhs,
-    //                                            const Matrix<number, Dynamic, Dynamic>& rhs) {
-    //     return lhs * rhs;
-    // }
 }  // namespace mlinalg::structures

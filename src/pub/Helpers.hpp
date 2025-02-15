@@ -1,3 +1,8 @@
+/**
+ * @file Helpers.hpp
+ * @brief Helper functions for structures
+ */
+
 #pragma once
 #include <variant>
 #include <vector>

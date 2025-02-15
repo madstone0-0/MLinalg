@@ -1,3 +1,7 @@
+/**
+ * @file Numeric.hpp
+ * @brief This file contains utility functions for numeric operations
+ */
 #pragma once
 
 #include <algorithm>

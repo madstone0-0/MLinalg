@@ -1,3 +1,7 @@
+/**
+ * @file Logging.hpp
+ * @brief This file contains utility functions for logging
+ */
 #pragma once
 
 #include <chrono>

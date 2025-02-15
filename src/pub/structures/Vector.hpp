@@ -1,3 +1,8 @@
+/**
+ * @file Vector.hpp
+ * @brief Header file for the Vector class
+ */
+
 #pragma once
 
 #include <algorithm>
@@ -566,6 +571,9 @@ namespace mlinalg::structures {
 namespace mlinalg::structures {
     static const int Dynamic{-1};
 
+    /**
+     * @brief Dynamic Vector class for representing both row and column vectors in n-dimensional space
+     */
     template <Number number>
     class Vector<number, Dynamic> {
        public:
