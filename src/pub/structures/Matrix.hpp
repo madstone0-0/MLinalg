@@ -1187,6 +1187,8 @@ namespace mlinalg::structures {
          */
         number& at(int i, int j) { return matrixAt<number>(matrix, i, j); }
 
+        number at(int i, int j) const { return matrixAtConst<number>(matrix, i, j); }
+
         /**
          * @brief Copy construct a new Matrix object
          *

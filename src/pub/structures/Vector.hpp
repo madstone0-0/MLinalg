@@ -44,51 +44,6 @@ namespace mlinalg::structures {
             return true;
         }
 
-        template <Container T, Container U>
-        bool vectorGreater(const T& row, const U& otherRow) {
-            checkOperandSize(row, otherRow);
-            auto n = row.size();
-            for (size_t i{}; i < n; i++)
-                if (row.at(i) <= otherRow.at(i)) return false;
-            return true;
-        }
-
-        template <Container T, Container U>
-        bool vectorGreaterEqual(const T& row, const U& otherRow) {
-            checkOperandSize(row, otherRow);
-            auto n = row.size();
-            for (size_t i{}; i < n; i++)
-                if (row.at(i) < otherRow.at(i)) return false;
-            return true;
-        }
-
-        template <Container T, Container U>
-        bool vectorLess(const T& row, const U& otherRow) {
-            checkOperandSize(row, otherRow);
-            auto n = row.size();
-            for (size_t i{}; i < n; i++)
-                if (row.at(i) >= otherRow.at(i)) return false;
-            return true;
-        }
-
-        template <Container T, Container U>
-        bool vectorLessEqual(const T& row, const U& otherRow) {
-            checkOperandSize(row, otherRow);
-            auto n = row.size();
-            for (size_t i{}; i < n; i++)
-                if (row.at(i) > otherRow.at(i)) return false;
-            return true;
-        }
-
-        template <Container T, Container U>
-        bool vectorNotEqual(const T& row, const U& otherRow) {
-            checkOperandSize(row, otherRow);
-            auto n = row.size();
-            for (size_t i{}; i < n; i++)
-                if (row.at(i) == otherRow.at(i)) return false;
-            return true;
-        }
-
         template <Number number, Container T>
         number& vectorAt(T& row, int i) {
             return row.at(i);
@@ -332,54 +287,6 @@ namespace mlinalg::structures {
          */
         bool operator==(const Vector& other) const { return vectorEqual(*row, *other.row); }
 
-        // /**
-        //  * @brief Greater than operator
-        //  *
-        //  * @param other Vector to compare
-        //  * @return true if all the entries in the vector are greater than all the entries in the other vector else
-        //  false
-        //  */
-        // bool operator>(const Vector& other) const { return vectorGreater(*row, *other.row); }
-        //
-        // /**
-        //  * @brief Less than operator
-        //  *
-        //  * @param other Vector to compare
-        //  * @return true if all the entries in the other vector are less than all the entries in this vector else
-        //  false
-        //  */
-        // bool operator<(const Vector& other) const { return vectorLess(*row, *other.row); }
-        //
-        // /**
-        //  * @brief Greater than or equal to operator
-        //  *
-        //  * @param other Vector to compare
-        //  * @return true if all the entries in the vector are greater than or equal to the entries in the other vector
-        //  * else false
-        //  */
-        // bool operator>=(const Vector& other) const { return vectorGreaterEqual(*row, *other.row); }
-        //
-        // /**
-        //  * @brief Less than or equal to operator
-        //  *
-        //  * @param other Vector to compare
-        //  * @return true if all the entries in the vector are less than or equal to the entries in the other vector
-        //  else
-        //  * false
-        //  */
-        // bool operator<=(const Vector& other) const { return vectorLessEqual(*row, *other.row); }
-        //
-        // /**
-        //  * @brief Inequalty Operator
-        //  *
-        //  * @param other Vector to compare
-        //  * @return true if all the entires in the vector are not equal to all the entries in the other vector else
-        //  false
-        //  */
-        // bool operator!=(const Vector& other) const { return vectorNotEqual(*row, *other.row); }
-        //
-        /*bool operator==(const Vector<number, n>& other) const { return row == other.row; }*/
-
         ~Vector() { row.reset(); }
 
         /**
@@ -497,6 +404,17 @@ namespace mlinalg::structures {
          */
         Vector<number, n>& operator*=(const number& scalar) {
             vectorScalarMultI<number>(*row, scalar);
+            return *this;
+        }
+
+        /**
+         * @brief In-place vector division by a scalar
+         *
+         * @param scalar A scalar of the same type as the vector
+         * @return
+         */
+        Vector<number, n>& operator/=(const number& scalar) {
+            vectorScalarDivI(*row, scalar);
             return *this;
         }
 
@@ -723,8 +641,6 @@ namespace mlinalg::structures {
             return *this;
         }
 
-        // auto operator<=>(const Vector& other) const = default;
-
         /**
          * @brief Equality operator
          *
@@ -742,90 +658,6 @@ namespace mlinalg::structures {
         {
             return vectorEqual(*lhs.row, *rhs.row);
         }
-
-        /**
-         * @brief Greater than operator
-         *
-         * @param other Vector to compare
-         * @return true if all the entries in the vector are greater than all the entries in the other vector else false
-         */
-        template <int otherN>
-        bool operator>(const Vector<number, otherN>& other) const {
-            return vectorGreater(*row, *other.row);
-        }
-
-        template <int n, int otherN, typename = std::enable_if_t<n == Dynamic && otherN != Dynamic>>
-        friend bool operator>(const Vector<number, otherN>& lhs, const Vector<number, n> rhs) {
-            return vectorGreater(*lhs.row, *rhs.row);
-        }
-
-        /**
-         * @brief Less than operator
-         *
-         * @param other Vector to compare
-         * @return true if all the entries in the other vector are less than all the entries in this vector else false
-         */
-        template <int otherN>
-        bool operator<(const Vector<number, otherN>& other) const {
-            return vectorLess(*row, *other.row);
-        }
-
-        template <int n, int otherN, typename = std::enable_if_t<n == Dynamic && otherN != Dynamic>>
-        friend bool operator<(const Vector<number, otherN>& lhs, const Vector<number, n> rhs) {
-            return vectorLess(*lhs.row, *rhs.row);
-        }
-
-        /**
-         * @brief Greater than or equal to operator
-         *
-         * @param other Vector to compare
-         * @return true if all the entries in the vector are greater than or equal to the entries in the other vector
-         * else false
-         */
-        template <int otherN>
-        bool operator>=(const Vector<number, otherN>& other) const {
-            return vectorGreaterEqual(*row, *other.row);
-        }
-
-        template <int n, int otherN, typename = std::enable_if_t<n == Dynamic && otherN != Dynamic>>
-        friend bool operator>=(const Vector<number, otherN>& lhs, const Vector<number, n> rhs) {
-            return vectorGreaterEqual(*lhs.row, *rhs.row);
-        }
-
-        /**
-         * @brief Less than or equal to operator
-         *
-         * @param other Vector to compare
-         * @return true if all the entries in the vector are less than or equal to the entries in the other vector else
-         * false
-         */
-        template <int otherN>
-        bool operator<=(const Vector<number, otherN>& other) const {
-            return vectorLessEqual(*row, *other.row);
-        }
-
-        template <int n, int otherN, typename = std::enable_if_t<n == Dynamic && otherN != Dynamic>>
-        friend bool operator<=(const Vector<number, otherN>& lhs, const Vector<number, n> rhs) {
-            return vectorLessEqual(*lhs.row, *rhs.row);
-        }
-
-        /**
-         * @brief Inequalty Operator
-         *
-         * @param other Vector to compare
-         * @return true if all the entires in the vector are not equal to all the entries in the other vector else false
-         */
-        template <int otherN>
-        bool operator!=(const Vector<number, otherN>& other) const {
-            return vectorNotEqual(*row, *other.row);
-        }
-
-        template <int n, int otherN, typename = std::enable_if_t<n == Dynamic && otherN != Dynamic>>
-        friend bool operator!=(const Vector<number, otherN>& lhs, const Vector<number, n> rhs) {
-            return vectorNotEqual(*lhs.row, *rhs.row);
-        }
-
-        /*bool operator==(const Vector<number, n>& other) const { return row == other.row; }*/
 
         ~Vector() { row.reset(); }
 
@@ -977,6 +809,17 @@ namespace mlinalg::structures {
         }
 
         /**
+         * @brief In-place vector division by a scalar
+         *
+         * @param scalar A scalar of the same type as the vector
+         * @return
+         */
+        Vector<number, Dynamic>& operator/=(const number& scalar) {
+            vectorScalarDivI(*row, scalar);
+            return *this;
+        }
+
+        /**
          * @brief Vector multiplication by a vector
          *
          * @param vec Another vector of the same size as the vector
@@ -1106,11 +949,6 @@ namespace mlinalg::structures {
             using std::swap;
             swap(first.row, second.row);
         }
-
-        // template <int otherN>
-        // void checkOperandSize(const Vector<number, otherN>& other) const {
-        //     if (other.size() != this->size()) throw std::invalid_argument("Vectors must be of the same size");
-        // }
 
         size_t n;
         VectorRowDynamicPtr<number> row{std::make_unique<VectorRowDynamic<number>>()};
