@@ -23,6 +23,7 @@
 
 #include "../Concepts.hpp"
 #include "../Helpers.hpp"
+#include "../Numeric.hpp"
 #include "Vector.hpp"
 
 using std::vector, std::array, std::optional, std::unique_ptr, std::shared_ptr;
@@ -137,7 +138,7 @@ namespace mlinalg::structures {
             if (nRows != nRowsOther || nCols != nColsOther) return false;
             for (size_t i{}; i < nRows; i++)
                 for (size_t j{}; j < nCols; j++) {
-                    if (matrix.at(i).at(j) != otherMatrix.at(i).at(j)) return false;
+                    if (!fuzzyCompare(matrix.at(i).at(j), otherMatrix.at(i).at(j))) return false;
                 }
             return true;
         }

@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "../Concepts.hpp"
+#include "Numeric.hpp"
 
 using std::vector, std::array, std::optional, std::unique_ptr, std::shared_ptr;
 namespace rg = std::ranges;
@@ -39,7 +40,7 @@ namespace mlinalg::structures {
             checkOperandSize(row, otherRow);
             auto n = row.size();
             for (size_t i{}; i < n; i++)
-                if (row.at(i) != otherRow.at(i)) return false;
+                if (!fuzzyCompare(row.at(i), otherRow.at(i))) return false;
             return true;
         }
 

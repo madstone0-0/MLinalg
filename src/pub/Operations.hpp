@@ -17,11 +17,10 @@
 #include <stdexcept>
 #include <vector>
 
+#include "Numeric.hpp"
 #include "Structures.hpp"
 
 using std::vector, std::array, std::optional;
-
-constexpr double EPSILON = std::numeric_limits<double>::epsilon();
 
 namespace mlinalg {
     using namespace structures;
@@ -71,7 +70,7 @@ namespace mlinalg {
         for (const auto& row : system) {
             size_t zeroCount{};
             for (size_t i{}; i < nCols - 1; i++)
-                if (std::abs(row.at(i)) <= EPSILON) zeroCount++;
+                if (fuzzyCompare(row.at(i), number(0))) zeroCount++;
 
             if (zeroCount == nCols - 1 && row.back() != 0) return true;
         }
@@ -119,9 +118,9 @@ namespace mlinalg {
             }
         }
         leftSide = vector{leftSide.at(varPos)};
-        auto rightSimpl = std::accumulate(rightSide.begin(), rightSide.end(), number{0});
-        if (std::abs(leftSide.at(0)) <= EPSILON) {
-            if (std::abs(rightSimpl) <= EPSILON && std::abs(leftSide.at(0)) <= EPSILON)
+        auto rightSimpl = std::accumulate(rightSide.begin(), rightSide.end(), number(0));
+        if (fuzzyCompare(leftSide.at(0), number(0))) {
+            if (fuzzyCompare(rightSimpl, number(0)) && fuzzyCompare(leftSide.at(0), number(0)))
                 return 0;
             else
                 return std::nullopt;
@@ -197,7 +196,7 @@ namespace mlinalg {
             int mid = floor((size - 1) / 2.);
             size_t count{};
             for (size_t i{}; i < size - 1; i++)
-                if (std::abs(row.at(i)) <= EPSILON && i <= mid) count++;
+                if (fuzzyCompare(row.at(i), number(0)) && i <= mid) count++;
             return count;
         };
 
@@ -265,7 +264,7 @@ namespace mlinalg {
 
             auto pivot = system.at(j, j);
 
-            if (std::abs(pivot) <= EPSILON) {
+            if (fuzzyCompare(pivot, number(0))) {
                 throw std::runtime_error("Matrix is singular or numerically unstable");
             }
 
@@ -297,11 +296,11 @@ namespace mlinalg {
             size_t kRow{pivRow};
 
             // Check if current pivot is (effectively) zero
-            if (std::abs(system.at(pivRow, pivCol)) < EPSILON) {
+            if (fuzzyCompare(system.at(pivRow, pivCol), number(0))) {
                 // Find the first row below with a non-zero entry in this column
                 size_t kRow = pivRow;
                 for (kRow = pivRow + 1; kRow < nRows; kRow++) {
-                    if (std::abs(system.at(kRow, pivCol)) >= EPSILON) {
+                    if (!fuzzyCompare(system.at(kRow, pivCol), number(0))) {
                         break;
                     }
                 }
@@ -489,8 +488,9 @@ namespace mlinalg {
      * @return The solutions to the system if they exist, nullopt otherwise.
      */
     template <Number number, int m, int n>
-    optional<RowOptional<number, m>> findSolutions(const LinearSystem<number, m, n>& system) {
+    optional<RowOptional<number, m>> findSolutions(const LinearSystem<number, m, n>& sys) {
         RowOptional<number, m> solutions{};
+        LinearSystem<number, m, n> system{sys};
         system = rearrangeSystem(system);
 
         auto reducedEchelon = rref(system);
@@ -546,12 +546,12 @@ namespace mlinalg {
      * @param system The linear system to find the inverse of.
      * @return The inverse of the system if it exists, nullopt otherwise.
      */
-    template <Number number, int m, int n>
-    optional<Matrix<number, m, n>> inverse(const LinearSystem<number, m, n>& system) {
+    template <Number number, int m>
+    optional<Matrix<number, m, m>> inverse(const LinearSystem<number, m, m>& system) {
         auto det = system.det();
-        if (std::abs(det) <= EPSILON) return std::nullopt;
-        if (m == 2 && n == 2)
-            return (1. / det) * Matrix<number, m, n>{{system.at(1).at(1), -system.at(0).at(1)},
+        if (fuzzyCompare(det, number(0))) return std::nullopt;
+        if (m == 2)
+            return (1. / det) * Matrix<number, m, m>{{system.at(1).at(1), -system.at(0).at(1)},
                                                      {-system.at(1).at(0), system.at(0).at(0)}};
         else {
             const auto& nRows = system.numRows();
@@ -560,7 +560,7 @@ namespace mlinalg {
             auto rrefAug = rref(augmented);
             auto inv = rrefAug.colToVectorSet();
             inv.erase(inv.begin(), inv.begin() + nRows);
-            return mlinalg::structures::helpers::fromColVectorSet<number, m, n>(inv);
+            return mlinalg::structures::helpers::fromColVectorSet<number, m, m>(inv);
         }
     }
 

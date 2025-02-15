@@ -220,41 +220,80 @@ TEST_CASE("Vector", "[vector]") {
             }
 
             SECTION("Comparisions") {
-                SECTION("Equality") {
-                    auto v1 = Vector<int, 2>{1, 2};
-                    auto v2 = Vector<int, 2>{1, 2};
+                // ------------------ Integer 32 (int) Tests ------------------
+                SECTION("Integer - Equality") {
+                    Vector<int, 2> v1{1, 2};
+                    Vector<int, 2> v2{1, 2};
                     REQUIRE(v1 == v2);
                 }
-                //
-                //     SECTION("Inequality") {
-                //         auto v1 = Vector<int, 2>{1, 2};
-                //         auto v2 = Vector<int, 2>{3, 4};
-                //         REQUIRE(v1 != v2);
-                //     }
-                //
-                //     SECTION("Less than") {
-                //         auto v1 = Vector<int, 2>{1, 2};
-                //         auto v2 = Vector<int, 2>{3, 4};
-                //         REQUIRE(v1 < v2);
-                //     }
-                //
-                //     SECTION("Less than or equal") {
-                //         auto v1 = Vector<int, 2>{1, 2};
-                //         auto v2 = Vector<int, 2>{1, 2};
-                //         REQUIRE(v1 <= v2);
-                //     }
-                //
-                //     SECTION("Greater than") {
-                //         auto v1 = Vector<int, 2>{3, 4};
-                //         auto v2 = Vector<int, 2>{1, 2};
-                //         REQUIRE(v1 > v2);
-                //     }
-                //
-                //     SECTION("Greater than or equal") {
-                //         auto v1 = Vector<int, 2>{1, 2};
-                //         auto v2 = Vector<int, 2>{1, 2};
-                //         REQUIRE(v1 >= v2);
-                //     }
+
+                SECTION("Integer - Inequality") {
+                    Vector<int, 2> v1{1, 2};
+                    Vector<int, 2> v2{3, 4};
+                    REQUIRE(v1 != v2);
+                }
+
+                // ------------------ Single Precision (float) Tests ------------------
+                SECTION("Float - Exact Equality") {
+                    Vector<float, 2> v1{1.0F, 2.0F};
+                    Vector<float, 2> v2{1.0F, 2.0F};
+                    REQUIRE(v1 == v2);
+                }
+
+                SECTION("Float - Approximate Equality Within Tolerance") {
+                    Vector<float, 2> v1{1.000001F, 2.000001F};
+                    Vector<float, 2> v2{1.0F, 2.0F};
+                    REQUIRE(v1 == v2);
+                }
+
+                SECTION("Float - Inequality Beyond Tolerance") {
+                    Vector<float, 2> v1{1.0F, 2.0F};
+                    Vector<float, 2> v2{1.0F, 2.1F};
+                    REQUIRE(v1 != v2);
+                }
+
+                SECTION("Float - Infinity Comparison") {
+                    Vector<float, 2> v1{std::numeric_limits<float>::infinity(), 2.0F};
+                    Vector<float, 2> v2{std::numeric_limits<float>::infinity(), 2.0F};
+                    REQUIRE(v1 == v2);
+                }
+
+                SECTION("Float - NaN Comparison") {
+                    Vector<float, 2> v1{std::numeric_limits<float>::quiet_NaN(), 2.0F};
+                    Vector<float, 2> v2{std::numeric_limits<float>::quiet_NaN(), 2.0F};
+                    REQUIRE(v1 != v2);
+                }
+
+                // ------------------ Double Precision (double) Tests ------------------
+                SECTION("Double - Exact Equality") {
+                    Vector<double, 2> v1{1.0, 2.0};
+                    Vector<double, 2> v2{1.0, 2.0};
+                    REQUIRE(v1 == v2);
+                }
+
+                SECTION("Double - Approximate Equality Within Tolerance") {
+                    Vector<double, 2> v1{1.000000001, 2.000000001};
+                    Vector<double, 2> v2{1.0, 2.0};
+                    REQUIRE(v1 == v2);
+                }
+
+                SECTION("Double - Inequality Beyond Tolerance") {
+                    Vector<double, 2> v1{1.0, 2.0};
+                    Vector<double, 2> v2{1.0, 2.0001};
+                    REQUIRE(v1 != v2);
+                }
+
+                SECTION("Double - Infinity Comparison") {
+                    Vector<double, 2> v1{std::numeric_limits<double>::infinity(), 2.0};
+                    Vector<double, 2> v2{std::numeric_limits<double>::infinity(), 2.0};
+                    REQUIRE(v1 == v2);
+                }
+
+                SECTION("Double - NaN Comparison") {
+                    Vector<double, 2> v1{std::numeric_limits<double>::quiet_NaN(), 2.0};
+                    Vector<double, 2> v2{std::numeric_limits<double>::quiet_NaN(), 2.0};
+                    REQUIRE(v1 != v2);
+                }
             }
         }
 
@@ -364,41 +403,80 @@ TEST_CASE("Vector", "[vector]") {
             }
 
             SECTION("Comparisions") {
-                SECTION("Equality") {
-                    auto v1 = Vector<int, Dynamic>{1, 2};
-                    auto v2 = Vector<int, Dynamic>{1, 2};
+                // ------------------ Integer 32 (int) Tests ------------------
+                SECTION("Integer - Equality") {
+                    Vector<int, Dynamic> v1{1, 2};
+                    Vector<int, Dynamic> v2{1, 2};
                     REQUIRE(v1 == v2);
                 }
-                //
-                //     SECTION("Inequality") {
-                //         auto v1 = Vector<int, Dynamic>{1, 2};
-                //         auto v2 = Vector<int, Dynamic>{3, 4};
-                //         REQUIRE(v1 != v2);
-                //     }
-                //
-                //     SECTION("Less than") {
-                //         auto v1 = Vector<int, Dynamic>{1, 2};
-                //         auto v2 = Vector<int, Dynamic>{3, 4};
-                //         REQUIRE(v1 < v2);
-                //     }
-                //
-                //     SECTION("Less than or equal") {
-                //         auto v1 = Vector<int, Dynamic>{1, 2};
-                //         auto v2 = Vector<int, Dynamic>{1, 2};
-                //         REQUIRE(v1 <= v2);
-                //     }
-                //
-                //     SECTION("Greater than") {
-                //         auto v1 = Vector<int, Dynamic>{3, 4};
-                //         auto v2 = Vector<int, Dynamic>{1, 2};
-                //         REQUIRE(v1 > v2);
-                //     }
-                //
-                //     SECTION("Greater than or equal") {
-                //         auto v1 = Vector<int, Dynamic>{1, 2};
-                //         auto v2 = Vector<int, Dynamic>{1, 2};
-                //         REQUIRE(v1 >= v2);
-                //     }
+
+                SECTION("Integer - Inequality") {
+                    Vector<int, Dynamic> v1{1, 2};
+                    Vector<int, Dynamic> v2{3, 4};
+                    REQUIRE(v1 != v2);
+                }
+
+                // ------------------ Single Precision (float) Tests ------------------
+                SECTION("Float - Exact Equality") {
+                    Vector<float, Dynamic> v1{1.0F, 2.0F};
+                    Vector<float, Dynamic> v2{1.0F, 2.0F};
+                    REQUIRE(v1 == v2);
+                }
+
+                SECTION("Float - Approximate Equality Within Tolerance") {
+                    Vector<float, Dynamic> v1{1.000001F, 2.000001F};
+                    Vector<float, Dynamic> v2{1.0F, 2.0F};
+                    REQUIRE(v1 == v2);
+                }
+
+                SECTION("Float - Inequality Beyond Tolerance") {
+                    Vector<float, Dynamic> v1{1.0F, 2.0F};
+                    Vector<float, Dynamic> v2{1.0F, 2.1F};
+                    REQUIRE(v1 != v2);
+                }
+
+                SECTION("Float - Infinity Comparison") {
+                    Vector<float, Dynamic> v1{std::numeric_limits<float>::infinity(), 2.0F};
+                    Vector<float, Dynamic> v2{std::numeric_limits<float>::infinity(), 2.0F};
+                    REQUIRE(v1 == v2);
+                }
+
+                SECTION("Float - NaN Comparison") {
+                    Vector<float, Dynamic> v1{std::numeric_limits<float>::quiet_NaN(), 2.0F};
+                    Vector<float, Dynamic> v2{std::numeric_limits<float>::quiet_NaN(), 2.0F};
+                    REQUIRE(v1 != v2);
+                }
+
+                // ------------------ Double Precision (double) Tests ------------------
+                SECTION("Double - Exact Equality") {
+                    Vector<double, Dynamic> v1{1.0, 2.0};
+                    Vector<double, Dynamic> v2{1.0, 2.0};
+                    REQUIRE(v1 == v2);
+                }
+
+                SECTION("Double - Approximate Equality Within Tolerance") {
+                    Vector<double, Dynamic> v1{1.000000001, 2.000000001};
+                    Vector<double, Dynamic> v2{1.0, 2.0};
+                    REQUIRE(v1 == v2);
+                }
+
+                SECTION("Double - Inequality Beyond Tolerance") {
+                    Vector<double, Dynamic> v1{1.0, 2.0};
+                    Vector<double, Dynamic> v2{1.0, 2.0001};
+                    REQUIRE(v1 != v2);
+                }
+
+                SECTION("Double - Infinity Comparison") {
+                    Vector<double, Dynamic> v1{std::numeric_limits<double>::infinity(), 2.0};
+                    Vector<double, Dynamic> v2{std::numeric_limits<double>::infinity(), 2.0};
+                    REQUIRE(v1 == v2);
+                }
+
+                SECTION("Double - NaN Comparison") {
+                    Vector<double, Dynamic> v1{std::numeric_limits<double>::quiet_NaN(), 2.0};
+                    Vector<double, Dynamic> v2{std::numeric_limits<double>::quiet_NaN(), 2.0};
+                    REQUIRE(v1 != v2);
+                }
             }
         }
 
@@ -453,13 +531,13 @@ TEST_CASE("Vector", "[vector]") {
                     REQUIRE(v1 == v2);
                     REQUIRE(v2 == v1);
                 }
-                //
-                //     SECTION("Inequality") {
-                //         auto v1 = Vector<int, Dynamic>{1, 2};
-                //         auto v2 = Vector<int, 2>{3, 4};
-                //         REQUIRE(v1 != v2);
-                //         REQUIRE(v2 != v1);
-                //     }
+
+                SECTION("Inequality") {
+                    auto v1 = Vector<int, Dynamic>{1, 2};
+                    auto v2 = Vector<int, 2>{3, 4};
+                    REQUIRE(v1 != v2);
+                    REQUIRE(v2 != v1);
+                }
                 //
                 //     SECTION("Less than") {
                 //         auto v1 = Vector<int, Dynamic>{1, 2};
@@ -1038,41 +1116,81 @@ TEST_CASE("Matrix", "[matrix]") {
             }
 
             SECTION("Comparisions") {
-                SECTION("Equality") {
+                // ------------------  Integer 32 (int) ------------------
+                SECTION("Integer - Exact Equality") {
                     auto m1 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
                     auto m2 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
                     REQUIRE(m1 == m2);
                 }
-                //
-                //     SECTION("Inequality") {
-                //         auto m1 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
-                //         auto m2 = Matrix<int, 2, 2>{{5, 6}, {7, 8}};
-                //         REQUIRE(m1 != m2);
-                //     }
-                //
-                //     SECTION("Less than") {
-                //         auto m1 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
-                //         auto m2 = Matrix<int, 2, 2>{{5, 6}, {7, 8}};
-                //         REQUIRE(m1 < m2);
-                //     }
-                //
-                //     SECTION("Less than or equal") {
-                //         auto m1 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
-                //         auto m2 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
-                //         REQUIRE(m1 <= m2);
-                //     }
-                //
-                //     SECTION("Greater than") {
-                //         auto m1 = Matrix<int, 2, 2>{{5, 6}, {7, 8}};
-                //         auto m2 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
-                //         REQUIRE(m1 > m2);
-                //     }
-                //
-                //     SECTION("Greater than or equal") {
-                //         auto m1 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
-                //         auto m2 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
-                //         REQUIRE(m1 >= m2);
-                //     }
+
+                SECTION("Integer - Exact Inequality") {
+                    auto m1 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
+                    auto m2 = Matrix<int, 2, 2>{{5, 6}, {7, 8}};
+                    REQUIRE(m1 != m2);
+                }
+
+                // ------------------ Single Precision (float) ------------------
+                SECTION("Float - Exact Equality") {
+                    Matrix<float, 2, 2> m1{{1.0F, 2.0F}, {3.0F, 4.0F}};
+                    Matrix<float, 2, 2> m2{{1.0F, 2.0F}, {3.0F, 4.0F}};
+                    REQUIRE(m1 == m2);
+                }
+
+                SECTION("Float - Approximate Equality Within Tolerance") {
+                    Matrix<float, 2, 2> m1{{1.000001F, 2.000001F}, {3.000001F, 4.000001F}};
+                    Matrix<float, 2, 2> m2{{1.0F, 2.0F}, {3.0F, 4.0F}};
+                    REQUIRE(m1 == m2);
+                }
+
+                SECTION("Float - Inequality Beyond Tolerance") {
+                    Matrix<float, 2, 2> m1{{1.0F, 2.0F}, {3.0F, 4.0F}};
+                    Matrix<float, 2, 2> m2{{1.0F, 2.0F}, {3.0F, 4.1F}};
+                    REQUIRE(m1 != m2);
+                }
+
+                SECTION("Float - NaN Comparison") {
+                    // NaN should not compare equal to NaN.
+                    Matrix<float, 2, 2> m1{{std::numeric_limits<float>::quiet_NaN(), 2.0F}, {3.0F, 4.0F}};
+                    Matrix<float, 2, 2> m2{{std::numeric_limits<float>::quiet_NaN(), 2.0F}, {3.0F, 4.0F}};
+                    REQUIRE(m1 != m2);
+                }
+
+                SECTION("Float - Infinity Comparison") {
+                    Matrix<float, 2, 2> m1{{std::numeric_limits<float>::infinity(), 2.0F}, {3.0F, 4.0F}};
+                    Matrix<float, 2, 2> m2{{std::numeric_limits<float>::infinity(), 2.0F}, {3.0F, 4.0F}};
+                    REQUIRE(m1 == m2);
+                }
+
+                // ------------------ Double Precision (double) ------------------
+                SECTION("Double - Exact Equality") {
+                    Matrix<double, 2, 2> m1{{1.0, 2.0}, {3.0, 4.0}};
+                    Matrix<double, 2, 2> m2{{1.0, 2.0}, {3.0, 4.0}};
+                    REQUIRE(m1 == m2);
+                }
+
+                SECTION("Double - Approximate Equality Within Tolerance") {
+                    Matrix<double, 2, 2> m1{{1.000000001, 2.000000001}, {3.000000001, 4.000000001}};
+                    Matrix<double, 2, 2> m2{{1.0, 2.0}, {3.0, 4.0}};
+                    REQUIRE(m1 == m2);
+                }
+
+                SECTION("Double - Inequality Beyond Tolerance") {
+                    Matrix<double, 2, 2> m1{{1.0, 2.0}, {3.0, 4.0}};
+                    Matrix<double, 2, 2> m2{{1.0, 2.0}, {3.0, 4.0001}};
+                    REQUIRE(m1 != m2);
+                }
+
+                SECTION("Double - NaN Comparison") {
+                    Matrix<double, 2, 2> m1{{std::numeric_limits<double>::quiet_NaN(), 2.0}, {3.0, 4.0}};
+                    Matrix<double, 2, 2> m2{{std::numeric_limits<double>::quiet_NaN(), 2.0}, {3.0, 4.0}};
+                    REQUIRE(m1 != m2);
+                }
+
+                SECTION("Double - Infinity Comparison") {
+                    Matrix<double, 2, 2> m1{{std::numeric_limits<double>::infinity(), 2.0}, {3.0, 4.0}};
+                    Matrix<double, 2, 2> m2{{std::numeric_limits<double>::infinity(), 2.0}, {3.0, 4.0}};
+                    REQUIRE(m1 == m2);
+                }
             }
 
             SECTION("Subset") {
@@ -1371,41 +1489,81 @@ TEST_CASE("Matrix", "[matrix]") {
             }
 
             SECTION("Comparisions") {
-                SECTION("Equality") {
+                // ------------------  Integer 32 (int) ------------------
+                SECTION("Integer - Exact Equality") {
                     auto m1 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
                     auto m2 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
                     REQUIRE(m1 == m2);
                 }
-                //
-                //     SECTION("Inequality") {
-                //         auto m1 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
-                //         auto m2 = Matrix<int, Dynamic, Dynamic>{{5, 6}, {7, 8}};
-                //         REQUIRE(m1 != m2);
-                //     }
-                //
-                //     SECTION("Less than") {
-                //         auto m1 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
-                //         auto m2 = Matrix<int, Dynamic, Dynamic>{{5, 6}, {7, 8}};
-                //         REQUIRE(m1 < m2);
-                //     }
-                //
-                //     SECTION("Less than or equal") {
-                //         auto m1 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
-                //         auto m2 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
-                //         REQUIRE(m1 <= m2);
-                //     }
-                //
-                //     SECTION("Greater than") {
-                //         auto m1 = Matrix<int, Dynamic, Dynamic>{{5, 6}, {7, 8}};
-                //         auto m2 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
-                //         REQUIRE(m1 > m2);
-                //     }
-                //
-                //     SECTION("Greater than or equal") {
-                //         auto m1 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
-                //         auto m2 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
-                //         REQUIRE(m1 >= m2);
-                //     }
+
+                SECTION("Integer - Exact Inequality") {
+                    auto m1 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
+                    auto m2 = Matrix<int, Dynamic, Dynamic>{{5, 6}, {7, 8}};
+                    REQUIRE(m1 != m2);
+                }
+
+                // ------------------ Single Precision (float) ------------------
+                SECTION("Float - Exact Equality") {
+                    Matrix<float, Dynamic, Dynamic> m1{{1.0F, 2.0F}, {3.0F, 4.0F}};
+                    Matrix<float, Dynamic, Dynamic> m2{{1.0F, 2.0F}, {3.0F, 4.0F}};
+                    REQUIRE(m1 == m2);
+                }
+
+                SECTION("Float - Approximate Equality Within Tolerance") {
+                    Matrix<float, Dynamic, Dynamic> m1{{1.000001F, 2.000001F}, {3.000001F, 4.000001F}};
+                    Matrix<float, Dynamic, Dynamic> m2{{1.0F, 2.0F}, {3.0F, 4.0F}};
+                    REQUIRE(m1 == m2);
+                }
+
+                SECTION("Float - Inequality Beyond Tolerance") {
+                    Matrix<float, Dynamic, Dynamic> m1{{1.0F, 2.0F}, {3.0F, 4.0F}};
+                    Matrix<float, Dynamic, Dynamic> m2{{1.0F, 2.0F}, {3.0F, 4.1F}};
+                    REQUIRE(m1 != m2);
+                }
+
+                SECTION("Float - NaN Comparison") {
+                    // NaN should not compare equal to NaN.
+                    Matrix<float, Dynamic, Dynamic> m1{{std::numeric_limits<float>::quiet_NaN(), 2.0F}, {3.0F, 4.0F}};
+                    Matrix<float, Dynamic, Dynamic> m2{{std::numeric_limits<float>::quiet_NaN(), 2.0F}, {3.0F, 4.0F}};
+                    REQUIRE(m1 != m2);
+                }
+
+                SECTION("Float - Infinity Comparison") {
+                    Matrix<float, Dynamic, Dynamic> m1{{std::numeric_limits<float>::infinity(), 2.0F}, {3.0F, 4.0F}};
+                    Matrix<float, Dynamic, Dynamic> m2{{std::numeric_limits<float>::infinity(), 2.0F}, {3.0F, 4.0F}};
+                    REQUIRE(m1 == m2);
+                }
+
+                // ------------------ Double Precision (double) ------------------
+                SECTION("Double - Exact Equality") {
+                    Matrix<double, Dynamic, Dynamic> m1{{1.0, 2.0}, {3.0, 4.0}};
+                    Matrix<double, Dynamic, Dynamic> m2{{1.0, 2.0}, {3.0, 4.0}};
+                    REQUIRE(m1 == m2);
+                }
+
+                SECTION("Double - Approximate Equality Within Tolerance") {
+                    Matrix<double, Dynamic, Dynamic> m1{{1.000000001, 2.000000001}, {3.000000001, 4.000000001}};
+                    Matrix<double, Dynamic, Dynamic> m2{{1.0, 2.0}, {3.0, 4.0}};
+                    REQUIRE(m1 == m2);
+                }
+
+                SECTION("Double - Inequality Beyond Tolerance") {
+                    Matrix<double, Dynamic, Dynamic> m1{{1.0, 2.0}, {3.0, 4.0}};
+                    Matrix<double, Dynamic, Dynamic> m2{{1.0, 2.0}, {3.0, 4.0001}};
+                    REQUIRE(m1 != m2);
+                }
+
+                SECTION("Double - NaN Comparison") {
+                    Matrix<double, Dynamic, Dynamic> m1{{std::numeric_limits<double>::quiet_NaN(), 2.0}, {3.0, 4.0}};
+                    Matrix<double, Dynamic, Dynamic> m2{{std::numeric_limits<double>::quiet_NaN(), 2.0}, {3.0, 4.0}};
+                    REQUIRE(m1 != m2);
+                }
+
+                SECTION("Double - Infinity Comparison") {
+                    Matrix<double, Dynamic, Dynamic> m1{{std::numeric_limits<double>::infinity(), 2.0}, {3.0, 4.0}};
+                    Matrix<double, Dynamic, Dynamic> m2{{std::numeric_limits<double>::infinity(), 2.0}, {3.0, 4.0}};
+                    REQUIRE(m1 == m2);
+                }
             }
 
             SECTION("Subset") {
