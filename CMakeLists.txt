@@ -15,9 +15,10 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif()
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
-# add_compile_options(-Wall -Wextra -Werror=return-type)
+add_compile_options(-Wall -Wextra -Wfloat-equal)
 # add_compile_options(-Werror=return-type)
 set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -fsanitize=address")
+# set(CMAKE_CXX_FLAGS_DEBUG "-ggdb")
 
 set(CMAKE_CXX_FLAGS_RELEASE "-Os -fno-ident")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

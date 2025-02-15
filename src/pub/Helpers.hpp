@@ -20,21 +20,21 @@ namespace mlinalg::structures::helpers {
     template <Number num, int m, int n>
     Matrix<num, m, n> fromColVectorSet(const vector<Vector<num, m>>& vecSet) {
         if constexpr (m == Dynamic || n == Dynamic) {
-            const auto& nRows{vecSet.size()};
-            const auto& nCols{vecSet.at(0).size()};
+            const size_t& nRows{vecSet.size()};
+            const size_t& nCols{vecSet.at(0).size()};
             Matrix<num, Dynamic, Dynamic> res(nRows, nCols);
-            for (int i{}; i < nCols; i++) {
+            for (size_t i{}; i < nCols; i++) {
                 const auto& vec{vecSet.at(i)};
-                for (int j{}; j < nRows; j++) {
+                for (size_t j{}; j < nRows; j++) {
                     res.at(j, i) = vec.at(j);
                 }
             }
             return res;
         } else {
             Matrix<num, m, n> res;
-            for (int i{}; i < n; i++) {
+            for (size_t i{}; i < n; i++) {
                 const auto& vec{vecSet.at(i)};
-                for (int j{}; j < m; j++) {
+                for (size_t j{}; j < m; j++) {
                     res.at(j, i) = vec.at(j);
                 }
             }
@@ -81,7 +81,7 @@ namespace mlinalg::structures::helpers {
 
     template <Number num, int m, int n>
     Matrix<num, Dynamic, Dynamic> toDynamic(const Matrix<num, m, n> matrix) {
-        return {matrix};
+        return Matrix<num, Dynamic, Dynamic>{matrix};
     }
 
 }  // namespace mlinalg::structures::helpers

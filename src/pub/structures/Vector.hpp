@@ -11,8 +11,6 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include <tuple>
-#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -20,7 +18,6 @@
 #include "Numeric.hpp"
 
 using std::vector, std::array, std::optional, std::unique_ptr, std::shared_ptr;
-namespace rg = std::ranges;
 
 namespace mlinalg::structures {
     template <Number number, int m, int n>
@@ -60,14 +57,14 @@ namespace mlinalg::structures {
             constexpr int vSize = (n != -1) ? n : -1;
             auto size = row.size();
             Vector<number, vSize> res(size);
-            for (int i{}; i < size; i++) res.at(i) = row.at(i) - otherRow.at(i);
+            for (size_t i{}; i < size; i++) res.at(i) = row.at(i) - otherRow.at(i);
             return res;
         }
 
         template <Number number, Container T, Container U>
         void vectorSubI(T& row, const U& otherRow) {
             checkOperandSize(row, otherRow);
-            for (int i{}; i < row.size(); i++) row.at(i) -= otherRow.at(i);
+            for (size_t i{}; i < row.size(); i++) row.at(i) -= otherRow.at(i);
         }
 
         template <Number number, int n, Container T, Container U>
@@ -76,14 +73,14 @@ namespace mlinalg::structures {
             constexpr int vSize = (n != -1) ? n : -1;
             auto size = row.size();
             Vector<number, vSize> res(size);
-            for (int i{}; i < size; i++) res.at(i) = row.at(i) + otherRow.at(i);
+            for (size_t i{}; i < size; i++) res.at(i) = row.at(i) + otherRow.at(i);
             return res;
         }
 
         template <Number number, Container T, Container U>
         void vectorAddI(T& row, const U& otherRow) {
             checkOperandSize(row, otherRow);
-            for (int i{}; i < row.size(); i++) row.at(i) += otherRow.at(i);
+            for (size_t i{}; i < row.size(); i++) row.at(i) += otherRow.at(i);
         }
 
         template <Number number, int n, Container T>
@@ -91,7 +88,7 @@ namespace mlinalg::structures {
             constexpr int vSize = (n != -1) ? n : -1;
             auto size = row.size();
             Vector<number, vSize> res(size);
-            for (int i{}; i < size; i++) res.at(i) = scalar * row.at(i);
+            for (size_t i{}; i < size; i++) res.at(i) = scalar * row.at(i);
             return res;
         }
 
@@ -101,18 +98,18 @@ namespace mlinalg::structures {
             constexpr int vSize = (n != -1) ? n : -1;
             auto size = row.size();
             Vector<number, vSize> res(size);
-            for (int i{}; i < size; i++) res.at(i) = row.at(i) / scalar;
+            for (size_t i{}; i < size; i++) res.at(i) = row.at(i) / scalar;
             return res;
         }
 
         template <Number number, Container T>
         void vectorScalarMultI(T& row, const number& scalar) {
-            for (int i{}; i < row.size(); i++) row.at(i) *= scalar;
+            for (size_t i{}; i < row.size(); i++) row.at(i) *= scalar;
         }
 
         template <Number number, Container T>
         void vectorScalarDivI(T& row, const number& scalar) {
-            for (int i{}; i < row.size(); i++) row.at(i) /= scalar;
+            for (size_t i{}; i < row.size(); i++) row.at(i) /= scalar;
         }
 
         template <Container T>
@@ -127,15 +124,15 @@ namespace mlinalg::structures {
             }
 
             if (row.size() == 1)
-                ss << "[ " << std::setw(maxWidth) << row.at(0) << " ]\n";
+                ss << "[ " << std::setw(static_cast<int>(maxWidth)) << row.at(0) << " ]\n";
             else
-                for (int i{}; i < row.size(); i++)
+                for (size_t i{}; i < row.size(); i++)
                     if (i == 0) {
-                        ss << "⎡ " << std::setw(maxWidth) << row.at(i) << " ⎤\n";
+                        ss << "⎡ " << std::setw(static_cast<int>(maxWidth)) << row.at(i) << " ⎤\n";
                     } else if (i == row.size() - 1) {
-                        ss << "⎣ " << std::setw(maxWidth) << row.at(i) << " ⎦\n";
+                        ss << "⎣ " << std::setw(static_cast<int>(maxWidth)) << row.at(i) << " ⎦\n";
                     } else {
-                        ss << "| " << std::setw(maxWidth) << row.at(i) << " |\n";
+                        ss << "| " << std::setw(static_cast<int>(maxWidth)) << row.at(i) << " |\n";
                     }
             return ss.str();
         }
@@ -168,14 +165,14 @@ namespace mlinalg::structures {
                     os << "None";
                 os << " ]\n";
             } else
-                for (int i{}; i < row.size(); i++) {
+                for (size_t i{}; i < row.size(); i++) {
                     if (i == 0) {
-                        os << "⎡ " << std::setw(maxWidth) << hasVal(row.at(i)) << " ⎤\n";
+                        os << "⎡ " << std::setw(static_cast<int>(maxWidth)) << hasVal(row.at(i)) << " ⎤\n";
                     } else if (i == row.size() - 1) {
-                        os << "⎣ " << std::setw(maxWidth) << hasVal(row.at(i)) << " ⎦\n";
+                        os << "⎣ " << std::setw(static_cast<int>(maxWidth)) << hasVal(row.at(i)) << " ⎦\n";
 
                     } else {
-                        os << "| " << std::setw(maxWidth) << hasVal(row.at(i)) << " |\n";
+                        os << "| " << std::setw(static_cast<int>(maxWidth)) << hasVal(row.at(i)) << " |\n";
                     }
                 }
             return os;
@@ -186,7 +183,7 @@ namespace mlinalg::structures {
             constexpr auto sizeP = (n == -1) ? std::pair<int, int>{-1, -1} : std::pair<int, int>{1, n};
             const auto size = row.size();
             Matrix<number, sizeP.first, sizeP.second> res(1, size);
-            for (int i{}; i < size; i++) res.at(0, i) = row.at(i);
+            for (size_t i{}; i < size; i++) res.at(0, i) = row.at(i);
             return res;
         }
 
@@ -378,7 +375,7 @@ namespace mlinalg::structures {
          *
          * @return the size of the vector
          */
-        [[nodiscard]] int size() const { return n; }
+        [[nodiscard]] size_t size() const { return static_cast<size_t>(n); }
 
         /**
          * @brief Vector multiplication by a scalar
@@ -573,7 +570,7 @@ namespace mlinalg::structures {
     class Vector<number, Dynamic> {
        public:
         Vector() = delete;
-        explicit Vector(size_t size) : row{new VectorRowDynamic<number>(size)}, n{size} {}
+        explicit Vector(size_t size) : n{size}, row{new VectorRowDynamic<number>(size)} {}
 
         Vector(const std::initializer_list<number>& list)
             : n{list.size()}, row{std::make_unique<VectorRowDynamic<number>>(list)} {}
@@ -585,7 +582,7 @@ namespace mlinalg::structures {
         template <int nN>
         Vector(const Vector<number, nN>& other)
             requires(nN != Dynamic)
-            : row{new VectorRowDynamic<number>(nN)}, n{nN} {
+            : n{nN}, row{new VectorRowDynamic<number>(nN)} {
             for (int i{}; i < nN; i++) {
                 this->at(i) = other.at(i);
             }
@@ -596,14 +593,14 @@ namespace mlinalg::structures {
          *
          * @param other Vector to copy
          */
-        Vector(const Vector<number, Dynamic>& other) : row{new VectorRowDynamic<number>{*other.row}}, n{other.n} {}
+        Vector(const Vector<number, Dynamic>& other) : n{other.n}, row{new VectorRowDynamic<number>{*other.row}} {}
 
         /**
          * @brief Move construct a new Vector object
          *
          * @param other Vector to move
          */
-        Vector(Vector<number, Dynamic>&& other) noexcept : row{std::move(other.row)}, n{other.n} { other.n = 0; }
+        Vector(Vector<number, Dynamic>&& other) noexcept : n{other.n}, row{std::move(other.row)} { other.n = 0; }
 
         /**
          * @brief Copy assignment operator
@@ -637,7 +634,7 @@ namespace mlinalg::structures {
          */
         Vector& operator=(Vector<number, Dynamic>&& other) noexcept {
             row = std::move(other.row);
-            n = std::move(other.n);
+            n = other.n;
             return *this;
         }
 
@@ -775,7 +772,7 @@ namespace mlinalg::structures {
          *
          * @return the size of the vector
          */
-        [[nodiscard]] int size() const { return n; }
+        [[nodiscard]] size_t size() const { return n; }
 
         /**
          * @brief Vector multiplication by a scalar

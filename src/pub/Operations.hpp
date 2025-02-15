@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <cstddef>
 #include <cstdlib>
 #include <map>
 #include <numeric>
@@ -48,11 +49,11 @@ namespace mlinalg {
      */
     template <Number number, int m, int n>
     bool isInEchelonForm(const LinearSystem<number, m, n>& system, const RowOptional<number, m>& pivots) {
-        const auto& nRows = system.numRows();
+        const size_t& nRows = system.numRows();
 
         for (size_t i{}; i < pivots.size(); i++)
             for (size_t j{i + 1}; j < nRows; j++)
-                if (system.at(j).at(i) != 0) return false;
+                if (!fuzzyCompare(system.at(j, i), number(0))) return false;
         return true;
     }
 
@@ -68,10 +69,11 @@ namespace mlinalg {
 
         for (const auto& row : system) {
             size_t zeroCount{};
-            for (size_t i{}; i < nCols - 1; i++)
+            for (int i{}; i < static_cast<int>(nCols) - 1; i++)
                 if (fuzzyCompare(row.at(i), number(0))) zeroCount++;
 
-            if (zeroCount == nCols - 1 && row.back() != 0) return true;
+            if (static_cast<int>(zeroCount) == static_cast<int>(nCols) - 1 && !fuzzyCompare(row.back(), number(0)))
+                return true;
         }
         return false;
     }
@@ -137,8 +139,8 @@ namespace mlinalg {
      */
     template <Number number, int m, int n>
     RowOptional<number, m> getPivots(const LinearSystem<number, m, n>& system, bool partial = true) {
-        const auto& nRows = system.numRows();
-        const auto& nCols = system.numCols();
+        const size_t& nRows = system.numRows();
+        const size_t& nCols = system.numCols();
 
         std::set<size_t> seenCols{};
         size_t pivRow{};
@@ -146,9 +148,6 @@ namespace mlinalg {
         RowOptional<number, m> pivots(nRows);
         if (partial) {
             while (pivRow < nRows && pivCol < nCols) {
-                number big{std::abs(system.at(pivRow, pivCol))};
-                size_t kRow{pivRow};
-
                 // Check if current pivot is (effectively) zero
                 if (fuzzyCompare(system.at(pivRow, pivCol), number(0))) {
                     // Find the first row below with a non-zero entry in this column
@@ -193,8 +192,8 @@ namespace mlinalg {
      */
     template <Number number, int m, int n>
     RowOptional<size_t, m> getPivotLocations(const LinearSystem<number, m, n>& system, bool partial = true) {
-        const auto& nRows = system.numRows();
-        const auto& nCols = system.numCols();
+        const size_t& nRows = system.numRows();
+        const size_t& nCols = system.numCols();
 
         std::set<size_t> seenCols{};
         size_t pivRow{};
@@ -202,9 +201,6 @@ namespace mlinalg {
         RowOptional<size_t, m> pivots(nRows);
         if (partial) {
             while (pivRow < nRows && pivCol < nCols) {
-                number big{std::abs(system.at(pivRow, pivCol))};
-                size_t kRow{pivRow};
-
                 // Check if current pivot is (effectively) zero
                 if (fuzzyCompare(system.at(pivRow, pivCol), number(0))) {
                     // Find the first row below with a non-zero entry in this column
@@ -227,7 +223,7 @@ namespace mlinalg {
         } else {
             for (size_t idx{}; idx < nRows; idx++) {
                 const auto& row = system.at(idx);
-                for (size_t i{pivCol}; i < nCols - 1; i++) {
+                for (size_t i{pivCol}; i < static_cast<size_t>(nCols - 1); i++) {
                     pivCol++;
                     if (!fuzzyCompare(row.at(i), number(0))) {
                         pivots.at(pivRow) = i;
@@ -269,12 +265,9 @@ namespace mlinalg {
      */
     template <Number number, int m, int n>
     LinearSystem<number, m, n> rearrangeSystem(const LinearSystem<number, m, n>& system) {
-        const auto& nRows = system.numRows();
-        const auto& nCols = system.numCols();
-
         auto getZeroCount = [](const Row<number, n>& row) {
             const auto& size = row.size();
-            int mid = floor((size - 1) / 2.);
+            size_t mid = floor((size - 1) / 2.);
             size_t count{};
             for (size_t i{}; i < size - 1; i++)
                 if (fuzzyCompare(row.at(i), number(0)) && i <= mid) count++;
@@ -286,8 +279,7 @@ namespace mlinalg {
         };
 
         auto getRowSortedCounts = [&getZeroCount, &cmp](const LinearSystem<number, m, n> sys) {
-            const auto& nRows = sys.numRows();
-            const auto& nCols = sys.numCols();
+            const size_t& nRows = sys.numRows();
             std::multimap<size_t, size_t> rowCounts{};
             vector<std::pair<size_t, size_t>> res{};
 
@@ -320,15 +312,14 @@ namespace mlinalg {
     template <Number number, int m, int n>
     LinearSystem<number, m, n> refSq(const LinearSystem<number, m, n>& sys) {
         LinearSystem<number, m, n> system{sys};
-        const auto& nRows = system.numRows();
-        const auto& nCols = system.numCols();
+        const size_t& nCols = system.numCols();
 
         for (size_t j{}; j < nCols; j++) {
-            if (system.at(j, j) == 0) {
+            if (fuzzyCompare(system.at(j, j), number(0))) {
                 number big{std::abs(system.at(j, j))};
                 size_t kRow{j};
 
-                for (size_t k{j + 1}; k < nCols - 1; k++) {
+                for (size_t k{j + 1}; k < static_cast<size_t>(nCols - 1); k++) {
                     auto val = std::abs(system.at(k, j));
                     if (val > big) {
                         big = val;
@@ -367,15 +358,12 @@ namespace mlinalg {
     LinearSystem<number, m, n> refRec(const LinearSystem<number, m, n>& sys) {
         LinearSystem<number, m, n> system{sys};
 
-        const auto& nRows = system.numRows();
-        const auto& nCols = system.numCols();
+        const size_t& nRows = system.numRows();
+        const size_t& nCols = system.numCols();
 
         size_t pivRow{};
         size_t pivCol{};
         while (pivRow < nRows && pivCol < nCols) {
-            number big{std::abs(system.at(pivRow, pivCol))};
-            size_t kRow{pivRow};
-
             // Check if current pivot is (effectively) zero
             if (fuzzyCompare(system.at(pivRow, pivCol), number(0))) {
                 // Find the first row below with a non-zero entry in this column
@@ -437,7 +425,6 @@ namespace mlinalg {
         LinearSystem<number, m, n> system{sys};
 
         int nRows = static_cast<int>(system.numRows());
-        int nCols = static_cast<int>(system.numCols());
 
         auto pivots = getPivots(system);
         if (!isInEchelonForm(system, pivots)) {
@@ -453,7 +440,7 @@ namespace mlinalg {
 
             // Normalize the pivot row if identity is desired.
             number pivotVal = system.at(i, pivCol);
-            if (identity && pivotVal != 1) {
+            if (identity && !fuzzyCompare(pivotVal, number(1))) {
                 system.at(i) /= pivotVal;
             }
 
@@ -481,7 +468,6 @@ namespace mlinalg {
     LinearSystem<number, m, n> rrefSq(const LinearSystem<number, m, n>& sys, bool identity = true) {
         LinearSystem<number, m, n> system{sys};
 
-        const auto& nRows = system.numRows();
         const auto& nCols = system.numCols();
 
         RowOptional<number, m> pivots = getPivots(system);
@@ -588,7 +574,7 @@ namespace mlinalg {
     Matrix<number, m, m> I(int nRows) {
         if constexpr (m == -1) {
             Matrix<number, m, m> identity(nRows, nRows);
-            for (size_t i{}; i < nRows; i++) {
+            for (int i{}; i < nRows; i++) {
                 identity.at(i, i) = 1;
             }
             return identity;

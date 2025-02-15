@@ -177,12 +177,12 @@ TEST_CASE("Vector", "[vector]") {
                 auto v1 = Vector<int, 2>{1, 2};
                 auto v2 = Vector<int, 2>{3, 4};
                 auto dot = v1.dot(v2);
-                REQUIRE(dot == 11);
+                REQUIRE(dot == Approx(11));
 
                 auto u1 = Vector<int, 1>{1};
                 auto u2 = Vector<int, 1>{2};
                 auto dot2 = u1.dot(u2);
-                REQUIRE(dot2 == 2);
+                REQUIRE(dot2 == Approx(2));
             }
 
             SECTION("Distance") {
@@ -361,11 +361,12 @@ TEST_CASE("Vector", "[vector]") {
                 auto v1 = Vector<int, Dynamic>{1, 2};
                 auto v2 = Vector<int, Dynamic>{3, 4};
                 auto dot = v1.dot(v2);
-                REQUIRE(dot == 11);
+                REQUIRE(dot == Approx(11));
 
                 auto u1 = Vector<int, Dynamic>{1};
                 auto u2 = Vector<int, Dynamic>{2};
                 auto dot2 = u1.dot(u2);
+                REQUIRE(dot2 == Approx(2));
             }
 
             SECTION("Distance") {
@@ -514,7 +515,7 @@ TEST_CASE("Vector", "[vector]") {
                 auto v1 = Vector<int, Dynamic>{1, 2};
                 auto v2 = Vector<int, 2>{3, 4};
                 auto dot = v1.dot(v2);
-                REQUIRE(dot == 11);
+                REQUIRE(dot == Approx(11));
             }
 
             SECTION("Distance") {
@@ -596,7 +597,7 @@ TEST_CASE("Vector", "[vector]") {
             SECTION("Zero-length Vector") {
                 auto v = Vector<int, 2>{0, 0};
                 auto len = v.length();
-                REQUIRE(len == 0);
+                REQUIRE(len == Approx(0));
             }
 
             SECTION("Large number operations") {
@@ -647,9 +648,9 @@ TEST_CASE("Vector", "[vector]") {
                 auto v1 = Vector<size_t, large_size>{};
                 auto v2 = Vector<size_t, large_size>{};
 
-                for (size_t i = 0; i < large_size; ++i) {
-                    v1.at(i) = i;
-                    v2.at(i) = i;
+                for (size_t i = 0; i < large_size; i++) {
+                    v1.at(static_cast<int>(i)) = i;
+                    v2.at(static_cast<int>(i)) = i;
                 }
 
                 auto start = std::chrono::high_resolution_clock::now();
@@ -690,7 +691,7 @@ TEST_CASE("Vector", "[vector]") {
             SECTION("Zero-length Vector") {
                 auto v = Vector<int, Dynamic>{0, 0};
                 auto len = v.length();
-                REQUIRE(len == 0);
+                REQUIRE(len == Approx(0));
             }
 
             SECTION("Large number operations") {
@@ -742,8 +743,8 @@ TEST_CASE("Vector", "[vector]") {
                 auto v2 = Vector<size_t, large_size>{};
 
                 for (size_t i = 0; i < large_size; ++i) {
-                    v1.at(i) = i;
-                    v2.at(i) = i;
+                    v1.at(static_cast<int>(i)) = i;
+                    v2.at(static_cast<int>(i)) = i;
                 }
 
                 auto start = std::chrono::high_resolution_clock::now();
@@ -945,8 +946,8 @@ TEST_CASE("Matrix", "[matrix]") {
                     Matrix<int, 2, 2> expected{{19, 22}, {43, 50}};
 
                     // Verify the result
-                    for (int i = 0; i < m3.numRows(); i++) {
-                        for (int j = 0; j < m3.numCols(); j++) {
+                    for (int i = 0; i < static_cast<int>(m3.numRows()); i++) {
+                        for (int j = 0; j < static_cast<int>(m3.numCols()); j++) {
                             REQUIRE(m3.at(i, j) == expected.at(i, j));
                         }
                     }
@@ -959,8 +960,8 @@ TEST_CASE("Matrix", "[matrix]") {
                     auto m2 = m1 * identity;
 
                     // Verify that the result is the same as the original matrix
-                    for (int i = 0; i < m1.numRows(); i++) {
-                        for (int j = 0; j < m1.numCols(); j++) {
+                    for (int i = 0; i < static_cast<int>(m1.numRows()); i++) {
+                        for (int j = 0; j < static_cast<int>(m1.numCols()); j++) {
                             REQUIRE(m2.at(i, j) == m1.at(i, j));
                         }
                     }
@@ -973,8 +974,8 @@ TEST_CASE("Matrix", "[matrix]") {
                     auto m2 = m1 * zero;
 
                     // Verify that the result is a zero matrix
-                    for (int i = 0; i < m2.numRows(); i++) {
-                        for (int j = 0; j < m2.numCols(); j++) {
+                    for (int i = 0; i < static_cast<int>(m2.numRows()); i++) {
+                        for (int j = 0; j < static_cast<int>(m2.numCols()); j++) {
                             REQUIRE(m2.at(i, j) == 0);
                         }
                     }
@@ -996,8 +997,8 @@ TEST_CASE("Matrix", "[matrix]") {
                     Matrix<int, 2, 2> expected{{58, 64}, {139, 154}};
 
                     // Verify the result
-                    for (int i = 0; i < m3.numRows(); i++) {
-                        for (int j = 0; j < m3.numCols(); j++) {
+                    for (int i = 0; i < static_cast<int>(m3.numRows()); i++) {
+                        for (int j = 0; j < static_cast<int>(m3.numCols()); j++) {
                             REQUIRE(m3.at(i, j) == expected.at(i, j));
                         }
                     }
@@ -1025,8 +1026,8 @@ TEST_CASE("Matrix", "[matrix]") {
                     };
 
                     // Verify the result
-                    for (int i = 0; i < m3.numRows(); i++) {
-                        for (int j = 0; j < m3.numCols(); j++) {
+                    for (int i = 0; i < static_cast<int>(m3.numRows()); i++) {
+                        for (int j = 0; j < static_cast<int>(m3.numCols()); j++) {
                             REQUIRE(m3.at(i, j) == expected.at(i, j));
                         }
                     }
@@ -1826,7 +1827,6 @@ TEST_CASE("Matrix", "[matrix]") {
                         }
                     }
 
-                    bool correct{true};
                     auto start = high_resolution_clock::now();
                     auto result = m1 * m2;
                     auto end = high_resolution_clock::now();

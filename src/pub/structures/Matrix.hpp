@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #ifdef DEBUG
 #include "../Logging.hpp"
 #endif
@@ -93,13 +94,13 @@ namespace mlinalg::structures {
         vector<Vector<number, m>> matrixColsToVectorSet(const T& matrix) {
             // TODO: Fix this not actually checking dynamic arrays when cofactoring
             if constexpr (m == -1 || n == -1) {
-                const auto& nRows = matrix.size();
-                const auto& nCols = matrix.at(0).size();
+                const size_t& nRows = matrix.size();
+                const size_t& nCols = matrix.at(0).size();
                 vector<RowDynamic<number>> res;
                 res.reserve(nCols);
-                for (int i{}; i < nCols; i++) {
+                for (size_t i{}; i < nCols; i++) {
                     Vector<number, Dynamic> vec(nRows);
-                    for (int j{}; j < nRows; j++) {
+                    for (size_t j{}; j < nRows; j++) {
                         vec.at(j) = matrix.at(j).at(i);
                     }
                     res.emplace_back(std::move(vec));
@@ -149,7 +150,7 @@ namespace mlinalg::structures {
             const auto& nCols = matrix.at(0).size();
             Matrix<number, m, n> res(nRows, nCols);
             auto asRowVectorSet{std::move(matrixRowsToVectorSet<number, m, n>(matrix))};
-            for (int i{}; i < nRows; i++) {
+            for (size_t i{}; i < nRows; i++) {
                 res.at(i) = asRowVectorSet.at(i) * scalar;
             }
             return res;
@@ -161,7 +162,7 @@ namespace mlinalg::structures {
             const auto& nCols = matrix.at(0).size();
             Matrix<number, m, n> res(nRows, nCols);
             auto asRowVectorSet{std::move(matrixRowsToVectorSet<number, m, n>(matrix))};
-            for (int i{}; i < nRows; i++) {
+            for (size_t i{}; i < nRows; i++) {
                 res.at(i) = asRowVectorSet.at(i) / scalar;
             }
             return res;
@@ -173,7 +174,7 @@ namespace mlinalg::structures {
             const auto& nRows = matrix.size();
             const auto& nCols = matrix.at(0).size();
             Matrix<number, m, n> res(nRows, nCols);
-            for (int i{}; i < nRows; i++) res.at(i) = matrix.at(i) + otherMatrix.at(i);
+            for (size_t i{}; i < nRows; i++) res.at(i) = matrix.at(i) + otherMatrix.at(i);
             return res;
         }
 
@@ -183,7 +184,7 @@ namespace mlinalg::structures {
             const auto& nRows = matrix.size();
             const auto& nCols = matrix.at(0).size();
             Matrix<number, m, n> res(nRows, nCols);
-            for (int i{}; i < nRows; i++) res.at(i) = matrix.at(i) - otherMatrix.at(i);
+            for (size_t i{}; i < nRows; i++) res.at(i) = matrix.at(i) - otherMatrix.at(i);
             return res;
         }
 
@@ -203,22 +204,22 @@ namespace mlinalg::structures {
 
             if (nRows == 1) {
                 ss << "[ ";
-                for (const auto& elem : matrix.at(0)) ss << " " << std::setw(maxWidth) << elem << " ";
+                for (const auto& elem : matrix.at(0)) ss << " " << std::setw(static_cast<int>(maxWidth)) << elem << " ";
                 ss << "]\n";
             } else {
                 int i{};
                 for (const auto& row : matrix) {
                     if (i == 0) {
                         ss << "⎡";
-                        for (const auto& elem : row) ss << " " << std::setw(maxWidth) << elem << " ";
+                        for (const auto& elem : row) ss << " " << std::setw(static_cast<int>(maxWidth)) << elem << " ";
                         ss << "⎤\n";
-                    } else if (i == nRows - 1) {
+                    } else if (i == static_cast<int>(nRows) - 1) {
                         ss << "⎣";
-                        for (const auto& elem : row) ss << " " << std::setw(maxWidth) << elem << " ";
+                        for (const auto& elem : row) ss << " " << std::setw(static_cast<int>(maxWidth)) << elem << " ";
                         ss << "⎦\n";
                     } else {
                         ss << "|";
-                        for (const auto& elem : row) ss << " " << std::setw(maxWidth) << elem << " ";
+                        for (const auto& elem : row) ss << " " << std::setw(static_cast<int>(maxWidth)) << elem << " ";
                         ss << "|\n";
                     }
                     i++;
@@ -240,7 +241,7 @@ namespace mlinalg::structures {
 
             constexpr int vSize = (m == -1 || n == -1) ? Dynamic : m;
             const auto& nRows = matrix.size();
-            const auto& nCols = matrix.at(0).size();
+
             Vector<number, vSize> res(nRows);
             auto asCols{std::move(matrixColsToVectorSet<number, m, n>(matrix))};
             int i{};
@@ -250,7 +251,7 @@ namespace mlinalg::structures {
                 i++;
             }
 
-            for (int i{}; i < nRows; i++) {
+            for (size_t i{}; i < nRows; i++) {
                 number sumRes{};
                 for (const auto& col : asCols) sumRes += col.at(i);
                 res.at(i) = sumRes;
@@ -267,7 +268,7 @@ namespace mlinalg::structures {
          */
         template <Number number, int m, int n, int mOther, int nOther, Container T, Container U>
         Matrix<number, m, nOther> multMatByDef(const T& matrix, const U& otherMatrix) {
-            if (matrix.at(0).size() != otherMatrix.size())
+            if (matrix.at(0).size() != static_cast<size_t>(otherMatrix.size()))
                 throw std::invalid_argument(
                     "The columns of the first matrix must be equal to the rows of the second matrix");
 
@@ -308,7 +309,7 @@ namespace mlinalg::structures {
             constexpr size_t nSize{j1 - j0};
             Matrix<number, mSize, nSize> res{};
 
-            auto isInRange = [](auto x0, auto x1, auto y) { return y >= x0 && y < x1; };
+            auto isInRange = [](int x0, int x1, int y) { return y >= x0 && y < x1; };
 
             size_t insJ{};
             for (int i{}; i < m; i++) {
@@ -436,20 +437,20 @@ namespace mlinalg::structures {
             constexpr int vSize = isDynamic ? Dynamic : m;
             constexpr auto sizeP = isDynamic ? DynamicPair : SizePair{m, n};
 
-            const auto& nRows = matrix.size();
-            const auto& nCols = matrix.at(0).size();
+            const size_t& nRows = matrix.size();
+            const size_t& nCols = matrix.at(0).size();
 
-            auto mutateMatrix = [&matrix, &nRows, &nCols, &sizeP](auto& variant) {
+            auto mutateMatrix = [&matrix, &nRows, &nCols](auto& variant) {
                 if constexpr (std::is_same_v<std::decay_t<decltype(variant)>,
                                              Matrix<number, sizeP.first, sizeP.second>>) {
-                    for (int i{}; i < nRows; i++)
-                        for (int j{}; j < nCols; j++) variant.at(j).at(i) = matrix.at(i).at(j);
+                    for (size_t i{}; i < nRows; i++)
+                        for (size_t j{}; j < nCols; j++) variant.at(j).at(i) = matrix.at(i).at(j);
                 }
             };
 
-            auto mutateVector = [&matrix, &nRows, &nCols, &vSize](auto& variant) {
+            auto mutateVector = [&matrix, &nRows](auto& variant) {
                 if constexpr (std::is_same_v<std::decay_t<decltype(variant)>, Vector<number, vSize>>) {
-                    for (int i{}; i < nRows; i++) variant.at(i) = matrix.at(i).at(0);
+                    for (size_t i{}; i < nRows; i++) variant.at(i) = matrix.at(i).at(0);
                 }
             };
 
@@ -478,18 +479,17 @@ namespace mlinalg::structures {
             constexpr auto isDynamic = m == -1 || n == -1;
             constexpr auto DynamicPair = SizePair{Dynamic, Dynamic};
 
-            constexpr int vSize = isDynamic ? Dynamic : m;
             constexpr auto sizeP = isDynamic ? DynamicPair : SizePair{m, n + nN};
 
-            const auto& nRows = matrix.size();
-            const auto& nCols = matrix.at(0).size();
-            const auto& nOtherCols = otherMatrix.at(0).size();
+            const size_t& nRows = matrix.size();
+            const size_t& nCols = matrix.at(0).size();
+            const size_t& nOtherCols = otherMatrix.at(0).size();
             Matrix<number, sizeP.first, sizeP.second> res(nRows, nCols + nOtherCols);
-            for (int i{}; i < nRows; i++) {
+            for (size_t i{}; i < nRows; i++) {
                 auto& row{res.at(i)};
                 const auto& thisRow{matrix.at(i)};
                 const auto& otherRow{otherMatrix.at(i)};
-                for (int j{}; j < (nCols + nOtherCols); j++) {
+                for (size_t j{}; j < (nCols + nOtherCols); j++) {
                     if (j < nCols)
                         row.at(j) = thisRow.at(j);
                     else
@@ -512,14 +512,14 @@ namespace mlinalg::structures {
 
             constexpr auto sizeP = isDynamic ? DynamicPair : SizePair{m, n + 1};
 
-            const auto& nRows = matrix.size();
-            const auto& nCols = matrix.at(0).size();
-            const auto& nSize = vec.size();
+            const size_t& nRows = matrix.size();
+            const size_t& nCols = matrix.at(0).size();
+
             Matrix<number, sizeP.first, sizeP.second> res(nRows, nCols + 1);
-            for (int i{}; i < nRows; i++) {
+            for (size_t i{}; i < nRows; i++) {
                 auto& row{res.at(i)};
                 const auto& thisRow{matrix.at(i)};
-                int j{};
+                size_t j{};
                 for (; j < nCols; j++) {
                     row.at(j) = thisRow.at(j);
                 }
@@ -539,8 +539,8 @@ namespace mlinalg::structures {
         // TODO: Find a way to account for negatives and do nothing when they are found
         Matrix<number, m - 1, n - 1> MatrixSubset(const T& matrix, const std::optional<int>& i,
                                                   const std::optional<int> j) {
-            const auto& nRows = matrix.size();
-            const auto& nCols = matrix.at(0).size();
+            const int& nRows = matrix.size();
+            const int& nCols = matrix.at(0).size();
             if (nRows != nCols) throw std::runtime_error("Matrix must be square to find a subset");
             if (nRows <= 1 || nCols <= 1) throw std::runtime_error("Matrix must be at least 2x2 to find a subset");
 
@@ -551,7 +551,7 @@ namespace mlinalg::structures {
 
             Matrix<number, sizeP.first, sizeP.second> res(nRows - 1, nCols - 1);
             int resRow = 0;
-            for (int k = 0; k < nRows; ++k) {
+            for (int k = 0; k < nRows; k++) {
                 if (i.has_value() && i.value() == k) continue;  // Skip the row to be removed
 
                 int resCol = 0;
@@ -590,8 +590,10 @@ namespace mlinalg::structures {
             int colPos{};
 
             int pos{};
+            auto compFunc = [](number x) { return fuzzyCompare(x, number(0)); };
+
             for (const auto& row : matrix) {
-                auto count = rg::count_if(row, [](auto x) { return x == 0; });
+                auto count = rg::count_if(row, compFunc);
                 if (count > maxRowZeros) {
                     maxRowZeros = count;
                     rowPos = pos;
@@ -601,7 +603,7 @@ namespace mlinalg::structures {
 
             pos = 0;
             for (const auto& col : matrixColsToVectorSet<number, m, n>(matrix)) {
-                auto count = rg::count_if(col, [](auto x) { return x == 0; });
+                auto count = rg::count_if(col, compFunc);
                 if (count > maxColZeros) {
                     maxColZeros = count;
                     colPos = pos;
@@ -626,7 +628,7 @@ namespace mlinalg::structures {
         number cofactorCommon(const T& matrix, int i, int j) {
             number res{};
             auto a = matrix.at(i).at(j);
-            if (a == 0) return 0;
+            if (fuzzyCompare(a, number(0))) return 0;
             auto A_ij = MatrixSubset<number, m, n>(matrix, i, j);
             auto C = ((int)std::pow(-1, ((i + 1) + (j + 1)))) * A_ij.det();
             res += a * C;
@@ -642,9 +644,9 @@ namespace mlinalg::structures {
         template <Number number, int m, int n, Container T>
         number cofactorRow(const T& matrix, int row) {
             number res{};
-            const auto& nCols = matrix.at(0).size();
+            const size_t& nCols = matrix.at(0).size();
             int i{row};
-            for (int j{0}; j < nCols; j++) {
+            for (size_t j{0}; j < nCols; j++) {
                 res += cofactorCommon<number, m, n>(matrix, i, j);
             }
             return res;
@@ -659,9 +661,9 @@ namespace mlinalg::structures {
         template <Number number, int m, int n, Container T>
         number cofactorCol(const T& matrix, int col) {
             number res{};
-            const auto& nCols = matrix.at(0).size();
+            const size_t& nCols = matrix.at(0).size();
             int j{col};
-            for (int i{0}; i < nCols; i++) {
+            for (size_t i{0}; i < nCols; i++) {
                 res += cofactorCommon<number, m, n>(matrix, i, j);
             }
             return res;
@@ -739,7 +741,7 @@ namespace mlinalg::structures {
          *
          * @param other Matrix to copy
          */
-        Matrix(const Matrix& other) : matrix{other.matrix} {}
+        Matrix(const Matrix& other) = default;
 
         /**
          * @brief Move construct a new Matrix object
@@ -877,7 +879,7 @@ namespace mlinalg::structures {
             requires(m != Dynamic && n != Dynamic && mOther != Dynamic && nOther != Dynamic)
         {
             constexpr bool isDynamic = m == Dynamic || n == Dynamic || mOther == Dynamic || nOther == Dynamic;
-            constexpr bool isNotSquare = m != n || m != mOther && n != nOther;
+            constexpr bool isNotSquare = m != n || (m != mOther && n != nOther);
             constexpr bool isNotPow2 = (size_t(n) & (size_t(n) - 1)) != 0;  // Checks if n is not a power of 2
 
             if constexpr (isDynamic || isNotSquare || isNotPow2) {
@@ -922,14 +924,14 @@ namespace mlinalg::structures {
          *
          * @return
          */
-        [[nodiscard]] constexpr int numRows() const { return m; }
+        [[nodiscard]] constexpr size_t numRows() const { return static_cast<size_t>(m); }
 
         /**
          * @brief Number of columns in the matrix
          *
          * @return
          */
-        [[nodiscard]] constexpr int numCols() const { return n; }
+        [[nodiscard]] constexpr size_t numCols() const { return static_cast<size_t>(n); }
 
         explicit operator std::string() const { return matrixStringRepr(matrix); }
 
@@ -1130,7 +1132,7 @@ namespace mlinalg::structures {
 
 namespace mlinalg::structures {
     template <Number number>
-    class Matrix<number, -1, -1> {
+    class Matrix<number, Dynamic, Dynamic> {
        public:
         Matrix(int m, int n) : m(m), n(n) {
             if (m <= 0) throw std::invalid_argument("Matrix must have at least one row");
@@ -1155,7 +1157,7 @@ namespace mlinalg::structures {
         }
 
         template <int m, int n>
-        Matrix(const Matrix<number, m, n>& other)
+        explicit Matrix(const Matrix<number, m, n>& other)
             requires(m != -1 && n != -1)
             : m{m}, n{n} {
             matrix.reserve(m);
@@ -1194,14 +1196,14 @@ namespace mlinalg::structures {
          *
          * @param other Matrix to copy
          */
-        Matrix(const Matrix& other) : matrix{other.matrix}, m{other.m}, n{other.n} {}
+        Matrix(const Matrix& other) = default;
 
         /**
          * @brief Move construct a new Matrix object
          *
          * @param other  Matrix to move
          */
-        Matrix(Matrix&& other) noexcept : matrix{std::move(other.matrix)}, m{other.m}, n{other.n} {
+        Matrix(Matrix&& other) noexcept : m{other.m}, n{other.n}, matrix{std::move(other.matrix)} {
             other.m = 0;
             other.n = 0;
         }
