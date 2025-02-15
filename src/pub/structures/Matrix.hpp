@@ -445,7 +445,7 @@ namespace mlinalg::structures {
             const size_t& nRows = matrix.size();
             const size_t& nCols = matrix.at(0).size();
 
-            auto mutateMatrix = [&matrix, &nRows, &nCols](auto& variant) {
+            auto mutateMatrix = [&matrix, &nRows, &nCols, sizeP](auto& variant) {
                 if constexpr (std::is_same_v<std::decay_t<decltype(variant)>,
                                              Matrix<number, sizeP.first, sizeP.second>>) {
                     for (size_t i{}; i < nRows; i++)
