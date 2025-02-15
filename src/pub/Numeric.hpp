@@ -16,6 +16,7 @@ namespace mlinalg {
 
     /**
      * @brief Compare two numbers with a tolerance of EPSILON
+     *
      * Adapted from https://embeddeduse.com/2019/08/26/qt-compare-two-floats/
      * @param a
      * @param b

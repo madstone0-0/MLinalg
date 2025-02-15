@@ -10,6 +10,10 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
 endif()
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_definitions(-DDEBUG)
+endif()
+
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 # add_compile_options(-Wall -Wextra -Werror=return-type)
 # add_compile_options(-Werror=return-type)
