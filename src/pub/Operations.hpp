@@ -12,7 +12,6 @@
 #include <map>
 #include <numeric>
 #include <optional>
-#include <ostream>
 #include <set>
 #include <stdexcept>
 #include <vector>
@@ -137,22 +136,104 @@ namespace mlinalg {
      * @return The pivots of the system, if they exist.
      */
     template <Number number, int m, int n>
-    RowOptional<number, m> getPivots(const LinearSystem<number, m, n>& system) {
+    RowOptional<number, m> getPivots(const LinearSystem<number, m, n>& system, bool partial = true) {
         const auto& nRows = system.numRows();
         const auto& nCols = system.numCols();
 
         std::set<size_t> seenCols{};
-        size_t pivIdx{};
-        size_t colPos{};
+        size_t pivRow{};
+        size_t pivCol{};
         RowOptional<number, m> pivots(nRows);
-        for (size_t idx{}; idx < nRows; idx++) {
-            const auto& row = system.at(idx);
-            for (size_t i{colPos}; i < nCols - 1; i++) {
-                colPos++;
-                if (std::abs(row.at(i)) > EPSILON) {
-                    pivots.at(pivIdx) = row.at(i);
-                    pivIdx++;
-                    break;
+        if (partial) {
+            while (pivRow < nRows && pivCol < nCols) {
+                number big{std::abs(system.at(pivRow, pivCol))};
+                size_t kRow{pivRow};
+
+                // Check if current pivot is (effectively) zero
+                if (fuzzyCompare(system.at(pivRow, pivCol), number(0))) {
+                    // Find the first row below with a non-zero entry in this column
+                    size_t kRow = pivRow;
+                    for (kRow = pivRow + 1; kRow < nRows; kRow++) {
+                        if (!fuzzyCompare(system.at(kRow, pivCol), number(0))) {
+                            break;
+                        }
+                    }
+
+                    if (kRow == nRows) {  // No non-zero found; move to next column
+                        pivCol++;
+                        continue;
+                    }
+                }
+                pivots.at(pivRow) = system.at(pivRow, pivCol);
+                pivRow++;
+                pivCol++;
+            }
+        } else {
+            for (size_t idx{}; idx < nRows; idx++) {
+                const auto& row = system.at(idx);
+                for (size_t i{pivCol}; i < nCols - 1; i++) {
+                    pivCol++;
+                    if (!fuzzyCompare(row.at(i), number(0))) {
+                        pivots.at(pivRow) = row.at(i);
+                        pivRow++;
+                        break;
+                    }
+                }
+            }
+        }
+        return pivots;
+    }
+
+    /**
+     * @brief Gets the pivot locations of a linear system.
+     *
+     * @param system The linear system to get the pivots from.
+     * @return The pivot locations if they exist, where the the value is the column position and the index of the value
+     * is the row position
+     */
+    template <Number number, int m, int n>
+    RowOptional<size_t, m> getPivotLocations(const LinearSystem<number, m, n>& system, bool partial = true) {
+        const auto& nRows = system.numRows();
+        const auto& nCols = system.numCols();
+
+        std::set<size_t> seenCols{};
+        size_t pivRow{};
+        size_t pivCol{};
+        RowOptional<size_t, m> pivots(nRows);
+        if (partial) {
+            while (pivRow < nRows && pivCol < nCols) {
+                number big{std::abs(system.at(pivRow, pivCol))};
+                size_t kRow{pivRow};
+
+                // Check if current pivot is (effectively) zero
+                if (fuzzyCompare(system.at(pivRow, pivCol), number(0))) {
+                    // Find the first row below with a non-zero entry in this column
+                    size_t kRow = pivRow;
+                    for (kRow = pivRow + 1; kRow < nRows; kRow++) {
+                        if (!fuzzyCompare(system.at(kRow, pivCol), number(0))) {
+                            break;
+                        }
+                    }
+
+                    if (kRow == nRows) {  // No non-zero found; move to next column
+                        pivCol++;
+                        continue;
+                    }
+                }
+                pivots.at(pivRow) = pivCol;
+                pivRow++;
+                pivCol++;
+            }
+        } else {
+            for (size_t idx{}; idx < nRows; idx++) {
+                const auto& row = system.at(idx);
+                for (size_t i{pivCol}; i < nCols - 1; i++) {
+                    pivCol++;
+                    if (!fuzzyCompare(row.at(i), number(0))) {
+                        pivots.at(pivRow) = i;
+                        pivRow++;
+                        break;
+                    }
                 }
             }
         }
@@ -355,35 +436,33 @@ namespace mlinalg {
     LinearSystem<number, m, n> rrefRec(const LinearSystem<number, m, n>& sys, bool identity = true) {
         LinearSystem<number, m, n> system{sys};
 
-        const auto& nRows = system.numRows();
-        const auto& nCols = system.numCols();
+        int nRows = static_cast<int>(system.numRows());
+        int nCols = static_cast<int>(system.numCols());
 
         auto pivots = getPivots(system);
-        if (!isInEchelonForm(system, pivots)) system = ref(system);
+        if (!isInEchelonForm(system, pivots)) {
+            system = ref(system);
+        }
+        auto pivotLocs = getPivotLocations(system);
 
-        for (size_t col = nCols; col > 0; --col) {
-            system = rearrangeSystem(system);
-            size_t pivotRow = col - 1;
+        // Iterate over each row that has a pivot.
+        for (int i = nRows - 1; i >= 0; i--) {
+            auto pivotLoc = pivotLocs.at(i);
+            if (!pivotLoc.has_value()) continue;
+            auto pivCol = pivotLoc.value();
 
-            if (pivotRow >= nRows) continue;
-
-            if (std::abs(system.at(pivotRow).at(col - 1)) <= EPSILON) continue;
-
-            if (identity) {
-                auto pivotValue = system.at(pivotRow).at(col - 1);
-                if (pivotValue != 0) {
-                    for (size_t j = 0; j < nCols; ++j) {
-                        system.at(pivotRow).at(j) /= pivotValue;
-                    }
-                }
+            // Normalize the pivot row if identity is desired.
+            number pivotVal = system.at(i, pivCol);
+            if (identity && pivotVal != 1) {
+                system.at(i) /= pivotVal;
             }
 
-            for (size_t row = 0; row < pivotRow; ++row) {
-                auto upperValue = system.at(row).at(col - 1);
-                if (upperValue != 0) {
-                    for (size_t j = 0; j < nCols; ++j) {
-                        system.at(row).at(j) -= upperValue * system.at(pivotRow).at(j);
-                    }
+            // Eliminate the pivot column from all rows above.
+            for (int row = 0; row < i; row++) {
+                if (!pivotLocs.at(i).has_value()) continue;
+                number permute = system.at(row, pivotLocs.at(i).value());
+                if (!fuzzyCompare(permute, number(0))) {
+                    system.at(row) -= permute * system.at(i);
                 }
             }
         }
@@ -407,39 +486,17 @@ namespace mlinalg {
 
         RowOptional<number, m> pivots = getPivots(system);
         if (!isInEchelonForm(system, pivots)) system = ref(system);
-        pivots = getPivots(system);
 
-        while (!isInReducedEchelonForm(system, pivots)) {
-            auto size = pivots.size() < nCols - 1 ? pivots.size() : nCols - 1;
-            for (int i{1}; i < size; i++) {
-                pivots = getPivots(system);
-                if (!pivots.at(i).has_value()) continue;
-                for (int j{i - 1}; j >= 0; j--) {
-                    pivots = getPivots(system);
-                    const auto& pivot = pivots.at(i);
-                    auto upper = system.at(j).at(i);
-                    if (std::abs(upper) <= EPSILON) continue;
-                    if (std::abs(pivot.value()) <= EPSILON) continue;
+        for (int j(static_cast<int>(nCols) - 1); j >= 0; j--) {
+            if (!fuzzyCompare(system.at(j, j), number(0))) {
+                if (identity) system.at(j) *= 1 / system.at(j, j);
 
-                    auto permute = upper / pivot.value();
-                    auto rowItems = system.at(j);
-                    Row<number, n> permuted{permute * system.at(i)};
-                    auto newRow = permuted - rowItems;
-                    system.at(j) = newRow;
+                for (int i(j - 1); i >= 0; i--) {
+                    auto permute = system.at(i, j) / system.at(j, j);
+                    system.at(i) -= permute * system.at(j);
                 }
             }
         }
-
-        if (identity)
-            for (size_t i{}; i < pivots.size(); i++) {
-                try {
-                    const auto& pivot{system.at(i).at(i)};
-                    if (std::abs(pivot) <= EPSILON) continue;
-                    if (std::abs(pivot - 1) > EPSILON) system.at(i) = system.at(i) * (1 / pivot);
-                } catch (const std::out_of_range& e) {
-                    continue;
-                }
-            }
 
         return system;
     }
