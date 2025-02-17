@@ -1575,6 +1575,84 @@ TEST_CASE("Matrix", "[matrix]") {
                 REQUIRE(m2.at(1, 0) == 7);
                 REQUIRE(m2.at(1, 1) == 9);
             }
+
+            SECTION("Slice") {
+                // Test case 1: Slice a 3x3 matrix to get a 2x2 submatrix
+
+                auto m1 = Matrix<int, Dynamic, Dynamic>{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+                auto sliced1 = m1.slice({0, 2}, {0, 2});
+                REQUIRE(sliced1.numRows() == 2);
+                REQUIRE(sliced1.numCols() == 2);
+                REQUIRE(sliced1.at(0, 0) == 1);
+                REQUIRE(sliced1.at(0, 1) == 2);
+                REQUIRE(sliced1.at(1, 0) == 4);
+                REQUIRE(sliced1.at(1, 1) == 5);
+
+                // Test case 2: Slice a 4x4 matrix to get a 2x2 submatrix from the top-left corner
+
+                auto m2 = Matrix<int, Dynamic, Dynamic>{
+                    {1, 2, 5, 6},
+                    {3, 4, 7, 8},
+                    {9, 10, 13, 14},
+                    {11, 12, 15, 16},
+                };
+                auto sliced2 = m2.slice({0, m2.numRows() / 2}, {0, m2.numCols() / 2});
+                REQUIRE(sliced2.numRows() == 2);
+                REQUIRE(sliced2.numCols() == 2);
+                REQUIRE(sliced2.at(0, 0) == 1);
+                REQUIRE(sliced2.at(0, 1) == 2);
+                REQUIRE(sliced2.at(1, 0) == 3);
+                REQUIRE(sliced2.at(1, 1) == 4);
+
+                // Test case 3: Slice a 4x4 matrix to get a single row
+
+                auto m3 = Matrix<int, Dynamic, Dynamic>{
+                    {1, 2, 3, 4},
+                    {5, 6, 7, 8},
+                    {9, 10, 11, 12},
+                    {13, 14, 15, 16},
+                };
+                auto sliced3 = m3.slice({1, 2}, {0, 4});
+                REQUIRE(sliced3.numRows() == 1);
+                REQUIRE(sliced3.numCols() == 4);
+                REQUIRE(sliced3.at(0, 0) == 5);
+                REQUIRE(sliced3.at(0, 1) == 6);
+                REQUIRE(sliced3.at(0, 2) == 7);
+                REQUIRE(sliced3.at(0, 3) == 8);
+
+                // Test case 4: Slice a 4x4 matrix to get a single column
+
+                auto m4 = Matrix<int, Dynamic, Dynamic>{
+                    {1, 2, 3, 4},
+                    {5, 6, 7, 8},
+                    {9, 10, 11, 12},
+                    {13, 14, 15, 16},
+                };
+                auto sliced4 = m4.slice({0, 4}, {2, 3});
+                REQUIRE(sliced4.numRows() == 4);
+                REQUIRE(sliced4.numCols() == 1);
+                REQUIRE(sliced4.at(0, 0) == 3);
+                REQUIRE(sliced4.at(1, 0) == 7);
+                REQUIRE(sliced4.at(2, 0) == 11);
+                REQUIRE(sliced4.at(3, 0) == 15);
+
+                // Test case 5: Slice the entire matrix
+
+                auto m5 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
+                auto sliced5 = m5.slice({0, 2}, {0, 2});
+                REQUIRE(sliced5.numRows() == 2);
+                REQUIRE(sliced5.numCols() == 2);
+                REQUIRE(sliced5.at(0, 0) == 1);
+                REQUIRE(sliced5.at(0, 1) == 2);
+                REQUIRE(sliced5.at(1, 0) == 3);
+                REQUIRE(sliced5.at(1, 1) == 4);
+
+                // Test case 9: Slice with negative indices (should be caught at compile time)
+
+                auto m9 = Matrix<int, Dynamic, Dynamic>{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+                // This should fail at compile time, so it's not included in the runtime tests.
+                // static_assert(!std::is_invocable_v<decltype(m9.slice<-1, 2, 0, 2>()), decltype(m9)>);
+            }
         }
 
         SECTION("Cross") {

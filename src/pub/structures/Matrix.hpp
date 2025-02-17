@@ -38,6 +38,8 @@ namespace rg = std::ranges;
 using SizePair = std::pair<int, int>;
 
 namespace mlinalg::structures {
+    using SlicePair = std::pair<size_t, size_t>;
+
     template <Number number, int m, int n>
     class Matrix;
 
@@ -313,6 +315,37 @@ namespace mlinalg::structures {
             constexpr size_t mSize{i1 - i0};
             constexpr size_t nSize{j1 - j0};
             Matrix<number, mSize, nSize> res{};
+
+            auto isInRange = [](int x0, int x1, int y) { return y >= x0 && y < x1; };
+
+            size_t insJ{};
+            for (int i{}; i < m; i++) {
+                if (!isInRange(i0, i1, i)) continue;
+                insJ = 0;
+                for (int j{}; j < n; j++) {
+                    if (!isInRange(j0, j1, j)) continue;
+                    res.at(i - i0).at(insJ) = matrix.at(i).at(j);
+                    insJ++;
+                }
+            }
+            return res;
+        }
+
+        template <Number number, Container T>
+        Matrix<number, Dynamic, Dynamic> MatrixSlice(const T& matrix, const SlicePair& i, const SlicePair& j) {
+            const auto& [i0, i1] = i;
+            const auto& [j0, j1] = j;
+            const auto& m = matrix.size();
+            const auto& n = matrix.at(0).size();
+
+            if (rg::any_of(array<size_t, 4>{i0, i1, j0, j1}, [](auto x) { return x < 0; }))
+                throw std::invalid_argument("Negative slicing not supported");
+
+            if (rg::any_of(array<size_t, 2>{i1, j1}, [n](auto x) { return x > n; }))
+                throw std::invalid_argument("Cannot slice past matrix bounds");
+
+            if (i0 > i1 || j0 > j1) throw std::invalid_argument("Start position cannot be greater than end position");
+            Matrix<number, Dynamic, Dynamic> res(i1 - i0, j1 - j0);
 
             auto isInRange = [](int x0, int x1, int y) { return y >= x0 && y < x1; };
 
@@ -1481,6 +1514,17 @@ namespace mlinalg::structures {
          */
         Matrix<number, Dynamic, Dynamic> subset(std::optional<int> i, std::optional<int> j) const {
             return MatrixSubset<number, 0, 0>(matrix, i, j);
+        }
+
+        /**
+         * @brief Slice the matrix
+         *
+         * @param i SlicePair for the rows in the form {i0, i1}
+         * @param j SlicePair for the columns in the form {j0, j1}
+         * @return The sliced matrix of size (m - (i1 - i0))x(n - (j1 - j0))
+         */
+        Matrix<number, Dynamic, Dynamic> slice(const SlicePair& i, const SlicePair& j) {
+            return MatrixSlice<number>(matrix, i, j);
         }
 
         /**
