@@ -128,7 +128,7 @@ namespace mlinalg::structures {
         }
 
         template <Number number, int m, int n, Container T>
-        vector<Vector<number, m>> matrixRowsToVectorSet(const T& matrix) {
+        vector<Vector<number, n>> matrixRowsToVectorSet(const T& matrix) {
             constexpr int vSize = (m == -1 || n == -1) ? Dynamic : n;
             const auto& nRows = matrix.size();
             vector<Vector<number, vSize>> res;
@@ -480,7 +480,7 @@ namespace mlinalg::structures {
 
             auto mutateMatrix = [&matrix, &nRows, &nCols, sizeP](auto& variant) {
                 if constexpr (std::is_same_v<std::decay_t<decltype(variant)>,
-                                             Matrix<number, sizeP.first, sizeP.second>>) {
+                                             Matrix<number, sizeP.second, sizeP.first>>) {
                     for (size_t i{}; i < nRows; i++)
                         for (size_t j{}; j < nCols; j++) variant.at(j).at(i) = matrix.at(i).at(j);
                 }
@@ -493,9 +493,8 @@ namespace mlinalg::structures {
             };
 
             TransposeVariant<number, sizeP.first, sizeP.second> res(
-                std::in_place_index<1>, Matrix<number, sizeP.first, sizeP.second>(nCols, nRows));
+                std::in_place_index<1>, Matrix<number, sizeP.second, sizeP.first>(nCols, nRows));
             if (nCols != 1) {
-                res = Matrix<number, sizeP.second, sizeP.first>(nCols, nRows);
                 std::visit(mutateMatrix, res);
                 return res;
             }
