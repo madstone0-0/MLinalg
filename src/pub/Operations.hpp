@@ -17,6 +17,7 @@
 #include <stdexcept>
 #include <vector>
 
+#include "Concepts.hpp"
 #include "Numeric.hpp"
 #include "Structures.hpp"
 
@@ -37,6 +38,19 @@ namespace mlinalg {
      */
     template <Number number, int m>
     using RowOptional = std::conditional_t<m == -1, RowDynamic<optional<number>>, Row<optional<number>, m>>;
+
+    template <Number num, int n>
+    Vector<num, n> extractSolutionVector(const Vector<optional<num>, n>& solutions) {
+        if (rg::any_of(solutions, [](const auto& val) { return !val.has_value(); })) {
+            throw std::runtime_error("Cannot extract solution vector from incomplete solutions");
+        }
+
+        Vector<num, n> res{};
+        for (size_t i{}; i < n; i++) {
+            res.at(i) = solutions.at(i).value();
+        }
+        return res;
+    }
 
     /**
      * @brief Checks if a linear system is in echelon form.
@@ -337,7 +351,8 @@ namespace mlinalg {
             auto pivot = system.at(j, j);
 
             if (fuzzyCompare(pivot, number(0))) {
-                throw std::runtime_error("Matrix is singular or numerically unstable");
+                // throw std::runtime_error("Matrix is singular or numerically unstable");
+                continue;
             }
 
             for (size_t i{j + 1}; i < nCols; i++) {
@@ -507,7 +522,7 @@ namespace mlinalg {
     }
 
     template <Number number, int m, int n>
-    optional<RowOptional<number, m>> findSolutions(const LinearSystem<number, m, n>& system);
+    optional<RowOptional<number, n - 1>> findSolutions(const LinearSystem<number, m, n>& system);
 
     /**
      * @brief Find the solutions to a matrix equation in the form:
@@ -523,6 +538,12 @@ namespace mlinalg {
         return findSolutions(system);
     }
 
+    template <Number number, int m, int n>
+    bool isSystemUnderdetermined(const LinearSystem<number, m, n>& sys) {
+        const auto& lastRow = sys.at(sys.numRows() - 1);
+        return static_cast<bool>(rg::all_of(lastRow, [](auto x) { return fuzzyCompare(x, number(0)); }));
+    }
+
     /**
      * @brief Find the solutions to a linear system in the form:
      * [A | b]
@@ -531,8 +552,8 @@ namespace mlinalg {
      * @return The solutions to the system if they exist, nullopt otherwise.
      */
     template <Number number, int m, int n>
-    optional<RowOptional<number, m>> findSolutions(const LinearSystem<number, m, n>& sys) {
-        RowOptional<number, m> solutions{};
+    optional<RowOptional<number, n - 1>> findSolutions(const LinearSystem<number, m, n>& sys) {
+        RowOptional<number, n - 1> solutions{};
         LinearSystem<number, m, n> system{sys};
         system = rearrangeSystem(system);
 
@@ -540,12 +561,18 @@ namespace mlinalg {
 
         if (isInconsistent(reducedEchelon)) return nullopt;
 
-        for (auto i{solutions.rbegin()}; i != solutions.rend(); i++) {
-            try {
-                auto index = std::distance(solutions.rbegin(), i);
-                solutions.at(index) = solveEquation(reducedEchelon.at(index), index, solutions);
-            } catch (const std::out_of_range& e) {
-                continue;
+        // TODO: Check for underdetermined systems, find the general solution and calculate the values
+        // that satisfy the system with the minimum-norm solution.
+        if (isSystemUnderdetermined(reducedEchelon)) {
+            throw std::runtime_error("Finding the solutions to an underdetermined system is not implemented");
+        } else {
+            for (auto i{solutions.rbegin()}; i != solutions.rend(); i++) {
+                try {
+                    auto index = std::distance(solutions.rbegin(), i);
+                    solutions.at(index) = solveEquation(reducedEchelon.at(index), index, solutions);
+                } catch (const std::out_of_range& e) {
+                    continue;
+                }
             }
         }
         return solutions;
