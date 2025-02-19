@@ -905,7 +905,7 @@ namespace mlinalg::structures {
             requires(m != Dynamic && n != Dynamic && mOther != Dynamic && nOther != Dynamic)
         {
             constexpr bool isDynamic = m == Dynamic || n == Dynamic || mOther == Dynamic || nOther == Dynamic;
-            constexpr bool isNotSquare = m != n || (m != mOther && n != nOther);
+            constexpr bool isNotSquare = m != n || (m != mOther && n != nOther) || mOther != nOther;
             constexpr bool isNotPow2 = (size_t(n) & (size_t(n) - 1)) != 0;  // Checks if n is not a power of 2
 
             if constexpr (isDynamic || isNotSquare || isNotPow2) {
@@ -937,7 +937,7 @@ namespace mlinalg::structures {
          */
         template <int nOther>
         Matrix<number, m, nOther> operator*(const TransposeVariant<number, n, nOther>& other) const {
-            return multMatByDef<number, m, n, nOther>(matrix, helpers::extractMatrixFromTranspose(other).matrix);
+            return multMatByDef<number, m, n, n, nOther>(matrix, helpers::extractMatrixFromTranspose(other).matrix);
         }
 
         /**
