@@ -3,6 +3,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <cmath>
 
+#include "Helpers.hpp"
 #include "Structures.hpp"
 #include "structures/Vector.hpp"
 
@@ -763,6 +764,12 @@ TEST_CASE("Vector", "[vector]") {
 }
 
 TEST_CASE("Matrix", "[matrix]") {
+    auto sys1 = mlinalg::LinearSystem<double, 3, 4>{{
+        {1, -2, 1, 0},
+        {0, 2, -8, 8},
+        {5, 0, -5, 10},
+    }};
+
     SECTION("Creation") {
         SECTION("Compile Time") {
             SECTION("Default constructor") {
@@ -1032,15 +1039,46 @@ TEST_CASE("Matrix", "[matrix]") {
                         }
                     }
                 }
+
+                // Test case 3: Multiply by transposed zero matrix
+                {
+                    auto m1 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
+                    auto zero = Matrix<int, 2, 2>{{0, 0}, {0, 0}};
+                    auto m2 = m1 * zero.T();
+
+                    // Verify that the result is a zero matrix
+                    for (int i = 0; i < static_cast<int>(m2.numRows()); i++) {
+                        for (int j = 0; j < static_cast<int>(m2.numCols()); j++) {
+                            REQUIRE(m2.at(i, j) == 0);
+                        }
+                    }
+                }
             }
 
             SECTION("Scalar multiplication") {
-                auto m1 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
-                auto m2 = m1 * 2;
-                REQUIRE(m2.at(0, 0) == 2);
-                REQUIRE(m2.at(0, 1) == 4);
-                REQUIRE(m2.at(1, 0) == 6);
-                REQUIRE(m2.at(1, 1) == 8);
+                {
+                    auto m1 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
+                    auto m2 = m1 * 2;
+                    REQUIRE(m2.at(0, 0) == 2);
+                    REQUIRE(m2.at(0, 1) == 4);
+                    REQUIRE(m2.at(1, 0) == 6);
+                    REQUIRE(m2.at(1, 1) == 8);
+                }
+                {
+                    auto m1 = sys1 * 2;
+                    REQUIRE(m1.at(0, 0) == Approx(2));
+                    REQUIRE(m1.at(0, 1) == Approx(-4));
+                    REQUIRE(m1.at(0, 2) == Approx(2));
+                    REQUIRE(m1.at(0, 3) == Approx(0));
+                    REQUIRE(m1.at(1, 0) == Approx(0));
+                    REQUIRE(m1.at(1, 1) == Approx(4));
+                    REQUIRE(m1.at(1, 2) == Approx(-16));
+                    REQUIRE(m1.at(1, 3) == Approx(16));
+                    REQUIRE(m1.at(2, 0) == Approx(10));
+                    REQUIRE(m1.at(2, 1) == Approx(0));
+                    REQUIRE(m1.at(2, 2) == Approx(-10));
+                    REQUIRE(m1.at(2, 3) == Approx(20));
+                }
             }
 
             SECTION("Scalar division") {
@@ -1053,12 +1091,82 @@ TEST_CASE("Matrix", "[matrix]") {
             }
 
             SECTION("Transpose") {
-                auto m1 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
-                auto m2 = extractMatrixFromTranspose(m1.T());
-                REQUIRE(m2.at(0, 0) == 1);
-                REQUIRE(m2.at(0, 1) == 3);
-                REQUIRE(m2.at(1, 0) == 2);
-                REQUIRE(m2.at(1, 1) == 4);
+                SECTION("Square Matrix") {
+                    auto m1 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
+                    auto m1T = extractMatrixFromTranspose(m1.T());
+                    INFO("Square matrix transpose");
+                    REQUIRE(m1T.at(0, 0) == 1);
+                    REQUIRE(m1T.at(0, 1) == 3);
+                    REQUIRE(m1T.at(1, 0) == 2);
+                    REQUIRE(m1T.at(1, 1) == 4);
+
+                    // Verify that transposing twice returns the original matrix
+                    auto m1TT = extractMatrixFromTranspose(m1T.T());
+                    for (size_t i = 0; i < m1.numRows(); ++i) {
+                        for (size_t j = 0; j < m1.numCols(); ++j) {
+                            INFO("Double transpose element (" << i << "," << j << ")");
+                            REQUIRE(m1.at(i, j) == m1TT.at(i, j));
+                        }
+                    }
+                }
+
+                SECTION("Non-Square Matrix") {
+                    auto m2 = Matrix<int, 2, 3>{{1, 2, 3}, {4, 5, 6}};
+                    auto m2T = extractMatrixFromTranspose(m2.T());
+                    INFO("Non-square matrix dimensions");
+                    REQUIRE(m2T.numRows() == 3);
+                    REQUIRE(m2T.numCols() == 2);
+
+                    // Check element-wise correctness
+                    REQUIRE(m2T.at(0, 0) == 1);
+                    REQUIRE(m2T.at(0, 1) == 4);
+                    REQUIRE(m2T.at(1, 0) == 2);
+                    REQUIRE(m2T.at(1, 1) == 5);
+                    REQUIRE(m2T.at(2, 0) == 3);
+                    REQUIRE(m2T.at(2, 1) == 6);
+
+                    // Verify double-transposition
+                    auto m2TT = extractMatrixFromTranspose(m2T.T());
+                    for (size_t i = 0; i < m2.numRows(); ++i) {
+                        for (size_t j = 0; j < m2.numCols(); ++j) {
+                            INFO("Double transpose element (" << i << "," << j << ")");
+                            REQUIRE(m2.at(i, j) == m2TT.at(i, j));
+                        }
+                    }
+                }
+
+                SECTION("Matrix with Negative and Zero Elements") {
+                    auto m3 = Matrix<int, 3, 3>{{0, -1, 2}, {3, 0, -4}, {5, -6, 0}};
+                    auto m3T = extractMatrixFromTranspose(m3.T());
+                    INFO("Matrix with negatives and zeros");
+                    // Check that m3T(j,i) equals m3(i,j) for all elements
+                    for (size_t i = 0; i < m3.numRows(); ++i) {
+                        for (size_t j = 0; j < m3.numCols(); ++j) {
+                            INFO("Comparing element (" << i << "," << j << ")");
+                            REQUIRE(m3.at(i, j) == m3T.at(j, i));
+                        }
+                    }
+                }
+
+                SECTION("Linear System Transpose") {
+                    auto sys1 = mlinalg::LinearSystem<double, 3, 4>{{
+                        {1, -2, 1, 0},
+                        {0, 2, -8, 8},
+                        {5, 0, -5, 10},
+                    }};
+                    auto sys1T = extractMatrixFromTranspose(sys1.T());
+                    INFO("Linear system transpose dimensions");
+                    REQUIRE(sys1T.numRows() == 4);
+                    REQUIRE(sys1T.numCols() == 3);
+
+                    // Check element-wise that the transpose is correct.
+                    for (size_t i = 0; i < sys1.numRows(); ++i) {
+                        for (size_t j = 0; j < sys1.numCols(); ++j) {
+                            INFO("Comparing sys1(" << i << "," << j << ") with sys1T(" << j << "," << i << ")");
+                            REQUIRE(sys1.at(i, j) == sys1T.at(j, i));
+                        }
+                    }
+                }
             }
 
             SECTION("Matrix Vector Multiplication") {
@@ -1069,14 +1177,14 @@ TEST_CASE("Matrix", "[matrix]") {
                 REQUIRE(v2.at(1) == 11);
             }
 
-            // SECTION("Iteration") {
-            //     auto m = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
-            //     const auto *it = m.begin();
-            //     REQUIRE(*it == Vector<int, 2>{1, 2});
-            //     REQUIRE(it != m.end());
-            //     REQUIRE(*(++it) == Vector<int, 2>{3, 4});
-            //     REQUIRE(++it == m.end());
-            // }
+            SECTION("Iteration") {
+                auto m = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
+                const auto *it = m.begin();
+                REQUIRE(*it == Vector<int, 2>{1, 2});
+                REQUIRE(it != m.end());
+                REQUIRE(*(++it) == Vector<int, 2>{3, 4});
+                REQUIRE(++it == m.end());
+            }
 
             SECTION("Determinant") {
                 auto m = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
