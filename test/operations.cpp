@@ -495,12 +495,87 @@ TEST_CASE("Operations") {
                     auto sol1 = findSolutions(system1);
 
                     REQUIRE(sol1.has_value());
+
+                    SECTION("Unique solution using [A | b]") {
+                        LinearSystem<double, 2, 3> sys{
+                            {2.0, 3.0, 8.0},
+                            {1.0, 2.0, 5.0},
+                        };
+                        auto sol = findSolutions(sys);
+                        REQUIRE(sol.has_value());
+                        REQUIRE(sol.value().at(0) == Approx(1.0));
+                        REQUIRE(sol.value().at(1) == Approx(2.0));
+                    }
+
+                    SECTION("No solution using [A | b]") {
+                        // Augmented matrix for an inconsistent system:
+                        // x + y = 3, 2x + 2y = 4 (b should be [3, 4] but consistency requires [3, 6])
+                        LinearSystem<double, 2, 3> sys{{1.0, 1.0, 3.0}, {2.0, 2.0, 4.0}};
+                        auto sol = findSolutions(sys);
+                        REQUIRE_FALSE(sol.has_value());
+                    }
                 }
 
                 SECTION("Ax = b") {
                     auto sol1 = findSolutions(A1, b1);
 
                     REQUIRE(sol1.has_value());
+
+                    SECTION("Unique solution using Ax = b") {
+                        // Solve: [2 3; 1 2] * x = [8; 5]  -> expected x = [1, 2]
+                        Matrix<double, 2, 2> A{
+                            {2.0, 3.0},
+                            {1.0, 2.0},
+                        };
+                        Vector<double, 2> b{{8.0, 5.0}};
+                        auto sol = findSolutions(A, b);
+                        REQUIRE(sol.has_value());
+                        REQUIRE(sol.value().at(0) == Approx(1.0));
+                        REQUIRE(sol.value().at(1) == Approx(2.0));
+                    }
+
+                    SECTION("No solution using Ax = b") {
+                        // Inconsistent system: x + y = 3 and 2x + 2y = 4 (should be 6 if consistent)
+                        Matrix<double, 2, 2> A{{1.0, 1.0}, {2.0, 2.0}};
+                        Vector<double, 2> b{{3.0, 4.0}};
+                        auto sol = findSolutions(A, b);
+                        REQUIRE_FALSE(sol.has_value());
+                    }
+
+                    SECTION("Larger system with unique solution") {
+                        // A 3x3 system.
+                        Matrix<double, 3, 3> A{{3.0, -1.0, 2.0}, {2.0, 4.0, 1.0}, {-1.0, 2.0, 5.0}};
+                        Vector<double, 3> b{{5.0, 11.0, 8.0}};
+                        auto sol = findSolutions(A, b);
+                        REQUIRE(sol.has_value());
+                        auto computed_b = A * extractSolutionVector(sol.value());
+                        for (int i = 0; i < 3; ++i) {
+                            REQUIRE(computed_b.at(i) == Approx(b.at(i)));
+                        }
+                    }
+
+                    SECTION("Overdetermined but consistent system using Ax = b") {
+                        // Over-determined system: More equations than unknowns.
+                        // Example: x = 2, y = 3, and x+y = 5.
+                        Matrix<double, 3, 2> A{{1.0, 0.0}, {0.0, 1.0}, {1.0, 1.0}};
+                        Vector<double, 3> b{{2.0, 3.0, 5.0}};
+                        auto sol = findSolutions(A, b);
+                        REQUIRE(sol.has_value());
+                        REQUIRE(sol.value().at(0) == Approx(2.0));
+                        REQUIRE(sol.value().at(1) == Approx(3.0));
+                    }
+
+                    SECTION("Verify solution correctness via substitution") {
+                        Matrix<double, 2, 2> A{{4.0, -2.0}, {1.0, 3.0}};
+                        Vector<double, 2> b{{6.0, 8.0}};
+                        auto sol = findSolutions(A, b);
+                        REQUIRE(sol.has_value());
+                        auto computed_b = A * extractSolutionVector(sol.value());
+                        for (int i = 0; i < 2; ++i) {
+                            INFO("Row " << i << ": expected " << b.at(i) << ", got " << computed_b.at(i));
+                            REQUIRE(computed_b.at(i) == Approx(b.at(i)));
+                        }
+                    }
                 }
             }
 
