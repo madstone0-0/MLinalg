@@ -351,7 +351,6 @@ namespace mlinalg {
             auto pivot = system.at(j, j);
 
             if (fuzzyCompare(pivot, number(0))) {
-                // throw std::runtime_error("Matrix is singular or numerically unstable");
                 continue;
             }
 
@@ -538,10 +537,29 @@ namespace mlinalg {
         return findSolutions(system);
     }
 
+    /**
+     * @brief Determined if a linear system in the form
+     * [A | b]
+     *is underdetermined.
+     *
+     * Assumes the system is already in row echelon form.
+     * @param sys The linear system to check.
+     * @return true if the system is underdetermined, false otherwise.
+     */
     template <Number number, int m, int n>
     bool isSystemUnderdetermined(const LinearSystem<number, m, n>& sys) {
-        const auto& lastRow = sys.at(sys.numRows() - 1);
-        return static_cast<bool>(rg::all_of(lastRow, [](auto x) { return fuzzyCompare(x, number(0)); }));
+        // Compute the effective rank by counting nonzero rows.
+        // (This assumes that the system is already in row echelon form,
+        // so that all-zero rows, if any, appear at the bottom.)
+        int rank = 0;
+        for (const auto& row : sys) {
+            // If the row is not all zeros, count it as a pivot row.
+            if (!rg::all_of(row, [](const number& value) { return fuzzyCompare(value, number(0)); })) {
+                ++rank;
+            }
+        }
+        // The system is underdetermined if there are more unknowns than pivot rows.
+        return rank < sys.numCols() - 1;
     }
 
     /**
