@@ -95,6 +95,4 @@ namespace mlinalg::structures::helpers {
         return Matrix<num, Dynamic, Dynamic>{matrix};
     }
 
-
-
 }  // namespace mlinalg::structures::helpers
