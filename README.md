@@ -50,6 +50,7 @@ MLinalg serves as both a learning tool and a proof-of-concept for building numer
 
 - **test/**  
   Unit tests (using Catch2) to verify the correctness of all implemented functions.
+  examples.cpp: Contains examples of using the library.
 
 ## Requirements
 
