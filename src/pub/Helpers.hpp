@@ -84,9 +84,17 @@ namespace mlinalg::structures::helpers {
         return std::get<Vector<num, m>>(T);
     }
 
+    /**
+     * @brief Convert a matrix to a dynamic matrix
+     *
+     * @param matrix Compile time matrix
+     * @return Matrix<number, Dynamic, Dynamic>
+     */
     template <Number num, int m, int n>
     Matrix<num, Dynamic, Dynamic> toDynamic(const Matrix<num, m, n> matrix) {
         return Matrix<num, Dynamic, Dynamic>{matrix};
     }
+
+
 
 }  // namespace mlinalg::structures::helpers
