@@ -341,8 +341,7 @@ namespace mlinalg::structures {
             if (rg::any_of(array<size_t, 4>{i0, i1, j0, j1}, [](auto x) { return x < 0; }))
                 throw std::invalid_argument("Negative slicing not supported");
 
-            if (rg::any_of(array<size_t, 2>{i1, j1}, [n](auto x) { return x > n; }))
-                throw std::invalid_argument("Cannot slice past matrix bounds");
+            if (i1 > m || j1 > n) throw std::invalid_argument("Cannot slice past matrix bounds");
 
             if (i0 > i1 || j0 > j1) throw std::invalid_argument("Start position cannot be greater than end position");
             Matrix<number, Dynamic, Dynamic> res(i1 - i0, j1 - j0);
