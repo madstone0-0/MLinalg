@@ -529,7 +529,7 @@ namespace mlinalg::structures {
                     if (j < nCols)
                         row.at(j) = thisRow.at(j);
                     else
-                        row.at(j) = otherRow.at((j - static_cast<int>(nOtherCols)));
+                        row.at(j) = otherRow.at(j - nCols);
                 }
             }
             return res;
