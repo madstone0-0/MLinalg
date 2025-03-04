@@ -33,7 +33,8 @@ namespace mlinalg {
             // They are equal only if both are infinite and have the same sign.
             return std::isinf(a) && std::isinf(b) && (std::signbit(a) == std::signbit(b));
         }
-        if (std::abs(a - b) <= EPSILON_FIXED) return true;
-        return std::abs(a - b) <= EPSILON * std::max(std::abs(a), std::abs(b));
+        auto diff{static_cast<double>(a - b)};
+        if (std::abs(diff) <= EPSILON_FIXED) return true;
+        return std::abs(diff) <= EPSILON * std::max(std::abs(static_cast<double>(a)), std::abs(static_cast<double>(b)));
     }
 }  // namespace mlinalg
