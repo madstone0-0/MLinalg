@@ -66,6 +66,15 @@ namespace mlinalg::structures {
             return res;
         }
 
+        template <Number number, int n, Container T>
+        Vector<number, n> vectorNeg(const T& row) {
+            constexpr int vSize = (n != -1) ? n : -1;
+            auto size = row.size();
+            Vector<number, vSize> res(size);
+            for (size_t i{}; i < size; i++) res.at(i) = -row.at(i);
+            return res;
+        }
+
         template <Number number, Container T, Container U>
         void vectorSubI(T& row, const U& otherRow) {
             checkOperandSize(row, otherRow);
@@ -342,6 +351,13 @@ namespace mlinalg::structures {
         Vector<number, n> operator-(const Vector<number, n>& other) const {
             return vectorSub<number, n>(*row, *other.row);
         }
+
+        /**
+         * @brief Vector Negation
+         *
+         * @return the negeated vector
+         */
+        Vector<number, n> operator-() const { return vectorNeg<number, n>(*row); }
 
         /**
          * @brief In-place vector subtraction

@@ -140,6 +140,17 @@ TEST_CASE("Vector", "[vector]") {
                 REQUIRE(u3.at(0) == -1);
             }
 
+            SECTION("Negation") {
+                auto v = Vector<int, 2>{1, 2};
+                auto v2 = -v;
+                REQUIRE(v2.at(0) == -1);
+                REQUIRE(v2.at(1) == -2);
+
+                auto u = Vector<int, 1>{1};
+                auto u2 = -u;
+                REQUIRE(u2.at(0) == -1);
+            }
+
             SECTION("Vector Multiplication") {
                 auto v1 = Vector<int, 2>{1, 2};
                 auto v2 = Vector<int, 2>{3, 4};
