@@ -4,7 +4,7 @@
 #include <cmath>
 
 #include "Helpers.hpp"
-#include "Structures.hpp"
+#include "Numeric.hpp"
 #include "structures/Vector.hpp"
 
 using namespace Catch;
@@ -62,7 +62,10 @@ TEST_CASE("Vector", "[vector]") {
                 REQUIRE(v2.size() == 2);
             }
 
-            SECTION("Sanity check") { REQUIRE_THROWS(Vector<int, 0>{}); }
+            SECTION("Sanity check") {
+                REQUIRE_THROWS(Vector<int, 0>{});
+                REQUIRE_THROWS(Vector<int, 3>{1});
+            }
         }
 
         SECTION("Dynamic") {
@@ -1174,7 +1177,7 @@ TEST_CASE("Matrix", "[matrix]") {
                     for (size_t i = 0; i < sys1.numRows(); ++i) {
                         for (size_t j = 0; j < sys1.numCols(); ++j) {
                             INFO("Comparing sys1(" << i << "," << j << ") with sys1T(" << j << "," << i << ")");
-                            REQUIRE(sys1.at(i, j) == sys1T.at(j, i));
+                            REQUIRE(mlinalg::fuzzyCompare(sys1.at(i, j), sys1T.at(j, i)));
                         }
                     }
                 }
@@ -1435,8 +1438,8 @@ TEST_CASE("Matrix", "[matrix]") {
                     Matrix<int, Dynamic, Dynamic> expected{{19, 22}, {43, 50}};
 
                     // Verify the result
-                    for (int i = 0; i < m3.numRows(); i++) {
-                        for (int j = 0; j < m3.numCols(); j++) {
+                    for (size_t i{}; i < m3.numRows(); i++) {
+                        for (size_t j{}; j < m3.numCols(); j++) {
                             REQUIRE(m3.at(i, j) == expected.at(i, j));
                         }
                     }
@@ -1449,8 +1452,8 @@ TEST_CASE("Matrix", "[matrix]") {
                     auto m2 = m1 * identity;
 
                     // Verify that the result is the same as the original matrix
-                    for (int i = 0; i < m1.numRows(); i++) {
-                        for (int j = 0; j < m1.numCols(); j++) {
+                    for (size_t i{}; i < m1.numRows(); i++) {
+                        for (size_t j{}; j < m1.numCols(); j++) {
                             REQUIRE(m2.at(i, j) == m1.at(i, j));
                         }
                     }
@@ -1463,8 +1466,8 @@ TEST_CASE("Matrix", "[matrix]") {
                     auto m2 = m1 * zero;
 
                     // Verify that the result is a zero matrix
-                    for (int i = 0; i < m2.numRows(); i++) {
-                        for (int j = 0; j < m2.numCols(); j++) {
+                    for (size_t i{}; i < m2.numRows(); i++) {
+                        for (size_t j{}; j < m2.numCols(); j++) {
                             REQUIRE(m2.at(i, j) == 0);
                         }
                     }
@@ -1486,8 +1489,8 @@ TEST_CASE("Matrix", "[matrix]") {
                     Matrix<int, Dynamic, Dynamic> expected{{58, 64}, {139, 154}};
 
                     // Verify the result
-                    for (int i = 0; i < m3.numRows(); i++) {
-                        for (int j = 0; j < m3.numCols(); j++) {
+                    for (size_t i{}; i < m3.numRows(); i++) {
+                        for (size_t j{}; j < m3.numCols(); j++) {
                             REQUIRE(m3.at(i, j) == expected.at(i, j));
                         }
                     }
@@ -1518,8 +1521,8 @@ TEST_CASE("Matrix", "[matrix]") {
                     };
 
                     // Verify the result
-                    for (int i = 0; i < m3.numRows(); i++) {
-                        for (int j = 0; j < m3.numCols(); j++) {
+                    for (size_t i{}; i < m3.numRows(); i++) {
+                        for (size_t j{}; j < m3.numCols(); j++) {
                             REQUIRE(m3.at(i, j) == expected.at(i, j));
                         }
                     }

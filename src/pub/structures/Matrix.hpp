@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <cassert>
 #include <cstddef>
 #ifdef DEBUG
 #include "../Logging.hpp"
@@ -78,22 +79,22 @@ namespace mlinalg::structures {
         }
 
         template <Container T>
-        auto& matrixRowAt(T& matrix, int i) {
+        auto& matrixRowAt(T& matrix, size_t i) {
             return matrix.at(i);
         }
 
         template <Container T>
-        auto matrixRowAtConst(const T& matrix, int i) {
+        auto matrixRowAtConst(const T& matrix, size_t i) {
             return matrix.at(i);
         }
 
         template <Number number, Container T>
-        number& matrixAt(T& matrix, int i, int j) {
+        number& matrixAt(T& matrix, size_t i, size_t j) {
             return matrix.at(i).at(j);
         }
 
         template <Number number, Container T>
-        number matrixAtConst(const T& matrix, int i, int j) {
+        number matrixAtConst(const T& matrix, size_t i, size_t j) {
             return matrix.at(i).at(j);
         }
 
@@ -349,10 +350,10 @@ namespace mlinalg::structures {
             auto isInRange = [](int x0, int x1, int y) { return y >= x0 && y < x1; };
 
             size_t insJ{};
-            for (int i{}; i < m; i++) {
+            for (size_t i{}; i < m; i++) {
                 if (!isInRange(i0, i1, i)) continue;
                 insJ = 0;
-                for (int j{}; j < n; j++) {
+                for (size_t j{}; j < n; j++) {
                     if (!isInRange(j0, j1, j)) continue;
                     res.at(i - i0).at(insJ) = matrix.at(i).at(j);
                     insJ++;
@@ -730,38 +731,11 @@ namespace mlinalg::structures {
     template <Number number, int m, int n>
     class Matrix {
        public:
-        /**
-         * @brief Access the ith row of the matrix
-         *
-         * @param i The index of the row to access
-         * @return A reference to the ith row
-         */
-        Row<number, n>& at(int i) { return matrixRowAt(matrix, i); }
-
-        /**
-         * @brief Const access the ith row of the matrix
-         *
-         * @param i The index of the row to access
-         * @return A const reference to the ith row
-         */
-        Row<number, n> at(int i) const { return matrixRowAtConst(matrix, i); }
-
-        /**
-         * @brief Access the element at the ith row and jth column
-         *
-         * @param i The index of the row
-         * @param j The index of the column
-         * @return A reference to the element at the ith row and jth column
-         */
-        number& at(int i, int j) { return matrixAt<number>(matrix, i, j); }
-
-        number at(int i, int j) const { return matrixAtConst<number>(matrix, i, j); }
-
         Matrix() = default;
 
         // Constructor to keep consistency with the Dynamic Matrix specialization to allow them to be used
         // interchangeably
-        Matrix(int nRows, int nCols) {}
+        Matrix(int nRows, int nCols) {}  // NOLINT
 
         /**
          * @brief Construct a new Matrix object from an initializer list of row vectors
@@ -769,6 +743,8 @@ namespace mlinalg::structures {
          * @param rows  Initializer list of row vectors
          */
         constexpr Matrix(const std::initializer_list<std::initializer_list<number>>& rows) {
+            static_assert(m > 0, "Number of rows cannot be 0");
+            static_assert(n > 0, "Number of colmns cannot be 0");
             for (int i{}; i < m; i++) matrix.at(i) = Row<number, n>{*(rows.begin() + i)};
         }
 
@@ -808,6 +784,40 @@ namespace mlinalg::structures {
             matrix = std::move(other.matrix);
             return *this;
         }
+
+        /**
+         * @brief Access the ith row of the matrix
+         *
+         * @param i The index of the row to access
+         * @return A reference to the ith row
+         */
+        Row<number, n>& at(size_t i) { return matrixRowAt(matrix, i); }
+
+        /**
+         * @brief Const access the ith row of the matrix
+         *
+         * @param i The index of the row to access
+         * @return A const reference to the ith row
+         */
+        Row<number, n> at(size_t i) const { return matrixRowAtConst(matrix, i); }
+
+        /**
+         * @brief Access the element at the ith row and jth column
+         *
+         * @param i The index of the row
+         * @param j The index of the column
+         * @return A reference to the element at the ith row and jth column
+         */
+        number& at(size_t i, size_t j) { return matrixAt<number>(matrix, i, j); }
+
+        /**
+         * @brief Const cccess the element at the ith row and jth column
+         *
+         * @param i The index of the row
+         * @param j The index of the column
+         * @return A const reference to the element at the ith row and jth column
+         */
+        number at(size_t i, size_t j) const { return matrixAtConst<number>(matrix, i, j); }
 
         /**
          * @brief Convert the columns of the matrix to a vector of column vectors
@@ -1211,9 +1221,9 @@ namespace mlinalg::structures {
          * @param j The index of the column
          * @return A reference to the element at the ith row and jth column
          */
-        number& at(int i, int j) { return matrixAt<number>(matrix, i, j); }
+        number& at(size_t i, size_t j) { return matrixAt<number>(matrix, i, j); }
 
-        number at(int i, int j) const { return matrixAtConst<number>(matrix, i, j); }
+        number at(size_t i, size_t j) const { return matrixAtConst<number>(matrix, i, j); }
 
         /**
          * @brief Copy construct a new Matrix object
@@ -1418,14 +1428,14 @@ namespace mlinalg::structures {
          *
          * @return
          */
-        [[nodiscard]] int numRows() const { return m; }
+        [[nodiscard]] size_t numRows() const { return m; }
 
         /**
          * @brief Number of columns in the matrix
          *
          * @return
          */
-        [[nodiscard]] int numCols() const { return n; }
+        [[nodiscard]] size_t numCols() const { return n; }
 
         explicit operator std::string() const { return matrixStringRepr(matrix); }
 

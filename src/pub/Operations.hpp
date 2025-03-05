@@ -83,11 +83,10 @@ namespace mlinalg {
 
         for (const auto& row : system) {
             size_t zeroCount{};
-            for (int i{}; i < static_cast<int>(nCols) - 1; i++)
+            for (size_t i{}; i < (nCols - 1); i++)
                 if (fuzzyCompare(row.at(i), number(0))) zeroCount++;
 
-            if (static_cast<int>(zeroCount) == static_cast<int>(nCols) - 1 && !fuzzyCompare(row.back(), number(0)))
-                return true;
+            if (zeroCount == (nCols - 1) && !fuzzyCompare(row.back(), number(0))) return true;
         }
         return false;
     }
@@ -237,7 +236,7 @@ namespace mlinalg {
         } else {
             for (size_t idx{}; idx < nRows; idx++) {
                 const auto& row = system.at(idx);
-                for (size_t i{pivCol}; i < static_cast<size_t>(nCols - 1); i++) {
+                for (size_t i{pivCol}; i < (nCols - 1); i++) {
                     pivCol++;
                     if (!fuzzyCompare(row.at(i), number(0))) {
                         pivots.at(pivRow) = i;
@@ -333,7 +332,7 @@ namespace mlinalg {
                 number big{std::abs(system.at(j, j))};
                 size_t kRow{j};
 
-                for (size_t k{j + 1}; k < static_cast<size_t>(nCols - 1); k++) {
+                for (size_t k{j + 1}; k < (nCols - 1); k++) {
                     auto val = std::abs(system.at(k, j));
                     if (val > big) {
                         big = val;
@@ -482,12 +481,12 @@ namespace mlinalg {
     LinearSystem<number, m, n> rrefSq(const LinearSystem<number, m, n>& sys, bool identity = true) {
         LinearSystem<number, m, n> system{sys};
 
-        const auto& nCols = system.numCols();
+        const auto& nCols = static_cast<int>(system.numCols());
 
         RowOptional<number, m> pivots = getPivots(system);
         if (!isInEchelonForm(system, pivots)) system = ref(system);
 
-        for (int j(static_cast<int>(nCols) - 1); j >= 0; j--) {
+        for (int j{nCols - 1}; j >= 0; j--) {
             if (!fuzzyCompare(system.at(j, j), number(0))) {
                 if (identity) system.at(j) *= 1 / system.at(j, j);
 
@@ -551,7 +550,7 @@ namespace mlinalg {
         // Compute the effective rank by counting nonzero rows.
         // (This assumes that the system is already in row echelon form,
         // so that all-zero rows, if any, appear at the bottom.)
-        int rank = 0;
+        size_t rank{};
         for (const auto& row : sys) {
             // If the row is not all zeros, count it as a pivot row.
             if (!rg::all_of(row, [](const number& value) { return fuzzyCompare(value, number(0)); })) {

@@ -9,6 +9,7 @@
 #include <array>
 #include <cmath>
 #include <iomanip>
+#include <iterator>
 #include <memory>
 #include <numeric>
 #include <optional>
@@ -47,12 +48,12 @@ namespace mlinalg::structures {
         }
 
         template <Number number, Container T>
-        number& vectorAt(T& row, int i) {
+        number& vectorAt(T& row, size_t i) {
             return row.at(i);
         }
 
         template <Number number, Container T>
-        number vectorConstAt(const T& row, int i) {
+        number vectorConstAt(const T& row, size_t i) {
             return row.at(i);
         }
 
@@ -108,7 +109,7 @@ namespace mlinalg::structures {
 
         template <Number number, int n, Container T>
         Vector<number, n> vectorScalarDiv(const T& row, const number& scalar) {
-            if (scalar == 0) throw std::domain_error("Division by zero");
+            if (fuzzyCompare(scalar, number(0))) throw std::domain_error("Division by zero");
             constexpr int vSize = (n != -1) ? n : -1;
             auto size = row.size();
             Vector<number, vSize> res(size);
@@ -207,7 +208,7 @@ namespace mlinalg::structures {
     template <Number number, int n>
     using VectorRow = std::array<number, n>;
 
-    // Type alias for the backing array of a Vector
+    // Type alias for the backing array of a dynamic Vector
     template <Number number>
     using VectorRowDynamic = std::vector<number>;
 
@@ -215,7 +216,7 @@ namespace mlinalg::structures {
     template <Number number, int n>
     using VectorRowPtr = unique_ptr<VectorRow<number, n>>;
 
-    // Type alias for a unique pointer to a VectorRow
+    // Type alias for a unique pointer to a dynamic VectorRow
     template <Number number>
     using VectorRowDynamicPtr = unique_ptr<VectorRowDynamic<number>>;
 
@@ -231,7 +232,7 @@ namespace mlinalg::structures {
 
         // Constructor to keep consistency with the Dynamic Vector specialization to allow them to be used
         // interchangeably
-        explicit Vector(size_t size) {}
+        explicit Vector(size_t size) {}  // NOLINT
 
         /**
          * @brief Construct a new Vector object from an initializer list
@@ -240,6 +241,8 @@ namespace mlinalg::structures {
          */
         Vector(const std::initializer_list<number>& list) {
             checkDimensions();
+            if (list.size() != n)
+                throw std::invalid_argument("Initializer list must be the same size as the defined vector size");
             for (int i{}; i < n; i++) row->at(i) = *(list.begin() + i);
         }
 
@@ -306,7 +309,7 @@ namespace mlinalg::structures {
          * @param i the index of the element to access
          * @return a reference to the ith element
          */
-        number& at(int i) { return vectorAt<number>(*row, i); }
+        number& at(size_t i) { return vectorAt<number>(*row, i); }
 
         /**
          * @brief Const access the ith element of the vector
@@ -314,7 +317,7 @@ namespace mlinalg::structures {
          * @param i the index of the element to access
          * @return  the ith element
          */
-        number at(int i) const { return vectorConstAt<number>(*row, i); }
+        number at(size_t i) const { return vectorConstAt<number>(*row, i); }
 
         /**
          * @brief Find the dot product of this vector and another vector
@@ -688,7 +691,7 @@ namespace mlinalg::structures {
          * @param i the index of the element to access
          * @return a reference to the ith element
          */
-        number& at(int i) { return vectorAt<number>(*row, i); }
+        number& at(size_t i) { return vectorAt<number>(*row, i); }
 
         /**
          * @brief Const access the ith element of the vector
@@ -696,7 +699,7 @@ namespace mlinalg::structures {
          * @param i the index of the element to access
          * @return  the ith element
          */
-        number at(int i) const { return vectorConstAt<number>(*row, i); }
+        number at(size_t i) const { return vectorConstAt<number>(*row, i); }
 
         /**
          * @brief Find the dot product of this vector and another vector
