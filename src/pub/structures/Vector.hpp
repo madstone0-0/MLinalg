@@ -127,6 +127,14 @@ namespace mlinalg::structures {
             for (size_t i{}; i < row.size(); i++) row.at(i) /= scalar;
         }
 
+        template <Number number, int n, int otherN>
+        number vectorVectorMult(const Vector<number, n>& vec, const Vector<number, otherN>& otherVec) {
+            if (vec.size() != otherVec.size()) throw std::invalid_argument("Vectors must be of the same size");
+
+            const auto res = vec.T() * otherVec;
+            return res.at(0);
+        }
+
         template <Container T>
         std::string vectorStringRepr(const T& row) {
             std::stringstream ss{};
@@ -445,7 +453,7 @@ namespace mlinalg::structures {
          * @param vec Another vector of the same size as the vector
          * @return  A 1x1 vector containing the dot product of the two vectors
          */
-        auto operator*(const Vector<number, n>& vec) const { return this->T() * vec; }
+        auto operator*(const Vector<number, n>& vec) const { return vectorVectorMult(*this, vec); }
 
         /**
          * @brief Vector multiplication by a matrix
@@ -458,8 +466,7 @@ namespace mlinalg::structures {
             Vector<number, n> res;
             auto asCols{std::move(mat.colToVectorSet())};
             for (int i{}; i < n; i++) {
-                auto multRes = *this * asCols.at(i);
-                res.at(i) = std::accumulate(multRes.begin(), multRes.end(), 0);
+                res.at(i) = *this * asCols.at(i);
             }
             return res;
         }
@@ -852,7 +859,7 @@ namespace mlinalg::structures {
         template <int otherN>
         auto operator*(const Vector<number, otherN>& vec) const {
             checkOperandSize(*row, *(vec.row));
-            return this->T() * vec;
+            return vectorVectorMult(*this, vec);
         }
 
         /**

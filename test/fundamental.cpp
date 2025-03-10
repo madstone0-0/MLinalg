@@ -157,13 +157,13 @@ TEST_CASE("Vector", "[vector]") {
             SECTION("Vector Multiplication") {
                 auto v1 = Vector<int, 2>{1, 2};
                 auto v2 = Vector<int, 2>{3, 4};
-                auto v3 = v1 * v2;
-                REQUIRE(v3.at(0) == 11);
+                auto dot1 = v1 * v2;
+                REQUIRE(dot1 == 11);
 
                 auto u1 = Vector<int, 1>{1};
                 auto u2 = Vector<int, 1>{2};
-                auto u3 = u1 * u2;
-                REQUIRE(u3.at(0) == 2);
+                auto dot2 = u1 * u2;
+                REQUIRE(dot2 == 2);
             }
 
             SECTION("Scalar multiplication") {
@@ -342,12 +342,13 @@ TEST_CASE("Vector", "[vector]") {
             SECTION("Vector Multiplication") {
                 auto v1 = Vector<int, Dynamic>{1, 2};
                 auto v2 = Vector<int, Dynamic>{3, 4};
-                auto v3 = v1 * v2;
-                REQUIRE(v3.at(0) == 11);
+                auto dot1 = v1 * v2;
+                REQUIRE(dot1 == 11);
 
                 auto u1 = Vector<int, Dynamic>{1};
                 auto u2 = Vector<int, Dynamic>{2};
-                auto u3 = u1 * u2;
+                auto dot2 = u1 * u2;
+                REQUIRE(dot2 == 2);
             }
 
             SECTION("Scalar multiplication") {
@@ -522,8 +523,8 @@ TEST_CASE("Vector", "[vector]") {
             SECTION("Vector Multiplication") {
                 auto v1 = Vector<int, Dynamic>{1, 2};
                 auto v2 = Vector<int, 2>{3, 4};
-                auto v3 = v1 * v2;
-                REQUIRE(v3.at(0) == 11);
+                auto dot = v1 * v2;
+                REQUIRE(dot == 11);
             }
 
             SECTION("Dot product") {
