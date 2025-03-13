@@ -4,12 +4,6 @@ project(mlinalg LANGUAGES CXX VERSION 1.0)
 
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
 
-# file(
-#     GLOB CPP
-#     CONFIGURE_DEPENDS
-#     ${PROJECT_SOURCE_DIR}/pub/*.cpp
-#     ${PROJECT_SOURCE_DIR}/pub/*.hpp
-# )
 file(
     GLOB HPP
     CONFIGURE_DEPENDS
@@ -18,28 +12,26 @@ file(
     ${CMAKE_SOURCE_DIR}/src/*.hpp
 )
 
-add_library(mlinalg STATIC ${HPP})
+add_library(mlinalg INTERFACE)
 add_library(mlinalg::mlinalg ALIAS mlinalg)
 
 target_include_directories(
     mlinalg
-    PUBLIC
+    INTERFACE
         $<INSTALL_INTERFACE:include>
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/pub>
-    PRIVATE ${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/pub
 )
-set_target_properties(mlinalg PROPERTIES LINKER_LANGUAGE CXX)
 
 include(GNUInstallDirs)
 install(
     TARGETS mlinalg
     EXPORT mlinalgTargets
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
 set_target_properties(mlinalg PROPERTIES EXPORT_NAME mlinalg)
-# Preserve the directory structure in the installation directory
+
 install(
     DIRECTORY ${CMAKE_SOURCE_DIR}/src/pub/
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/mlinalg
