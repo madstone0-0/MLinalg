@@ -431,22 +431,25 @@ namespace mlinalg::structures {
                 auto B10 = MatrixSlice<halfM, m, 0, halfNOther, number, m, nOther>(B);
                 auto B11 = MatrixSlice<halfM, m, halfNOther, nOther, number, m, nOther>(B);
 
-                auto AB00 =
-                    strassen<number, A00.numRows(), A00.numCols(), B00.numCols()>(A00.getMatrix(), B00.getMatrix());
-                auto AB11 =
-                    strassen<number, A11.numRows(), A11.numCols(), B11.numCols()>(A11.getMatrix(), B11.getMatrix());
+                auto M1 = strassen<number, A00.numRows(), A00.numCols(), B00.numCols()>((A00 + A11).getMatrix(),
+                                                                                        (B00 + B11).getMatrix());
+                auto M2 = strassen<number, A10.numRows(), A10.numCols(), B00.numCols()>((A10 + A11).getMatrix(),
+                                                                                        B00.getMatrix());
+                auto M3 = strassen<number, A00.numRows(), A00.numCols(), B01.numCols()>(A00.getMatrix(),
+                                                                                        (B01 - B11).getMatrix());
+                auto M4 = strassen<number, A11.numRows(), A11.numCols(), B10.numCols()>(A11.getMatrix(),
+                                                                                        (B10 - B00).getMatrix());
+                auto M5 = strassen<number, A00.numRows(), A00.numCols(), B00.numCols()>((A00 + A01).getMatrix(),
+                                                                                        B11.getMatrix());
+                auto M6 = strassen<number, A10.numRows(), A10.numCols(), B00.numCols()>((A10 - A00).getMatrix(),
+                                                                                        (B00 + B01).getMatrix());
+                auto M7 = strassen<number, A01.numRows(), A01.numCols(), B10.numCols()>((A01 - A11).getMatrix(),
+                                                                                        (B10 + B11).getMatrix());
 
-                auto C00 = AB00 + strassen<number, A01.numRows(), A01.numCols(), B10.numCols()>(A01.getMatrix(),
-                                                                                                B10.getMatrix());
-                auto C01 =
-                    strassen<number, A00.numRows(), A00.numCols(), B01.numCols()>(A00.getMatrix(), B01.getMatrix()) +
-                    strassen<number, A01.numRows(), A01.numCols(), B11.numCols()>(A01.getMatrix(), B11.getMatrix());
-                auto C10 =
-                    strassen<number, A10.numRows(), A10.numCols(), B00.numCols()>(A10.getMatrix(), B00.getMatrix()) +
-                    strassen<number, A11.numRows(), A11.numCols(), B10.numCols()>(A11.getMatrix(), B10.getMatrix());
-                auto C11 =
-                    strassen<number, A10.numRows(), A10.numCols(), B01.numCols()>(A10.getMatrix(), B01.getMatrix()) +
-                    AB11;
+                auto C00 = M1 + M4 - M5 + M7;
+                auto C01 = M3 + M5;
+                auto C10 = M2 + M4;
+                auto C11 = M1 + M3 - M2 + M6;
 
                 constexpr int nSize{A00.numRows() * 2};
                 return merge.template operator()<nSize>(C00, C01, C10, C11);
