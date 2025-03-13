@@ -876,8 +876,7 @@ namespace mlinalg::structures {
             Vector<number, Dynamic> res(n);
             auto asCols{std::move(mat.colToVectorSet())};
             for (int i{}; i < n; i++) {
-                auto multRes = *this * asCols.at(i);
-                res.at(i) = std::accumulate(multRes.begin(), multRes.end(), 0);
+                res.at(i) = *this * asCols.at(i);
             }
             return res;
         }

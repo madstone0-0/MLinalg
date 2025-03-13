@@ -166,6 +166,23 @@ TEST_CASE("Vector", "[vector]") {
                 REQUIRE(dot2 == 2);
             }
 
+            SECTION("Matrix Multiplication") {
+                auto v1 = Vector<int, 2>{1, 2};
+                auto m = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
+                auto v2 = v1 * m;
+                REQUIRE(v2.at(0) == 7);
+                REQUIRE(v2.at(1) == 10);
+
+                auto u1 = Vector<int, 1>{1};
+                auto m2 = Matrix<int, 1, 1>{{2}};
+                auto u2 = u1 * m2;
+                REQUIRE(u2.at(0) == 2);
+
+                auto v3 = m * v1;
+                REQUIRE(v3.at(0) == 5);
+                REQUIRE(v3.at(1) == 11);
+            }
+
             SECTION("Scalar multiplication") {
                 auto v1 = Vector<int, 2>{1, 2};
                 auto v2 = v1 * 2;
@@ -349,6 +366,23 @@ TEST_CASE("Vector", "[vector]") {
                 auto u2 = Vector<int, Dynamic>{2};
                 auto dot2 = u1 * u2;
                 REQUIRE(dot2 == 2);
+            }
+
+            SECTION("Matrix Multiplication") {
+                auto v1 = Vector<int, Dynamic>{1, 2};
+                auto m = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
+                auto v2 = v1 * m;
+                REQUIRE(v2.at(0) == 7);
+                REQUIRE(v2.at(1) == 10);
+
+                auto u1 = Vector<int, Dynamic>{1};
+                auto m2 = Matrix<int, Dynamic, Dynamic>{{2}};
+                auto u2 = u1 * m2;
+                REQUIRE(u2.at(0) == 2);
+
+                auto v3 = m * v1;
+                REQUIRE(v3.at(0) == 5);
+                REQUIRE(v3.at(1) == 11);
             }
 
             SECTION("Scalar multiplication") {
