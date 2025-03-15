@@ -319,6 +319,44 @@ namespace mlinalg::structures {
             return helpers::fromColVectorSet<number, resSizeP.first, resSizeP.second>(res);
         }
 
+        /**
+         * @brief Matrix multiplication using the row-wise method to improve cache locality
+         *
+         * @param matrix The matrix to multiply
+         * @param other The matrix to multiply by
+         * @return The matrix resulting from the multiplication
+         */
+        template <Number number, int m, int n, int mOther, int nOther, Container T, Container U>
+        Matrix<number, m, nOther> multMatRowWise(const T& matrix, const U& otherMatrix) {
+            if (matrix.at(0).size() != static_cast<size_t>(otherMatrix.size()))
+                throw std::invalid_argument(
+                    "The columns of the first matrix must be equal to the rows of the second matrix");
+
+            const int nRows = matrix.size();
+            const int nCols = matrix[0].size();
+            const int nColsOther = otherMatrix[0].size();
+
+            constexpr bool isDynamic = m == Dynamic || n == Dynamic || mOther == Dynamic || nOther == Dynamic;
+            constexpr auto DynamicPair = SizePair{Dynamic, Dynamic};
+
+            constexpr auto resSizeP = isDynamic ? DynamicPair : SizePair{m, nOther};
+
+            constexpr int blockSize = 64 / sizeof(number);
+            Matrix<number, resSizeP.first, resSizeP.second> res{nRows, nColsOther};
+
+            for (int i{}; i < nRows; i++)
+                for (int j{}; j < nCols; j++) {
+                    const number temp = matrix[i][j];
+                    for (int k{}; k < nColsOther; k += blockSize) {
+                        const size_t kEnd = std::min(k + blockSize, nColsOther);
+                        for (int kk{k}; kk < kEnd; kk++) {
+                            res[i, kk] += temp * otherMatrix[j][kk];
+                        }
+                    }
+                }
+
+            return res;
+        }
 
         template <Number number, int m, int n, size_t i, size_t j, Container T>
         MatrixView<number, m, n> View(T& matrix, size_t rowOffset = 0, size_t colOffset = 0, size_t rowStride = 1,
@@ -463,6 +501,18 @@ namespace mlinalg::structures {
                 auto B10 = MatrixSlice<halfM, m, 0, halfNOther, number, m, nOther>(B);
                 auto B11 = MatrixSlice<halfM, m, halfNOther, nOther, number, m, nOther>(B);
 
+                // // Split matrix A into 4 submatrices
+                // auto A00 = View<number, m, n, halfM, halfN>(A);
+                // auto A01 = View<number, m, n, halfM, halfN>(A, 0, halfN);
+                // auto A10 = View<number, m, n, halfM, halfN>(A, halfM, 0);
+                // auto A11 = View<number, m, n, halfM, halfN>(A, halfM, halfN);
+                //
+                // // Split matrix B into 4 submatrices
+                // auto B00 = View<number, m, nOther, halfM, halfNOther>(B);
+                // auto B01 = View<number, m, nOther, halfM, halfNOther>(B, 0, halfNOther);
+                // auto B10 = View<number, m, nOther, halfM, halfNOther>(B, halfM, 0);
+                // auto B11 = View<number, m, nOther, halfM, halfNOther>(B, halfM, halfNOther);
+
                 auto M1 = strassen<number, A00.numRows(), A00.numCols(), B00.numCols()>((A00 + A11).getMatrix(),
                                                                                         (B00 + B11).getMatrix());
                 auto M2 = strassen<number, A10.numRows(), A10.numCols(), B00.numCols()>((A10 + A11).getMatrix(),
@@ -478,12 +528,20 @@ namespace mlinalg::structures {
                 auto M7 = strassen<number, A01.numRows(), A01.numCols(), B10.numCols()>((A01 - A11).getMatrix(),
                                                                                         (B10 + B11).getMatrix());
 
+                // auto M1 = strassen<number, halfM, halfN, halfNOther>(*((A00 + A11).matrix), *((B00 + B11).matrix));
+                // auto M2 = strassen<number, halfM, halfN, halfNOther>(*((A10 + A11).matrix), *(B00.matrix));
+                // auto M3 = strassen<number, halfM, halfN, halfNOther>(*(A00.matrix), *((B01 - B11).matrix));
+                // auto M4 = strassen<number, halfM, halfN, halfNOther>(*(A11.matrix), *((B10 - B00).matrix));
+                // auto M5 = strassen<number, halfM, halfN, halfNOther>(*((A00 + A01).matrix), *(B11.matrix));
+                // auto M6 = strassen<number, halfM, halfN, halfNOther>(*((A10 - A00).matrix), *((B00 + B01).matrix));
+                // auto M7 = strassen<number, halfM, halfN, halfNOther>(*((A01 - A11).matrix), *((B10 + B11).matrix));
+
                 auto C00 = M1 + M4 - M5 + M7;
                 auto C01 = M3 + M5;
                 auto C10 = M2 + M4;
                 auto C11 = M1 + M3 - M2 + M6;
 
-                constexpr int nSize{A00.numRows() * 2};
+                constexpr int nSize{m};
                 return merge.template operator()<nSize>(C00, C01, C10, C11);
             }
         }
@@ -1042,6 +1100,7 @@ namespace mlinalg::structures {
         Matrix<number, m, nOther> operator*(const Matrix<number, mOther, nOther>& other) const
             requires(m != Dynamic && n != Dynamic && mOther != Dynamic && nOther != Dynamic)
         {
+#ifdef STRASSEN
             constexpr bool isDynamic = m == Dynamic || n == Dynamic || mOther == Dynamic || nOther == Dynamic;
             constexpr bool isNotSquare = m != n || (m != mOther && n != nOther) || mOther != nOther;
             constexpr bool isNotPow2 = (size_t(n) & (size_t(n) - 1)) != 0;  // Checks if n is not a power of 2
@@ -1050,7 +1109,7 @@ namespace mlinalg::structures {
 #ifdef DEBUG
                 logging::log("Using default matrix multiplication algorithm", "Matrix operator*", logging::Level::INF);
 #endif
-                return multMatByDef<number, m, n, mOther, nOther>(matrix, other.matrix);
+                return multMatRowWise<number, m, n, mOther, nOther>(matrix, other.matrix);
             } else {
 #ifdef DEBUG
                 logging::log("Using strassen's matrix multiplication algorithm", "Matrix operator*",
@@ -1058,13 +1117,19 @@ namespace mlinalg::structures {
 #endif
                 return multMatStrassen<number, m, n, nOther>(matrix, other.matrix);
             }
+#else
+#ifdef DEBUG
+            logging::log("Using default matrix multiplication algorithm", "Matrix operator*", logging::Level::INF);
+#endif
+            return multMatRowWise<number, m, n, mOther, nOther>(matrix, other.matrix);
+#endif
         }
 
         template <int mOther, int nOther>
         Matrix<number, Dynamic, Dynamic> operator*(const Matrix<number, mOther, nOther>& other) const
             requires((n == Dynamic && m == Dynamic) || (mOther == Dynamic && nOther == Dynamic))
         {
-            return multMatByDef<number, Dynamic, Dynamic, Dynamic, Dynamic>(matrix, other.matrix);
+            return multMatRowWise<number, Dynamic, Dynamic, Dynamic, Dynamic>(matrix, other.matrix);
         }
 
         /**
@@ -1075,7 +1140,7 @@ namespace mlinalg::structures {
          */
         template <int nOther>
         Matrix<number, m, nOther> operator*(const TransposeVariant<number, n, nOther>& other) const {
-            return multMatByDef<number, m, n, n, nOther>(matrix, helpers::extractMatrixFromTranspose(other).matrix);
+            return multMatRowWise<number, m, n, n, nOther>(matrix, helpers::extractMatrixFromTranspose(other).matrix);
         }
 
         /**
@@ -1570,7 +1635,7 @@ namespace mlinalg::structures {
          */
         template <int otherM, int otherN>
         Matrix<number, Dynamic, Dynamic> operator*(const Matrix<number, otherM, otherN>& other) const {
-            return multMatByDef<number, Dynamic, Dynamic, Dynamic, Dynamic>(matrix, other.matrix);
+            return multMatRowWise<number, Dynamic, Dynamic, Dynamic, Dynamic>(matrix, other.matrix);
         }
 
         template <int m, int n, int otherM, int otherN>
@@ -1578,7 +1643,7 @@ namespace mlinalg::structures {
                                                           const Matrix<number, m, n> rhs)
             requires((n == Dynamic && m == Dynamic) && (otherN != Dynamic && otherM != Dynamic))
         {
-            return multMatByDef<number, Dynamic, Dynamic, Dynamic>(lhs.matrix, rhs.matrix);
+            return multMatRowWise<number, Dynamic, Dynamic, Dynamic>(lhs.matrix, rhs.matrix);
         }
 
         /**
@@ -1589,7 +1654,7 @@ namespace mlinalg::structures {
          */
         template <int otherM, int otherN>
         Matrix<number, Dynamic, Dynamic> operator*(const TransposeVariant<number, otherM, Dynamic>& other) const {
-            return multMatByDef<number, Dynamic, Dynamic, Dynamic>(helpers::extractMatrixFromTranspose(other));
+            return multMatRowWise<number, Dynamic, Dynamic, Dynamic>(helpers::extractMatrixFromTranspose(other));
         }
 
         template <int m, int n, int otherM, int otherN>
@@ -1597,8 +1662,8 @@ namespace mlinalg::structures {
                                                           const Matrix<number, m, n> rhs)
             requires((n == Dynamic && m == Dynamic) && (otherN != Dynamic && otherM != Dynamic))
         {
-            return multMatByDef<number, Dynamic, Dynamic, Dynamic>(helpers::extractMatrixFromTranspose(lhs),
-                                                                   rhs.matrix);
+            return multMatRowWise<number, Dynamic, Dynamic, Dynamic>(helpers::extractMatrixFromTranspose(lhs),
+                                                                     rhs.matrix);
         }
 
         /**
