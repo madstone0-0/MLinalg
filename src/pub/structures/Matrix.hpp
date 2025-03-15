@@ -44,6 +44,9 @@ namespace mlinalg::structures {
     template <Number number, int m, int n>
     class Matrix;
 
+    template <Number number, int m, int n>
+    struct MatrixView;
+
     /**
      * @brief Type alias for a variant of a Vector and a Matrix
      *
@@ -303,6 +306,18 @@ namespace mlinalg::structures {
             }
 
             return helpers::fromColVectorSet<number, resSizeP.first, resSizeP.second>(res);
+        }
+
+
+        template <Number number, int m, int n, size_t i, size_t j, Container T>
+        MatrixView<number, m, n> View(T& matrix, size_t rowOffset = 0, size_t colOffset = 0, size_t rowStride = 1,
+                                      size_t colStride = 1) {
+            const auto rows = matrix.size();
+            const auto cols = matrix.at(0).size();
+
+            if (i > rows || j > cols) throw std::out_of_range("View dimensions exceed matrix size");
+            if (rowOffset >= rows || colOffset >= cols) throw std::out_of_range("Offset out of range");
+            return MatrixView<number, m, n>{&matrix, rowOffset, colOffset, rowStride, colStride};
         }
 
         template <Number number, int m, int n, Container T>
@@ -732,6 +747,66 @@ namespace mlinalg::structures {
     }  // namespace
 
     /**
+     * @brief MatrixView class for representing a view of a matrix
+     *
+     * @param i Row index
+     * @param j Column index
+     */
+    template <Number number, int m, int n>
+    struct MatrixView {
+        TDArray<number, m, n>* matrix;
+        size_t rowOffset{};   // Starting row index
+        size_t colOffset{};   // Starting column index
+        size_t rowStride{1};  // Stride between rows
+        size_t colStride{1};  // Stride between columns
+
+        /**
+         * @brief  Read-write access to the element at the ith row and jth column
+         *
+         * @param i  The index of the row
+         * @param j  The index of the column
+         * @return A reference to the element at the ith row and jth column
+         */
+        number& operator()(size_t i, size_t j) {
+            return (*matrix)[rowOffset + (i * rowStride)][colOffset + (j * colStride)];
+        }
+
+        /**
+         * @brief Read-only access to the element at the ith row and jth column
+         *
+         * @param i The index of the row
+         * @param j  The index of the column
+         * @return A const reference to the element at the ith row and jth column
+         */
+        const number& operator()(size_t i, size_t j) const {
+            return (*matrix)[rowOffset + (i * rowStride)][colOffset + (j * colStride)];
+        }
+
+        friend class Matrix<number, m, n>;
+    };
+
+    template <Number number>
+    struct MatrixView<number, Dynamic, Dynamic> {
+        TDArrayDynamic<number>* matrix;
+        size_t rowOffset{};   // Starting row index
+        size_t colOffset{};   // Starting column index
+        size_t rowStride{1};  // Stride between rows
+        size_t colStride{1};  // Stride between columns
+
+        // Read-write access
+        number& operator()(size_t i, size_t j) {
+            return (*matrix)[rowOffset + (i * rowStride)][colOffset + (j * colStride)];
+        }
+
+        // Read-only access
+        const number& operator()(size_t i, size_t j) const {
+            return (*matrix)[rowOffset + (i * rowStride)][colOffset + (j * colStride)];
+        }
+
+        friend class Matrix<number, Dynamic, Dynamic>;
+    };
+
+    /**
      * @brief Matrix class for representing NxM matrices
      *
      * @param m Number of rows
@@ -1137,6 +1212,21 @@ namespace mlinalg::structures {
         template <size_t i0, size_t i1, size_t j0, size_t j1>
         Matrix<number, (i1 - i0), (j1 - j0)> slice() {
             return MatrixSlice<i0, i1, j0, j1, number, m, n>(matrix);
+        }
+
+        /**
+         * @brief Create a view of the matrix
+         *
+         * @param rowOffset The starting row index
+         * @param colOffset The starting column index
+         * @param rowStride The stride between rows
+         * @param colStride The stride between columns
+         * @return A MatrixView object of the matrix
+         */
+        template <size_t i, size_t j>
+        MatrixView<number, m, n> view(size_t rowOffset = 0, size_t colOffset = 0, size_t rowStride = 1,
+                                      size_t colStride = 1) {
+            return View<number, m, n, i, j>(matrix, rowOffset, colOffset, rowStride, colStride);
         }
 
         auto getMatrix() const { return matrix; }
@@ -1630,6 +1720,21 @@ namespace mlinalg::structures {
                 return MatrixDet2x2<number>(matrix);
             else
                 return MatrixCofactor<number, 0, 0>(matrix);
+        }
+
+        /**
+         * @brief Create a view of the matrix
+         *
+         * @param rowOffset The starting row index
+         * @param colOffset The starting column index
+         * @param rowStride The stride between rows
+         * @param colStride The stride between columns
+         * @return A MatrixView object of the matrix
+         */
+        template <size_t i, size_t j>
+        MatrixView<number, Dynamic, Dynamic> view(size_t rowOffset = 0, size_t colOffset = 0, size_t rowStride = 1,
+                                                  size_t colStride = 1) {
+            return View<number, Dynamic, Dynamic, i, j>(matrix, rowOffset, colOffset, rowStride, colStride);
         }
 
        private:
