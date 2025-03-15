@@ -103,7 +103,7 @@ namespace mlinalg::structures {
             constexpr int vSize = (n != -1) ? n : -1;
             auto size = row.size();
             Vector<number, vSize> res(size);
-            for (size_t i{}; i < size; i++) res.at(i) = scalar * row.at(i);
+            for (size_t i{}; i < size; i++) res.at(i) = scalar * row[i];
             return res;
         }
 
@@ -320,12 +320,28 @@ namespace mlinalg::structures {
         number& at(size_t i) { return vectorAt<number>(*row, i); }
 
         /**
+         * @brief Access the ith element of the vector
+         *
+         * @param i  the index of the element to access
+         * @return a reference to the ith element
+         */
+        number& operator[](size_t i) { return vectorAt<number>(*row, i); }
+
+        /**
          * @brief Const access the ith element of the vector
          *
          * @param i the index of the element to access
          * @return  the ith element
          */
         number at(size_t i) const { return vectorConstAt<number>(*row, i); }
+
+        /**
+         * @brief Const access the ith element of the vector
+         *
+         * @param i  the index of the element to access
+         * @return The ith element
+         */
+        number operator[](size_t i) const { return vectorConstAt<number>(*row, i); }
 
         /**
          * @brief Find the dot product of this vector and another vector
@@ -701,12 +717,28 @@ namespace mlinalg::structures {
         number& at(size_t i) { return vectorAt<number>(*row, i); }
 
         /**
+         * @brief Access the ith element of the vector
+         *
+         * @param i  the index of the element to access
+         * @return a reference to the ith element
+         */
+        number& operator[](size_t i) { return vectorAt<number>(*row, i); }
+
+        /**
          * @brief Const access the ith element of the vector
          *
          * @param i the index of the element to access
          * @return  the ith element
          */
         number at(size_t i) const { return vectorConstAt<number>(*row, i); }
+
+        /**
+         * @brief Const access the ith element of the vector
+         *
+         * @param i  the index of the element to access
+         * @return The ith element
+         */
+        number operator[](size_t i) const { return vectorConstAt<number>(*row, i); }
 
         /**
          * @brief Find the dot product of this vector and another vector

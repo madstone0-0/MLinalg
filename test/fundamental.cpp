@@ -251,6 +251,14 @@ TEST_CASE("Vector", "[vector]") {
                 REQUIRE(it == v.end());
             }
 
+            SECTION("Indexing") {
+                auto v = Vector<int, 2>{1, 2};
+                REQUIRE(v[0] == 1);
+                REQUIRE(v[1] == 2);
+                REQUIRE(v.at(0) == 1);
+                REQUIRE(v.at(1) == 2);
+            }
+
             SECTION("Comparisions") {
                 // ------------------ Integer 32 (int) Tests ------------------
                 SECTION("Integer - Equality") {
@@ -441,6 +449,14 @@ TEST_CASE("Vector", "[vector]") {
                 auto u = Vector<int, Dynamic>{1};
                 auto u2 = u.T();
                 REQUIRE(u2.at(0).at(0) == 1);
+            }
+
+            SECTION("Indexing") {
+                auto v = Vector<int, 2>{1, 2};
+                REQUIRE(v[0] == 1);
+                REQUIRE(v[1] == 2);
+                REQUIRE(v.at(0) == 1);
+                REQUIRE(v.at(1) == 2);
             }
 
             SECTION("Iteration") {
@@ -1439,6 +1455,42 @@ TEST_CASE("Matrix", "[matrix]") {
                 // This should fail at compile time, so it's not included in the runtime tests.
                 // static_assert(!std::is_invocable_v<decltype(m9.slice<-1, 2, 0, 2>()), decltype(m9)>);
             }
+
+            SECTION("Indexing") {
+                auto m = Matrix<int, 3, 3>{
+                    {1, 2, 3},
+                    {4, 5, 6},
+                    {7, 8, 9},
+                };
+                REQUIRE(m[0, 0] == 1);
+                REQUIRE(m[0, 1] == 2);
+                REQUIRE(m[0, 2] == 3);
+                REQUIRE(m[1, 0] == 4);
+                REQUIRE(m[1, 1] == 5);
+                REQUIRE(m[1, 2] == 6);
+                REQUIRE(m[2, 0] == 7);
+                REQUIRE(m[2, 1] == 8);
+                REQUIRE(m[2, 2] == 9);
+
+                REQUIRE(m.at(0, 0) == 1);
+                REQUIRE(m.at(0, 1) == 2);
+                REQUIRE(m.at(0, 2) == 3);
+                REQUIRE(m.at(1, 0) == 4);
+                REQUIRE(m.at(1, 1) == 5);
+                REQUIRE(m.at(1, 2) == 6);
+                REQUIRE(m.at(2, 0) == 7);
+                REQUIRE(m.at(2, 1) == 8);
+                REQUIRE(m.at(2, 2) == 9);
+
+                REQUIRE(m[0] == Vector<int, 3>{1, 2, 3});
+                REQUIRE(m[1] == Vector<int, 3>{4, 5, 6});
+                REQUIRE(m[2] == Vector<int, 3>{7, 8, 9});
+
+                REQUIRE(m.at(0) == Vector<int, 3>{1, 2, 3});
+                REQUIRE(m.at(1) == Vector<int, 3>{4, 5, 6});
+                REQUIRE(m.at(2) == Vector<int, 3>{7, 8, 9});
+            }
+
         }
 
         SECTION("Dynamic") {

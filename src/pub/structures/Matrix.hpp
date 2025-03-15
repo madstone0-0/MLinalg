@@ -62,6 +62,12 @@ namespace mlinalg::structures {
     template <Number number>
     using RowDynamic = Vector<number, -1>;
 
+    template <Number number, int m, int n>
+    using TDArray = array<Row<number, n>, m>;
+
+    template <Number number>
+    using TDArrayDynamic = vector<RowDynamic<number>>;
+
     namespace {
         template <Container T, Container U>
         void checkMatrixOperandRowSize(const T& matrix, const U& otherMatrix) {
@@ -805,6 +811,22 @@ namespace mlinalg::structures {
         Row<number, n> at(size_t i) const { return matrixRowAtConst(matrix, i); }
 
         /**
+         * @brief Access the ith row of the matrix
+         *
+         * @param i The index of the row to access
+         * @return A reference to the ith row
+         */
+        Row<number, n>& operator[](size_t i) { return matrixRowAt(matrix, i); }
+
+        /**
+         * @brief Const access the ith row of the matrix
+         *
+         * @param i The index of the row to access
+         * @return The ith row
+         */
+        Row<number, n> operator[](size_t i) const { return matrixRowAtConst(matrix, i); }
+
+        /**
          * @brief Access the element at the ith row and jth column
          *
          * @param i The index of the row
@@ -821,6 +843,24 @@ namespace mlinalg::structures {
          * @return A const reference to the element at the ith row and jth column
          */
         number at(size_t i, size_t j) const { return matrixAtConst<number>(matrix, i, j); }
+
+        /**
+         * @brief Access the element at the ith row and jth column
+         *
+         * @param i The index of the row
+         * @param j The index of the column
+         * @return A reference to the element at the ith row and jth column
+         */
+        number& operator[](size_t i, size_t j) { return matrixAt<number>(matrix, i, j); }
+
+        /**
+         * @brief Const access the element at the ith row and jth column
+         *
+         * @param i The index of the row
+         * @param j The index of the column
+         * @return The element at the ith row and jth column
+         */
+        number operator[](size_t i, size_t j) const { return matrixAtConst<number>(matrix, i, j); }
 
         /**
          * @brief Convert the columns of the matrix to a vector of column vectors
@@ -1130,7 +1170,7 @@ namespace mlinalg::structures {
         /**
          * @brief Backing array for the matrix
          */
-        array<Row<number, n>, m> matrix{};
+        TDArray<number, m, n> matrix{};
     };
 
     template <Number number, int m, int n, int nOther>
@@ -1218,6 +1258,22 @@ namespace mlinalg::structures {
         RowDynamic<number> at(int i) const { return matrixRowAtConst(matrix, i); }
 
         /**
+         * @brief Access the ith row of the matrix
+         *
+         * @param i The index of the row to access
+         * @return A reference to the ith row
+         */
+        RowDynamic<number>& operator[](size_t i) { return matrixRowAt(matrix, i); }
+
+        /**
+         * @brief Const access the ith row of the matrix
+         *
+         * @param i The index of the row to access
+         * @return The ith row
+         */
+        RowDynamic<number> operator[](size_t i) const { return matrixRowAtConst(matrix, i); }
+
+        /**
          * @brief Access the element at the ith row and jth column
          *
          * @param i The index of the row
@@ -1226,7 +1282,32 @@ namespace mlinalg::structures {
          */
         number& at(size_t i, size_t j) { return matrixAt<number>(matrix, i, j); }
 
+        /**
+         * @brief Const access the element at the ith row and jth column
+         *
+         * @param i The index of the row
+         * @param j The index of the column
+         * @return The element at the ith row and jth column
+         */
         number at(size_t i, size_t j) const { return matrixAtConst<number>(matrix, i, j); }
+
+        /**
+         * @brief Access the element at the ith row and jth column
+         *
+         * @param i The index of the row
+         * @param j The index of the column
+         * @return A reference to the element at the ith row and jth column
+         */
+        number& operator[](size_t i, size_t j) { return matrixAt<number>(matrix, i, j); }
+
+        /**
+         * @brief Const access the element at the ith row and jth column
+         *
+         * @param i The index of the row
+         * @param j The index of the column
+         * @return The element at the ith row and jth column
+         */
+        number operator[](size_t i, size_t j) const { return matrixAtConst<number>(matrix, i, j); }
 
         /**
          * @brief Copy construct a new Matrix object
@@ -1560,7 +1641,7 @@ namespace mlinalg::structures {
 
         size_t m;
         size_t n;
-        vector<RowDynamic<number>> matrix;
+        TDArrayDynamic<number> matrix;
     };
 
 }  // namespace mlinalg::structures
