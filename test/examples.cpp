@@ -13,6 +13,7 @@
 #include <iostream>
 
 #include "MLinalg.hpp"
+#include "structures/Vector.hpp"
 
 using std::cout;
 
@@ -244,7 +245,7 @@ int main() {
 
     // Demonstrate multiplication of two 2x2 matrices.
     auto A = Matrix<double, 2, 2>{{{5, 1}, {3, -2}}};
-    auto B = Matrix<double, 2, 2>{{{2, 0}, {4, 3}}};
+    auto B = Matrix<double, Dynamic, Dynamic>{{{2, 0}, {4, 3}}};
     cout << std::format("\nMultiplication of two 2x2 matrices:\nA * B =\n");
     cout << A * B << "\n";
     cout << std::format("B * A =\n");
@@ -257,7 +258,7 @@ int main() {
     cout << rref(sys20) << "\n";
 
     // Demonstrate vector arithmetic.
-    auto shear = Matrix<double, 2, 2>{{{1, 2}, {0, 1}}};
+    auto shear = Matrix<double, Dynamic, Dynamic>{{{1, 2}, {0, 1}}};
     auto refMat = Matrix<double, 2, 2>{{{-1, 0}, {0, 1}}};
     auto e1 = Vector<double, 2>{1, 0};
     auto e2 = Vector<double, 2>{0, 1};
