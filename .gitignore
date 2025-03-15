@@ -1,5 +1,5 @@
 build
-build-release
+build-*
 .cache
 *.log
 .ccls-cache
@@ -7,3 +7,7 @@ build-release
 *.srctrldb
 *.srctrlprj
 docs
+*.out
+*.out.*
+*.data
+*.png

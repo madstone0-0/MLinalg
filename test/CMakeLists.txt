@@ -6,6 +6,7 @@ add_executable(fundamental fundamental.cpp)
 add_executable(operations operations.cpp)
 add_executable(examples examples.cpp)
 add_executable(bench bench.cpp)
+add_executable(profile profile.cpp)
 target_link_libraries(
     fundamental
     PRIVATE Catch2::Catch2WithMain mlinalg::mlinalg
@@ -16,6 +17,7 @@ target_link_libraries(
 )
 target_link_libraries(examples PRIVATE mlinalg::mlinalg)
 target_link_libraries(bench PRIVATE Catch2::Catch2WithMain mlinalg::mlinalg)
+target_link_libraries(profile PRIVATE mlinalg::mlinalg)
 
 include(CTest)
 include(Catch)
