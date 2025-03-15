@@ -39,6 +39,16 @@ namespace rg = std::ranges;
 using SizePair = std::pair<int, int>;
 
 namespace mlinalg::structures {
+    /**
+     * @class Shape
+     * @brief A struct to represent the shape of a matrix
+     *
+     */
+    struct Shape {
+        size_t rows;
+        size_t cols;
+    };
+
     using SlicePair = std::pair<size_t, size_t>;
 
     template <Number number, int m, int n>
@@ -280,6 +290,7 @@ namespace mlinalg::structures {
         /**
          * @brief Matrix multiplication by a matrix by the definition of matrix multiplication
          *
+         * @param matrix The matrix to multiply
          * @param other The matrix to multiply by
          * @return The matrix resulting from the multiplication
          */
@@ -1075,16 +1086,23 @@ namespace mlinalg::structures {
         /**
          * @brief Number of rows in the matrix
          *
-         * @return
+         * @return The number of rows in the matrix
          */
         [[nodiscard]] constexpr size_t numRows() const { return static_cast<size_t>(m); }
 
         /**
          * @brief Number of columns in the matrix
          *
-         * @return
+         * @return The number of columns in the matrix
          */
         [[nodiscard]] constexpr size_t numCols() const { return static_cast<size_t>(n); }
+
+        /**
+         * @brief Shape of the matrix
+         *
+         * @return The shape of the matrix
+         */
+        [[nodiscard]] constexpr Shape shape() const { return {numRows(), numCols()}; }
 
         explicit operator std::string() const { return matrixStringRepr(matrix); }
 
@@ -1610,6 +1628,13 @@ namespace mlinalg::structures {
          * @return
          */
         [[nodiscard]] size_t numCols() const { return n; }
+
+        /**
+         * @brief Shape of the matrix
+         *
+         * @return The shape of the matrix
+         */
+        [[nodiscard]] Shape shape() const { return {numRows(), numCols()}; }
 
         explicit operator std::string() const { return matrixStringRepr(matrix); }
 
