@@ -325,7 +325,10 @@ namespace mlinalg::structures {
          * @param i  the index of the element to access
          * @return a reference to the ith element
          */
-        number& operator[](size_t i) { return vectorAt<number>(*row, i); }
+        number& operator[](size_t i) {
+            return (*row)[i];
+            // return vectorAt<number>(*row, i);
+        }
 
         /**
          * @brief Const access the ith element of the vector
@@ -341,7 +344,10 @@ namespace mlinalg::structures {
          * @param i  the index of the element to access
          * @return The ith element
          */
-        number operator[](size_t i) const { return vectorConstAt<number>(*row, i); }
+        number operator[](size_t i) const {
+            return (*row)[i];
+            // return vectorConstAt<number>(*row, i);
+        }
 
         /**
          * @brief Find the dot product of this vector and another vector
@@ -722,7 +728,10 @@ namespace mlinalg::structures {
          * @param i  the index of the element to access
          * @return a reference to the ith element
          */
-        number& operator[](size_t i) { return vectorAt<number>(*row, i); }
+        number& operator[](size_t i) {
+            return (*row)[i];
+            // return vectorAt<number>(*row, i);
+        }
 
         /**
          * @brief Const access the ith element of the vector
@@ -738,7 +747,10 @@ namespace mlinalg::structures {
          * @param i  the index of the element to access
          * @return The ith element
          */
-        number operator[](size_t i) const { return vectorConstAt<number>(*row, i); }
+        number operator[](size_t i) const {
+            return (*row)[i];
+            // return vectorConstAt<number>(*row, i);
+        }
 
         /**
          * @brief Find the dot product of this vector and another vector

@@ -93,7 +93,7 @@ namespace mlinalg::structures {
             if (matrix.size() != otherMatrix.size())
                 throw std::invalid_argument("Matrices must be of the same dimensions");
 
-            if (matrix.at(0).size() != otherMatrix.at(0).size())
+            if (matrix[0].size() != otherMatrix[0].size())
                 throw std::invalid_argument("Matrices must be of the same dimensions");
         }
 
@@ -122,13 +122,13 @@ namespace mlinalg::structures {
             // TODO: Fix this not actually checking dynamic arrays when cofactoring
             if constexpr (m == -1 || n == -1) {
                 const size_t& nRows = matrix.size();
-                const size_t& nCols = matrix.at(0).size();
+                const size_t& nCols = matrix[0].size();
                 vector<RowDynamic<number>> res;
                 res.reserve(nCols);
                 for (size_t i{}; i < nCols; i++) {
                     Vector<number, Dynamic> vec(nRows);
                     for (size_t j{}; j < nRows; j++) {
-                        vec.at(j) = matrix.at(j).at(i);
+                        vec[j] = matrix[j][i];
                     }
                     res.emplace_back(std::move(vec));
                 }
@@ -139,7 +139,7 @@ namespace mlinalg::structures {
                 for (int i{}; i < n; i++) {
                     Vector<number, m> vec;
                     for (int j{}; j < m; j++) {
-                        vec.at(j) = matrix.at(j).at(i);
+                        vec[j] = matrix[j][i];
                     }
                     res.emplace_back(std::move(vec));
                 }
@@ -328,7 +328,7 @@ namespace mlinalg::structures {
          */
         template <Number number, int m, int n, int mOther, int nOther, Container T, Container U>
         Matrix<number, m, nOther> multMatRowWise(const T& matrix, const U& otherMatrix) {
-            if (matrix.at(0).size() != static_cast<size_t>(otherMatrix.size()))
+            if (matrix[0].size() != static_cast<size_t>(otherMatrix.size()))
                 throw std::invalid_argument(
                     "The columns of the first matrix must be equal to the rows of the second matrix");
 
@@ -960,7 +960,10 @@ namespace mlinalg::structures {
          * @param i The index of the row to access
          * @return A reference to the ith row
          */
-        Row<number, n>& operator[](size_t i) { return matrixRowAt(matrix, i); }
+        Row<number, n>& operator[](size_t i) {
+            return matrix[i];
+            // return matrixRowAt(matrix, i);
+        }
 
         /**
          * @brief Const access the ith row of the matrix
@@ -968,7 +971,10 @@ namespace mlinalg::structures {
          * @param i The index of the row to access
          * @return The ith row
          */
-        Row<number, n> operator[](size_t i) const { return matrixRowAtConst(matrix, i); }
+        Row<number, n> operator[](size_t i) const {
+            return matrix[i];
+            // return matrixRowAtConst(matrix, i);
+        }
 
         /**
          * @brief Access the element at the ith row and jth column
@@ -995,7 +1001,10 @@ namespace mlinalg::structures {
          * @param j The index of the column
          * @return A reference to the element at the ith row and jth column
          */
-        number& operator[](size_t i, size_t j) { return matrixAt<number>(matrix, i, j); }
+        number& operator[](size_t i, size_t j) {
+            return matrix[i][j];
+            // return matrixAt<number>(matrix, i, j);
+        }
 
         /**
          * @brief Const access the element at the ith row and jth column
@@ -1004,7 +1013,10 @@ namespace mlinalg::structures {
          * @param j The index of the column
          * @return The element at the ith row and jth column
          */
-        number operator[](size_t i, size_t j) const { return matrixAtConst<number>(matrix, i, j); }
+        number operator[](size_t i, size_t j) const {
+            return matrix[i][j];
+            // return matrixAtConst<number>(matrix, i, j);
+        }
 
         /**
          * @brief Convert the columns of the matrix to a vector of column vectors

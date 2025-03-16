@@ -19,7 +19,7 @@ Matrix<double, m, n> genMartix() {
     Matrix<double, m, n> A;
     for (size_t i{}; i < m; i++) {
         for (size_t j{}; j < m; j++) {
-            A.at(i, j) = rng();
+            A[i, j] = rng();
         }
     }
     return A;
@@ -29,7 +29,7 @@ Matrix<double, Dynamic, Dynamic> genMartix(size_t m, size_t n) {
     Matrix<double, Dynamic, Dynamic> A{(int)m, (int)n};
     for (size_t i{}; i < m; i++) {
         for (size_t j{}; j < m; j++) {
-            A.at(i, j) = rng();
+            A[i, j] = rng();
         }
     }
     return A;
