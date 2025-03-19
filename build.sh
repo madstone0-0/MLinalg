@@ -1,43 +1,90 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 OUT_DIR="build"
 
-build_release() {
-	echo "Building Release"
-	LOCAL_OUT_DIR="$OUT_DIR-release"
-	mkdir -p "$LOCAL_OUT_DIR"
-	doxygen Doxyfile &>"$LOCAL_OUT_DIR"/doxygen.log
-	CXX=g++ cmake -G 'Ninja' -S . -B "$LOCAL_OUT_DIR" -DCMAKE_BUILD_TYPE=Release && ninja -C $LOCAL_OUT_DIR/ &>"$LOCAL_OUT_DIR".log
+# Usage function prints help message
+usage() {
+	echo "Usage: $0 [debug|release|profile|all]"
+	exit 1
+}
+
+# Run Doxygen and log output; exit if it fails.
+build_doxygen() {
+	local out_dir="$1"
+	echo "Running Doxygen..."
+	if ! doxygen Doxyfile &>"$out_dir/doxygen.log"; then
+		echo "Doxygen failed. Check $out_dir/doxygen.log for details."
+		exit 1
+	fi
+}
+
+# Configure and build with CMake and Ninja.
+# Arguments: build directory, build type, compiler
+build_with_cmake() {
+	local build_dir="$1"
+	local build_type="$2"
+	local compiler="$3"
+
+	echo "Configuring and building ${build_type} build in ${build_dir} using ${compiler}..."
+	mkdir -p "$build_dir"
+
+	if [ $build_type == "Release" ]; then
+		build_doxygen "$build_dir"
+	fi
+
+	if ! CXX="$compiler" cmake -G Ninja -S . -B "$build_dir" -DCMAKE_BUILD_TYPE="$build_type"; then
+		echo "CMake configuration failed for ${build_dir}."
+		exit 1
+	fi
+
+	if ! ninja -C "$build_dir" &>"$build_dir/build.log"; then
+		echo "Ninja build failed for ${build_dir}. See $build_dir/build.log for details."
+		exit 1
+	fi
+
+	echo "${build_type} build completed successfully in ${build_dir}."
 }
 
 build_debug() {
-	echo "Building Debug"
-	mkdir -p "$OUT_DIR"
-	doxygen Doxyfile &>./doxygen.log
-	CXX=clang++ cmake -G 'Ninja' -S . -B "$OUT_DIR" -DCMAKE_BUILD_TYPE=Debug && ninja -C $OUT_DIR/ &>"$OUT_DIR".log
+	build_with_cmake "$OUT_DIR" "Debug" "clang++"
+}
+
+build_release() {
+	local release_dir="${OUT_DIR}-release"
+	build_with_cmake "$release_dir" "Release" "g++"
 }
 
 build_profile() {
-	echo "Building Profile"
-	LOCAL_OUT_DIR="$OUT_DIR-profile"
-	mkdir -p "$LOCAL_OUT_DIR"
-	CXX=g++ cmake -G 'Ninja' -S . -B "$LOCAL_OUT_DIR" -DCMAKE_BUILD_TYPE=Profile && ninja -C $LOCAL_OUT_DIR/ &>"$LOCAL_OUT_DIR".log
+	local profile_dir="${OUT_DIR}-profile"
+	build_with_cmake "$profile_dir" "Profile" "g++"
 }
 
-MODE="$1"
-
-if [ -z "$MODE" ]; then
+# Determine build mode from first argument (default is debug)
+if [ $# -eq 0 ]; then
 	MODE="debug"
+else
+	MODE="$1"
 fi
 
-case $MODE in
-"debug")
+case "$MODE" in
+debug)
 	build_debug
 	;;
-"release")
+release)
 	build_release
 	;;
-"profile")
+profile)
 	build_profile
+	;;
+all)
+	echo "Building all configurations concurrently..."
+	build_debug &
+	build_release &
+	build_profile &
+	wait
+	;;
+*)
+	usage
 	;;
 esac
