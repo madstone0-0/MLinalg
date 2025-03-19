@@ -11,6 +11,10 @@
 #include "../Logging.hpp"
 #endif
 
+#ifdef __AVX__
+#include <immintrin.h>
+#endif
+
 #include <algorithm>
 #include <array>
 #include <cctype>
@@ -356,6 +360,163 @@ namespace mlinalg::structures {
                 }
 
             return res;
+        }
+
+#if defined(__AVX__) && defined(__FMA__)
+        template <Number number, int m, int n, int mOther, int nOther, Container T, Container U>
+        Matrix<float, m, nOther> multMatSIMD(const T& matrix, const U& otherMatrix)
+            requires(std::is_same_v<number, float>)
+        {
+            if (matrix[0].size() != static_cast<size_t>(otherMatrix.size()))
+                throw std::invalid_argument(
+                    "The columns of the first matrix must be equal to the rows of the second matrix");
+
+            const int nRows = matrix.size();
+            const int nCols = matrix[0].size();
+            const int nColsOther = otherMatrix[0].size();
+
+            constexpr bool isDynamic = m == Dynamic || n == Dynamic || mOther == Dynamic || nOther == Dynamic;
+            constexpr auto DynamicPair = SizePair{Dynamic, Dynamic};
+
+            constexpr auto resSizeP = isDynamic ? DynamicPair : SizePair{m, nOther};
+
+            Matrix<float, resSizeP.first, resSizeP.second> res{nRows, nColsOther};
+            const int vecSize{8};  // AVX can handle 8 floats
+
+            for (size_t i{}; i < nRows; i++) {
+                for (size_t k{}; k < nCols; k++) {
+                    const float a = matrix.at(i).at(k);
+                    __m256 avxA = _mm256_set1_ps(a);
+
+                    auto& kRow = otherMatrix.at(k);
+                    auto& iRow = res.at(i);
+
+                    // Only vectorize if there are at least 8 columns.
+                    if (nColsOther >= vecSize) {
+                        size_t j = 0;
+                        // Process in chunks of 8 floats
+                        for (; j + vecSize <= nColsOther; j += vecSize) {
+                            __m256 avxB = _mm256_loadu_ps(&kRow[j]);
+                            __m256 avxRes = _mm256_loadu_ps(&iRow[j]);
+                            avxRes = _mm256_fmadd_ps(avxA, avxB, avxRes);
+                            _mm256_storeu_ps(&iRow[j], avxRes);
+                        }
+                        // Process remaining elements, if any, with scalar code.
+                        for (; j < nColsOther; j++) {
+                            iRow[j] += a * kRow[j];
+                        }
+
+                    } else {
+                        // If there are fewer than 8 columns, use scalar code entirely.
+                        for (size_t j = 0; j < nColsOther; j++) {
+                            iRow[j] += a * kRow[j];
+                        }
+                    }
+                }
+            }
+            return res;
+        }
+
+        template <Number number, int m, int n, int mOther, int nOther, Container T, Container U>
+        Matrix<double, m, nOther> multMatSIMD(const T& matrix, const U& otherMatrix)
+            requires(std::is_same_v<number, double>)
+        {
+            if (matrix[0].size() != static_cast<size_t>(otherMatrix.size()))
+                throw std::invalid_argument(
+                    "The columns of the first matrix must be equal to the rows of the second matrix");
+
+            const size_t nRows = matrix.size();
+            const size_t nCols = matrix[0].size();
+            const size_t nColsOther = otherMatrix[0].size();
+
+            constexpr bool isDynamic = m == Dynamic || n == Dynamic || mOther == Dynamic || nOther == Dynamic;
+            constexpr auto DynamicPair = SizePair{Dynamic, Dynamic};
+
+            constexpr auto resSizeP = isDynamic ? DynamicPair : SizePair{m, nOther};
+
+            Matrix<double, resSizeP.first, resSizeP.second> res{(int)nRows, (int)nColsOther};
+            const int vecSize{4};  // AVX can handle 4 doubles
+
+            for (size_t i{}; i < nRows; i++) {
+                for (size_t k{}; k < nCols; k++) {
+                    const double a = matrix.at(i).at(k);
+                    __m256d avxA = _mm256_set1_pd(a);
+
+                    auto& kRow = otherMatrix.at(k);
+                    auto& iRow = res.at(i);
+
+                    // Only vectorize if there are at least 4 columns.
+                    if (nColsOther >= vecSize) {
+                        size_t j = 0;
+                        // Process in chunks of 4 doubles
+                        for (; j + vecSize <= nColsOther; j += vecSize) {
+                            __m256d avxB = _mm256_loadu_pd(&kRow[j]);
+                            __m256d avxRes = _mm256_loadu_pd(&iRow[j]);
+                            avxRes = _mm256_fmadd_pd(avxA, avxB, avxRes);
+                            _mm256_storeu_pd(&iRow[j], avxRes);
+                        }
+                        // Process remaining elements, if any, with scalar code.
+                        for (; j < nColsOther; j++) {
+                            iRow[j] += a * kRow[j];
+                        }
+                    } else {
+                        // If there are fewer than 4 columns, use scalar code entirely.
+                        for (size_t j = 0; j < nColsOther; j++) {
+                            iRow[j] += a * kRow[j];
+                        }
+                    }
+                }
+            }
+            return res;
+        }
+#endif
+
+        template <Number number, int m, int n, int mOther, int nOther, Container T, Container U>
+        Matrix<number, m, nOther> MatrixMultiplication(const T& matrix, const U& otherMatrix) {
+#ifdef STRASSEN
+            constexpr bool isDynamic = m == Dynamic || n == Dynamic || mOther == Dynamic || nOther == Dynamic;
+            constexpr bool isNotSquare = m != n || (m != mOther && n != nOther) || mOther != nOther;
+            constexpr bool isNotPow2 = (size_t(n) & (size_t(n) - 1)) != 0;  // Checks if n is not a power of 2
+
+            if constexpr (isDynamic || isNotSquare || isNotPow2) {
+#ifdef DEBUG
+                logging::log("Using default matrix multiplication algorithm", "Matrix operator*", logging::Level::INF);
+#endif
+
+#if defined(__AVX__) && defined(__FMA__)
+                if constexpr (std::is_same_v<number, double> || std::is_same_v<number, float>) {
+                    return multMatSIMD<number, m, n, mOther, nOther>(matrix, otherMatrix);
+                } else {
+                    return multMatRowWise<number, m, n, mOther, nOther>(matrix, otherMatrix);
+                }
+
+#else
+                return multMatRowWise<number, m, n, mOther, nOther>(matrix, other.matrix);
+#endif  // __AVX__
+
+            } else {
+#ifdef DEBUG
+                logging::log("Using strassen's matrix multiplication algorithm", "Matrix operator*",
+                             logging::Level::INF);
+#endif
+                return multMatStrassen<number, m, n, nOther>(matrix, other.matrix);
+            }
+#else
+#ifdef DEBUG
+            logging::log("Using default matrix multiplication algorithm", "Matrix operator*", logging::Level::INF);
+#endif
+
+#if defined(__AVX__) && defined(__FMA__)
+            if constexpr (std::is_same_v<number, double> || std::is_same_v<number, float>) {
+                return multMatSIMD<number, m, n, mOther, nOther>(matrix, otherMatrix);
+            } else {
+                return multMatRowWise<number, m, n, mOther, nOther>(matrix, otherMatrix);
+            }
+
+#else
+            return multMatRowWise<number, m, n, mOther, nOther>(matrix, otherMatrix);
+#endif  // __AVX__
+#endif
         }
 
         template <Number number, int m, int n, size_t i, size_t j, Container T>
@@ -1013,7 +1174,7 @@ namespace mlinalg::structures {
          * @param j The index of the column
          * @return The element at the ith row and jth column
          */
-        number operator[](size_t i, size_t j) const {
+        number& operator[](size_t i, size_t j) const {
             return matrix[i][j];
             // return matrixAtConst<number>(matrix, i, j);
         }
@@ -1112,36 +1273,14 @@ namespace mlinalg::structures {
         Matrix<number, m, nOther> operator*(const Matrix<number, mOther, nOther>& other) const
             requires(m != Dynamic && n != Dynamic && mOther != Dynamic && nOther != Dynamic)
         {
-#ifdef STRASSEN
-            constexpr bool isDynamic = m == Dynamic || n == Dynamic || mOther == Dynamic || nOther == Dynamic;
-            constexpr bool isNotSquare = m != n || (m != mOther && n != nOther) || mOther != nOther;
-            constexpr bool isNotPow2 = (size_t(n) & (size_t(n) - 1)) != 0;  // Checks if n is not a power of 2
-
-            if constexpr (isDynamic || isNotSquare || isNotPow2) {
-#ifdef DEBUG
-                logging::log("Using default matrix multiplication algorithm", "Matrix operator*", logging::Level::INF);
-#endif
-                return multMatRowWise<number, m, n, mOther, nOther>(matrix, other.matrix);
-            } else {
-#ifdef DEBUG
-                logging::log("Using strassen's matrix multiplication algorithm", "Matrix operator*",
-                             logging::Level::INF);
-#endif
-                return multMatStrassen<number, m, n, nOther>(matrix, other.matrix);
-            }
-#else
-#ifdef DEBUG
-            logging::log("Using default matrix multiplication algorithm", "Matrix operator*", logging::Level::INF);
-#endif
-            return multMatRowWise<number, m, n, mOther, nOther>(matrix, other.matrix);
-#endif
+            return MatrixMultiplication<number, m, n, mOther, nOther>(matrix, other.matrix);
         }
 
         template <int mOther, int nOther>
         Matrix<number, Dynamic, Dynamic> operator*(const Matrix<number, mOther, nOther>& other) const
             requires((n == Dynamic && m == Dynamic) || (mOther == Dynamic && nOther == Dynamic))
         {
-            return multMatRowWise<number, Dynamic, Dynamic, Dynamic, Dynamic>(matrix, other.matrix);
+            return MatrixMultiplication<number, Dynamic, Dynamic, Dynamic, Dynamic>(matrix, other.matrix);
         }
 
         /**
@@ -1152,7 +1291,8 @@ namespace mlinalg::structures {
          */
         template <int nOther>
         Matrix<number, m, nOther> operator*(const TransposeVariant<number, n, nOther>& other) const {
-            return multMatRowWise<number, m, n, n, nOther>(matrix, helpers::extractMatrixFromTranspose(other).matrix);
+            return MatrixMultiplication<number, m, n, n, nOther>(matrix,
+                                                                 helpers::extractMatrixFromTranspose(other).matrix);
         }
 
         /**
@@ -1647,7 +1787,7 @@ namespace mlinalg::structures {
          */
         template <int otherM, int otherN>
         Matrix<number, Dynamic, Dynamic> operator*(const Matrix<number, otherM, otherN>& other) const {
-            return multMatRowWise<number, Dynamic, Dynamic, Dynamic, Dynamic>(matrix, other.matrix);
+            return MatrixMultiplication<number, Dynamic, Dynamic, Dynamic, Dynamic>(matrix, other.matrix);
         }
 
         template <int m, int n, int otherM, int otherN>
@@ -1655,7 +1795,7 @@ namespace mlinalg::structures {
                                                           const Matrix<number, m, n> rhs)
             requires((n == Dynamic && m == Dynamic) && (otherN != Dynamic && otherM != Dynamic))
         {
-            return multMatRowWise<number, Dynamic, Dynamic, Dynamic>(lhs.matrix, rhs.matrix);
+            return MatrixMultiplication<number, Dynamic, Dynamic, Dynamic>(lhs.matrix, rhs.matrix);
         }
 
         /**
@@ -1666,7 +1806,7 @@ namespace mlinalg::structures {
          */
         template <int otherM, int otherN>
         Matrix<number, Dynamic, Dynamic> operator*(const TransposeVariant<number, otherM, Dynamic>& other) const {
-            return multMatRowWise<number, Dynamic, Dynamic, Dynamic>(helpers::extractMatrixFromTranspose(other));
+            return MatrixMultiplication<number, Dynamic, Dynamic, Dynamic>(helpers::extractMatrixFromTranspose(other));
         }
 
         template <int m, int n, int otherM, int otherN>
@@ -1674,8 +1814,8 @@ namespace mlinalg::structures {
                                                           const Matrix<number, m, n> rhs)
             requires((n == Dynamic && m == Dynamic) && (otherN != Dynamic && otherM != Dynamic))
         {
-            return multMatRowWise<number, Dynamic, Dynamic, Dynamic>(helpers::extractMatrixFromTranspose(lhs),
-                                                                     rhs.matrix);
+            return MatrixMultiplication<number, Dynamic, Dynamic, Dynamic>(helpers::extractMatrixFromTranspose(lhs),
+                                                                           rhs.matrix);
         }
 
         /**
