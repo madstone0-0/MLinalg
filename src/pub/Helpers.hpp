@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "Concepts.hpp"
-#include "structures/Vector.hpp"
+#include "structures/Aliases.hpp"
 
 namespace mlinalg::structures::helpers {
     using std::vector;

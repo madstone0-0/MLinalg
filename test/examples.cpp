@@ -13,11 +13,10 @@
 #include <iostream>
 
 #include "MLinalg.hpp"
-#include "structures/Vector.hpp"
 
 using std::cout;
 
-/**
+/*
  * @brief Solves and prints the solution of a linear system given as a coefficient matrix and right-hand side vector.
  *
  * The function augments the coefficient matrix with the vector and attempts to solve the system using

@@ -11,6 +11,7 @@
 
 #include "Concepts.hpp"
 
+using std::abs;
 namespace mlinalg {
     /**
      * @brief Epsilon value for floating point comparison
@@ -34,7 +35,7 @@ namespace mlinalg {
             return std::isinf(a) && std::isinf(b) && (std::signbit(a) == std::signbit(b));
         }
         auto diff{static_cast<double>(a - b)};
-        if (std::abs(diff) <= EPSILON_FIXED) return true;
-        return std::abs(diff) <= EPSILON * std::max(std::abs(static_cast<double>(a)), std::abs(static_cast<double>(b)));
+        if (abs(diff) <= EPSILON_FIXED) return true;
+        return abs(diff) <= EPSILON * std::max(abs(static_cast<double>(a)), abs(static_cast<double>(b)));
     }
 }  // namespace mlinalg

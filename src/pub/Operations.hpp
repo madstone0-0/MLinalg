@@ -20,12 +20,12 @@
 #include "Concepts.hpp"
 #include "Numeric.hpp"
 #include "Structures.hpp"
+#include "structures/Aliases.hpp"
 
-using std::vector, std::array, std::optional;
+using std::vector, std::array, std::optional, std::nullopt;
 
 namespace mlinalg {
     using namespace structures;
-    using std::nullopt;
 
     /**
      * @brief Linear System type alias.
@@ -137,7 +137,7 @@ namespace mlinalg {
             if (fuzzyCompare(rightSimpl, number(0)) && fuzzyCompare(leftSide.at(0), number(0)))
                 return 0;
             else
-                return std::nullopt;
+                return nullopt;
         }
 
         number sol = rightSimpl / leftSide.at(0);
@@ -267,7 +267,7 @@ namespace mlinalg {
                 return row;
             }
         }
-        return std::nullopt;  // No pivot found in this column
+        return nullopt;  // No pivot found in this column
     }
 
     /**
@@ -287,14 +287,12 @@ namespace mlinalg {
             return count;
         };
 
-        auto cmp = [](const std::pair<size_t, size_t>& a, const std::pair<size_t, size_t>& b) {
-            return (a.second < b.second);
-        };
+        auto cmp = [](const SizeTPair& a, const SizeTPair& b) { return (a.second < b.second); };
 
         auto getRowSortedCounts = [&getZeroCount, &cmp](const LinearSystem<number, m, n> sys) {
             const size_t& nRows = sys.numRows();
             std::multimap<size_t, size_t> rowCounts{};
-            vector<std::pair<size_t, size_t>> res{};
+            vector<SizeTPair> res{};
 
             for (size_t i{}; i < nRows; i++) rowCounts.emplace(i, getZeroCount(sys.at(i)));
             auto it = rowCounts.begin();
@@ -329,11 +327,11 @@ namespace mlinalg {
 
         for (size_t j{}; j < nCols; j++) {
             if (fuzzyCompare(system.at(j, j), number(0))) {
-                number big{std::abs(system.at(j, j))};
+                number big{abs(system.at(j, j))};
                 size_t kRow{j};
 
                 for (size_t k{j + 1}; k < (nCols - 1); k++) {
-                    auto val = std::abs(system.at(k, j));
+                    auto val = abs(system.at(k, j));
                     if (val > big) {
                         big = val;
                         kRow = k;
@@ -636,7 +634,7 @@ namespace mlinalg {
     template <Number number, int m>
     optional<Matrix<number, m, m>> inverse(const LinearSystem<number, m, m>& system) {
         auto det = system.det();
-        if (fuzzyCompare(det, number(0))) return std::nullopt;
+        if (fuzzyCompare(det, number(0))) return nullopt;
         if (m == 2)
             return (1. / det) * Matrix<number, m, m>{{system.at(1).at(1), -system.at(0).at(1)},
                                                      {-system.at(1).at(0), system.at(0).at(0)}};
