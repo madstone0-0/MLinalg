@@ -15,20 +15,20 @@ double rng() {
 using namespace mlinalg;
 
 template <size_t m, size_t n>
-Matrix<double, m, n> genMartix() {
+Matrix<double, m, n> genMatrix() {
     Matrix<double, m, n> A;
     for (size_t i{}; i < m; i++) {
-        for (size_t j{}; j < m; j++) {
+        for (size_t j{}; j < n; j++) {
             A[i, j] = rng();
         }
     }
     return A;
 }
 
-Matrix<double, Dynamic, Dynamic> genMartix(size_t m, size_t n) {
+Matrix<double, Dynamic, Dynamic> genMatrix(size_t m, size_t n) {
     Matrix<double, Dynamic, Dynamic> A{(int)m, (int)n};
     for (size_t i{}; i < m; i++) {
-        for (size_t j{}; j < m; j++) {
+        for (size_t j{}; j < n; j++) {
             A[i, j] = rng();
         }
     }
@@ -36,16 +36,15 @@ Matrix<double, Dynamic, Dynamic> genMartix(size_t m, size_t n) {
 }
 
 int main() {
+    constexpr size_t m{512};
     {
-        constexpr size_t m{128};
-        auto A{genMartix<m, m>()};
-        auto B{genMartix<m, m>()};
+        auto A{genMatrix<m, m>()};
+        auto B{genMatrix<m, m>()};
         A* B;
     }
     {
-        constexpr size_t m{128};
-        auto A{genMartix(m, m)};
-        auto B{genMartix(m, m)};
+        auto A{genMatrix(m, m)};
+        auto B{genMatrix(m, m)};
         A* B;
     }
     return 0;
