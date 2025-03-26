@@ -2153,7 +2153,7 @@ TEST_CASE("Matrix", "[matrix]") {
                 using namespace std::chrono;
 
                 SECTION("Matrix Addition Performance") {
-                    const int N = 1000;  // Large matrix size
+                    constexpr int N = 1000;  // Large matrix size
                     Matrix<int, N, N> m1;
                     Matrix<int, N, N> m2;
 
