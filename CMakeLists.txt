@@ -55,6 +55,8 @@ set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -fsanitize=address")
 
 set(CMAKE_CXX_FLAGS_RELEASE "-Os -fno-ident")
 set(CMAKE_CXX_FLAGS_PROFILE "-g -pg")
+set(CMAKE_CXX_FLAGS_ASM "-S -fverbose-asm -masm=intel")
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 #################

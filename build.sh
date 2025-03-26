@@ -5,7 +5,7 @@ OUT_DIR="build"
 
 # Usage function prints help message
 usage() {
-	echo "Usage: $0 [debug|release|profile|all]"
+	echo "Usage: $0 [debug|release|profile|asm|all]"
 	exit 1
 }
 
@@ -60,6 +60,11 @@ build_profile() {
 	build_with_cmake "$profile_dir" "Profile" "g++"
 }
 
+build_asm() {
+	local profile_dir="${OUT_DIR}-asm"
+	build_with_cmake "$profile_dir" "Asm" "g++"
+}
+
 # Determine build mode from first argument (default is debug)
 if [ $# -eq 0 ]; then
 	MODE="debug"
@@ -77,11 +82,15 @@ release)
 profile)
 	build_profile
 	;;
+asm)
+	build_asm
+	;;
 all)
 	echo "Building all configurations concurrently..."
 	build_debug &
 	build_release &
 	build_profile &
+	build_asm &
 	wait
 	;;
 *)
