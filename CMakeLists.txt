@@ -57,6 +57,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-Os -fno-ident")
 set(CMAKE_CXX_FLAGS_PROFILE "-g -pg")
 set(CMAKE_CXX_FLAGS_ASM "-S -fverbose-asm -masm=intel")
 
+set(CMAKE_VERIFY_INTERFACE_HEADER_SETS ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 #################

@@ -22,28 +22,39 @@ target_include_directories(
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/pub>
 )
 
+if(HPP)
+    target_sources(
+        mlinalg
+        INTERFACE
+            FILE_SET HEADERS
+            BASE_DIRS "${CMAKE_SOURCE_DIR}/src/pub"
+            FILES ${HPP}
+    )
+endif()
+
 include(GNUInstallDirs)
 install(
     TARGETS mlinalg
     EXPORT mlinalgTargets
+    FILE_SET HEADERS DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/mlinalg
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
 set_target_properties(mlinalg PROPERTIES EXPORT_NAME mlinalg)
 
-install(
-    DIRECTORY ${CMAKE_SOURCE_DIR}/src/pub/
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/mlinalg
-    FILES_MATCHING
-    PATTERN "*.hpp"
-)
-install(
-    DIRECTORY ${CMAKE_SOURCE_DIR}/src/pub/structures/
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/mlinalg/structures
-    FILES_MATCHING
-    PATTERN "*.hpp"
-)
+# install(
+#     DIRECTORY ${CMAKE_SOURCE_DIR}/src/pub/
+#     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/mlinalg
+#     FILES_MATCHING
+#     PATTERN "*.hpp"
+# )
+# install(
+#     DIRECTORY ${CMAKE_SOURCE_DIR}/src/pub/structures/
+#     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/mlinalg/structures
+#     FILES_MATCHING
+#     PATTERN "*.hpp"
+# )
 install(
     EXPORT mlinalgTargets
     FILE mlinalgTargets.cmake

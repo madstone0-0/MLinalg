@@ -43,6 +43,7 @@ build_with_cmake() {
 		exit 1
 	fi
 
+	# compdb --use-arguments -p build/ list >compile_commands.json
 	echo "${build_type} build completed successfully in ${build_dir}."
 }
 
