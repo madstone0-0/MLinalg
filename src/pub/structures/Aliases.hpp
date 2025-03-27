@@ -24,21 +24,52 @@ namespace mlinalg::structures {
     template <Number number, int n>
     class Vector;
 
-    // Type alias for the backing array of a Vector
+    /**
+     * @brief  Type alias for the backing array of a Vector
+     */
     template <Number number, int n>
     using VectorRow = std::array<number, n>;
 
-    // Type alias for the backing array of a dynamic Vector
+    /**
+     * @brief Type alias for the backing array of a dynamic Vector
+     */
     template <Number number>
     using VectorRowDynamic = std::vector<number>;
 
-    // Type alias for a unique pointer to a VectorRow
+    /**
+     * @brief Type alias for a unique pointer to a VectorRow
+     */
     template <Number number, int n>
     using VectorRowPtr = std::unique_ptr<VectorRow<number, n>>;
 
-    // Type alias for a unique pointer to a dynamic VectorRow
+    /**
+     * @brief Type alias for a unique pointer to a dynamic VectorRow
+     */
     template <Number number>
     using VectorRowDynamicPtr = std::unique_ptr<VectorRowDynamic<number>>;
+
+    /**
+     * @brief Type alias for a 2D Vector
+     */
+    template <Number number>
+    using V2 = Vector<number, 2>;
+
+    /**
+     * @brief Type alias for a 3D Vector
+     */
+    template <Number number>
+    using V3 = Vector<number, 3>;
+
+    // Convenience vector aliases
+    using V2f = V2<float>;
+    using V2d = V2<double>;
+    using V2i = V2<int>;
+    using V2ui = V2<unsigned int>;
+
+    using V3f = V3<float>;
+    using V3d = V3<double>;
+    using V3i = V3<int>;
+    using V3ui = V3<unsigned int>;
 
     // =============================
     // Matrix Aliases

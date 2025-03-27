@@ -391,17 +391,6 @@ namespace mlinalg::structures {
         return vec * scalar;
     }
 
-    /**
-     * @brief Type alias for a 2D Vector
-     */
-    template <Number number>
-    using Vector2 = mlinalg::structures::Vector<number, 2>;
-
-    /**
-     * @brief Type alias for a 3D Vector
-     */
-    template <Number number>
-    using Vector3 = mlinalg::structures::Vector<number, 3>;
 }  // namespace mlinalg::structures
 
 namespace mlinalg::structures {
