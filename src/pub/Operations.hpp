@@ -15,6 +15,7 @@
 #include <optional>
 #include <set>
 #include <stdexcept>
+#include <type_traits>
 #include <vector>
 
 #include "Concepts.hpp"
@@ -44,9 +45,10 @@ namespace mlinalg {
         if (rg::any_of(solutions, [](const auto& val) { return !val.has_value(); })) {
             throw std::runtime_error("Cannot extract solution vector from incomplete solutions");
         }
+        const auto size = solutions.size();
 
-        Vector<num, n> res{};
-        for (size_t i{}; i < n; i++) {
+        Vector<num, n> res(size);
+        for (size_t i{}; i < size; i++) {
             res.at(i) = solutions.at(i).value();
         }
         return res;
@@ -110,6 +112,15 @@ namespace mlinalg {
         return true;
     }
 
+    template <Number number, int m, int n>
+    using ConditionalOptionalRowOptional =
+        std::conditional_t<m == Dynamic || n == Dynamic, optional<RowOptional<number, Dynamic>>,
+                           optional<RowOptional<number, n - 1>>>;
+
+    template <Number number, int m, int n>
+    using ConditionalRowOptional =
+        std::conditional_t<m == Dynamic || n == Dynamic, RowOptional<number, Dynamic>, RowOptional<number, n - 1>>;
+
     /**
      * @brief Solves a linear equation using the given row and solutions.
      *
@@ -121,7 +132,7 @@ namespace mlinalg {
      */
     template <Number number, int n>
     optional<number> solveEquation(const Row<number, n>& row, size_t varPos,
-                                   const Row<optional<number>, n - 1>& solutions) {
+                                   const ConditionalRowOptional<number, n, n>& solutions) {
         vector<number> leftSide{row.begin(), row.end() - 1};
         vector<number> rightSide{row.back()};
         for (size_t i{}; i < leftSide.size(); i++) {
@@ -518,7 +529,9 @@ namespace mlinalg {
     }
 
     template <Number number, int m, int n>
-    optional<RowOptional<number, n - 1>> findSolutions(const LinearSystem<number, m, n>& system);
+    auto findSolutions(const LinearSystem<number, m, n>& sys)
+        -> std::conditional_t<m == Dynamic || n == Dynamic, optional<RowOptional<number, Dynamic>>,
+                              optional<RowOptional<number, n - 1>>>;
 
     /**
      * @brief Find the solutions to a matrix equation in the form:
@@ -567,8 +580,9 @@ namespace mlinalg {
      * @return The solutions to the system if they exist, nullopt otherwise.
      */
     template <Number number, int m, int n>
-    optional<RowOptional<number, n - 1>> findSolutions(const LinearSystem<number, m, n>& sys) {
-        RowOptional<number, n - 1> solutions{};
+    auto findSolutions(const LinearSystem<number, m, n>& sys) -> ConditionalOptionalRowOptional<number, m, n> {
+        const auto [numRows, numCols] = sys.shape();
+        ConditionalRowOptional<number, m, n> solutions(numCols - 1);
         LinearSystem<number, m, n> system{sys};
         system = rearrangeSystem(system);
 

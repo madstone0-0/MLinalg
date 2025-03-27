@@ -5,6 +5,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "Structures.hpp"
+#include "structures/Aliases.hpp"
 #include "structures/Vector.hpp"
 
 using namespace Catch;
@@ -764,6 +765,157 @@ TEST_CASE("Operations") {
                                      {0, 1, 2, 0},
                                      {0, 0, 0, 1},
                                  });
+            }
+
+            SECTION("Find Solutions To A Linear System") {
+                SECTION("[A | b]") {
+                    // auto sol1 = findSolutions(system1);
+                    //
+                    // REQUIRE(sol1.has_value());
+
+                    SECTION("Unique solution using [A | b]") {
+                        LinearSystem<double, 2, 3> sys{
+                            {2.0, 3.0, 8.0},
+                            {1.0, 2.0, 5.0},
+                        };
+                        auto sol = findSolutions(sys);
+                        REQUIRE(sol.has_value());
+                        REQUIRE(sol.value().at(0) == Approx(1.0));
+                        REQUIRE(sol.value().at(1) == Approx(2.0));
+                    }
+
+                    SECTION("No solution using [A | b]") {
+                        // Augmented matrix for an inconsistent system:
+                        // x + y = 3, 2x + 2y = 4 (b should be [3, 4] but consistency requires [3, 6])
+                        LinearSystem<double, 2, 3> sys{
+                            {1.0, 1.0, 3.0},
+                            {2.0, 2.0, 4.0},
+                        };
+                        auto sol = findSolutions(sys);
+                        REQUIRE_FALSE(sol.has_value());
+                    }
+                }
+
+                SECTION("Ax = b") {
+                    // auto sol1 = findSolutions(A1, b1);
+                    //
+                    // REQUIRE(sol1.has_value());
+
+                    SECTION("Unique solution using Ax = b") {
+                        // Solve: [2 3; 1 2] * x = [8; 5]  -> expected x = [1, 2]
+                        Matrix<double, Dynamic, Dynamic> A{
+                            {2.0, 3.0},
+                            {1.0, 2.0},
+                        };
+                        Vector<double, Dynamic> b{{8.0, 5.0}};
+                        auto sol = findSolutions(A, b);
+                        REQUIRE(sol.has_value());
+                        REQUIRE(sol.value().at(0) == Approx(1.0));
+                        REQUIRE(sol.value().at(1) == Approx(2.0));
+                    }
+
+                    SECTION("No solution using Ax = b") {
+                        // Inconsistent system: x + y = 3 and 2x + 2y = 4 (should be 6 if consistent)
+                        Matrix<double, Dynamic, Dynamic> A{{1.0, 1.0}, {2.0, 2.0}};
+                        Vector<double, Dynamic> b{{3.0, 4.0}};
+                        auto sol = findSolutions(A, b);
+                        REQUIRE_FALSE(sol.has_value());
+                    }
+
+                    SECTION("Larger system with unique solution") {
+                        // A 3x3 system.
+                        Matrix<double, Dynamic, Dynamic> A{{3.0, -1.0, 2.0}, {2.0, 4.0, 1.0}, {-1.0, 2.0, 5.0}};
+                        Vector<double, Dynamic> b{{5.0, 11.0, 8.0}};
+                        auto sol = findSolutions(A, b);
+                        REQUIRE(sol.has_value());
+                        auto computed_b = A * extractSolutionVector(sol.value());
+                        for (int i = 0; i < 3; ++i) {
+                            REQUIRE(computed_b.at(i) == Approx(b.at(i)));
+                        }
+                    }
+
+                    SECTION("Overdetermined but consistent system using Ax = b") {
+                        // Over-determined system: More equations than unknowns.
+                        // Example: x = 2, y = 3, and x+y = 5.
+                        Matrix<double, Dynamic, Dynamic> A{
+                            {1.0, 0.0},
+                            {0.0, 1.0},
+                            {1.0, 1.0},
+                        };
+                        Vector<double, Dynamic> b{
+                            {2.0, 3.0, 5.0},
+                        };
+                        auto sol = findSolutions(A, b);
+                        REQUIRE(sol.has_value());
+                        REQUIRE(sol.value().at(0) == Approx(2.0));
+                        REQUIRE(sol.value().at(1) == Approx(3.0));
+                    }
+
+                    SECTION("Verify solution correctness via substitution") {
+                        Matrix<double, Dynamic, Dynamic> A{
+                            {4.0, -2.0},
+                            {1.0, 3.0},
+                        };
+                        Vector<double, Dynamic> b{
+                            {6.0, 8.0},
+                        };
+                        auto sol = findSolutions(A, b);
+                        REQUIRE(sol.has_value());
+                        auto computed_b = A * extractSolutionVector(sol.value());
+                        for (int i = 0; i < 2; ++i) {
+                            INFO("Row " << i << ": expected " << b.at(i) << ", got " << computed_b.at(i));
+                            REQUIRE(computed_b.at(i) == Approx(b.at(i)));
+                        }
+                    }
+                }
+            }
+
+            SECTION("Identity of a Square Matrix") {
+                auto AI1 = A1 * I<double, A1.numRows()>();
+                auto AI6 = A6 * I<double, A6.numRows()>();
+                auto AI8 = A8 * I<double, A8.numRows()>();
+
+                REQUIRE(AI1 == A1);
+                REQUIRE(AI6 == A6);
+                REQUIRE(AI8 == A8);
+            }
+
+            SECTION("Inverse of a Matrix") {
+                Matrix<double, Dynamic, Dynamic> AInv1{
+                    {0, 1, 2},
+                    {1, 0, 3},
+                    {4, -3, 8},
+                };
+
+                Matrix<double, Dynamic, Dynamic> AInv2{
+                    {1, 5, 0},
+                    {2, 4, -1},
+                    {0, -2, 0},
+                };
+
+                Matrix<double, Dynamic, Dynamic> AInv3{
+                    {3, -7, 8, 9, -6},  //
+                    {0, 2, -5, 7, 3},   //
+                    {0, 0, 1, 5, 0},    //
+                    {0, 0, 2, 4, -1},   //
+                    {0, 0, 0, -2, 0},
+                };
+
+                auto inv1 = inverse(A1);
+                auto inv2 = inverse(AInv1);
+                auto inv3 = inverse(AInv2);
+                auto inv4 = inverse(AInv3);
+
+                REQUIRE_FALSE(inv1.has_value());
+
+                REQUIRE(inv2.has_value());
+                REQUIRE(inverse(inv2.value()).value() == AInv1);
+
+                REQUIRE(inv3.has_value());
+                REQUIRE(inverse(inv3.value()).value() == AInv2);
+
+                REQUIRE(inv4.has_value());
+                REQUIRE(inverse(inv4.value()).value() == AInv3);
             }
         }
     }

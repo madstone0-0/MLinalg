@@ -514,7 +514,7 @@ namespace mlinalg::structures {
         Matrix<number, m, n> res;
         for (int i{}; i < n; i++) {
             const auto& mult = vec.at(i);
-            for (int j{}; j < m; j++) res.at(j).at(i) = mult * rhs.matrix.at(j).at(i);
+            for (int j{}; j < m; j++) res.at(j).at(i) = mult * rhs.at(j, i);
         }
         return res;
     }
