@@ -5,6 +5,7 @@
 
 #include "Helpers.hpp"
 #include "Numeric.hpp"
+#include "structures/Aliases.hpp"
 #include "structures/Vector.hpp"
 
 using namespace Catch;
@@ -1740,7 +1741,7 @@ TEST_CASE("Matrix", "[matrix]") {
                 auto det = m.det();
                 REQUIRE(det == -2);
 
-                auto m2 = Matrix<int, 3, 3>{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+                auto m2 = Matrix<int, Dynamic, Dynamic>{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
                 auto det2 = m2.det();
                 REQUIRE(det2 == 0);
             }

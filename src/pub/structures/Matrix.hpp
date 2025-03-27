@@ -420,8 +420,7 @@ namespace mlinalg::structures {
             if constexpr (m == 2 && n == 2)
                 return MatrixDet2x2<number>(matrix);
             else
-                // TODO: Find a fix for this that allows dynamic matrices to the subset without m and n going to -2
-                return MatrixCofactor<number, 0, 0>(matrix);
+                return MatrixCofactor<number, m, n>(matrix);
         }
 
         /**
@@ -957,7 +956,7 @@ namespace mlinalg::structures {
             if (m == 2 && n == 2)
                 return MatrixDet2x2<number>(matrix);
             else
-                return MatrixCofactor<number, 0, 0>(matrix);
+                return MatrixCofactor<number, Dynamic, Dynamic>(matrix);
         }
 
         /**

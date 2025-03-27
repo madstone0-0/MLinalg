@@ -5,6 +5,7 @@
 
 #pragma once
 #include <stdexcept>
+#include <type_traits>
 
 #ifdef __AVX__
 #include <immintrin.h>
@@ -60,9 +61,10 @@ namespace mlinalg::structures {
     }
 
     template <Number number, int m, int n, Container T>
-    vector<Vector<number, m>> matrixColsToVectorSet(const T& matrix) {
-        // TODO: Fix this not actually checking dynamic arrays when cofactoring
-        if constexpr (m == Dynamic || n == Dynamic) {
+    auto matrixColsToVectorSet(const T& matrix)
+        -> std::conditional_t<((m == Dynamic || n == Dynamic)), vector<Vector<number, Dynamic>>,
+                              vector<Vector<number, m>>> {
+        if constexpr ((m == Dynamic || n == Dynamic) || (m == 0 || n == 0)) {
             const size_t& nRows = matrix.size();
             const size_t& nCols = matrix[0].size();
             vector<RowDynamic<number>> res;
@@ -464,7 +466,9 @@ namespace mlinalg::structures {
     }
 
     template <Number number, int m, int n, Container T>
-    Matrix<number, m - 1, n - 1> MatrixSubset(const T& matrix, const optional<int>& i, const optional<int> j);
+    auto MatrixSubset(const T& matrix, const optional<int>& i, const optional<int> j)
+        -> std::conditional_t<m == Dynamic || n == Dynamic, Matrix<number, Dynamic, Dynamic>,
+                              Matrix<number, m - 1, n - 1>>;
 
     template <size_t i0, size_t i1, size_t j0, size_t j1, Number number, int m, int n, Container T>
     Matrix<number, (i1 - i0), (j1 - j0)> MatrixSlice(const T& matrix) {
@@ -756,14 +760,15 @@ namespace mlinalg::structures {
      * @return The subsetted matrix of size (m - 1)x(n - 1)
      */
     template <Number number, int m, int n, Container T>
-    // TODO: Find a way to account for negatives and do nothing when they are found
-    Matrix<number, m - 1, n - 1> MatrixSubset(const T& matrix, const optional<int>& i, const optional<int> j) {
+    auto MatrixSubset(const T& matrix, const optional<int>& i, const optional<int> j)
+        -> std::conditional_t<m == Dynamic || n == Dynamic, Matrix<number, Dynamic, Dynamic>,
+                              Matrix<number, m - 1, n - 1>> {
         const int& nRows = matrix.size();
         const int& nCols = matrix.at(0).size();
         if (nRows != nCols) throw runtime_error("Matrix must be square to find a subset");
         if (nRows <= 1 || nCols <= 1) throw runtime_error("Matrix must be at least 2x2 to find a subset");
 
-        constexpr auto isDynamic = m == 0 || n == 0;
+        constexpr auto isDynamic = m == Dynamic || n == Dynamic;
         constexpr auto DynamicPair = SizePair{Dynamic, Dynamic};
 
         constexpr auto sizeP = isDynamic ? DynamicPair : SizePair{m - 1, n - 1};
