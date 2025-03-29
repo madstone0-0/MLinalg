@@ -1501,15 +1501,15 @@ TEST_CASE("Matrix", "[matrix]") {
                     {4, 5, 6},
                     {7, 8, 9},
                 };
-                REQUIRE(m[0, 0] == 1);
-                REQUIRE(m[0, 1] == 2);
-                REQUIRE(m[0, 2] == 3);
-                REQUIRE(m[1, 0] == 4);
-                REQUIRE(m[1, 1] == 5);
-                REQUIRE(m[1, 2] == 6);
-                REQUIRE(m[2, 0] == 7);
-                REQUIRE(m[2, 1] == 8);
-                REQUIRE(m[2, 2] == 9);
+                REQUIRE(m(0, 0) == 1);
+                REQUIRE(m(0, 1) == 2);
+                REQUIRE(m(0, 2) == 3);
+                REQUIRE(m(1, 0) == 4);
+                REQUIRE(m(1, 1) == 5);
+                REQUIRE(m(1, 2) == 6);
+                REQUIRE(m(2, 0) == 7);
+                REQUIRE(m(2, 1) == 8);
+                REQUIRE(m(2, 2) == 9);
 
                 REQUIRE(m.at(0, 0) == 1);
                 REQUIRE(m.at(0, 1) == 2);

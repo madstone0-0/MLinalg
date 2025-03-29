@@ -292,7 +292,7 @@ namespace mlinalg::structures {
                 for (int k{}; k < nColsOther; k += blockSize) {
                     const size_t kEnd = std::min(k + blockSize, nColsOther);
                     for (int kk{k}; kk < kEnd; kk++) {
-                        res[i, kk] += temp * otherMatrix[j][kk];
+                        res(i, kk) += temp * otherMatrix[j][kk];
                     }
                 }
             }
