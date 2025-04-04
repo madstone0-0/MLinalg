@@ -165,6 +165,13 @@ TEST_CASE("Vector", "[vector]") {
                 auto u2 = Vector<int, 1>{2};
                 auto dot2 = u1 * u2;
                 REQUIRE(dot2 == 2);
+
+                auto w1 = Vector<int, 2>{1, 1};
+                auto m = w1 * w1.T();
+                REQUIRE(m.at(0, 0) == 1);
+                REQUIRE(m.at(0, 1) == 1);
+                REQUIRE(m.at(1, 0) == 1);
+                REQUIRE(m.at(1, 1) == 1);
             }
 
             SECTION("Matrix Multiplication") {
@@ -413,19 +420,27 @@ TEST_CASE("Vector", "[vector]") {
                 auto u2 = Vector<int, Dynamic>{2};
                 auto dot2 = u1 * u2;
                 REQUIRE(dot2 == 2);
+
+                auto w1 = Vector<int, Dynamic>{1, 1};
+                auto m = w1 * w1.T();
+                auto m1 = helpers::extractMatrixFromTranspose(m);
+                REQUIRE(m1.at(0, 0) == 1);
+                REQUIRE(m1.at(0, 1) == 1);
+                REQUIRE(m1.at(1, 0) == 1);
+                REQUIRE(m1.at(1, 1) == 1);
             }
 
             SECTION("Matrix Multiplication") {
                 auto v1 = Vector<int, Dynamic>{1, 2};
                 auto m = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
-                auto v2 = v1 * m;
+                auto v2 = helpers::extractVectorFromTranspose(v1 * m);
                 REQUIRE(v2.at(0) == 7);
                 REQUIRE(v2.at(1) == 10);
 
                 auto u1 = Vector<int, Dynamic>{1};
                 auto m2 = Matrix<int, Dynamic, Dynamic>{{2}};
-                auto u2 = u1 * m2;
-                REQUIRE(u2.at(0) == 2);
+                auto u2 = helpers::extractMatrixFromTranspose(u1 * m2);
+                REQUIRE(u2.at(0, 0) == 2);
 
                 auto v3 = m * v1;
                 REQUIRE(v3.at(0) == 5);
@@ -1276,9 +1291,16 @@ TEST_CASE("Matrix", "[matrix]") {
             SECTION("Matrix Vector Multiplication") {
                 auto m = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
                 auto v = Vector<int, 2>{1, 2};
+
+                // In this case v is a column vector
                 auto v2 = m * v;
                 REQUIRE(v2.at(0) == 5);
                 REQUIRE(v2.at(1) == 11);
+
+                // In this case v is a row vector
+                auto v3 = v * m;
+                REQUIRE(v3.at(0) == 7);
+                REQUIRE(v3.at(1) == 10);
             }
 
             SECTION("Iteration") {
