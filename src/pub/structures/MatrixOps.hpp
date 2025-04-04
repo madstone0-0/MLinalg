@@ -4,6 +4,7 @@
  */
 
 #pragma once
+#include <cmath>
 #include <stdexcept>
 #include <type_traits>
 
@@ -128,6 +129,14 @@ namespace mlinalg::structures {
     }
 
     template <Number number, int m, int n, Container T>
+    void matrixScalarMultI(T& matrix, const number& scalar) {
+        const auto& nRows = matrix.size();
+        const auto& nCols = matrix.at(0).size();
+        for (size_t i{}; i < nRows; i++)
+            for (size_t j{}; j < nCols; j++) matrix.at(i).at(j) = matrix.at(i).at(j) * scalar;
+    }
+
+    template <Number number, int m, int n, Container T>
     Matrix<number, m, n> matrixScalarDiv(const T& matrix, const number& scalar) {
         const auto& nRows = matrix.size();
         const auto& nCols = matrix.at(0).size();
@@ -137,6 +146,15 @@ namespace mlinalg::structures {
             res.at(i) = asRowVectorSet.at(i) / scalar;
         }
         return res;
+    }
+
+    template <Number number, int m, int n, Container T>
+    void matrixScalarDivI(T& matrix, const number& scalar) {
+        if (fuzzyCompare(scalar, number(0))) throw std::domain_error("Division by zero");
+        const auto& nRows = matrix.size();
+        const auto& nCols = matrix.at(0).size();
+        for (size_t i{}; i < nRows; i++)
+            for (size_t j{}; j < nCols; j++) matrix.at(i).at(j) = matrix.at(i).at(j) / scalar;
     }
 
     template <Number number, int m, int n, Container T, Container U>
@@ -150,6 +168,14 @@ namespace mlinalg::structures {
     }
 
     template <Number number, int m, int n, Container T, Container U>
+    void matrixAddI(T& matrix, const U& otherMatrix) {
+        checkMatrixOperandSize(matrix, otherMatrix);
+        const auto& nRows = matrix.size();
+        const auto& nCols = matrix.at(0).size();
+        for (size_t i{}; i < nRows; i++) matrix.at(i) = matrix.at(i) + otherMatrix.at(i);
+    }
+
+    template <Number number, int m, int n, Container T, Container U>
     Matrix<number, m, n> matrixSub(const T& matrix, const U& otherMatrix) {
         checkMatrixOperandSize(matrix, otherMatrix);
         const auto& nRows = matrix.size();
@@ -157,6 +183,14 @@ namespace mlinalg::structures {
         Matrix<number, m, n> res(nRows, nCols);
         for (size_t i{}; i < nRows; i++) res.at(i) = matrix.at(i) - otherMatrix.at(i);
         return res;
+    }
+
+    template <Number number, int m, int n, Container T, Container U>
+    void matrixSubI(T& matrix, const U& otherMatrix) {
+        checkMatrixOperandSize(matrix, otherMatrix);
+        const auto& nRows = matrix.size();
+        const auto& nCols = matrix.at(0).size();
+        for (size_t i{}; i < nRows; i++) matrix.at(i) = matrix.at(i) - otherMatrix.at(i);
     }
 
     template <Container T>

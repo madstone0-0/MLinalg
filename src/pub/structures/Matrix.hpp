@@ -199,12 +199,34 @@ namespace mlinalg::structures {
         Matrix operator*(const number& scalar) const { return matrixScalarMult<number, m, n>(matrix, scalar); }
 
         /**
+         * @brief Inplace matrix multiplication by a scalar
+         *
+         * @param scalar A scalar of the same type as the matrix
+         * @return A reference to the current matrix
+         */
+        Matrix& operator*=(const number& scalar) {
+            matrixScalarMultI<number, m, n>(matrix, scalar);
+            return *this;
+        }
+
+        /**
          * @brief Matrix division by a scalar
          *
          * @param scalar A scalar of the same type as the matrix
          * @return The matrix resulting from the division
          */
         Matrix operator/(const number& scalar) const { return matrixScalarDiv<number, m, n>(matrix, scalar); }
+
+        /**
+         * @brief Inplace matrix division by a scalar
+         *
+         * @param scalar A scalar of the same type as the matrix
+         * @return A reference to the current matrix
+         */
+        Matrix operator/=(const number& scalar) {
+            matrixScalarDivI<number, m, n>(matrix, scalar);
+            return *this;
+        }
 
         /**
          * @brief Matrix addition
@@ -217,6 +239,17 @@ namespace mlinalg::structures {
         }
 
         /**
+         * @brief Inplace matrix addition
+         *
+         * @param other The matrix to add
+         * @return reference to the current matrix
+         */
+        Matrix& operator+=(const Matrix<number, m, n>& other) {
+            matrixAddI<number, m, n>(matrix, other.matrix);
+            return *this;
+        }
+
+        /**
          * @brief Matrix subtraction
          *
          * @param other The matrix to subtract
@@ -224,6 +257,17 @@ namespace mlinalg::structures {
          */
         Matrix operator-(const Matrix<number, m, n>& other) const {
             return matrixSub<number, m, n>(matrix, other.matrix);
+        }
+
+        /**
+         * @brief Inplace matrix subtraction
+         *
+         * @param other The matrix to subtract
+         * @return reference to the current matrix
+         */
+        Matrix& operator-=(const Matrix<number, m, n>& other) {
+            matrixSubI<number, m, n>(matrix, other.matrix);
+            return *this;
         }
 
         /**
@@ -708,6 +752,17 @@ namespace mlinalg::structures {
         }
 
         /**
+         * @brief Inplace matrix multiplication by a scalar
+         *
+         * @param scalar A scalar of the same type as the matrix
+         * @return A reference to the current matrix
+         */
+        Matrix<number, Dynamic, Dynamic> operator*=(const number& scalar) {
+            matrixScalarMultI<number, Dynamic, Dynamic>(matrix, scalar);
+            return *this;
+        }
+
+        /**
          * @brief Matrix division by a scalar
          *
          * @param scalar A scalar of the same type as the matrix
@@ -715,6 +770,17 @@ namespace mlinalg::structures {
          */
         Matrix<number, Dynamic, Dynamic> operator/(const number& scalar) const {
             return matrixScalarDiv<number, Dynamic, Dynamic>(matrix, scalar);
+        }
+
+        /**
+         * @brief Inplace matrix division by a scalar
+         *
+         * @param scalar A scalar of the same type as the matrix
+         * @return A reference to the current matrix
+         */
+        Matrix<number, Dynamic, Dynamic> operator/=(const number& scalar) {
+            matrixScalarDivI<number, Dynamic, Dynamic>(matrix, scalar);
+            return *this;
         }
 
         /**
@@ -726,6 +792,18 @@ namespace mlinalg::structures {
         template <int otherM, int otherN>
         Matrix<number, Dynamic, Dynamic> operator+(const Matrix<number, otherM, otherN>& other) const {
             return matrixAdd<number, Dynamic, Dynamic>(matrix, other.matrix);
+        }
+
+        /**
+         * @brief Inplace matrix addition
+         *
+         * @param other The matrix to add
+         * @return reference to the current matrix
+         */
+        template <int otherM, int otherN>
+        Matrix& operator+=(const Matrix<number, otherM, otherN>& other) {
+            matrixAddI<number, Dynamic, Dynamic>(matrix, other.matrix);
+            return *this;
         }
 
         template <int m, int n, int otherM, int otherN>

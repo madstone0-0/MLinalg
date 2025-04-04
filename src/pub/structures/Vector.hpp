@@ -618,7 +618,7 @@ namespace mlinalg::structures {
          */
         template <int otherN>
         Vector<number, Dynamic>& operator+=(const Vector<number, otherN>& other) {
-            vectorAddI<number, Dynamic>(*row, *other.row);
+            vectorAddI<number>(*row, *other.row);
             return *this;
         }
 
