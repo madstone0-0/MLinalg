@@ -670,9 +670,7 @@ namespace mlinalg::structures {
          * @param j The index of the column
          * @return A reference to the element at the ith row and jth column
          */
-        number& operator()(size_t i, size_t j) {
-            return matrix[i][j];
-        }
+        number& operator()(size_t i, size_t j) { return matrix[i][j]; }
 
         /**
          * @brief Const access the element at the ith row and jth column
@@ -681,9 +679,7 @@ namespace mlinalg::structures {
          * @param j The index of the column
          * @return The element at the ith row and jth column
          */
-        number operator()(size_t i, size_t j) const {
-            return matrix[i][j];
-        }
+        number operator()(size_t i, size_t j) const { return matrix[i][j]; }
 
         /**
          * @brief Copy construct a new Matrix object
