@@ -556,18 +556,19 @@ namespace mlinalg::structures {
     }
 
     template <Number number, int m, int n>
-    Matrix<number, m, n> operator*(const number& scalar, Matrix<number, m, n> rhs) {
-        return rhs * scalar;
+    TransposeVariant<number, m, n> operator*(const number& lhs, const TransposeVariant<number, m, n>& rhs) {
+        if (std::holds_alternative<Vector<number, m>>(rhs)) {
+            auto vec = get<Vector<number, m>>(rhs);
+            return lhs * vec;
+        } else {
+            auto mat = get<Matrix<number, m, n>>(rhs);
+            return lhs * mat;
+        }
     }
 
     template <Number number, int m, int n>
-    Matrix<number, m, n> operator*(Vector<number, n> vec, Matrix<number, m, n> rhs) {
-        Matrix<number, m, n> res;
-        for (int i{}; i < n; i++) {
-            const auto& mult = vec.at(i);
-            for (int j{}; j < m; j++) res.at(j).at(i) = mult * rhs.at(j, i);
-        }
-        return res;
+    Matrix<number, m, n> operator*(const number& scalar, Matrix<number, m, n> rhs) {
+        return rhs * scalar;
     }
 
 }  // namespace mlinalg::structures
@@ -832,6 +833,20 @@ namespace mlinalg::structures {
             return matrixSub<number, Dynamic, Dynamic>(matrix, other.matrix);
         }
 
+        /**
+         * @brief Matrix subtraction
+         *
+         * @param other The matrix to subtract
+         * @return The matrix resulting from the subtraction
+         */
+        template <int otherM, int otherN>
+        Matrix<number, Dynamic, Dynamic> operator-(const TransposeVariant<number, otherM, otherN>& otherT) const {
+            if (std::holds_alternative<Matrix<number, otherM, otherN>>(otherT)) {
+                auto other = get<Matrix<number, otherM, otherN>>(otherT);
+                return matrixSub<number, Dynamic, Dynamic>(matrix, other.matrix);
+            }
+            throw std::logic_error("Cannot subtract a vector from a matrix");
+        }
 
         /**
          * @brief Inplace matrix subtraction
