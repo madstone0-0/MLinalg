@@ -29,21 +29,22 @@ namespace logging {
     enum class Level : std::uint8_t { DEB, INF, WARN, ERR };
 
     inline void log(string_view message, string_view function, Level level = Level::DEB) {
-        auto fmt = [&]() {
-            return std::format("[{:%F T %T}] ({}) : {}\n", std::chrono::system_clock::now(), function, message);
-        };
         switch (level) {
             case Level::DEB:
-                cout << BLU << fmt() << reset;
+                cout << BLU << std::format("[{:%F T %T}] ({}) : ", std::chrono::system_clock::now(), function) << reset
+                     << message << '\n';
                 break;
             case Level::INF:
-                cout << GRN << fmt() << reset;
+                cout << GRN << std::format("[{:%F T %T}] ({}) : ", std::chrono::system_clock::now(), function) << reset
+                     << message << '\n';
                 break;
             case Level::WARN:
-                cout << YEL << fmt() << reset;
+                cout << YEL << std::format("[{:%F T %T}] ({}) : ", std::chrono::system_clock::now(), function) << reset
+                     << message << '\n';
                 break;
             case Level::ERR:
-                cout << RED << fmt() << reset;
+                cout << RED << std::format("[{:%F T %T}] ({}) : ", std::chrono::system_clock::now(), function) << reset
+                     << message << '\n';
                 break;
         }
     }
