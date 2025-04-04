@@ -129,6 +129,13 @@ TEST_CASE("Vector", "[vector]") {
                 auto u2 = Vector<int, 1>{2};
                 auto u3 = u1 + u2;
                 REQUIRE(u3.at(0) == 3);
+
+                // Inplace Addition
+                auto v4 = Vector<int, 2>{1, 2};
+                auto v5 = Vector<int, 2>{3, 4};
+                v4 += v5;
+                REQUIRE(v4.at(0) == 4);
+                REQUIRE(v4.at(1) == 6);
             }
 
             SECTION("Subtraction") {
@@ -142,6 +149,13 @@ TEST_CASE("Vector", "[vector]") {
                 auto u2 = Vector<int, 1>{2};
                 auto u3 = u1 - u2;
                 REQUIRE(u3.at(0) == -1);
+
+                // Inplace subtraction
+                auto v4 = Vector<int, 2>{1, 2};
+                auto v5 = Vector<int, 2>{3, 4};
+                v4 -= v5;
+                REQUIRE(v4.at(0) == -2);
+                REQUIRE(v4.at(1) == -2);
             }
 
             SECTION("Negation") {
@@ -200,6 +214,12 @@ TEST_CASE("Vector", "[vector]") {
                 auto u1 = Vector<int, 1>{1};
                 auto u2 = u1 * 2;
                 REQUIRE(u2.at(0) == 2);
+
+                // Inplace multiplication
+                auto v3 = Vector<int, 2>{1, 2};
+                v3 *= 2;
+                REQUIRE(v3.at(0) == 2);
+                REQUIRE(v3.at(1) == 4);
             }
 
             SECTION("Scalar division") {
@@ -211,6 +231,12 @@ TEST_CASE("Vector", "[vector]") {
                 auto u1 = Vector<int, 1>{1};
                 auto u2 = u1 / 2;
                 REQUIRE(u2.at(0) == 0);
+
+                // Inplace division
+                auto v3 = Vector<int, 2>{1, 2};
+                v3 /= 2;
+                REQUIRE(v3.at(0) == 0);
+                REQUIRE(v3.at(1) == 1);
             }
 
             SECTION("Dot product") {
@@ -395,6 +421,13 @@ TEST_CASE("Vector", "[vector]") {
                 auto u2 = Vector<int, Dynamic>{2};
                 auto u3 = u1 + u2;
                 REQUIRE(u3.at(0) == 3);
+
+                // Inplace addition
+                auto v4 = Vector<int, Dynamic>{1, 2};
+                auto v5 = Vector<int, Dynamic>{3, 4};
+                v4 += v5;
+                REQUIRE(v4.at(0) == 4);
+                REQUIRE(v4.at(1) == 6);
             }
 
             SECTION("Subtraction") {
@@ -408,6 +441,13 @@ TEST_CASE("Vector", "[vector]") {
                 auto u2 = Vector<int, Dynamic>{2};
                 auto u3 = u1 - u2;
                 REQUIRE(u3.at(0) == -1);
+
+                // Inplace Subtraction
+                auto v4 = Vector<int, Dynamic>{1, 2};
+                auto v5 = Vector<int, Dynamic>{3, 4};
+                v4 -= v5;
+                REQUIRE(v4.at(0) == -2);
+                REQUIRE(v4.at(1) == -2);
             }
 
             SECTION("Vector Multiplication") {
@@ -456,6 +496,12 @@ TEST_CASE("Vector", "[vector]") {
                 auto u1 = Vector<int, Dynamic>{1};
                 auto u2 = u1 * 2;
                 REQUIRE(u2.at(0) == 2);
+
+                // Inplace Multiplication
+                auto v3 = Vector<int, Dynamic>{1, 2};
+                v3 *= 2;
+                REQUIRE(v3.at(0) == 2);
+                REQUIRE(v3.at(1) == 4);
             }
 
             SECTION("Scalar division") {
@@ -467,6 +513,12 @@ TEST_CASE("Vector", "[vector]") {
                 auto u1 = Vector<int, Dynamic>{1};
                 auto u2 = u1 / 2;
                 REQUIRE(u2.at(0) == 0);
+
+                // Inplace Division
+                auto v3 = Vector<int, Dynamic>{1, 2};
+                v3 /= 2;
+                REQUIRE(v3.at(0) == 0);
+                REQUIRE(v3.at(1) == 1);
             }
 
             SECTION("Dot product") {
@@ -1049,6 +1101,15 @@ TEST_CASE("Matrix", "[matrix]") {
                 REQUIRE(m3.at(0, 1) == 8);
                 REQUIRE(m3.at(1, 0) == 10);
                 REQUIRE(m3.at(1, 1) == 12);
+
+                // Inplace Addition
+                auto m4 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
+                auto m5 = Matrix<int, 2, 2>{{5, 6}, {7, 8}};
+                m4 += m5;
+                REQUIRE(m4.at(0, 0) == 6);
+                REQUIRE(m4.at(0, 1) == 8);
+                REQUIRE(m4.at(1, 0) == 10);
+                REQUIRE(m4.at(1, 1) == 12);
             }
 
             SECTION("Subtraction") {
@@ -1059,6 +1120,15 @@ TEST_CASE("Matrix", "[matrix]") {
                 REQUIRE(m3.at(0, 1) == -4);
                 REQUIRE(m3.at(1, 0) == -4);
                 REQUIRE(m3.at(1, 1) == -4);
+
+                // Inplace Subtraction
+                auto m4 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
+                auto m5 = Matrix<int, 2, 2>{{5, 6}, {7, 8}};
+                m4 -= m5;
+                REQUIRE(m4.at(0, 0) == -4);
+                REQUIRE(m4.at(0, 1) == -4);
+                REQUIRE(m4.at(1, 0) == -4);
+                REQUIRE(m4.at(1, 1) == -4);
             }
 
             SECTION("Matrix Multiplication") {
@@ -1182,6 +1252,14 @@ TEST_CASE("Matrix", "[matrix]") {
                     REQUIRE(m2.at(0, 1) == 4);
                     REQUIRE(m2.at(1, 0) == 6);
                     REQUIRE(m2.at(1, 1) == 8);
+
+                    // Inplace Multiplication
+                    auto m3 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
+                    m3 *= 2;
+                    REQUIRE(m3.at(0, 0) == 2);
+                    REQUIRE(m3.at(0, 1) == 4);
+                    REQUIRE(m3.at(1, 0) == 6);
+                    REQUIRE(m3.at(1, 1) == 8);
                 }
                 {
                     auto m1 = sys1 * 2;
@@ -1197,6 +1275,22 @@ TEST_CASE("Matrix", "[matrix]") {
                     REQUIRE(m1.at(2, 1) == Approx(0));
                     REQUIRE(m1.at(2, 2) == Approx(-10));
                     REQUIRE(m1.at(2, 3) == Approx(20));
+
+                    // Inplace Multiplication
+                    auto m2 = sys1;
+                    m2 *= 2;
+                    REQUIRE(m2.at(0, 0) == Approx(2));
+                    REQUIRE(m2.at(0, 1) == Approx(-4));
+                    REQUIRE(m2.at(0, 2) == Approx(2));
+                    REQUIRE(m2.at(0, 3) == Approx(0));
+                    REQUIRE(m2.at(1, 0) == Approx(0));
+                    REQUIRE(m2.at(1, 1) == Approx(4));
+                    REQUIRE(m2.at(1, 2) == Approx(-16));
+                    REQUIRE(m2.at(1, 3) == Approx(16));
+                    REQUIRE(m2.at(2, 0) == Approx(10));
+                    REQUIRE(m2.at(2, 1) == Approx(0));
+                    REQUIRE(m2.at(2, 2) == Approx(-10));
+                    REQUIRE(m2.at(2, 3) == Approx(20));
                 }
             }
 
@@ -1207,6 +1301,18 @@ TEST_CASE("Matrix", "[matrix]") {
                 REQUIRE(m2.at(0, 1) == 1);
                 REQUIRE(m2.at(1, 0) == 1);
                 REQUIRE(m2.at(1, 1) == 2);
+
+                // Inplace Division
+                auto m3 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
+                m3 /= 2;
+                REQUIRE(m3.at(0, 0) == 0);
+                REQUIRE(m3.at(0, 1) == 1);
+                REQUIRE(m3.at(1, 0) == 1);
+                REQUIRE(m3.at(1, 1) == 2);
+
+                // Test division by zero
+                auto m4 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
+                REQUIRE_THROWS_AS(m4 / 0, std::domain_error);
             }
 
             SECTION("Transpose") {
@@ -1600,6 +1706,14 @@ TEST_CASE("Matrix", "[matrix]") {
                 REQUIRE(m3.at(0, 1) == 8);
                 REQUIRE(m3.at(1, 0) == 10);
                 REQUIRE(m3.at(1, 1) == 12);
+
+                // Inplace Addition
+                auto m4 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
+                m4 += m2;
+                REQUIRE(m4.at(0, 0) == 6);
+                REQUIRE(m4.at(0, 1) == 8);
+                REQUIRE(m4.at(1, 0) == 10);
+                REQUIRE(m4.at(1, 1) == 12);
             }
 
             SECTION("Subtraction") {
@@ -1610,6 +1724,14 @@ TEST_CASE("Matrix", "[matrix]") {
                 REQUIRE(m3.at(0, 1) == -4);
                 REQUIRE(m3.at(1, 0) == -4);
                 REQUIRE(m3.at(1, 1) == -4);
+
+                // Inplace Subtraction
+                auto m4 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
+                m4 -= m2;
+                REQUIRE(m4.at(0, 0) == -4);
+                REQUIRE(m4.at(0, 1) == -4);
+                REQUIRE(m4.at(1, 0) == -4);
+                REQUIRE(m4.at(1, 1) == -4);
             }
 
             SECTION("Matrix Multiplication") {
@@ -1721,6 +1843,14 @@ TEST_CASE("Matrix", "[matrix]") {
                 REQUIRE(m2.at(0, 1) == 4);
                 REQUIRE(m2.at(1, 0) == 6);
                 REQUIRE(m2.at(1, 1) == 8);
+
+                // Inplace Multiplication
+                auto m3 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
+                m3 *= 2;
+                REQUIRE(m3.at(0, 0) == 2);
+                REQUIRE(m3.at(0, 1) == 4);
+                REQUIRE(m3.at(1, 0) == 6);
+                REQUIRE(m3.at(1, 1) == 8);
             }
 
             SECTION("Scalar division") {
@@ -1730,6 +1860,14 @@ TEST_CASE("Matrix", "[matrix]") {
                 REQUIRE(m2.at(0, 1) == 1);
                 REQUIRE(m2.at(1, 0) == 1);
                 REQUIRE(m2.at(1, 1) == 2);
+
+                // Inplace Division
+                auto m3 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
+                m3 /= 2;
+                REQUIRE(m3.at(0, 0) == 0);
+                REQUIRE(m3.at(0, 1) == 1);
+                REQUIRE(m3.at(1, 0) == 1);
+                REQUIRE(m3.at(1, 1) == 2);
             }
 
             SECTION("Transpose") {
