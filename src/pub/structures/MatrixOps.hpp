@@ -941,4 +941,22 @@ namespace mlinalg::structures {
             return cofactorCol<number, m, n>(matrix, val);
     }
 
+    /**
+     * @brief Calculate the Frobenius norm of a matrix
+     *
+     * @param matrix The matrix to calculate the norm of
+     * @return The Frobenius norm of the matrix
+     */
+    template <Number number, int m, int n, Container T>
+    double FrobenisNorm(const T& matrix) {
+        const auto numRows = matrix.size();
+        const auto numCols = matrix.at(0).size();
+        double sum{};
+        for (size_t i{}; i < numRows; i++)
+            for (size_t j{}; j < numCols; j++) {
+                sum += matrix.at(i).at(j) * matrix.at(i).at(j);
+            }
+        return std::sqrt(sum);
+    }
+
 }  // namespace mlinalg::structures

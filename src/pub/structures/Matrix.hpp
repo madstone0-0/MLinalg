@@ -503,6 +503,13 @@ namespace mlinalg::structures {
             return View<number, m, n, i, j>(matrix, rowOffset, colOffset, rowStride, colStride);
         }
 
+        /**
+         * @brief Calculate the Frobenius norm of the matrix
+         *
+         * @return The Frobenius norm of the matrix
+         */
+        double frob() { return FrobenisNorm<number, m, n>(matrix); }
+
         auto getMatrix() const { return matrix; }
 
        private:
@@ -825,6 +832,19 @@ namespace mlinalg::structures {
             return matrixSub<number, Dynamic, Dynamic>(matrix, other.matrix);
         }
 
+
+        /**
+         * @brief Inplace matrix subtraction
+         *
+         * @param other The matrix to subtract
+         * @return reference to the current matrix
+         */
+        template <int otherM, int otherN>
+        Matrix& operator-=(const Matrix<number, otherM, otherN>& other) {
+            matrixSubI<number, Dynamic, Dynamic>(matrix, other.matrix);
+            return *this;
+        }
+
         template <int m, int n, int otherM, int otherN>
         friend Matrix<number, Dynamic, Dynamic> operator-(const Matrix<number, otherM, otherN>& lhs,
                                                           const Matrix<number, m, n> rhs)
@@ -1056,6 +1076,13 @@ namespace mlinalg::structures {
                                                   size_t colStride = 1) {
             return View<number, Dynamic, Dynamic, i, j>(matrix, rowOffset, colOffset, rowStride, colStride);
         }
+
+        /**
+         * @brief Calculate the Frobenius norm of the matrix
+         *
+         * @return The Frobenius norm of the matrix
+         */
+        double frob() { return FrobenisNorm<number, Dynamic, Dynamic>(matrix); }
 
        private:
         template <Number num, int mM, int nN>
