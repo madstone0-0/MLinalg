@@ -439,8 +439,8 @@ namespace mlinalg::structures {
          *
          * @return The sliced matrix of size (m - (i1 - i0))x(n - (j1 - j0))
          */
-        template <size_t i0, size_t i1, size_t j0, size_t j1>
-        Matrix<number, (i1 - i0), (j1 - j0)> slice() {
+        template <int i0, int i1, int j0, int j1>
+        Matrix<number, (i1 - i0), (j1 - j0)> slice(SizeTPair i = {0, 0}, SizeTPair j = {0, 0}) const {
             return MatrixSlice<i0, i1, j0, j1, number, m, n>(matrix);
         }
 
@@ -946,7 +946,8 @@ namespace mlinalg::structures {
          * @param j SlicePair for the columns in the form {j0, j1}
          * @return The sliced matrix of size (m - (i1 - i0))x(n - (j1 - j0))
          */
-        Matrix<number, Dynamic, Dynamic> slice(const SizeTPair& i, const SizeTPair& j) {
+        template <int i0 = 0, int i1 = 0, int j0 = 0, int j1 = 0>
+        Matrix<number, Dynamic, Dynamic> slice(const SizeTPair& i, const SizeTPair& j) const {
             return MatrixSlice<number>(matrix, i, j);
         }
 

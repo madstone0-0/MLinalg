@@ -470,17 +470,17 @@ namespace mlinalg::structures {
         -> std::conditional_t<m == Dynamic || n == Dynamic, Matrix<number, Dynamic, Dynamic>,
                               Matrix<number, m - 1, n - 1>>;
 
-    template <size_t i0, size_t i1, size_t j0, size_t j1, Number number, int m, int n, Container T>
+    template <int i0, int i1, int j0, int j1, Number number, int m, int n, Container T>
     Matrix<number, (i1 - i0), (j1 - j0)> MatrixSlice(const T& matrix) {
-        if constexpr (rg::any_of(array<size_t, 4>{i0, i1, j0, j1}, [](auto x) { return x < 0; }))
+        if constexpr (rg::any_of(array<int, 4>{i0, i1, j0, j1}, [](auto x) { return x < 0; }))
             throw invalid_argument("Negative slicing not supported");
 
         if constexpr (rg::any_of(array<size_t, 2>{i1, j1}, [](auto x) { return x > n; }))
             throw invalid_argument("Cannot slice past matrix bounds");
 
         if constexpr (i0 > i1 || j0 > j1) throw invalid_argument("Start position cannot be greater than end position");
-        constexpr size_t mSize{i1 - i0};
-        constexpr size_t nSize{j1 - j0};
+        constexpr int mSize{i1 - i0};
+        constexpr int nSize{j1 - j0};
         Matrix<number, mSize, nSize> res{};
 
         auto isInRange = [](int x0, int x1, int y) { return y >= x0 && y < x1; };
