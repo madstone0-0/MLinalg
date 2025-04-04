@@ -1,5 +1,2 @@
-If:
-  PathMatch: ".*\\.(h|hpp)$"
 CompileFlags:
-  Add: ["-std=c++23", "-I${workspaceFolder}/src/pub", "-Wall", "-Wextra", "-Wfloat-equal"]
-  Remove: []
+  Add: ["-std=c++23", "-I${workspaceFolder}/src", "-Wall", "-Wextra", "-Wfloat-equal"]
