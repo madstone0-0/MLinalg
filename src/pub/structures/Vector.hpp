@@ -20,6 +20,7 @@
 #include "../Concepts.hpp"
 #include "Aliases.hpp"
 #include "VectorOps.hpp"
+#include "structures/Matrix.hpp"
 
 using std::vector, std::array, std::optional, std::unique_ptr, std::shared_ptr;
 
@@ -273,11 +274,29 @@ namespace mlinalg::structures {
          * @return The vector resulting from the multiplication
          */
         template <int m>
-        Vector<number, n> operator*(const Matrix<number, m, n>& mat) {
+        Vector<number, n> operator*(const Matrix<number, m, n>& mat) const {
             Vector<number, n> res;
             auto asCols{std::move(mat.colToVectorSet())};
             for (int i{}; i < n; i++) {
                 res.at(i) = *this * asCols.at(i);
+            }
+            return res;
+        }
+
+        /**
+         * @brief Vector multiplication by a matrix of size 1xn.
+         * This results in a matrix of size nxn
+         *
+         * @param mat A matrix of size 1xn
+         * @return The matrix resulting from the multiplication
+         */
+        Matrix<number, n, n> operator*(const Matrix<number, 1, n>& mat) const
+            requires(n != 1)
+        {
+            Matrix<number, n, n> res;
+            auto asCols{std::move(mat.colToVectorSet())};
+            for (int i{}; i < n; i++) {
+                res.at(i) = *this * asCols.at(i).at(0);
             }
             return res;
         }
@@ -678,21 +697,34 @@ namespace mlinalg::structures {
 
         /**
          * @brief Vector multiplication by a matrix
+         * A 1xn matrix left multiplied by a vector of size n results in an nxn matrix
          *
          * @param mat A matrix of size MxN
          * @return The vector resulting from the multiplication
          */
-        Vector<number, Dynamic> operator*(const Matrix<number, Dynamic, Dynamic>& mat) {
+        TransposeVariant<number, Dynamic, Dynamic> operator*(const Matrix<number, Dynamic, Dynamic>& mat) const {
             const auto& numRows = mat.numRows();
-            if (numRows != n)
-                throw std::invalid_argument("Matrix must have the same number of rows as the vector size");
+            const auto numCols = mat.numCols();
+            if (numCols != this->n)
+                throw std::invalid_argument("Matrix must have the same number of columns as the vector size");
 
-            Vector<number, Dynamic> res(n);
             auto asCols{std::move(mat.colToVectorSet())};
-            for (int i{}; i < n; i++) {
-                res.at(i) = *this * asCols.at(i);
+            // If the matrix has only one row it is equivalent to a transposed vector
+            // And thus the result is a matrix with the cols of this matrix being the result of the dot product of the
+            // vector and the cols of the matrix
+            if (numRows == 1) {
+                Matrix<number, Dynamic, Dynamic> resMat(this->n, this->n);
+                for (size_t i{}; i < n; i++) {
+                    resMat.at(i) = *this * asCols.at(i).at(0);
+                }
+                return resMat;
+            } else {
+                Vector<number, Dynamic> resVec(this->n);
+                for (size_t i{}; i < n; i++) {
+                    resVec.at(i) = *this * asCols.at(i);
+                }
+                return resVec;
             }
-            return res;
         }
 
         /**
