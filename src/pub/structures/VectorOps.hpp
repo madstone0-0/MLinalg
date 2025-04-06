@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <cmath>
+#include <cstdlib>
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
@@ -198,6 +200,70 @@ namespace mlinalg::structures {
         Matrix<number, sizeP.first, sizeP.second> res(1, size);
         for (size_t i{}; i < size; i++) res.at(0, i) = row.at(i);
         return res;
+    }
+
+    template <Number number, int n, int otherN>
+    double vectorDot(const Vector<number, n>& v, const Vector<number, otherN>& w) {
+        if (v.size() != w.size()) throw std::invalid_argument("Vectors must be of the same size");
+        return (v.T() * w).at(0);
+    }
+
+    template <Number number, int n, int otherN>
+    double vectorDist(const Vector<number, n>& v, const Vector<number, otherN>& w) {
+        if (v.size() != w.size()) throw std::invalid_argument("Vectors must be of the same size");
+        auto diff = v - w;
+        return std::sqrt(diff.dot(diff));
+    }
+
+    // ===========
+    // P-Norms
+    // ===========
+
+    /**
+     * @brief L1-Norm of a vector
+     *
+     * @param row Vector to compute the norm of
+     * @return L1-Norm of the vector
+     */
+    template <Number number, int n, Container T>
+    double L1Norm(const T& row) {
+        double sum{};
+        for (const auto& elem : row) {
+            sum += std::abs(elem);
+        }
+        return sum;
+    }
+
+    /**
+     * @brief Euclidean norm (L2-Norm) of a vector
+     *
+     * @param vec Vector to compute the norm of
+     * @return Euclidean norm of the vector
+     */
+    template <Number number, int n>
+    double EuclideanNorm(const Vector<number, n>& vec) {
+        return std::sqrt(vec.dot(vec));
+    }
+
+    // ================
+    // Weighted P-Norms
+    // ================
+
+    /**
+     * @brief Weighted L2-Norm of a vector
+     *
+     * @param vec Vector to compute the norm of
+     * @return Weighted L2-Norm of the vector
+     */
+    template <Number number, int n, Container T>
+    double WeightedL2Norm(const T& row, const T& otherRow) {
+        if (otherRow.size() != row.size()) throw std::invalid_argument("Matrix and vector must have the same size");
+        double sum{};
+        for (size_t i{}; i < otherRow.size(); i++) {
+            const auto& val = otherRow[i] * (row[i] * row[i]);
+            sum += std::abs(val);
+        }
+        return std::sqrt(sum);
     }
 
 }  // namespace mlinalg::structures

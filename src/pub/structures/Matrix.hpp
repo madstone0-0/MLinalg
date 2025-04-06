@@ -506,9 +506,48 @@ namespace mlinalg::structures {
         /**
          * @brief Calculate the Frobenius norm of the matrix
          *
+         * This is the same as the L2 norm of the matrix
+         *
+         * \f[
+         * ||A||_F = \sqrt{\sum_{i=1}^{m} \sum_{j=1}^{n} |a_{ij}|^2}
+         * \f]
+         *
          * @return The Frobenius norm of the matrix
          */
         double frob() { return FrobenisNorm<number, m, n>(matrix); }
+
+        /**
+         * @brief Calculate the L1 norm of the matrix
+         *
+         * This is the maximum absolute column sum of the matrix
+         *
+         * \f[
+         * ||A||_1 = \max(\sum_{i=1}^n(|a_j|))
+         * \f]
+         *
+         * @return The L1 norm of the matrix
+         */
+        double l1() { return L1Norm<number, m, n>(*this); }
+
+        /**
+         * @brief Calculate the L-inf norm of the matrix
+         *
+         * This is the maximum absolute row sum of the matrix
+         *
+         * \f[
+         * ||A||_\infty = \max(\sum_{j=1}^m(|a_i|))
+         * \f]
+         *
+         * @return The L-inf norm of the matrix
+         */
+        double lInf() { return LInfNorm<number, m, n>(*this); }
+
+        /**
+         * @brief Calculate the trace of the matrix, i.e. the sum of the diagonal elements
+         *
+         * @return The trace of the matrix
+         */
+        number trace() const { return MatrixTrace<number, m>(matrix); }
 
         auto getMatrix() const { return matrix; }
 
@@ -1091,9 +1130,48 @@ namespace mlinalg::structures {
         /**
          * @brief Calculate the Frobenius norm of the matrix
          *
+         * This is the same as the L2 norm of the matrix
+         *
+         * \f[
+         * ||A||_F = \sqrt{\sum_{i=1}^{m} \sum_{j=1}^{n} |a_{ij}|^2}
+         * \f]
+         *
          * @return The Frobenius norm of the matrix
          */
         double frob() { return FrobenisNorm<number, Dynamic, Dynamic>(matrix); }
+
+        /**
+         * @brief Calculate the L1 norm of the matrix
+         *
+         * This is the maximum absolute column sum of the matrix
+         *
+         * \f[
+         * ||A||_1 = \max(\sum_{i=1}^n(|a_j|))
+         * \f]
+         *
+         * @return The L1 norm of the matrix
+         */
+        double l1() { return L1Norm<number, Dynamic, Dynamic>(*this); }
+
+        /**
+         * @brief Calculate the L-inf norm of the matrix
+         *
+         * This is the maximum absolute row sum of the matrix
+         *
+         * \f[
+         * ||A||_\infty = \max(\sum_{j=1}^m(|a_i|))
+         * \f]
+         *
+         * @return The L-inf norm of the matrix
+         */
+        double lInf() { return LInfNorm<number, Dynamic, Dynamic>(*this); }
+
+        /**
+         * @brief Calculate the trace of the matrix, i.e. the sum of the diagonal elements
+         *
+         * @return The trace of the matrix
+         */
+        number trace() const { return MatrixTrace<number, Dynamic>(matrix); }
 
        private:
         template <Number num, int mM, int nN>

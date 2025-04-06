@@ -937,6 +937,60 @@ namespace mlinalg::structures {
             return cofactorCol<number, m, n>(matrix, val);
     }
 
+    template <Number number, int n, Container T>
+    number MatrixTrace(const T& matrix) {
+        const auto nR = matrix.size();
+        const auto nC = matrix.at(0).size();
+        if (nR != nC) throw invalid_argument("Matrix must be square to calculate trace");
+        number sum{};
+        for (size_t i{}; i < nR; i++) {
+            sum += matrix.at(i).at(i);
+        }
+        return sum;
+    }
+
+    // =====================
+    // Induced Matrix Norms
+    // =====================
+
+    /**
+     * @brief Calculate the L1 norm of a matrix
+     *
+     * @param matrix The matrix to calculate the norm of
+     * @return The L1 norm of the matrix
+     */
+    template <Number number, int m, int n>
+    double L1Norm(const Matrix<number, m, n>& matrix) {
+        auto asCols{std::move(matrix.colToVectorSet())};
+        double max{-1};
+        for (const auto& col : asCols) {
+            auto l1Norm = col.l1();
+            if (l1Norm > max) max = l1Norm;
+        }
+        return max;
+    }
+
+    /**
+     * @brief Calculate the L-inf norm of a matrix
+     *
+     * @param matrix  The matrix to calculate the norm of
+     * @return The L-inf norm of the matrix
+     */
+    template <Number number, int m, int n>
+    double LInfNorm(const Matrix<number, m, n>& matrix) {
+        auto asRows{std::move(matrix.rowToVectorSet())};
+        double max{-1};
+        for (const auto& row : asRows) {
+            auto l1Norm = row.l1();
+            if (l1Norm > max) max = l1Norm;
+        }
+        return max;
+    }
+
+    // =====================
+    // General Matrix Norms
+    // =====================
+
     /**
      * @brief Calculate the Frobenius norm of a matrix
      *

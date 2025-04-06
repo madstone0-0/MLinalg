@@ -145,14 +145,57 @@ namespace mlinalg::structures {
          * @param other The other vector
          * @return the dot product of the two vectors
          */
-        double dot(const Vector<number, n>& other) const { return (this->T() * other).at(0); }
+        double dot(const Vector<number, n>& other) const { return vectorDot(*this, other); }
 
         /**
          * @brief Find the length of the vector
          *
          * @return the length of the vector
          */
-        [[nodiscard]] double length() const { return std::sqrt(this->dot(*this)); }
+        [[nodiscard]] double length() const { return EuclideanNorm(*this); }
+
+        /**
+         * @brief Find the euclidean norm of the vector
+         *
+         * This is the same as the length of the vector
+         *
+         * \f[
+         * ||x||_2 = \sqrt{x^T \cdot x}
+         * \f]
+         *
+         * @return the euclidean norm of the vector
+         */
+        [[nodiscard]] double euclid() const { return length(); }
+
+        /**
+         * @brief Find the L1 norm of the vector
+         *
+         * This is the same as the sum of the absolute values of the elements in the vector
+         *
+         * \f[
+         * ||x||_1 = \sum{|x_i|}
+         * \f]
+         *
+         * @return the L1 norm of the vector
+         */
+        [[nodiscard]] double l1() const { return L1Norm<number, n>(*row); }
+
+        /**
+         * @brief Find the weighted L2 norm of the vector
+         *
+         * Each of the coordinates of a vector space is given a weight
+         *
+         * \f[
+         * ||x||_W = \sqrt{\sum{w_i * x_i^2}}
+         * \f]
+         *
+         * @param otherVec The other vector
+         * @return the weighted L2 norm of the vector
+         */
+        template <int otherN>
+        double weightedL2(const Vector<number, otherN>& otherVec) const {
+            return WeightedL2Norm<number, n>(*row, *otherVec.row);
+        }
 
         /**
          * @brief Find the distance between this vector and another vector
@@ -160,10 +203,7 @@ namespace mlinalg::structures {
          * @param other The other vector
          * @return the distance between the two vectors
          */
-        [[nodiscard]] double dist(const Vector<number, n>& other) const {
-            auto diff = *this - other;
-            return std::sqrt(diff.dot(diff));
-        }
+        [[nodiscard]] double dist(const Vector<number, n>& other) const { return vectorDist(*this, other); }
 
         /**
          * @brief Vector subtraction
@@ -549,8 +589,7 @@ namespace mlinalg::structures {
          */
         template <int otherN>
         double dot(const Vector<number, otherN>& other) const {
-            checkOperandSize(*row, *(other.row));
-            return (this->T() * other).at(0);
+            return vectorDot(*this, other);
         }
 
         /**
@@ -558,7 +597,50 @@ namespace mlinalg::structures {
          *
          * @return the length of the vector
          */
-        [[nodiscard]] double length() const { return std::sqrt(this->dot(*this)); }
+        [[nodiscard]] double length() const { return EuclideanNorm(*this); }
+
+        /**
+         * @brief Find the euclidean norm of the vector
+         *
+         * This is the same as the length of the vector
+         *
+         * \f[
+         * ||x||_2 = \sqrt{x^T \cdot x}
+         * \f]
+         *
+         * @return the euclidean norm of the vector
+         */
+        [[nodiscard]] double euclid() const { return length(); }
+
+        /**
+         * @brief Find the L1 norm of the vector
+         *
+         * This is the same as the sum of the absolute values of the elements in the vector
+         *
+         * \f[
+         * ||x||_1 = \sum{|x_i|}
+         * \f]
+         *
+         * @return the L1 norm of the vector
+         */
+        [[nodiscard]] double l1() const { return L1Norm<number, Dynamic>(*row); }
+
+        /**
+         * @brief Find the weighted L2 norm of the vector
+         *
+         * Each of the coordinates of a vector space is given a weight
+         *
+         * \f[
+         * ||x||_W = \sqrt{\sum{|w_i * x_i|^2}}
+         * \f]
+         *
+         * @param otherVec The other vector
+         * @return the weighted L2 norm of the vector
+         */
+        template <int otherN>
+        double weightedL2(const Vector<number, otherN>& otherVec) const {
+            return WeightedL2Norm<number, Dynamic>(*row, *otherVec.row);
+        }
 
         /**
          * @brief Find the distance between this vector and another vector
@@ -569,9 +651,7 @@ namespace mlinalg::structures {
 
         template <int otherN>
         [[nodiscard]] double dist(const Vector<number, otherN>& other) const {
-            checkOperandSize(*row, *(other.row));
-            auto diff = *this - other;
-            return std::sqrt(diff.dot(diff));
+            return vectorDist(*this, other);
         }
 
         /**
