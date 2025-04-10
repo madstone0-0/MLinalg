@@ -20,7 +20,7 @@
 #include "../Concepts.hpp"
 #include "Aliases.hpp"
 #include "VectorOps.hpp"
-#include "structures/Matrix.hpp"
+#include "Matrix.hpp"
 
 using std::vector, std::array, std::optional, std::unique_ptr, std::shared_ptr;
 
