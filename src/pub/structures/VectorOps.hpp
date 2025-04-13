@@ -118,8 +118,11 @@ namespace mlinalg::structures {
     number vectorVectorMult(const Vector<number, n>& vec, const Vector<number, otherN>& otherVec) {
         if (vec.size() != otherVec.size()) throw std::invalid_argument("Vectors must be of the same size");
 
-        const auto res = vec.T() * otherVec;
-        return res[0];
+        number sum{0};
+        for (size_t i{}; i < vec.size(); i++) {
+            sum += vec[i] * otherVec[i];
+        }
+        return sum;
     }
 
     template <Container T>
