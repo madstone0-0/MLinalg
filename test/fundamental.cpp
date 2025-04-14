@@ -1357,6 +1357,32 @@ TEST_CASE("Matrix", "[matrix]") {
                 REQUIRE_THROWS_AS(m4 / 0, std::domain_error);
             }
 
+            SECTION("Norms") {
+                SECTION("Frobenius Norm") {
+                    auto m1 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
+                    auto norm = m1.frob();
+                    REQUIRE(norm == Approx(5.477225575051661));
+                }
+
+                SECTION("L1 Norm") {
+                    auto m1 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
+                    auto norm = m1.l1();
+                    REQUIRE(norm == Approx(6));
+                }
+
+                SECTION("L-Infinity Norm") {
+                    auto m1 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
+                    auto norm = m1.lInf();
+                    REQUIRE(norm == Approx(7));
+                }
+            }
+
+            SECTION("Trace") {
+                auto m1 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
+                auto trace = m1.trace();
+                REQUIRE(trace == 5);
+            }
+
             SECTION("Transpose") {
                 SECTION("Square Matrix") {
                     auto m1 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
@@ -1910,6 +1936,32 @@ TEST_CASE("Matrix", "[matrix]") {
                 REQUIRE(m3.at(0, 1) == 1);
                 REQUIRE(m3.at(1, 0) == 1);
                 REQUIRE(m3.at(1, 1) == 2);
+            }
+
+            SECTION("Norms") {
+                SECTION("Frobenius Norm") {
+                    auto m1 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
+                    auto norm = m1.frob();
+                    REQUIRE(norm == Approx(5.477225575051661));
+                }
+
+                SECTION("L1 Norm") {
+                    auto m1 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
+                    auto norm = m1.l1();
+                    REQUIRE(norm == Approx(6));
+                }
+
+                SECTION("L-Infinity Norm") {
+                    auto m1 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
+                    auto norm = m1.lInf();
+                    REQUIRE(norm == Approx(7));
+                }
+            }
+
+            SECTION("Trace") {
+                auto m1 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
+                auto trace = m1.trace();
+                REQUIRE(trace == 5);
             }
 
             SECTION("Transpose") {

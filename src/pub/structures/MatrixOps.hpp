@@ -464,7 +464,7 @@ namespace mlinalg::structures {
 #ifdef DEBUG
             logging::log("Using strassen's matrix multiplication algorithm", "Matrix operator*", logging::Level::INF);
 #endif
-            return multMatStrassen<number, m, n, nOther>(matrix, other.matrix);
+            return multMatStrassen<number, m, n, nOther>(matrix, otherMatrix);
         }
 #else
 #ifdef DEBUG
@@ -558,30 +558,69 @@ namespace mlinalg::structures {
         return res;
     }
 
+    template <Container T, Container U>
+    auto m1(const T& A, const U& B) {
+        // Returns (A[0][0] + A[1][1]) * (B[0][0] + B[1][1])
+        return (A.at(0).at(0) + A.at(1).at(1)) * (B.at(0).at(0) + B.at(1).at(1));
+    }
+
+    template <Container T, Container U>
+    auto m2(const T& A, const U& B) {
+        // Returns (A[1][0] + A[1][1]) * B[0][0]
+        return (A.at(1).at(0) + A.at(1).at(1)) * B.at(0).at(0);
+    }
+
+    template <Container T, Container U>
+    auto m3(const T& A, const U& B) {
+        // Returns A[0][0] * (B[0][1] - B[1][1])
+        return A.at(0).at(0) * (B.at(0).at(1) - B.at(1).at(1));
+    }
+
+    template <Container T, Container U>
+    auto m4(const T& A, const U& B) {
+        // Returns A[1][1] * (B[1][0] - B[0][0])
+        return A.at(1).at(1) * (B.at(1).at(0) - B.at(0).at(0));
+    }
+
+    template <Container T, Container U>
+    auto m5(const T& A, const U& B) {
+        // Returns (A[0][0] + A[0][1]) * B[1][1]
+        return (A.at(0).at(0) + A.at(0).at(1)) * B.at(1).at(1);
+    }
+
+    template <Container T, Container U>
+    auto m6(const T& A, const U& B) {
+        // Returns (A[1][0] - A[0][0]) * (B[0][0] + B[0][1])
+        return (A.at(1).at(0) - A.at(0).at(0)) * (B.at(0).at(0) + B.at(0).at(1));
+    }
+
+    template <Container T, Container U>
+    auto m7(const T& A, const U& B) {
+        // Returns (A[0][1] - A[1][1]) * (B[1][0] + B[1][1])
+        return (A.at(0).at(1) - A.at(1).at(1)) * (B.at(1).at(0) + B.at(1).at(1));
+    }
+
+    template <Number number, int m, int n, int nOther, Container T, Container U>
+    Matrix<number, 2, 2> strassen(const T& A, const U& B)
+        requires(n == 2 && m == 2 && nOther == 2)
+    {
+        // Base case
+        auto M1 = m1(A, B);
+        auto M2 = m2(A, B);
+        auto M3 = m3(A, B);
+        auto M4 = m4(A, B);
+        auto M5 = m5(A, B);
+        auto M6 = m6(A, B);
+        auto M7 = m7(A, B);
+        return Matrix<number, 2, 2>{
+            {M1 + M4 - M5 + M7, M3 + M5},  //
+            {M2 + M4, M1 + M3 - M2 + M6}   //
+        };
+    }
+
     template <Number number, int m, int n, int nOther, Container T, Container U>
     auto strassen(const T& A, const U& B) {
         if constexpr (n == 2 && m == 2 && nOther == 2) {
-            auto m1 = [](const T& A, const U& B) {
-                return (A.at(0).at(0) + A.at(1).at(1)) * (B.at(0).at(0) + B.at(1).at(1));
-            };
-            auto m2 = [](const T& A, const U& B) {  //
-                return (A.at(1).at(0) + A.at(1).at(1)) * B.at(0).at(0);
-            };
-            auto m3 = [](const T& A, const U& B) {  //
-                return A.at(0).at(0) * (B.at(0).at(1) - B.at(1).at(1));
-            };
-            auto m4 = [](const T& A, const U& B) {  //
-                return A.at(1).at(1) * (B.at(1).at(0) - B.at(0).at(0));
-            };
-            auto m5 = [](const T& A, const U& B) {  //
-                return (A.at(0).at(0) + A.at(0).at(1)) * B.at(1).at(1);
-            };
-            auto m6 = [](const T& A, const U& B) {  //
-                return (A.at(1).at(0) - A.at(0).at(0)) * (B.at(0).at(0) + B.at(0).at(1));
-            };
-            auto m7 = [](const T& A, const U& B) {  //
-                return (A.at(0).at(1) - A.at(1).at(1)) * (B.at(1).at(0) + B.at(1).at(1));
-            };
             // Base case
             if (A.size() <= 2 && A[0].size() <= 2 && B.size() <= 2 && B[0].size() <= 2) {
                 auto M1 = m1(A, B);
@@ -688,7 +727,6 @@ namespace mlinalg::structures {
     template <Number number, int m, int n, Container T>
     TransposeVariant<number, m, n> TransposeMatrix(const T& matrix) {
         constexpr auto isDynamic = m == Dynamic || n == Dynamic;
-        constexpr auto DynamicPair = SizePair{Dynamic, Dynamic};
 
         constexpr int vSize = isDynamic ? Dynamic : m;
         constexpr auto sizeP = isDynamic ? DynamicPair : SizePair{m, n};
@@ -731,7 +769,6 @@ namespace mlinalg::structures {
     Matrix<number, m, nN + n> MatrixAugmentMatrix(const T& matrix, const U& otherMatrix) {
         checkMatrixOperandRowSize(matrix, otherMatrix);
         constexpr auto isDynamic = m == Dynamic || n == Dynamic;
-        constexpr auto DynamicPair = SizePair{Dynamic, Dynamic};
 
         constexpr auto sizeP = isDynamic ? DynamicPair : SizePair{m, n + nN};
 
@@ -762,7 +799,6 @@ namespace mlinalg::structures {
     template <Number number, int m, int n, Container MatrixContainer, Container VectorContainer>
     Matrix<number, m, n + 1> MatrixAugmentVector(const MatrixContainer& matrix, const VectorContainer& vec) {
         constexpr auto isDynamic = m == Dynamic || n == Dynamic;
-        constexpr auto DynamicPair = SizePair{Dynamic, Dynamic};
 
         constexpr auto sizeP = isDynamic ? DynamicPair : SizePair{m, n + 1};
 
@@ -799,7 +835,6 @@ namespace mlinalg::structures {
         if (nRows <= 1 || nCols <= 1) throw runtime_error("Matrix must be at least 2x2 to find a subset");
 
         constexpr auto isDynamic = m == Dynamic || n == Dynamic;
-        constexpr auto DynamicPair = SizePair{Dynamic, Dynamic};
 
         constexpr auto sizeP = isDynamic ? DynamicPair : SizePair{m - 1, n - 1};
 
