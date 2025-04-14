@@ -5,7 +5,7 @@ OUT_DIR="build"
 
 # Usage function prints help message
 usage() {
-	echo "Usage: $0 [debug|release|profile|asm|all]"
+	echo "Usage: $0 [debug|release|profile|asm|all] [additional CMake args...]"
 	exit 1
 }
 
@@ -20,79 +20,82 @@ build_doxygen() {
 }
 
 # Configure and build with CMake and Ninja.
-# Arguments: build directory, build type, compiler
+# Arguments: build directory, build type, compiler, additional CMake args...
 build_with_cmake() {
 	local build_dir="$1"
 	local build_type="$2"
 	local compiler="$3"
+	shift 3
+	local extra_args=("$@")
 
 	echo "Configuring and building ${build_type} build in ${build_dir} using ${compiler}..."
 	mkdir -p "$build_dir"
 
-	if [ $build_type == "Release" ]; then
+	if [[ "$build_type" == "Release" ]]; then
 		build_doxygen "$build_dir"
 	fi
 
-	if ! CXX="$compiler" cmake -G Ninja -S . -B "$build_dir" -DCMAKE_BUILD_TYPE="$build_type"; then
+	if ! CXX="$compiler" cmake -G Ninja -S . -B "$build_dir" -DCMAKE_BUILD_TYPE="$build_type" "${extra_args[@]}"; then
 		echo "CMake configuration failed for ${build_dir}."
 		exit 1
 	fi
 
-	# if ! bear -- ninja -C "$build_dir" &>"$build_dir/build.log"; then
 	if ! ninja -C "$build_dir" &>"$build_dir/build.log"; then
 		echo "Ninja build failed for ${build_dir}. See $build_dir/build.log for details."
 		exit 1
 	fi
 
-	compdb -p build/ list >compile_commands.json
+	# Generate compile_commands.json in the current directory using the build directory.
+	compdb -p "$build_dir" list >compile_commands.json
 	echo "${build_type} build completed successfully in ${build_dir}."
 }
 
 build_debug() {
-	build_with_cmake "$OUT_DIR" "Debug" "clang++"
+	build_with_cmake "$OUT_DIR" "Debug" "clang++" "$@"
 }
 
 build_release() {
 	local release_dir="${OUT_DIR}-release"
-	build_with_cmake "$release_dir" "Release" "g++"
+	build_with_cmake "$release_dir" "Release" "g++" "$@"
 }
 
 build_profile() {
 	local profile_dir="${OUT_DIR}-profile"
-	build_with_cmake "$profile_dir" "Profile" "g++"
+	build_with_cmake "$profile_dir" "Profile" "g++" "$@"
 }
 
 build_asm() {
-	local profile_dir="${OUT_DIR}-asm"
-	build_with_cmake "$profile_dir" "Asm" "g++"
+	local asm_dir="${OUT_DIR}-asm"
+	build_with_cmake "$asm_dir" "Asm" "g++" "$@"
 }
 
-# Determine build mode from first argument (default is debug)
+# Determine build mode from first argument (default is debug) and shift it off.
 if [ $# -eq 0 ]; then
 	MODE="debug"
 else
 	MODE="$1"
+	shift
 fi
 
 case "$MODE" in
 debug)
-	build_debug
+	build_debug "$@"
 	;;
 release)
-	build_release
+	build_release "$@"
 	;;
 profile)
-	build_profile
+	build_profile "$@"
 	;;
 asm)
-	build_asm
+	build_asm "$@"
 	;;
 all)
 	echo "Building all configurations concurrently..."
-	build_debug &
-	build_release &
-	build_profile &
-	build_asm &
+	build_debug "$@" &
+	build_release "$@" &
+	build_profile "$@" &
+	build_asm "$@" &
 	wait
 	;;
 *)

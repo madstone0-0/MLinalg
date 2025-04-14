@@ -1,2 +1,2 @@
 CompileFlags:
-  Add: ["-std=c++23", "-I${workspaceFolder}/src", "-Wall", "-Wextra", "-Wfloat-equal"]
+  Add: ["-std=c++23", "-I./src", "-Wall", "-Wextra", "-Wfloat-equal", "-Werror=return-type"]
