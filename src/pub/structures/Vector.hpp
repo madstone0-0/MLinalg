@@ -206,6 +206,13 @@ namespace mlinalg::structures {
         [[nodiscard]] double dist(const Vector<number, n>& other) const { return vectorDist(*this, other); }
 
         /**
+         * @brief Normalize a vector into a unit vector
+         *
+         * @return the normalized vector
+         */
+        Vector<double, n> normalize() { return vectorNormalize(*this); }
+
+        /**
          * @brief Vector subtraction
          *
          * @param other the vector to subtract
@@ -653,6 +660,13 @@ namespace mlinalg::structures {
         [[nodiscard]] double dist(const Vector<number, otherN>& other) const {
             return vectorDist(*this, other);
         }
+
+        /**
+         * @brief Normalize a vector into a unit vector
+         *
+         * @return the normalized vector
+         */
+        Vector<double, Dynamic> normalize() { return vectorNormalize(*this); }
 
         /**
          * @brief Vector subtraction

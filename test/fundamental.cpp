@@ -264,6 +264,27 @@ TEST_CASE("Vector", "[vector]") {
                 REQUIRE(len == Approx(2.23606797749979));
             }
 
+            SECTION("Norms") {
+                SECTION("L1 Norm") {
+                    auto v = Vector<int, 2>{1, 2};
+                    auto norm = v.l1();
+                    REQUIRE(norm == Approx(3));
+                }
+
+                SECTION("L2 Norm") {
+                    auto v = Vector<int, 2>{1, 2};
+                    auto norm = v.euclid();
+                    REQUIRE(norm == Approx(2.23606797749979));
+                }
+
+                SECTION("Weighted L2 Norm") {
+                    auto v = Vector<int, 2>{1, 2};
+                    auto w = Vector<int, 2>{3, 4};
+                    auto norm = v.weightedL2(w);
+                    REQUIRE(norm == Approx(4.3588989435));
+                }
+            }
+
             SECTION("Transpose") {
                 auto v = Vector<int, 2>{1, 2};
                 auto v2 = v.T();
@@ -544,6 +565,27 @@ TEST_CASE("Vector", "[vector]") {
                 auto v = Vector<int, Dynamic>{1, 2};
                 auto len = v.length();
                 REQUIRE(len == Approx(2.23606797749979));
+            }
+
+            SECTION("Norms") {
+                SECTION("L1 Norm") {
+                    auto v = Vector<int, Dynamic>{1, 2};
+                    auto norm = v.l1();
+                    REQUIRE(norm == Approx(3));
+                }
+
+                SECTION("L2 Norm") {
+                    auto v = Vector<int, Dynamic>{1, 2};
+                    auto norm = v.euclid();
+                    REQUIRE(norm == Approx(2.23606797749979));
+                }
+
+                SECTION("Weighted L2 Norm") {
+                    auto v = Vector<int, Dynamic>{1, 2};
+                    auto w = Vector<int, Dynamic>{3, 4};
+                    auto norm = v.weightedL2(w);
+                    REQUIRE(norm == Approx(4.3588989435));
+                }
             }
 
             SECTION("Transpose") {

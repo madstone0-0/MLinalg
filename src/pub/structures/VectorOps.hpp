@@ -215,6 +215,12 @@ namespace mlinalg::structures {
         return std::sqrt(diff.dot(diff));
     }
 
+    template <Number number, int n>
+    Vector<number, n> vectorNormalize(const Vector<number, n>& v) {
+        auto len = v.length();
+        return v / len;
+    }
+
     // ===========
     // P-Norms
     // ===========
