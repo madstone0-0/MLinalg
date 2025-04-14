@@ -105,4 +105,28 @@ namespace mlinalg::structures {
     template <Number number>
     using TDArrayDynamic = std::vector<RowDynamic<number>>;
 
+    constexpr SizePair DynamicPair{Dynamic, Dynamic};
+
+    // ==================
+    // Misc Aliases
+    // ==================
+
+    /**
+     * @brief Row of optional numbers type alias.
+     */
+    template <Number number, int m>
+    using RowOptional = std::conditional_t<m == -1, RowDynamic<std::optional<number>>, Row<std::optional<number>, m>>;
+
+    template <Number number, int m, int n>
+    using ConditionalOptionalRowOptional =
+        std::conditional_t<m == Dynamic || n == Dynamic, std::optional<RowOptional<number, Dynamic>>,
+                           std::optional<RowOptional<number, n - 1>>>;
+
+    template <Number number, int m, int n>
+    using ConditionalRowOptional =
+        std::conditional_t<m == Dynamic || n == Dynamic, RowOptional<number, Dynamic>, RowOptional<number, n - 1>>;
+
+    template <Number number, int m, int n>
+    using ConditionalRowOptionalN =
+        std::conditional_t<m == Dynamic || n == Dynamic, RowOptional<number, Dynamic>, RowOptional<number, n>>;
 }  // namespace mlinalg::structures

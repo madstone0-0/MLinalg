@@ -278,7 +278,6 @@ namespace mlinalg::structures {
             throw invalid_argument("The columns of the first matrix must be equal to the rows of the second matrix");
 
         constexpr bool isDynamic = m == Dynamic || n == Dynamic || mOther == Dynamic || nOther == Dynamic;
-        constexpr auto DynamicPair = SizePair{Dynamic, Dynamic};
 
         constexpr int vSize = isDynamic ? Dynamic : m;
         constexpr auto resSizeP = isDynamic ? DynamicPair : SizePair{m, nOther};
@@ -313,7 +312,6 @@ namespace mlinalg::structures {
         const int nColsOther = otherMatrix[0].size();
 
         constexpr bool isDynamic = m == Dynamic || n == Dynamic || mOther == Dynamic || nOther == Dynamic;
-        constexpr auto DynamicPair = SizePair{Dynamic, Dynamic};
 
         constexpr auto resSizeP = isDynamic ? DynamicPair : SizePair{m, nOther};
 
@@ -324,7 +322,7 @@ namespace mlinalg::structures {
             for (int j{}; j < nCols; j++) {
                 const number temp = matrix[i][j];
                 for (int k{}; k < nColsOther; k += blockSize) {
-                    const size_t kEnd = std::min(k + blockSize, nColsOther);
+                    const int kEnd = std::min(k + blockSize, nColsOther);
                     for (int kk{k}; kk < kEnd; kk++) {
                         res(i, kk) += temp * otherMatrix[j][kk];
                     }
@@ -347,7 +345,6 @@ namespace mlinalg::structures {
         const int nColsOther = otherMatrix[0].size();
 
         constexpr bool isDynamic = m == Dynamic || n == Dynamic || mOther == Dynamic || nOther == Dynamic;
-        constexpr auto DynamicPair = SizePair{Dynamic, Dynamic};
 
         constexpr auto resSizeP = isDynamic ? DynamicPair : SizePair{m, nOther};
 
@@ -400,7 +397,6 @@ namespace mlinalg::structures {
         const size_t nColsOther = otherMatrix[0].size();
 
         constexpr bool isDynamic = m == Dynamic || n == Dynamic || mOther == Dynamic || nOther == Dynamic;
-        constexpr auto DynamicPair = SizePair{Dynamic, Dynamic};
 
         constexpr auto resSizeP = isDynamic ? DynamicPair : SizePair{m, nOther};
 

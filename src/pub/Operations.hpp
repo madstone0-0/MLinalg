@@ -34,12 +34,6 @@ namespace mlinalg {
     template <Number number, int m, int n>
     using LinearSystem = Matrix<number, m, n>;
 
-    /**
-     * @brief Row of optional numbers type alias.
-     */
-    template <Number number, int m>
-    using RowOptional = std::conditional_t<m == -1, RowDynamic<optional<number>>, Row<optional<number>, m>>;
-
     template <Number num, int n>
     Vector<num, n> extractSolutionVector(const Vector<optional<num>, n>& solutions) {
         if (rg::any_of(solutions, [](const auto& val) { return !val.has_value(); })) {
@@ -111,15 +105,6 @@ namespace mlinalg {
         }
         return true;
     }
-
-    template <Number number, int m, int n>
-    using ConditionalOptionalRowOptional =
-        std::conditional_t<m == Dynamic || n == Dynamic, optional<RowOptional<number, Dynamic>>,
-                           optional<RowOptional<number, n - 1>>>;
-
-    template <Number number, int m, int n>
-    using ConditionalRowOptional =
-        std::conditional_t<m == Dynamic || n == Dynamic, RowOptional<number, Dynamic>, RowOptional<number, n - 1>>;
 
     /**
      * @brief Solves a linear equation using the given row and solutions.
