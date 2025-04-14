@@ -4,6 +4,8 @@
  */
 
 #pragma once
+#include <optional>
+#include <random>
 #include <variant>
 #include <vector>
 
@@ -15,6 +17,18 @@ namespace mlinalg::structures::helpers {
 
     template <Number number, int m, int n>
     using TransposeVariant = std::variant<Vector<number, m>, Matrix<number, n, m>>;
+
+    template <Number num>
+    num rng(int min, int max, std::optional<size_t> seed = std::nullopt) {
+        static std::mt19937 generator(seed.value_or(std::random_device{}()));
+        if constexpr (std::is_integral_v<num>) {
+            std::uniform_int_distribution<num> distribution(min, max);
+            return distribution(generator);
+        } else {
+            std::uniform_real_distribution<num> distribution(min, max);
+            return distribution(generator);
+        }
+    }
 
     /**
      * @brief Generate a matrix from a vector of column vectors

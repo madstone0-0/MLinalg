@@ -129,4 +129,6 @@ namespace mlinalg::structures {
     template <Number number, int m, int n>
     using ConditionalRowOptionalN =
         std::conditional_t<m == Dynamic || n == Dynamic, RowOptional<number, Dynamic>, RowOptional<number, n>>;
+
+    using Seed = std::optional<size_t>;
 }  // namespace mlinalg::structures
