@@ -5,8 +5,15 @@ OUT_DIR="build"
 
 # Usage function prints help message
 usage() {
-	echo "Usage: $0 [debug|release|profile|asm|all] [additional CMake args...]"
+	echo "Usage: $0 [debug|release|profile|asm|all] [show_log=yes|no] [additional CMake args...]"
 	exit 1
+}
+
+# Run string as a command
+run() {
+	eval "$*" || {
+		return 1
+	}
 }
 
 # Run Doxygen and log output; exit if it fails.
@@ -25,7 +32,8 @@ build_with_cmake() {
 	local build_dir="$1"
 	local build_type="$2"
 	local compiler="$3"
-	shift 3
+	local show_log="$4"
+	shift 4
 	local extra_args=("$@")
 
 	echo "Configuring and building ${build_type} build in ${build_dir} using ${compiler}..."
@@ -40,8 +48,16 @@ build_with_cmake() {
 		exit 1
 	fi
 
-	if ! ninja -C "$build_dir" &>"$build_dir/build.log"; then
-		echo "Ninja build failed for ${build_dir}. See $build_dir/build.log for details."
+	if [ "$show_log" == "yes" ]; then
+		echo "Showing build log for ${build_dir}..."
+		cmd="ninja -C $build_dir 2>&1 | tee ${build_dir}/build.log"
+	else
+		echo "Building ${build_type} in ${build_dir}..."
+		cmd="ninja -C $build_dir &> ${build_dir}/build.log"
+	fi
+
+	if ! run "$cmd"; then
+		echo "Ninja build failed for ${build_dir}."
 		exit 1
 	fi
 
@@ -51,22 +67,30 @@ build_with_cmake() {
 }
 
 build_debug() {
-	build_with_cmake "$OUT_DIR" "Debug" "clang++" "$@"
+	local show_log="$1"
+	shift
+	build_with_cmake "$OUT_DIR" "Debug" "clang++" "$show_log" "$@"
 }
 
 build_release() {
+	local show_log="$1"
 	local release_dir="${OUT_DIR}-release"
-	build_with_cmake "$release_dir" "Release" "g++" "$@"
+	shift
+	build_with_cmake "$release_dir" "Release" "g++" "$show_log" "$@"
 }
 
 build_profile() {
+	local show_log="$1"
 	local profile_dir="${OUT_DIR}-profile"
-	build_with_cmake "$profile_dir" "Profile" "g++" "$@"
+	shift
+	build_with_cmake "$profile_dir" "Profile" "g++" "$show_log" "$@"
 }
 
 build_asm() {
+	local show_log="$1"
 	local asm_dir="${OUT_DIR}-asm"
-	build_with_cmake "$asm_dir" "Asm" "g++" "$@"
+	shift
+	build_with_cmake "$asm_dir" "Asm" "g++" "$show_log" "$@"
 }
 
 # Determine build mode from first argument (default is debug) and shift it off.
@@ -77,25 +101,33 @@ else
 	shift
 fi
 
+# Determine if we should show the log (default is no).
+if [ $# -eq 0 ]; then
+	SHOW_LOG="no"
+else
+	SHOW_LOG="$1"
+	shift
+fi
+
 case "$MODE" in
 debug)
-	build_debug "$@"
+	build_debug "$SHOW_LOG" "$@"
 	;;
 release)
-	build_release "$@"
+	build_release "$SHOW_LOG" "$@"
 	;;
 profile)
-	build_profile "$@"
+	build_profile "$SHOW_LOG" "$@"
 	;;
 asm)
-	build_asm "$@"
+	build_asm "$SHOW_LOG" "$@"
 	;;
 all)
 	echo "Building all configurations concurrently..."
-	build_debug "$@" &
-	build_release "$@" &
-	build_profile "$@" &
-	build_asm "$@" &
+	build_debug "no" "$@" &
+	build_release "no" "$@" &
+	build_profile "no" "$@" &
+	build_asm "no" "$@" &
 	wait
 	;;
 *)
