@@ -129,26 +129,16 @@ namespace mlinalg::structures {
 
     template <Container T>
     std::string vectorStringRepr(const T& row) {
+        const auto size = row.size();
         std::stringstream ss{};
 
-        size_t maxWidth = 0;
-        for (const auto& elem : row) {
-            std::stringstream temp_ss;
-            temp_ss << elem;
-            maxWidth = std::max(maxWidth, temp_ss.str().length());
+        if (size == 1)
+            ss << "[ " << row[0] << " ]\n";
+        else {
+            ss << '[';
+            for (size_t i{}; i < size; i++) ss << row[i] << (i != (size - 1) ? ", " : "");
+            ss << "]\n";
         }
-
-        if (row.size() == 1)
-            ss << "[ " << std::setw(static_cast<int>(maxWidth)) << row.at(0) << " ]\n";
-        else
-            for (size_t i{}; i < row.size(); i++)
-                if (i == 0) {
-                    ss << "⎡ " << std::setw(static_cast<int>(maxWidth)) << row.at(i) << " ⎤\n";
-                } else if (i == row.size() - 1) {
-                    ss << "⎣ " << std::setw(static_cast<int>(maxWidth)) << row.at(i) << " ⎦\n";
-                } else {
-                    ss << "| " << std::setw(static_cast<int>(maxWidth)) << row.at(i) << " |\n";
-                }
         return ss.str();
     }
 
@@ -165,31 +155,14 @@ namespace mlinalg::structures {
             return val.str();
         };
 
-        size_t maxWidth = 0;
-        for (const auto& elem : row) {
-            std::stringstream temp_ss;
-            temp_ss << hasVal(elem);
-            maxWidth = std::max(maxWidth, temp_ss.str().length());
+        if (size == 1) {
+            os << "[ " << hasVal(row[0]) << " ]";
+        } else {
+            os << '[';
+            for (size_t i{}; i < size; i++) os << hasVal(row[i]) << (i != (size - 1) ? ", " : "");
+            os << "]\n";
         }
 
-        if (size == 1) {
-            os << "[ ";
-            if (row.at(0).has_value())
-                os << row.at(0).value();
-            else
-                os << "None";
-            os << " ]\n";
-        } else
-            for (size_t i{}; i < row.size(); i++) {
-                if (i == 0) {
-                    os << "⎡ " << std::setw(static_cast<int>(maxWidth)) << hasVal(row.at(i)) << " ⎤\n";
-                } else if (i == row.size() - 1) {
-                    os << "⎣ " << std::setw(static_cast<int>(maxWidth)) << hasVal(row.at(i)) << " ⎦\n";
-
-                } else {
-                    os << "| " << std::setw(static_cast<int>(maxWidth)) << hasVal(row.at(i)) << " |\n";
-                }
-            }
         return os;
     }
 
