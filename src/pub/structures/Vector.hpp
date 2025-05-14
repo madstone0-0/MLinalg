@@ -19,8 +19,8 @@
 
 #include "../Concepts.hpp"
 #include "Aliases.hpp"
-#include "VectorOps.hpp"
 #include "Matrix.hpp"
+#include "VectorOps.hpp"
 
 using std::vector, std::array, std::optional, std::unique_ptr, std::shared_ptr;
 
@@ -554,7 +554,7 @@ namespace mlinalg::structures {
             return vectorEqual(*lhs.row, *rhs.row);
         }
 
-        ~Vector() { row.reset(); }
+        ~Vector() = default;
 
         /**
          * @brief Access the ith element of the vector

@@ -4,8 +4,13 @@
  */
 
 #pragma once
+#include <algorithm>
+#include <functional>
+#include <numeric>
 #include <optional>
 #include <random>
+#include <stdexcept>
+#include <type_traits>
 #include <variant>
 #include <vector>
 
@@ -14,6 +19,7 @@
 
 namespace mlinalg::structures::helpers {
     using std::vector;
+    namespace rg = std::ranges;
 
     template <Number number, int m, int n>
     using TransposeVariant = std::variant<Vector<number, m>, Matrix<number, n, m>>;
@@ -107,6 +113,55 @@ namespace mlinalg::structures::helpers {
     template <Number num, int m, int n>
     Matrix<num, Dynamic, Dynamic> toDynamic(const Matrix<num, m, n> matrix) {
         return Matrix<num, Dynamic, Dynamic>{matrix};
+    }
+
+    template <Number to, Number from, int m, int n>
+    Matrix<to, m, n> cast(const Matrix<from, m, n>& A) {
+        if constexpr (!std::is_convertible_v<from, to>) {
+            throw std::invalid_argument{"Cannot convert to type"};
+        }
+        auto [nR, nC] = A.shape();
+        Matrix<to, m, n> M(nR, nC);
+        for (size_t i{}; i < nR; i++)
+            for (size_t j{}; j < nC; j++) M(i, j) = to(A(i, j));
+        return M;
+    }
+
+    template <Number to, Number from, int m>
+    Vector<to, m> cast(const Vector<from, m>& v) {
+        if constexpr (!std::is_convertible_v<from, to>) {
+            throw std::invalid_argument{"Cannot convert to type"};
+        }
+        auto size = v.size();
+        Vector<to, m> w(size);
+        for (size_t i{}; i < size; i++) w[i] = to(v[i]);
+        return v;
+    }
+
+    // https://stackoverflow.com/a/17074810
+    template <typename T, typename Compare = std::less<>>
+    vector<size_t> sortPermutation(const vector<T>& vec, Compare cmp = Compare()) {
+        vector<size_t> res(vec.size());
+        std::iota(res.begin(), res.end(), 0);
+        std::sort(res.begin(), res.end(), [&vec, &cmp](size_t i, size_t j) { return cmp(vec[i], vec[j]); });
+        return res;
+    }
+
+    template <typename T>
+    void applySortPermutation(vector<T>& vec, const vector<size_t>& permutation) {
+        vector<bool> done(vec.size());
+        for (size_t i{}; i < vec.size(); i++) {
+            if (done[i]) continue;
+            done[i] = true;
+            size_t prevJ{i};
+            size_t j{permutation[i]};
+            while (i != j) {
+                std::swap(vec[prevJ], vec[j]);
+                done[j] = true;
+                prevJ = j;
+                j = permutation[j];
+            }
+        }
     }
 
 }  // namespace mlinalg::structures::helpers
