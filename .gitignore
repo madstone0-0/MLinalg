@@ -13,3 +13,4 @@ docs
 *.png
 compile_commands.json
 test/dummy.cpp
+*.ipynb
