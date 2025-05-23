@@ -27,18 +27,21 @@ using std::pair, std::invalid_argument, std::string, std::is_same_v, std::runtim
 namespace rg = std::ranges;
 
 namespace mlinalg::structures {
+    using namespace mlinalg::stacktrace;
 
     template <Container T, Container U>
     void checkMatrixOperandRowSize(const T& matrix, const U& otherMatrix) {
-        if (matrix.size() != otherMatrix.size()) throw invalid_argument("Matrices must be of the same dimensions");
+        if (matrix.size() != otherMatrix.size())
+            throw StackError<invalid_argument>("Matrices must be of the same dimensions");
     }
 
     template <Container T, Container U>
     void checkMatrixOperandSize(const T& matrix, const U& otherMatrix) {
-        if (matrix.size() != otherMatrix.size()) throw invalid_argument("Matrices must be of the same dimensions");
+        if (matrix.size() != otherMatrix.size())
+            throw StackError<invalid_argument>("Matrices must be of the same dimensions");
 
         if (matrix[0].size() != otherMatrix[0].size())
-            throw invalid_argument("Matrices must be of the same dimensions");
+            throw StackError<invalid_argument>("Matrices must be of the same dimensions");
     }
 
     template <Container T>
@@ -150,7 +153,7 @@ namespace mlinalg::structures {
 
     template <Number number, int m, int n, Container T>
     void matrixScalarDivI(T& matrix, const number& scalar) {
-        if (fuzzyCompare(scalar, number(0))) throw std::domain_error("Division by zero");
+        if (fuzzyCompare(scalar, number(0))) throw StackError<std::domain_error>("Division by zero");
         const auto& nRows = matrix.size();
         const auto& nCols = matrix.at(0).size();
         for (size_t i{}; i < nRows; i++)
@@ -242,7 +245,7 @@ namespace mlinalg::structures {
     template <Number number, int m, int n, int mRes = m, Container T>
     Vector<number, mRes> multMatByVec(const T& matrix, const Vector<number, n>& vec) {
         if (matrix.at(0).size() != vec.size())
-            throw invalid_argument("The columns of the matrix must be equal to the size of the vector");
+            throw StackError<invalid_argument>("The columns of the matrix must be equal to the size of the vector");
 
         constexpr int vSize = (m == Dynamic || n == Dynamic) ? Dynamic : m;
         const auto& nRows = matrix.size();
@@ -275,7 +278,8 @@ namespace mlinalg::structures {
     template <Number number, int m, int n, int mOther, int nOther, Container T, Container U>
     Matrix<number, m, nOther> multMatByDef(const T& matrix, const U& otherMatrix) {
         if (matrix.at(0).size() != static_cast<size_t>(otherMatrix.size()))
-            throw invalid_argument("The columns of the first matrix must be equal to the rows of the second matrix");
+            throw StackError<invalid_argument>(
+                "The columns of the first matrix must be equal to the rows of the second matrix");
 
         constexpr bool isDynamic = m == Dynamic || n == Dynamic || mOther == Dynamic || nOther == Dynamic;
 
@@ -305,7 +309,8 @@ namespace mlinalg::structures {
     template <Number number, int m, int n, int mOther, int nOther, Container T, Container U>
     Matrix<number, m, nOther> multMatRowWise(const T& matrix, const U& otherMatrix) {
         if (matrix[0].size() != static_cast<size_t>(otherMatrix.size()))
-            throw invalid_argument("The columns of the first matrix must be equal to the rows of the second matrix");
+            throw StackError<invalid_argument>(
+                "The columns of the first matrix must be equal to the rows of the second matrix");
 
         const int nRows = matrix.size();
         const int nCols = matrix[0].size();
@@ -338,7 +343,8 @@ namespace mlinalg::structures {
         requires(is_same_v<number, float>)
     {
         if (matrix[0].size() != static_cast<size_t>(otherMatrix.size()))
-            throw invalid_argument("The columns of the first matrix must be equal to the rows of the second matrix");
+            throw StackError<invalid_argument>(
+                "The columns of the first matrix must be equal to the rows of the second matrix");
 
         const int nRows = matrix.size();
         const int nCols = matrix[0].size();
@@ -390,7 +396,8 @@ namespace mlinalg::structures {
         requires(is_same_v<number, double>)
     {
         if (matrix[0].size() != static_cast<size_t>(otherMatrix.size()))
-            throw invalid_argument("The columns of the first matrix must be equal to the rows of the second matrix");
+            throw StackError<invalid_argument>(
+                "The columns of the first matrix must be equal to the rows of the second matrix");
 
         const size_t nRows = matrix.size();
         const size_t nCols = matrix[0].size();
@@ -490,8 +497,8 @@ namespace mlinalg::structures {
         const auto rows = matrix.size();
         const auto cols = matrix.at(0).size();
 
-        if (i > rows || j > cols) throw std::out_of_range("View dimensions exceed matrix size");
-        if (rowOffset >= rows || colOffset >= cols) throw std::out_of_range("Offset out of range");
+        if (i > rows || j > cols) throw StackError<std::out_of_range>("View dimensions exceed matrix size");
+        if (rowOffset >= rows || colOffset >= cols) throw StackError<std::out_of_range>("Offset out of range");
         return MatrixView<number, m, n>{&matrix, rowOffset, colOffset, rowStride, colStride};
     }
 
@@ -503,12 +510,13 @@ namespace mlinalg::structures {
     template <int i0, int i1, int j0, int j1, Number number, int m, int n, Container T>
     Matrix<number, (i1 - i0), (j1 - j0)> MatrixSlice(const T& matrix) {
         if constexpr (rg::any_of(array<int, 4>{i0, i1, j0, j1}, [](auto x) { return x < 0; }))
-            throw invalid_argument("Negative slicing not supported");
+            throw StackError<invalid_argument>("Negative slicing not supported");
 
         if constexpr (rg::any_of(array<size_t, 2>{i1, j1}, [](auto x) { return x > n; }))
-            throw invalid_argument("Cannot slice past matrix bounds");
+            throw StackError<invalid_argument>("Cannot slice past matrix bounds");
 
-        if constexpr (i0 > i1 || j0 > j1) throw invalid_argument("Start position cannot be greater than end position");
+        if constexpr (i0 > i1 || j0 > j1)
+            throw StackError<invalid_argument>("Start position cannot be greater than end position");
         constexpr int mSize{i1 - i0};
         constexpr int nSize{j1 - j0};
         Matrix<number, mSize, nSize> res{};
@@ -536,11 +544,12 @@ namespace mlinalg::structures {
         const auto& n = matrix.at(0).size();
 
         if (rg::any_of(array<size_t, 4>{i0, i1, j0, j1}, [](auto x) { return x < 0; }))
-            throw invalid_argument("Negative slicing not supported");
+            throw StackError<invalid_argument>("Negative slicing not supported");
 
-        if (i1 > m || j1 > n) throw invalid_argument("Cannot slice past matrix bounds");
+        if (i1 > m || j1 > n) throw StackError<invalid_argument>("Cannot slice past matrix bounds");
 
-        if (i0 > i1 || j0 > j1) throw invalid_argument("Start position cannot be greater than end position");
+        if (i0 > i1 || j0 > j1)
+            throw StackError<invalid_argument>("Start position cannot be greater than end position");
         Matrix<number, Dynamic, Dynamic> res(i1 - i0, j1 - j0);
 
         auto isInRange = [](int x0, int x1, int y) { return y >= x0 && y < x1; };
@@ -714,7 +723,8 @@ namespace mlinalg::structures {
     template <Number number, int m, int n, int nOther, Container T, Container U>
     Matrix<number, m, nOther> multMatStrassen(const T& matrix, const U& otherMatrix) {
         if (matrix.at(0).size() != otherMatrix.size())
-            throw invalid_argument("The columns of the first matrix must be equal to the rows of the second matrix");
+            throw StackError<invalid_argument>(
+                "The columns of the first matrix must be equal to the rows of the second matrix");
 
         return strassen<number, m, n, nOther>(matrix, otherMatrix);
     }
@@ -831,8 +841,8 @@ namespace mlinalg::structures {
                               Matrix<number, m - 1, n - 1>> {
         const int& nRows = matrix.size();
         const int& nCols = matrix.at(0).size();
-        if (nRows != nCols) throw runtime_error("Matrix must be square to find a subset");
-        if (nRows <= 1 || nCols <= 1) throw runtime_error("Matrix must be at least 2x2 to find a subset");
+        if (nRows != nCols) throw StackError<runtime_error>("Matrix must be square to find a subset");
+        if (nRows <= 1 || nCols <= 1) throw StackError<runtime_error>("Matrix must be at least 2x2 to find a subset");
 
         constexpr auto isDynamic = m == Dynamic || n == Dynamic;
 
@@ -976,7 +986,7 @@ namespace mlinalg::structures {
     number MatrixTrace(const T& matrix) {
         const auto nR = matrix.size();
         const auto nC = matrix.at(0).size();
-        if (nR != nC) throw invalid_argument("Matrix must be square to calculate trace");
+        if (nR != nC) throw StackError<invalid_argument>("Matrix must be square to calculate trace");
         number sum{};
         for (size_t i{}; i < nR; i++) {
             sum += matrix.at(i).at(i);

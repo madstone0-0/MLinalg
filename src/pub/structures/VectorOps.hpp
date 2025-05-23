@@ -13,9 +13,11 @@
 #include <string>
 
 #include "../Concepts.hpp"
+#include "../Helpers.hpp"
 #include "Aliases.hpp"
 
 namespace mlinalg::structures {
+    using namespace mlinalg::stacktrace;
     template <Number number, int n>
     class Vector;
 
@@ -24,7 +26,7 @@ namespace mlinalg::structures {
 
     template <Container T, Container U>
     void checkOperandSize(const T& row, const U& otherRow) {
-        if (row.size() != otherRow.size()) throw std::invalid_argument("Vectors must be of the same size");
+        if (row.size() != otherRow.size()) throw StackError<std::invalid_argument>("Vectors must be of the same size");
     }
 
     template <Container T, Container U>
@@ -98,7 +100,7 @@ namespace mlinalg::structures {
 
     template <Number number, int n, Container T>
     Vector<number, n> vectorScalarDiv(const T& row, const number& scalar) {
-        if (fuzzyCompare(scalar, number(0))) throw std::domain_error("Division by zero");
+        if (fuzzyCompare(scalar, number(0))) throw StackError<std::domain_error>("Division by zero");
         constexpr int vSize = (n != Dynamic) ? n : Dynamic;
         auto size = row.size();
         Vector<number, vSize> res(size);
@@ -118,7 +120,7 @@ namespace mlinalg::structures {
 
     template <Number number, int n, int otherN>
     number vectorVectorMult(const Vector<number, n>& vec, const Vector<number, otherN>& otherVec) {
-        if (vec.size() != otherVec.size()) throw std::invalid_argument("Vectors must be of the same size");
+        if (vec.size() != otherVec.size()) throw StackError<std::invalid_argument>("Vectors must be of the same size");
 
         number sum{0};
         for (size_t i{}; i < vec.size(); i++) {
@@ -177,13 +179,13 @@ namespace mlinalg::structures {
 
     template <Number number, int n, int otherN>
     double vectorDot(const Vector<number, n>& v, const Vector<number, otherN>& w) {
-        if (v.size() != w.size()) throw std::invalid_argument("Vectors must be of the same size");
+        if (v.size() != w.size()) throw StackError<std::invalid_argument>("Vectors must be of the same size");
         return (v.T() * w).at(0);
     }
 
     template <Number number, int n, int otherN>
     double vectorDist(const Vector<number, n>& v, const Vector<number, otherN>& w) {
-        if (v.size() != w.size()) throw std::invalid_argument("Vectors must be of the same size");
+        if (v.size() != w.size()) throw StackError<std::invalid_argument>("Vectors must be of the same size");
         auto diff = v - w;
         return std::sqrt(diff.dot(diff));
     }
@@ -236,7 +238,8 @@ namespace mlinalg::structures {
      */
     template <Number number, int n, Container T>
     double WeightedL2Norm(const T& row, const T& otherRow) {
-        if (otherRow.size() != row.size()) throw std::invalid_argument("Matrix and vector must have the same size");
+        if (otherRow.size() != row.size())
+            throw StackError<std::invalid_argument>("Matrix and vector must have the same size");
         double sum{};
         for (size_t i{}; i < otherRow.size(); i++) {
             const auto& val = otherRow[i] * (row[i] * row[i]);

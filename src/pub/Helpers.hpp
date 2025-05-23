@@ -34,12 +34,15 @@ namespace mlinalg::stacktrace {
     template <Exception E = std::runtime_error>
     class StackError : public E {
        public:
-#ifdef DEBUG
         StackError(const std::string& msg, const boost::stacktrace::stacktrace& st = boost::stacktrace::stacktrace())
-            : E(makeMsg(msg, st)) {}
+            : E(
+#ifdef DEBUG
+                  makeMsg(msg, st)
 #else
-        StackError(const std::string& msg) : E(msg) {}
-#endif  // DEBUG
+                  msg
+#endif
+              ) {
+        }
 
        private:
         std::string makeMsg(const std::string& msg, const boost::stacktrace::stacktrace& st) {
