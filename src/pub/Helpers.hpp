@@ -4,12 +4,18 @@
  */
 
 #pragma once
+#define BOOST_STACKTRACE_USE_ADDR2LINE
 #include <algorithm>
+#include <boost/stacktrace.hpp>
+#include <concepts>
+#include <exception>
 #include <functional>
 #include <numeric>
 #include <optional>
 #include <random>
+#include <sstream>
 #include <stdexcept>
+#include <string>
 #include <type_traits>
 #include <variant>
 #include <vector>
@@ -17,7 +23,35 @@
 #include "Concepts.hpp"
 #include "structures/Aliases.hpp"
 
+namespace mlinalg::stacktrace {
+
+    template <typename E>
+    concept Exception = requires {
+        std::derived_from<E, std::exception>;
+        std::constructible_from<E, std::string>;
+    };
+
+    template <Exception E = std::runtime_error>
+    class StackError : public E {
+       public:
+#ifdef DEBUG
+        StackError(const std::string& msg, const boost::stacktrace::stacktrace& st = boost::stacktrace::stacktrace())
+            : E(makeMsg(msg, st)) {}
+#else
+        StackError(const std::string& msg) : E(msg) {}
+#endif  // DEBUG
+
+       private:
+        std::string makeMsg(const std::string& msg, const boost::stacktrace::stacktrace& st) {
+            std::ostringstream oss;
+            oss << msg << "\n" << st;
+            return oss.str();
+        }
+    };
+}  // namespace mlinalg::stacktrace
+
 namespace mlinalg::structures::helpers {
+    using namespace mlinalg::stacktrace;
     using std::vector;
     namespace rg = std::ranges;
 
@@ -118,7 +152,7 @@ namespace mlinalg::structures::helpers {
     template <Number to, Number from, int m, int n>
     Matrix<to, m, n> cast(const Matrix<from, m, n>& A) {
         if constexpr (!std::is_convertible_v<from, to>) {
-            throw std::invalid_argument{"Cannot convert to type"};
+            throw StackError<std::invalid_argument>{"Cannot convert to type"};
         }
         auto [nR, nC] = A.shape();
         Matrix<to, m, n> M(nR, nC);
@@ -130,7 +164,7 @@ namespace mlinalg::structures::helpers {
     template <Number to, Number from, int m>
     Vector<to, m> cast(const Vector<from, m>& v) {
         if constexpr (!std::is_convertible_v<from, to>) {
-            throw std::invalid_argument{"Cannot convert to type"};
+            throw StackError<std::invalid_argument>{"Cannot convert to type"};
         }
         auto size = v.size();
         Vector<to, m> w(size);

@@ -53,10 +53,12 @@ if(STRASSEN)
 endif()
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_link_options(-rdynamic -Wl,--export-dynamic)
+endif()
 add_compile_options(-Wall -Wextra -Wfloat-equal -Werror=return-type)
 # add_compile_options(-Werror=return-type)
 set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -fsanitize=address")
-# set(CMAKE_CXX_FLAGS_DEBUG "-ggdb")
 
 set(CMAKE_CXX_FLAGS_RELEASE "-Os -fno-ident")
 set(CMAKE_CXX_FLAGS_PROFILE "-g -pg")
@@ -72,3 +74,17 @@ find_package(Catch2 3 REQUIRED)
 
 add_subdirectory(src)
 add_subdirectory(test)
+
+#################
+# Boost         #
+#################
+# For debug builds, we need to link against the boost stacktrace library
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    find_package(Boost REQUIRED)
+    if(Boost_FOUND)
+        message(STATUS "Boost stacktrace found")
+        target_link_libraries(mlinalg INTERFACE boost_stacktrace_addr2line dl)
+    else()
+        message(WARNING "Boost stacktrace not found")
+    endif()
+endif()
