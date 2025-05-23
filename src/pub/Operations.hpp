@@ -42,7 +42,7 @@ namespace mlinalg {
     template <Number num, int n>
     Vector<num, n> extractSolutionVector(const Vector<optional<num>, n>& solutions) {
         if (rg::any_of(solutions, [](const auto& val) { return !val.has_value(); })) {
-            throw std::runtime_error("Cannot extract solution vector from incomplete solutions");
+            throw StackError<std::runtime_error>("Cannot extract solution vector from incomplete solutions");
         }
         const auto size = solutions.size();
 
@@ -455,7 +455,7 @@ namespace mlinalg {
     template <Number number, int n>
     bool isSingular(const Matrix<number, n, n>& A) {
         const auto [nR, nC] = A.shape();
-        if (nR != nC) throw std::invalid_argument{"Matrix A must be square"};
+        if (nR != nC) throw StackError<std::invalid_argument>{"Matrix A must be square"};
 
         const auto& [L, U] = LU(A);
 
@@ -732,7 +732,7 @@ namespace mlinalg {
     template <Number number, int n>
     auto LU(const Matrix<number, n, n>& A) {
         const auto [nR, nC] = A.shape();
-        if (nR != nC) throw std::invalid_argument{"Matrix A must be square"};
+        if (nR != nC) throw StackError<std::invalid_argument>{"Matrix A must be square"};
         const int numRows = nR;
         auto L = matrixZeros<number, n, n>(numRows, numRows);
         auto U = A;
@@ -798,7 +798,7 @@ namespace mlinalg {
         const auto [nR, nC] = A.shape();
         const int numRows = nR;
         const int numCols = nC;
-        if (numRows != numCols) throw std::invalid_argument{"Matrix A must be square"};
+        if (numRows != numCols) throw StackError<std::invalid_argument>{"Matrix A must be square"};
 
         auto U = matrixZeros<number, n, n>(numRows, numRows);
         auto R = matrixZeros<number, n, n>(numRows, numRows);
@@ -821,7 +821,7 @@ namespace mlinalg {
             const auto& diag = wIN2 - sum;
             R(i, i) = sqrt(std::max(diag, EPSILON));
 
-            if (fuzzyCompare(R(i, i), number(0))) throw std::logic_error{"Matrix A is singular"};
+            if (fuzzyCompare(R(i, i), number(0))) throw StackError<std::logic_error>{"Matrix A is singular"};
 
             // Compute vector U_i using forward substitution
             auto vec = vectorZeros<number, n>(numRows);
@@ -1083,7 +1083,8 @@ namespace mlinalg {
         // TODO: Check for underdetermined systems, find the general solution and calculate the values
         // that satisfy the system with the minimum-norm solution.
         if (isSystemUnderdetermined(reducedEchelon)) {
-            throw std::runtime_error("Finding the solutions to an underdetermined system is not implemented");
+            throw StackError<std::runtime_error>(
+                "Finding the solutions to an underdetermined system is not implemented");
         } else {
             for (auto i{solutions.rbegin()}; i != solutions.rend(); i++) {
                 try {
@@ -1102,7 +1103,7 @@ namespace mlinalg {
         const auto [nR, nC] = A.shape();
         const auto& zero{vectorZeros<number, m>((int)nR)};
         const auto& x0 = findSolutions(A, zero);
-        if (!x0.has_value()) throw runtime_error{"Cannot solve Ax = 0"};
+        if (!x0.has_value()) throw StackError<runtime_error>{"Cannot solve Ax = 0"};
         const auto& x = extractSolutionVector(x0.value());
         return x;
     }
@@ -1143,7 +1144,7 @@ namespace mlinalg {
         const auto [nR, nC] = A.shape();
         const int numRows = nR;
         const int numCols = nC;
-        if (numRows != numCols) throw std::invalid_argument{"Matrix A must be square"};
+        if (numRows != numCols) throw StackError<std::invalid_argument>{"Matrix A must be square"};
 
         // Using the iterative power method
         auto x0{vectorOnes<number, m>(numRows)};
@@ -1182,7 +1183,7 @@ namespace mlinalg {
         const int numRows = nR;
         const int numCols = nC;
 
-        if (numRows != numCols) throw std::invalid_argument{"Matrix A must be square"};
+        if (numRows != numCols) throw StackError<std::invalid_argument>{"Matrix A must be square"};
         auto x0{vectorRandom<number, n>(numRows, 0, 1, seed)};
         number l0{0};
 
@@ -1226,7 +1227,7 @@ namespace mlinalg {
         const int numRows = nR;
         const int numCols = nC;
 
-        if (numRows != numCols) throw std::invalid_argument{"Matrix A must be square"};
+        if (numRows != numCols) throw StackError<std::invalid_argument>{"Matrix A must be square"};
 
         auto x0{vectorRandom<number, n>(numRows, 0, 1, seed)};
         x0 = (1 / x0.length()) * x0;
@@ -1240,11 +1241,11 @@ namespace mlinalg {
             const auto& [L, U] = LU(A);
 
             const auto& zi = findSolutions(L, x0);
-            if (!zi.has_value()) throw std::runtime_error{"Cannot find solutions to L"};
+            if (!zi.has_value()) throw StackError<std::runtime_error>{"Cannot find solutions to L"};
             const auto& ziExt = extractSolutionVector(zi.value());
 
             const auto& y = findSolutions(U, ziExt);
-            if (!y.has_value()) throw std::runtime_error{"Cannot find solutions to U"};
+            if (!y.has_value()) throw StackError<std::runtime_error>{"Cannot find solutions to U"};
             const auto& yi = extractSolutionVector<number, n>(y.value());
 
             x0 = (1 / yi.length()) * yi;
@@ -1262,8 +1263,8 @@ namespace mlinalg {
         const auto [nR, nC] = A.shape();
         const int numRows = nR;
         const int numCols = nC;
-        if (numRows != numCols) throw std::invalid_argument{"Matrix A must be square"};
-        if (isSingular(A)) throw std::invalid_argument{"Matrix A is singular"};
+        if (numRows != numCols) throw StackError<std::invalid_argument>{"Matrix A must be square"};
+        if (isSingular(A)) throw StackError<std::invalid_argument>{"Matrix A is singular"};
         vector<number> values;
         vector<Vector<number, n>> vectors;
 
@@ -1303,7 +1304,7 @@ namespace mlinalg {
     template <Number number, int n>
     Matrix<number, n, n> diag(const Matrix<number, n, n>& matrix) {
         const auto [nR, nC] = matrix.shape();
-        if (nR != nC) throw runtime_error("Matrix must be square to find a diagonal");
+        if (nR != nC) throw StackError<runtime_error>("Matrix must be square to find a diagonal");
 
         constexpr auto isDynamic = n == Dynamic;
 
@@ -1321,7 +1322,7 @@ namespace mlinalg {
         Matrix<number, n, n> res{n, n};
         size_t i{};
         for (const auto& entry : entries) {
-            if (i >= n) throw std::out_of_range{"Too many entries for diagonal matrix"};
+            if (i >= n) throw StackError<std::out_of_range>{"Too many entries for diagonal matrix"};
             res(i, i) = entry;
             i++;
         }
@@ -1331,7 +1332,7 @@ namespace mlinalg {
     template <int n, Number number, typename Itr>
     Matrix<number, n, n> diagonal(Itr begin, Itr end) {
         auto dist = std::distance(begin, end);
-        if (n != dist) throw std::out_of_range{"Too many entries for diagonal matrix"};
+        if (n != dist) throw StackError<std::out_of_range>{"Too many entries for diagonal matrix"};
         Matrix<number, n, n> res(n, n);
 
         size_t i{};
@@ -1367,7 +1368,7 @@ namespace mlinalg {
     template <Number number, int n>
     Matrix<number, n, n> houseHolder(const Vector<number, n>& v) {
         if (isZeroVector(v))
-            throw std::logic_error{"Vector v cannot be the zero vector"};  // v cannot be the zero vector
+            throw StackError<std::logic_error>{"Vector v cannot be the zero vector"};  // v cannot be the zero vector
         const auto size = v.size();
         const auto& vT = v.T();
         auto P{I<number, n>(size)};
