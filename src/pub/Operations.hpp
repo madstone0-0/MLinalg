@@ -1118,11 +1118,11 @@ namespace mlinalg {
     optional<Matrix<number, m, m>> inverse(const LinearSystem<number, m, m>& system) {
         auto det = system.det();
         if (fuzzyCompare(det, number(0))) return nullopt;
-        if (m == 2)
+        const auto& [nRows, nCols] = system.shape();
+        if (nRows == 2)
             return (1. / det) * Matrix<number, m, m>{{system.at(1).at(1), -system.at(0).at(1)},
                                                      {-system.at(1).at(0), system.at(0).at(0)}};
         else {
-            const auto& nRows = system.numRows();
             auto identity = I<number, m>(nRows);
             auto augmented = system.augment(identity);
             auto rrefAug = rref(augmented);
