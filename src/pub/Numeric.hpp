@@ -19,7 +19,7 @@ namespace mlinalg {
      * @brief Epsilon value for floating point comparison
      */
     static constexpr double EPSILON = std::numeric_limits<double>::epsilon();
-    static constexpr double EPSILON_FIXED = 1.0e-08;
+    static constexpr double EPSILON_FIXED = 1.0e-05;
 
     template <typename T>
     struct is_floating_point_or_complex
