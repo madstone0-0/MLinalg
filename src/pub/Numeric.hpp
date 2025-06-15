@@ -35,7 +35,7 @@ namespace mlinalg {
      * @return True if the numbers are equal within EPSILON, false otherwise
      */
     template <Number number>
-    constexpr bool fuzzyCompare(const number& a, const number& b) {
+    constexpr bool fuzzyCompare(const number& a, const number& b, double tolerance = EPSILON_FIXED) {
         // Check if either value is infinity.
         const auto& absA{abs(a)};
         const auto& absB{abs(b)};
@@ -49,13 +49,13 @@ namespace mlinalg {
             if (abs(diff) <= EPSILON * std::max(abs(static_cast<double>(a)), abs(static_cast<double>(b))))
                 return true;
             else
-                return abs(diff) <= EPSILON_FIXED;
+                return abs(diff) <= tolerance;
         } else {
             auto diff{a - b};
             if (abs(diff) <= EPSILON * std::max(abs(a), abs(b)))
                 return true;
             else
-                return abs(diff) <= EPSILON_FIXED;
+                return abs(diff) <= tolerance;
         }
     }
 }  // namespace mlinalg

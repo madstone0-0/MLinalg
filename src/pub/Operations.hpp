@@ -5,11 +5,14 @@
  */
 
 #pragma once
+#include <sys/types.h>
+
 #include <algorithm>
 #include <array>
 #include <cassert>
 #include <cmath>
 #include <cstddef>
+#include <cstdint>
 #include <cstdlib>
 #include <functional>
 #include <iterator>
@@ -18,6 +21,7 @@
 #include <set>
 #include <stdexcept>
 #include <tuple>
+#include <type_traits>
 #include <vector>
 
 #include "Concepts.hpp"
@@ -534,32 +538,6 @@ namespace mlinalg {
         return rspace.size();
     }
 
-    template <Number number>
-    auto LU(const Matrix<number, 1, 1>& A);
-
-    template <Number number, int n>
-    auto LU(const Matrix<number, n, n>& A);
-
-    /**
-     * @brief Checks if a matrix is singular, using LU decomposition to check if any
-     * of the diagonal elements of U are zero, i.e. indicating the determinant is zero.
-     *
-     * @param A
-     * @return
-     */
-    template <Number number, int n>
-    bool isSingular(const Matrix<number, n, n>& A) {
-        const auto [nR, nC] = A.shape();
-        if (nR != nC) throw StackError<std::invalid_argument>{"Matrix A must be square"};
-
-        const auto& [L, U] = LU(A);
-
-        for (int i = 0; i < nR; ++i) {
-            if (std::abs(U(i, i)) < EPSILON) return true;
-        }
-        return false;
-    }
-
     /**
      * @brief Determined if a linear system in the form
      * [A | b]
@@ -895,6 +873,70 @@ namespace mlinalg {
         }
     }
 
+    enum class QRType : uint8_t { Full, Thin };
+
+    template <QRType type, Number number, int m, int n>
+    using QType = std::conditional_t<type == QRType::Full, Matrix<number, m, m>, Matrix<number, m, std::min(m, n)>>;
+
+    template <QRType type, Number number, int m, int n>
+    using RType = std::conditional_t<type == QRType::Full, Matrix<number, m, n>, Matrix<number, std::min(m, n), n>>;
+
+    template <QRType type, Number number, int m, int n>
+    using QRPair = pair<QType<type, number, m, n>, RType<type, number, m, n>>;
+
+    /**
+     * @brief Extend a set of orthonormal vectors to form a complete orthonormal basis.
+     *
+     * Given k orthonormal vectors in R^m (where k < m), this function finds
+     * additional (m-k) orthonormal vectors to complete the basis for R^m.
+     *
+     * @param orthonormalVectors The existing orthonormal vectors (k vectors in R^m)
+     * @param dimension The target dimension m
+     * @return Complete set of m orthonormal vectors
+     */
+    template <Number number, int m>
+    vector<Vector<number, m>> extendToCompleteBasis(const vector<Vector<number, m>>& qs, size_t dim) {
+        vector<Vector<number, m>> basis = qs;
+        auto n = qs.size();
+
+        // We need (dimension - currentSize) more vectors
+        for (size_t i = n; i < dim; ++i) {
+            // Start with a standard basis vector
+            Vector<number, m> candidate(dim);
+
+            // Try each standard basis vector until we find one that's not
+            // in the span of existing vectors
+            bool found = false;
+            for (size_t basisIdx = 0; basisIdx < dim && !found; ++basisIdx) {
+                // Create e_basisIndex (standard basis vector)
+                candidate = Vector<number, m>{};
+                candidate[basisIdx] = number(1);
+
+                // Orthogonalize against all existing vectors using Gram-Schmidt
+                Vector<number, m> orth = candidate;
+                for (const auto& v : basis) {
+                    number proj = orth.dot(v);
+                    orth -= proj * v;
+                }
+
+                // Check if the result is non-zero (not in span of existing vectors)
+                number norm = orth.length();
+                if (!fuzzyCompare(norm, number(0))) {
+                    // Normalize and add to basis
+                    basis.emplace_back(orth / norm);
+                    found = true;
+                }
+            }
+
+            if (!found) {
+                throw StackError<std::logic_error>{
+                    "Failed to extend to complete orthonormal basis - this shouldn't happen"};
+            }
+        }
+
+        return basis;
+    }
+
     /**
      * @brief Find an orthonormal basis for the column space of a matrix using the Gram-Schmidt process.
      *
@@ -920,12 +962,14 @@ namespace mlinalg {
      * @param R Optional output matrix to store the upper triangular matrix from the Gram-Schmidt process.
      * @return A vector of orthonormal vectors that form the basis for the column space of A.
      */
-    template <Number number, int m, int n>
-    vector<Vector<number, m>> GSOrth(const Matrix<number, m, n>& A, Matrix<number, n, n>* R = nullptr) {
+    template <QRType type, Number number, int m, int n>
+    vector<Vector<number, m>> GSOrth(const Matrix<number, m, n>& A, RType<type, number, m, n>* R = nullptr) {
         const auto& [nRows, nCols] = A.shape();
         const auto& asCols = A.colToVectorSet();
+
         vector<Vector<number, m>> qs;
         qs.reserve(nCols);
+
         const auto& v0 = asCols[0];
         const auto& norm0 = v0.length();
         qs.push_back(v0 / norm0);
@@ -953,6 +997,23 @@ namespace mlinalg {
             }
             qs.push_back(vi / norm);
         }
+
+        if constexpr (type == QRType::Full) {
+            auto fullRows = std::min(nRows, nCols);
+            if (nRows > nCols) {
+                // If the matrix is full, we need to add orthogonal vectors to fill the remaining rows
+                const auto& completeBasis = extendToCompleteBasis<number, m>(qs, nRows);
+                qs.clear();
+                qs.reserve(nRows);
+                for (const auto& vec : completeBasis) {
+                    qs.emplace_back(vec);
+                }
+
+                if (R)
+                    for (size_t i{nCols}; i < fullRows; ++i) R->at(i, i) = 0;
+            }
+        }
+
         return qs;
     }
 
@@ -990,18 +1051,278 @@ namespace mlinalg {
      * @param A The square matrix to decompose.
      * @return A pair containing the orthogonal matrix Q and the upper triangular matrix R.
      */
-    template <Number number, int n>
-    auto QR(const Matrix<number, n, n>& A) {
+    template <QRType type, Number number, int m, int n>
+    QRPair<type, number, m, n> gsQR(const Matrix<number, m, n>& A) {
         const auto [nR, nC] = A.shape();
-        const int numRows = nR;
-        const int numCols = nC;
-        if (numRows != numCols) throw StackError<std::invalid_argument>{"Matrix A must be square"};
 
-        auto R = matrixZeros<number, n, n>(numRows, numRows);
+        if constexpr (type == QRType::Full) {
+            auto R = RType<type, number, m, n>(nR, nC);
 
-        const auto& Q = helpers::fromColVectorSet<number, n, n>(GSOrth<number, n, n>(A, &R));
+            const auto& qs = GSOrth<type>(A, &R);
+            // If the matrix is full, we need to create a square Q matrix
+            auto Q = I<number, m>(nR);
+            for (size_t i{}; i < nC; ++i) {
+                for (size_t j{}; j < nR; ++j) {
+                    Q(j, i) = qs[i][j];
+                }
+            }
+            return {Q, R};
+        } else {
+            auto R = RType<type, number, m, n>(nR, std::min(nR, nC));
 
-        return std::pair{Q, R};
+            const auto& qs = GSOrth<type>(A, &R);
+            // For thin QR decomposition, we can return the orthogonal matrix directly
+            auto Q = QType<type, number, m, n>(nR, std::min(nR, nC));
+            for (size_t i{}; i < nC; ++i) {
+                for (size_t j{}; j < nR; ++j) {
+                    Q(j, i) = qs[i][j];
+                }
+            }
+            return {Q, R};
+        }
+    }
+
+    /**
+     * @brief Find the Householder matrix for a given vector.
+     *
+     * The Householder matrix is used to reflect a vector across a hyperplane. And is
+     * defined as:
+     *
+     * \f[
+     * P = I - 2 \frac{\mathbf{v}\mathbf{v}^T}{\mathbf{v}^T \mathbf{v}}
+     * \f]
+     *
+     * @param v The vector to find the Householder matrix for.
+     * @return The Householder matrix.
+     */
+    template <Number number, int n>
+    Matrix<number, n, n> houseHolder(const Vector<number, n>& v) {
+        if (isZeroVector(v))
+            throw StackError<std::logic_error>{"Vector v cannot be the zero vector"};  // v cannot be the zero vector
+        const auto size = v.size();
+        const auto& vT = v.T();
+        auto P{I<number, n>(size)};
+        // P = I - 2/v^T v * (v v^T)
+        P = P - (2 / (vT * v).at(0)) * (v * vT);
+        return P;
+    }
+
+    /**
+     * @brief Compute the Householder reduction of a linear system.
+     *
+     * Applies a sequence of Householder reflections to zero out sub‑diagonal entries of the input matrix,
+     * transforming it into an upper‑triangular (or upper‑Hessenberg) form.  For an m×n matrix \f$A\f$, we
+     * construct at each step \f$i=1,\dots,\min(m,n)\f$ a vector
+     *
+     * \f[
+     *   u_i = x_i - \|x_i\|\,e_1,\quad
+     *   H_i = I - 2\,\frac{u_i\,u_i^T}{u_i^T u_i},
+     * \f]
+     *
+     * where \f$x_i\f$ is the \f$i\f$th column of the current working matrix below the diagonal, and \f$e_1\f$
+     * is the first standard basis vector of appropriate dimension.  We then update
+     *
+     * \f[
+     *   A^{(i+1)} = H_i\,A^{(i)},
+     * \quad
+     *   Q^{(i+1)} = Q^{(i)}\,H_i^T,
+     * \f]
+     *
+     * accumulating \f$Q = H_1^T H_2^T \cdots H_k^T\f$ so that ultimately
+     *
+     * \f[
+     *   Q^T A = R
+     * \f]
+     *
+     * with \f$Q\f$ orthogonal and \f$R\f$ upper‑triangular (or upper‑Hessenberg if \f$m>n\f$).
+     *
+     * @param system  The input linear system matrix \f$A\in\mathbb{R}^{m\times n}\f$ to be reduced.
+     * @return A std::pair containing
+     *         - \f$Q\in\mathbb{R}^{m\times m}\f$: the orthogonal matrix from accumulated reflections,
+     *         - \f$R\in\mathbb{R}^{m\times n}\f$: the resulting upper‑triangular (or upper‑Hessenberg) matrix.
+     */
+    template <Number number, int m, int n>
+    auto houseHolderRed(const LinearSystem<number, m, n>& system) {
+        const auto [numRows, numCols] = system.shape();
+        const size_t nR = numRows;
+        const size_t nC = numCols;
+
+        auto B{system};
+        auto U = I<number, m>(numRows);
+        auto V = I<number, n>(numCols);
+
+        const size_t p{std::min(nR, nC)};
+        for (size_t k{}; k < p; k++) {
+            // --------------------------------------------------------------------
+            // Left house holder reduction: zero out below the diagonal in column k
+            // --------------------------------------------------------------------
+            Vector<number, Dynamic> x(numRows - k);
+            for (size_t i{k}; i < nR; i++) {
+                x[i - k] = B(i, k);
+            }
+
+            // Compute reflector if x is not already zero
+            if (!isZeroVector(x)) {
+                // Determine norm and sign to avoid cancellation
+                auto normX = x.length();
+                number sign = (fuzzyCompare(x[0], number(0)) || x[0] > number(0)) ? number(1) : number(-1);
+                // Form the Householder vector
+                x[0] = x[0] + sign * normX;
+                auto v = x;
+                // Small Householder matrix of size (numRows-k)x(numRows-k)
+                auto H = houseHolder(v);
+
+                // Generate identity of full size and replace the lower right block with the
+                // small Householder matrix
+                auto Qk = I<number, m>(numRows);
+                for (size_t i{k}; i < nR; i++)
+                    for (size_t j{k}; j < nR; j++) Qk(i, j) = H(i - k, j - k);
+
+                B = Qk * B;
+                U = U * Qk;
+            }
+
+            // -----------------------------------------------------------------------
+            // Right house holder reduction: zero out above the superdiagonal in row k
+            // -----------------------------------------------------------------------
+            if (static_cast<int>(k) < static_cast<int>(numCols - 1)) {
+                Vector<number, Dynamic> x(numCols - k - 1);
+                for (size_t j{k + 1}; j < numCols; j++) x[j - k - 1] = B(k, j);
+
+                if (!isZeroVector(x)) {
+                    auto normX = x.length();
+                    number sign = (fuzzyCompare(x[0], number(0)) || x[0] > number(0)) ? number(1) : number(-1);
+                    x[0] = x[0] + sign * normX;
+                    auto v = x;
+                    auto H = houseHolder(v);  // size (numCols-k-1)x(numCols-k-1)
+
+                    // Embed H_small into an identity matrix for the full column range
+                    auto Qk = I<number, n>(numCols);
+                    for (size_t i{k + 1}; i < numCols; i++)
+                        for (size_t j{k + 1}; j < numCols; j++) Qk(i, j) = H(i - k - 1, j - k - 1);
+
+                    B = B * Qk;
+                    V = V * Qk;
+                }
+            }
+        }
+        return std::tuple{U, B, V};
+    }
+
+    /**
+     * @brief Computes the QR decomposition of a matrix A using the Householder transformation.
+     *
+     * The Householder transformation is used to zero out the elements below the diagonal of each column,
+     * resulting in an upper triangular matrix R. The orthogonal matrix Q is built up from the Householder reflectors.
+     *
+     * @param A
+     * @return
+     */
+    template <QRType type, Number number, int m, int n>
+    QRPair<type, number, m, n> houseHolderQR(const Matrix<number, m, n>& A) {
+        const auto [numRows, numCols] = A.shape();
+        auto R = A;                      // will become upper‑triangular
+        auto Q = I<number, m>(numRows);  // accumulate left reflectors
+
+        const size_t p = std::min(numRows, numCols);
+        for (size_t k = 0; k < p; ++k) {
+            // ---------------------------------------------------
+            // Left Householder step: zero out below-diagonal in col k
+            // ---------------------------------------------------
+            Vector<number, Dynamic> x(numRows - k);
+            for (size_t i = k; i < numRows; ++i) {
+                x[i - k] = R(i, k);
+            }
+
+            if (!isZeroVector(x)) {
+                auto normX = x.length();
+                number sign = (fuzzyCompare(x[0], number(0)) || x[0] > number(0)) ? number(1) : number(-1);
+
+                x[0] += sign * normX;
+                auto v = x;
+                auto H = houseHolder(v);  // small (numRows-k)×(numRows-k)
+
+                // embed H into full-size identity Qk
+                auto Qk = I<number, m>(numRows);
+                for (size_t i = k; i < numRows; ++i)
+                    for (size_t j = k; j < numRows; ++j) Qk(i, j) = H(i - k, j - k);
+
+                // apply reflector on the left
+                R = Qk * R;
+                Q = Q * Qk;
+            }
+        }
+
+        if constexpr (type == QRType::Full) {
+            return {Q, R};
+        } else {
+            // Extract thin QR decomposition
+            const auto rank = std::min(numRows, numCols);
+
+            // QThin: m×min(m,n) - first min(m,n) columns of Q
+            auto QThin = QType<type, number, m, n>(numRows, rank);
+            for (size_t i{}; i < numRows; ++i) {
+                for (size_t j{}; j < rank; ++j) {
+                    QThin(i, j) = Q(i, j);
+                }
+            }
+
+            // RThin: min(m,n)×n - first min(m,n) rows of R
+            auto RThin = RType<type, number, m, n>(rank, numCols);
+            for (size_t i{}; i < rank; ++i) {
+                for (size_t j{}; j < numCols; ++j) {
+                    RThin(i, j) = R(i, j);
+                }
+            }
+
+            return std::pair{QThin, RThin};
+        }
+    }
+
+    enum class QRMethod : uint8_t {
+        GramSchmidt,
+        Householder,
+    };
+
+    /**
+     * @brief Computes the QR decomposition of a matrix A using the specified method.
+     *
+     * @param A  The matrix to decompose.
+     * @param method  The method to use for QR decomposition (default is Gram-Schmidt).
+     * @return A pair containing the orthogonal matrix Q and the upper triangular matrix R.
+     */
+    template <QRType type, Number number, int m, int n>
+    QRPair<type, number, m, n> QR(const Matrix<number, m, n>& A, QRMethod method = QRMethod::GramSchmidt) {
+        switch (method) {
+            case QRMethod::GramSchmidt:
+                return gsQR<type>(A);
+            case QRMethod::Householder:
+                return houseHolderQR<type>(A);
+            default:
+                throw StackError<std::invalid_argument>{"Unknown QR method"};
+        }
+    }
+
+    /**
+     * @brief Checks if a matrix is singular, using LU decomposition to check if any
+     * of the diagonal elements of U are zero, i.e. indicating the determinant is zero.
+     *
+     * @param A
+     * @return
+     */
+    template <Number number, int n>
+    bool isSingular(const Matrix<number, n, n>& A) {
+        const auto [nR, nC] = A.shape();
+        if (nR != nC) throw StackError<std::invalid_argument>{"Matrix A must be square"};
+
+        const auto& [L, U] = LU(A);
+
+        for (int i = 0; i < nR; ++i) {
+            const auto& abs = std::abs(U(i, i));
+            if (fuzzyCompare(abs, number(0)) || abs < EPSILON) return true;
+            // if (std::abs(U(i, i)) < EPSILON_FIXED) return true;
+        }
+        return false;
     }
 
     /**
@@ -1369,18 +1690,29 @@ namespace mlinalg {
         return res;
     }
 
+    /**
+     * @brief Create a diagonal matrix with the given entries on the diagonal.
+     *
+     * @param a The value to fill the diagonal with.
+     * @return A diagonal matrix with the given value on the diagonal.
+     */
     template <int n, Number number>
     Matrix<number, n, n> diagonal(number a) {
         Matrix<number, n, n> res{n, n};
         size_t i{};
         while (i < n) {
-            if (i >= n) throw StackError<std::out_of_range>{"Too many entries for diagonal matrix"};
             res(i, i) = a;
             i++;
         }
         return res;
     }
 
+    /**
+     * @brief Create a diagonal matrix with the given entries on the diagonal.
+     *
+     * @param entries The entries to fill the diagonal with.
+     * @return A diagonal matrix with the given entries on the diagonal.
+     */
     template <int n, Number number>
     Matrix<number, n, n> diagonal(const std::initializer_list<number>& entries) {
         Matrix<number, n, n> res{n, n};
@@ -1393,6 +1725,14 @@ namespace mlinalg {
         return res;
     }
 
+    /**
+     * @brief Create a diagonal matrix with the given entries on the diagonal.
+     *
+     * @tparam Itr The iterator type for the entries.
+     * @param begin The beginning iterator for the entries.
+     * @param end  The ending iterator for the entries.
+     * @return A diagonal matrix with the given entries on the diagonal.
+     */
     template <int n, Number number, typename Itr>
     Matrix<number, n, n> diagonal(Itr begin, Itr end) {
         auto dist = std::distance(begin, end);
@@ -1407,6 +1747,12 @@ namespace mlinalg {
         return res;
     }
 
+    /**
+     * @brief Create a diagonal matrix with the given entries on the diagonal.
+     *
+     * @param entries The entries to fill the diagonal with.
+     * @return A diagonal matrix with the given entries on the diagonal.
+     */
     template <int n, Number number>
     Matrix<number, n, n> diagonal(const array<number, n>& entries) {
         Matrix<number, n, n> res{n, n};
@@ -1429,7 +1775,7 @@ namespace mlinalg {
         Matrix<number, n, n> R;
         auto Qprod{diagonal<n>(number(1))};
         for (size_t i{1}; i < iters; i++) {
-            const auto& res = QR(Ai);
+            const auto& res = QR<QRType::Full>(Ai);
             Q = std::move(res.first);
             R = std::move(res.second);
             Qprod = Qprod * Q;
@@ -1444,133 +1790,6 @@ namespace mlinalg {
         auto vectors{Qprod.colToVectorSet()};
 
         return pair{values, vectors};
-    }
-
-    /**
-     * @brief Find the Householder matrix for a given vector.
-     *
-     * The Householder matrix is used to reflect a vector across a hyperplane. And is
-     * defined as:
-     *
-     * \f[
-     * P = I - 2 \frac{\mathbf{v}\mathbf{v}^T}{\mathbf{v}^T \mathbf{v}}
-     * \f]
-     *
-     * @param v The vector to find the Householder matrix for.
-     * @return The Householder matrix.
-     */
-    template <Number number, int n>
-    Matrix<number, n, n> houseHolder(const Vector<number, n>& v) {
-        if (isZeroVector(v))
-            throw StackError<std::logic_error>{"Vector v cannot be the zero vector"};  // v cannot be the zero vector
-        const auto size = v.size();
-        const auto& vT = v.T();
-        auto P{I<number, n>(size)};
-        // P = I - 2/v^T v * (v v^T)
-        P = P - (2 / (vT * v).at(0)) * (v * vT);
-        return P;
-    }
-
-    /**
-     * @brief Compute the Householder reduction of a linear system.
-     *
-     * Applies a sequence of Householder reflections to zero out sub‑diagonal entries of the input matrix,
-     * transforming it into an upper‑triangular (or upper‑Hessenberg) form.  For an m×n matrix \f$A\f$, we
-     * construct at each step \f$i=1,\dots,\min(m,n)\f$ a vector
-     *
-     * \f[
-     *   u_i = x_i - \|x_i\|\,e_1,\quad
-     *   H_i = I - 2\,\frac{u_i\,u_i^T}{u_i^T u_i},
-     * \f]
-     *
-     * where \f$x_i\f$ is the \f$i\f$th column of the current working matrix below the diagonal, and \f$e_1\f$
-     * is the first standard basis vector of appropriate dimension.  We then update
-     *
-     * \f[
-     *   A^{(i+1)} = H_i\,A^{(i)},
-     * \quad
-     *   Q^{(i+1)} = Q^{(i)}\,H_i^T,
-     * \f]
-     *
-     * accumulating \f$Q = H_1^T H_2^T \cdots H_k^T\f$ so that ultimately
-     *
-     * \f[
-     *   Q^T A = R
-     * \f]
-     *
-     * with \f$Q\f$ orthogonal and \f$R\f$ upper‑triangular (or upper‑Hessenberg if \f$m>n\f$).
-     *
-     * @param system  The input linear system matrix \f$A\in\mathbb{R}^{m\times n}\f$ to be reduced.
-     * @return A std::pair containing
-     *         - \f$Q\in\mathbb{R}^{m\times m}\f$: the orthogonal matrix from accumulated reflections,
-     *         - \f$R\in\mathbb{R}^{m\times n}\f$: the resulting upper‑triangular (or upper‑Hessenberg) matrix.
-     */
-    template <Number number, int m, int n>
-    auto houseHolderRed(const LinearSystem<number, m, n>& system) {
-        const auto [numRows, numCols] = system.shape();
-        const size_t nR = numRows;
-        const size_t nC = numCols;
-
-        auto B{system};
-        auto U = I<number, m>(numRows);
-        auto V = I<number, n>(numCols);
-
-        const size_t p{std::min(nR, nC)};
-        for (size_t k{}; k < p; k++) {
-            // --------------------------------------------------------------------
-            // Left house holder reduction: zero out below the diagonal in column k
-            // --------------------------------------------------------------------
-            Vector<number, Dynamic> x(numRows - k);
-            for (size_t i{k}; i < nR; i++) {
-                x[i - k] = B(i, k);
-            }
-
-            // Compute reflector if x is not already zero
-            if (!isZeroVector(x)) {
-                // Determine norm and sign to avoid cancellation
-                auto normX = x.length();
-                number sign = (fuzzyCompare(x[0], number(0)) || x[0] > number(0)) ? number(1) : number(-1);
-                // Form the Householder vector
-                x[0] = x[0] + sign * normX;
-                auto v = x;
-                // Small Householder matrix of size (numRows-k)x(numRows-k)
-                auto H = houseHolder(v);
-
-                // Generate identity of full size and replace the lower right block with the
-                // small Householder matrix
-                auto Qk = I<number, m>(numRows);
-                for (size_t i{k}; i < nR; i++)
-                    for (size_t j{k}; j < nR; j++) Qk(i, j) = H(i - k, j - k);
-
-                B = Qk * B;
-                U = U * Qk;
-            }
-
-            // -----------------------------------------------------------------------
-            // Right house holder reduction: zero out above the superdiagonal in row k
-            // -----------------------------------------------------------------------
-            if (static_cast<int>(k) < static_cast<int>(numCols - 1)) {
-                Vector<number, Dynamic> x(numCols - k - 1);
-                for (size_t j{k + 1}; j < numCols; j++) x[j - k - 1] = B(k, j);
-
-                if (!isZeroVector(x)) {
-                    auto normX = x.length();
-                    number sign = (fuzzyCompare(x[0], number(0)) || x[0] > number(0)) ? number(1) : number(-1);
-                    x[0] = x[0] + sign * normX;
-                    auto v = x;
-                    auto H = houseHolder(v);  // size (numCols-k-1)x(numCols-k-1)
-
-                    // Embed H_small into an identity matrix for the full column range
-                    auto Qk = I<number, n>(numCols);
-                    for (size_t i{k + 1}; i < numCols; i++)
-                        for (size_t j{k + 1}; j < numCols; j++) Qk(i, j) = H(i - k - 1, j - k - 1);
-
-                    B = B * Qk;
-                    V = V * Qk;
-                }
-            }
-        }
-        return std::tuple{U, B, V};
     }
 
     /**
@@ -1637,7 +1856,7 @@ namespace mlinalg {
         logging::log(format("SVD Sigma: {}", Sigma), "svdEigen");
 
         // Construct the V matrix from the eigenvectors.
-        const auto& V = helpers::fromColVectorSet<number, ATA.rows(), ATA.cols()>(v);
+        const auto& V = helpers::fromColVectorSet<number, ATA.rows, ATA.cols>(v);
         logging::log(format("SVD V: {}", V), "svdEigen");
 
         // Construct the U matrix using the eigenvectors and the Sigma matrix.
