@@ -80,7 +80,7 @@ add_subdirectory(test)
 #################
 # For debug builds, we need to link against the boost stacktrace library
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    find_package(Boost REQUIRED)
+    find_package(Boost CONFIG REQUIRED)
     if(Boost_FOUND)
         message(STATUS "Boost stacktrace found")
         target_link_libraries(mlinalg INTERFACE boost_stacktrace_addr2line dl)

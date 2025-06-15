@@ -1471,6 +1471,40 @@ namespace mlinalg {
         return P;
     }
 
+    /**
+     * @brief Compute the Householder reduction of a linear system.
+     *
+     * Applies a sequence of Householder reflections to zero out sub‑diagonal entries of the input matrix,
+     * transforming it into an upper‑triangular (or upper‑Hessenberg) form.  For an m×n matrix \f$A\f$, we
+     * construct at each step \f$i=1,\dots,\min(m,n)\f$ a vector
+     *
+     * \f[
+     *   u_i = x_i - \|x_i\|\,e_1,\quad
+     *   H_i = I - 2\,\frac{u_i\,u_i^T}{u_i^T u_i},
+     * \f]
+     *
+     * where \f$x_i\f$ is the \f$i\f$th column of the current working matrix below the diagonal, and \f$e_1\f$
+     * is the first standard basis vector of appropriate dimension.  We then update
+     *
+     * \f[
+     *   A^{(i+1)} = H_i\,A^{(i)},
+     * \quad
+     *   Q^{(i+1)} = Q^{(i)}\,H_i^T,
+     * \f]
+     *
+     * accumulating \f$Q = H_1^T H_2^T \cdots H_k^T\f$ so that ultimately
+     *
+     * \f[
+     *   Q^T A = R
+     * \f]
+     *
+     * with \f$Q\f$ orthogonal and \f$R\f$ upper‑triangular (or upper‑Hessenberg if \f$m>n\f$).
+     *
+     * @param system  The input linear system matrix \f$A\in\mathbb{R}^{m\times n}\f$ to be reduced.
+     * @return A std::pair containing
+     *         - \f$Q\in\mathbb{R}^{m\times m}\f$: the orthogonal matrix from accumulated reflections,
+     *         - \f$R\in\mathbb{R}^{m\times n}\f$: the resulting upper‑triangular (or upper‑Hessenberg) matrix.
+     */
     template <Number number, int m, int n>
     auto houseHolderRed(const LinearSystem<number, m, n>& system) {
         const auto [numRows, numCols] = system.shape();
