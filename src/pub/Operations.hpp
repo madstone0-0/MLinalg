@@ -793,6 +793,33 @@ namespace mlinalg {
         }
     }
 
+    /**
+     * @brief Find an orthonormal basis for the column space of a matrix using the Gram-Schmidt process.
+     *
+     * @param A The matrix to find the orthonormal basis for.
+     * @return A vector of orthonormal vectors that form the basis for the column space of A.
+     */
+    template <Number number, int m, int n>
+    vector<Vector<number, m>> GSOrth(const Matrix<number, m, n>& A) {
+        const auto& [nRows, nCols] = A.shape();
+        const auto& asCols = A.colToVectorSet();
+        vector<Vector<number, m>> qs;
+        qs.reserve(nCols);
+        qs.push_back(asCols[0] / asCols[0].length());
+
+        for (size_t i{1}; i < nCols; ++i) {
+            auto vi = asCols[i];
+
+            for (size_t j{}; j < i; ++j) {
+                vi -= ((vi * qs[j]) / (qs[j] * qs[j])) * qs[j];
+            }
+
+            const auto& norm = vi.length();
+            qs.push_back(vi / norm);
+        }
+        return qs;
+    }
+
     template <Number number, int n>
     auto QR(const Matrix<number, n, n>& A) {
         const auto [nR, nC] = A.shape();
