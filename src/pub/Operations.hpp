@@ -24,7 +24,6 @@
 #include "Helpers.hpp"
 #include "Logging.hpp"
 #include "Numeric.hpp"
-#include "Structures.hpp"
 #include "structures/Aliases.hpp"
 #include "structures/Matrix.hpp"
 #include "structures/Vector.hpp"
@@ -323,6 +322,79 @@ namespace mlinalg {
     }
 
     /**
+     * @brief Find the identity matrix of a square linear system
+     * @return  The identity matrix of the system.
+     */
+    template <Number number, int m>
+    Matrix<number, m, m> I() {
+        Matrix<number, m, m> identity{};
+        for (size_t i{}; i < m; i++) {
+            identity.at(i).at(i) = 1;
+        }
+        return identity;
+    }
+
+    /**
+     * @brief Find the identity matrix of a square linear system
+     *
+     * @return  The identity matrix of the system.
+     */
+    template <Number number, int m>
+    Matrix<number, m, m> I(int nRows) {
+        if constexpr (m == -1) {
+            Matrix<number, m, m> identity(nRows, nRows);
+            for (int i{}; i < nRows; i++) {
+                identity.at(i, i) = 1;
+            }
+            return identity;
+        } else {
+            return I<number, m>();
+        }
+    }
+
+    /**
+     * @brief Checks if a matrix is isHermitian.
+     *
+     * A matrix is Hermitian if it is equal to its own transpose in the case of
+     * a real matrix or if it is equal to the conjugate transpose in the case of a complex matrix.
+     *
+     * @param A the matrix to check
+     * @return true if the matrix is Hermitian, false otherwise.
+     */
+    template <Number number, int m, int n>
+    bool isHermitian(const Matrix<number, m, n>& A) {
+        const auto& [nR, nC] = A.shape();
+        if (nR != nC) throw StackError<std::invalid_argument>{"Matrix must be square"};
+        return A == helpers::extractMatrixFromTranspose(A.T());
+    }
+
+    /**
+     * @brief Checks if a matrix is orthogonal.
+     *
+     * The columns of a matrix are orthogonal if the dot product of any two distinct columns is zero.
+     * This can be checked by computing the product of the transpose of the matrix and the matrix itself,
+     * which should yield the identity matrix if the columns are orthogonal.
+     *
+     * @param A the matrix to check
+     * @return true if the matrix is orthogonal, false otherwise.
+     */
+    template <Number number, int m, int n>
+    bool isOrthogonal(const Matrix<number, m, n>& A) {
+        const auto& [nR, nC] = A.shape();
+        const auto& ATA = helpers::extractMatrixFromTranspose(A.T()) * A;
+        const auto& Id = I<number, n>(nC);
+
+        auto minus = ATA - Id;
+        const auto& [nR2, nC2] = minus.shape();
+        for (size_t i{}; i < nR2; i++) {
+            for (size_t j{}; j < nC2; j++) {
+                if (!fuzzyCompare(abs(minus(i, j)), number(0))) return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * @brief Checks if a vector is a zero vector.
      *
      * @param v The vector to check.
@@ -333,6 +405,28 @@ namespace mlinalg {
         for (const auto& i : v) {
             if (!fuzzyCompare(i, number(0))) return false;
         }
+        return true;
+    }
+
+    /**
+     * @brief Checks if a matrix is upper triangular.
+     *
+     * @param A The matrix to check.
+     * @return true if the matrix is upper triangular, false otherwise.
+     */
+    template <Number number, int m, int n>
+    bool isUpperTriangular(const Matrix<number, m, n>& A) {
+        const auto [nRows, nCols] = A.shape();
+
+        // Check all elements below the main diagonal
+        for (size_t i{}; i < nRows; ++i) {
+            for (size_t j{}; j < std::min(i, nCols); ++j) {
+                if (!fuzzyCompare(A(i, j), number(0))) {
+                    return false;
+                }
+            }
+        }
+
         return true;
     }
 
@@ -1257,186 +1351,32 @@ namespace mlinalg {
     }
 
     /**
-     * @brief Find the dominant eigenvector of a square matrix using the power method.
-     *
-     * @param A The matrix to find the dominant eigenvector of.
-     * @param iters The number of iterations to perform.
-     * @return The dominant eigenvector of the matrix.
-     */
-    template <Number number, int m>
-    Vector<double, m> dominantEigenvector(const Matrix<number, m, m>& A, size_t iters = 1000) {
-        const auto [nR, nC] = A.shape();
-        const int numRows = nR;
-        const int numCols = nC;
-        if (numRows != numCols) throw StackError<std::invalid_argument>{"Matrix A must be square"};
-
-        // Using the iterative power method
-        auto x0{vectorOnes<number, m>(numRows)};
-        for (size_t i{}; i < iters; i++) {
-            x0 = A * x0;
-            number largestAbs{x0[0]};
-            // Scaling
-            for (size_t j{1}; j < x0.size(); j++)
-                if (abs(x0[j]) > largestAbs) largestAbs = abs(x0[j]);
-            x0 = (1 / largestAbs) * x0;
-        }
-        return x0;
-    }
-
-    /**
-     * @brief Find the dominant eigenvalue of a square matrix using the Rayleigh quotient.
-     *
-     * @param A
-     * @param eigenvector
-     * @return
-     */
-    template <Number number, int n>
-    auto dominantEigenvalue(const Matrix<number, n, n>& A, const Vector<number, n>& eigenvector) {
-        // Eigenvalue found by the Rayleigh quotient:
-        // eigenvalue = (A*x * x) / (x * x)
-        const auto& x = eigenvector;
-        const auto& num = (A * x) * x;
-        const auto& denom = x * x;
-        return num / denom;
-    }
-
-    template <Number number, int n>
-    auto powerEigen(const Matrix<number, n, n>& A, size_t iters = 10'000, double tol = 0.001,
-                    Seed seed = std::nullopt) {
-        const auto [nR, nC] = A.shape();
-        const int numRows = nR;
-        const int numCols = nC;
-
-        if (numRows != numCols) throw StackError<std::invalid_argument>{"Matrix A must be square"};
-        auto x0{vectorRandom<number, n>(numRows, 0, 1, seed)};
-        number l0{0};
-
-        for (size_t i{}; i < iters; i++) {
-            x0 = std::move(A * x0);
-            number largestAbs{x0[0]};
-            // Scaling
-            for (size_t j{1}; j < x0.size(); j++)
-                if (abs(x0[j]) > largestAbs) largestAbs = abs(x0[j]);
-            x0 = std::move((1 / largestAbs) * x0);
-
-            const auto& x = x0;
-            const auto& num = (A * x) * x;
-            const auto& denom = x * x;
-            l0 = num / denom;
-            const auto& error = ((A * x0) - (l0 * x0)).length();
-            if (fuzzyCompare(error, tol) || error < tol) break;
-        }
-
-        return pair{x0, l0};
-    }
-
-    /**
-     * @brief Deflate the matrix A by the outer product of the eigenvector and the eigenvalue.
-     *
-     * @param A The matrix to deflate.
-     * @param eignevalue The eigenvalue to deflate by.
-     * @param eigenvector The eigenvector to deflate by.
-     * @return The deflated matrix.
-     */
-    template <Number number, int n>
-    auto deflate(const Matrix<number, n, n>& A, number eignevalue, const Vector<number, n>& eigenvector) {
-        const auto& rhs = eignevalue * (eigenvector * eigenvector.T());
-        return A - rhs;
-    }
-
-    template <Number number, int n>
-    auto shiftedInvPowerEigen(const Matrix<number, n, n>& M, std::optional<number> s = std::nullopt,
-                              size_t iters = 10'000, double tol = 0.001, Seed seed = std::nullopt) {
-        const auto [nR, nC] = M.shape();
-        const int numRows = nR;
-        const int numCols = nC;
-
-        if (numRows != numCols) throw StackError<std::invalid_argument>{"Matrix A must be square"};
-
-        auto x0{vectorRandom<number, n>(numRows, 0, 1, seed)};
-        x0 = (1 / x0.length()) * x0;
-        number l0{0};
-
-        for (size_t i{}; i < iters; i++) {
-            // Use Rayleigh quotient to update the shift if shift is not provided
-            if (!s.has_value()) s = (x0.dot(M * x0)) / (x0.dot(x0));
-
-            const auto& A = M - s.value() * I<number, n>(numRows);
-            const auto& [L, U] = LU(A);
-
-            const auto& zi = findSolutions(L, x0);
-            if (!zi.has_value()) throw StackError<std::runtime_error>{"Cannot find solutions to L"};
-            const auto& ziExt = extractSolutionVector(zi.value());
-
-            const auto& y = findSolutions(U, ziExt);
-            if (!y.has_value()) throw StackError<std::runtime_error>{"Cannot find solutions to U"};
-            const auto& yi = extractSolutionVector<number, n>(y.value());
-
-            x0 = (1 / yi.length()) * yi;
-            l0 = (x0.dot(A * x0)) / (x0.dot(x0));
-
-            const auto& error = ((A * x0) - (l0 * x0)).length();
-            if (fuzzyCompare(error, tol) || error < tol) break;
-        }
-
-        return pair{x0, s.value()};
-    }
-
-    template <Number number, int n>
-    auto eigen(const Matrix<number, n, n>& A, Seed seed = std::nullopt, size_t iters = 10'000, double tol = 0.001) {
-        const auto [nR, nC] = A.shape();
-        const int numRows = nR;
-        const int numCols = nC;
-        if (numRows != numCols) throw StackError<std::invalid_argument>{"Matrix A must be square"};
-        if (isSingular(A)) throw StackError<std::invalid_argument>{"Matrix A is singular"};
-        vector<number> values;
-        vector<Vector<number, n>> vectors;
-
-        // Find the largest eignevalue and eigenvector
-        const auto& [v1, l1] = powerEigen(A, iters, tol);
-        // Find the smallest eigenvalue and eigenvector
-        const auto& [vn, ln] = shiftedInvPowerEigen(A, optional<number>(0), iters, tol, seed);
-
-        values.emplace_back(l1);
-        vectors.emplace_back(v1);
-        values.emplace_back(ln);
-        vectors.emplace_back(vn);
-
-        // Use the shifted inverse power method to find the remaining eigenvalues and eigenvectors
-        // by trying to find the next eigenvalue that is not equal to the previous one.
-        auto M = A;
-        auto shift = ln;
-        while (values.size() < nR) {
-            const auto& [v, l] = shiftedInvPowerEigen(M, optional<number>(nullopt), iters, tol, seed);
-            M = deflate(M, l, v);
-            if (fuzzyCompare(l, l1)) break;
-
-            values.emplace_back(l);
-            vectors.emplace_back(v);
-            shift = l;
-        }
-
-        return pair{values, vectors};
-    }
-
-    /**
      * @brief Find the diagonal of a square matrix.
      *
      * @param matrix The matrix to find the diagonal of.
      * @return The diagonal of the matrix.
      */
     template <Number number, int n>
-    Matrix<number, n, n> diag(const Matrix<number, n, n>& matrix) {
+    vector<number> diag(const Matrix<number, n, n>& matrix) {
         const auto [nR, nC] = matrix.shape();
         if (nR != nC) throw StackError<runtime_error>("Matrix must be square to find a diagonal");
 
-        constexpr auto isDynamic = n == Dynamic;
-
-        constexpr auto sizeP = isDynamic ? DynamicPair : SizePair{n, n};
-
-        Matrix<number, sizeP.first, sizeP.second> res(nR, nR);
+        vector<number> res;
+        res.reserve(nR);
         for (size_t i{}; i < nR; i++) {
-            res(i, i) = matrix(i, i);
+            res.push_back(matrix(i, i));
+        }
+        return res;
+    }
+
+    template <int n, Number number>
+    Matrix<number, n, n> diagonal(number a) {
+        Matrix<number, n, n> res{n, n};
+        size_t i{};
+        while (i < n) {
+            if (i >= n) throw StackError<std::out_of_range>{"Too many entries for diagonal matrix"};
+            res(i, i) = a;
+            i++;
         }
         return res;
     }
@@ -1474,6 +1414,36 @@ namespace mlinalg {
             res(i, i) = entries[i];
         }
         return res;
+    }
+
+    template <Number number, int n>
+    auto eigenQR(const Matrix<number, n, n>& A, size_t iters = 10'000) {
+        const auto [nR, nC] = A.shape();
+        const int numRows = nR;
+        const int numCols = nC;
+        if (numRows != numCols) throw StackError<std::invalid_argument>{"Matrix A must be square"};
+        if (isSingular(A)) throw StackError<std::invalid_argument>{"Matrix A is singular"};
+
+        auto Ai = A;
+        Matrix<number, n, n> Q;
+        Matrix<number, n, n> R;
+        auto Qprod{diagonal<n>(number(1))};
+        for (size_t i{1}; i < iters; i++) {
+            const auto& res = QR(Ai);
+            Q = std::move(res.first);
+            R = std::move(res.second);
+            Qprod = Qprod * Q;
+
+            Ai = R * Q;
+
+            if (isUpperTriangular(A)) break;
+        }
+        logging::log(format("Qprod -> {}", Qprod), "eigenQR");
+
+        const auto& values = diag(Ai);
+        auto vectors{Qprod.colToVectorSet()};
+
+        return pair{values, vectors};
     }
 
     /**
@@ -1569,50 +1539,126 @@ namespace mlinalg {
         return std::tuple{U, B, V};
     }
 
+    /**
+     * @brief Compute the Singular Value Decomposition (SVD) of a matrix using the eigenvalue decomposition of
+     * \f$A^TA\f$.
+     *
+     * We factorize \f$A = U\,\Sigma\,V^T\f$ in three main steps:
+     *
+     * 1. Eigen‑decompose \f$A A^T\f$
+     *
+     *    Compute
+     *    \f[
+     *      A A^T = U \,\Lambda\, U^T,
+     *    \f]
+     *    where \f$\Lambda = \text{diag}(\lambda_1,\dots,\lambda_r)\f$ are the eigenvalues
+     *    and the columns of \f$U = [\,u_1\,\dots\,u_r\,]\f$ are the corresponding orthonormal eigenvectors.
+     *
+     * 2. Construct \f$\Sigma\f$ and \f$V\f$
+     *
+     *    Let \f$\sigma_i = \sqrt{\lambda_i}\f$ and build
+     *    \f[
+     *      \Sigma = \text{diag}(\sigma_1,\dots,\sigma_r),
+     *    \f]
+     *    then compute each column \f$v_i\f$ of \f$V\f$ by
+     *    \f[
+     *      v_i = \frac{A^T\,u_i}{\sigma_i},
+     *    \f]
+     *    so that \f$V = [\,v_1\,\dots\,v_r\,]\f$ is orthonormal.
+     *
+     * 3. Construct \f$U\f$
+     *
+     *    The matrix \f$U\f$ is simply the collection of eigenvectors \f$\{u_i\}\f$ from step 1,
+     *    now aligned with singular values \f$\sigma_i\f$.  Together,
+     *    \f[
+     *      A = U\,\Sigma\,V^T.
+     *    \f]
+     *
+     * @param A The matrix to decompose.
+     * @return A std::tuple containing
+     *         - \f$U\in\mathbb{R}^{m\times r}\f$: the left singular vectors,
+     *         - \f$\Sigma\in\mathbb{R}^{r\times r}\f$: the diagonal matrix of singular values,
+     *         - \f$V\in\mathbb{R}^{n\times r}\f$: the right singular vectors.
+     */
     template <Number number, int m, int n>
-    auto svdGolubReinsch(const LinearSystem<number, m, n>& system) {
-        const auto& [B, U, V] = houseHolderRed(system);
-        const auto [numRows, numCols] = system.shape();
-        int i{};
-        while (i < numCols) {
-            i++;
-        }
-    }
+    auto svdEigen(const LinearSystem<number, m, n>& sys) {
+        // Find the eigen values and eigenvectors of A*A^T
+        const auto [nR, nC] = sys.shape();
+        const auto& ATA{sys * helpers::extractMatrixFromTranspose(sys.T())};
+        auto [l, v] = eigenQR(ATA);
+        const auto& A = helpers::padMatrixToSquare<number, m, n>(sys);
 
-    template <Number number, int m, int n>
-    auto svdEigen(const LinearSystem<number, m, n>& A) {
-        const auto [nR, nC] = A.shape();
-        const auto& ATA{A * A.T()};
-        auto [l, v] = eigen(ATA);
-
-        const auto& p = helpers::sortPermutation(l, std::greater<>());
+        const auto& p = helpers::sortPermutation(l.begin(), l.end(), std::greater<>());
         helpers::applySortPermutation(l, p);
         helpers::applySortPermutation(v, p);
+        logging::log(format("SVD Eigenvalues: {}", l), "svdEigen");
+        logging::log(format("SVD Eigenvectors: {}", v), "svdEigen");
 
+        // Construct the Sigma matrix from the eigenvalues by taking the square root of the eigenvalues.
         auto Sigma = matrixZeros<number, n, n>(nC, nC);
         const auto minDim = std::min(nR, nC);
         for (size_t i{}; i < minDim; i++) {
             Sigma(i, i) = l[i] > 0 ? sqrt(l[i]) : 0;
         }
+        logging::log(format("SVD Sigma: {}", Sigma), "svdEigen");
 
-        const auto& V = helpers::fromColVectorSet<number, n, n>(v);
+        // Construct the V matrix from the eigenvectors.
+        const auto& V = helpers::fromColVectorSet<number, ATA.rows(), ATA.cols()>(v);
+        logging::log(format("SVD V: {}", V), "svdEigen");
 
+        // Construct the U matrix using the eigenvectors and the Sigma matrix.
         auto U = matrixZeros<number, m, m>(nR, nR);
         for (size_t i{}; i < minDim; i++)
+            // Normalize the eigenvectors and multiply by the corresponding singular value.
             if (!fuzzyCompare(Sigma(i, i), number(0))) {
                 auto ui = (A * v[i]).normalize();
                 for (size_t j = 0; j < m; j++) {
                     U(j, i) = ui[j];
                 }
             }
+        logging::log(format("SVD U: {}", U), "svdEigen");
 
         return std::tuple{U, Sigma, helpers::extractMatrixFromTranspose(V.T())};
     }
 
+    /**
+     * @brief Compute the Singular Value Decomposition (SVD) of a linear system.
+     *
+     * Geometrically, any linear map \f$A:\mathbb{R}^n\to\mathbb{R}^m\f$ can be viewed in three stages:
+     * 1. **Rotate (or reflect) the input space** by \f$V^T\f$, aligning the standard basis to the principal input
+     * directions.
+     * 2. **Scale along each principal axis** by the singular values \f$\sigma_i\f$, stretching or shrinking the unit
+     * sphere into an ellipsoid.
+     * 3. **Rotate (or reflect) into the output space** by \f$U\f$, orienting the ellipsoid in \f$\mathbb{R}^m\f$.
+     *
+     * Algebraically, we write
+     * \f[
+     *   A = U\,\Sigma\,V^T,
+     * \f]
+     * where:
+     * - \f$V\in\mathbb{R}^{n\times r}\f$ contains the right singular vectors (orthonormal directions in the domain),
+     * - \f$\Sigma=\mathrm{diag}(\sigma_1,\dots,\sigma_r)\in\mathbb{R}^{r\times r}\f$ has nonnegative singular values
+     * \f$\sigma_i\ge0\f$,
+     * - \f$U\in\mathbb{R}^{m\times r}\f$ contains the left singular vectors (orthonormal directions in the codomain).
+     *
+     * In this form:
+     * - Columns of \f$V\f$ span the directions along which \f$A\f$ acts by pure scaling.
+     * - Each \f$\sigma_i\f$ is the length of the semi‑axis of the image ellipsoid \f$A(B^n)\f$, where \f$B^n\f$ is the
+     * unit ball.
+     * - Columns of \f$U\f$ give the orientations of those axes in the output space.
+     *
+     * The SVD thus exposes the “principal axes” of the transformation,
+     * provides the best low‑rank approximations to \f$A\f$,
+     * and underlies stable algorithms for solving least‑squares and computing pseudoinverses.
+     *
+     * @param system The linear system to decompose.
+     * @return A std::tuple containing
+     *         - \f$U\in\mathbb{R}^{m\times r}\f$: the left singular vectors,
+     *         - \f$\Sigma\in\mathbb{R}^{r\times r}\f$: the diagonal matrix of singular values,
+     *         - \f$V\in\mathbb{R}^{n\times r}\f$: the right singular vectors.
+     */
     template <Number number, int m, int n>
     auto svd(const LinearSystem<number, m, n>& system) {
-        // const auto [numRows, numCols] = system.shape();
-        // const auto& sys = numRows >= numCols ? system : helpers::extractMatrixFromTranspose(system.T());
         return svdEigen(system);
     }
 

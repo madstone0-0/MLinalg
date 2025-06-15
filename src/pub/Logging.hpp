@@ -29,6 +29,7 @@ namespace logging {
     enum class Level : std::uint8_t { DEB, INF, WARN, ERR };
 
     inline void log(string_view message, string_view function, Level level = Level::DEB) {
+#ifdef DEBUG
         switch (level) {
             case Level::DEB:
                 cout << BLU << std::format("[{:%F T %T}] ({}) : ", std::chrono::system_clock::now(), function) << reset
@@ -47,5 +48,6 @@ namespace logging {
                      << message << '\n';
                 break;
         }
+#endif
     }
 }  // namespace logging

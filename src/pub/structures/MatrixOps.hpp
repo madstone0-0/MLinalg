@@ -452,10 +452,6 @@ namespace mlinalg::structures {
         constexpr bool isNotPow2 = (size_t(n) & (size_t(n) - 1)) != 0;  // Checks if n is not a power of 2
 
         if constexpr (isDynamic || isNotSquare || isNotPow2) {
-#ifdef DEBUG
-            logging::log("Using default matrix multiplication algorithm", "Matrix operator*", logging::Level::INF);
-#endif
-
 #if defined(__AVX__) && defined(__FMA__)
             if constexpr (is_same_v<number, double> || is_same_v<number, float>) {
                 return multMatSIMD<number, m, n, mOther, nOther>(matrix, otherMatrix);
@@ -474,9 +470,6 @@ namespace mlinalg::structures {
             return multMatStrassen<number, m, n, nOther>(matrix, otherMatrix);
         }
 #else
-#ifdef DEBUG
-        logging::log("Using default matrix multiplication algorithm", "Matrix operator*", logging::Level::INF);
-#endif
 
 #if defined(__AVX__) && defined(__FMA__)
         if constexpr (is_same_v<number, double> || is_same_v<number, float>) {

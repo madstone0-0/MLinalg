@@ -108,6 +108,9 @@ namespace mlinalg::structures {
             return *this;
         }
 
+        [[nodiscard]] constexpr int rows() const { return m; }
+        [[nodiscard]] constexpr int cols() const { return n; }
+
         /**
          * @brief Access the ith row of the matrix
          *
@@ -651,6 +654,9 @@ namespace mlinalg::structures {
             matrix.reserve(m);
             for (const auto& row : other.matrix) matrix.emplace_back(row);
         }
+
+        [[nodiscard]] constexpr int rows() const { return Dynamic; }
+        [[nodiscard]] constexpr int cols() const { return Dynamic; }
 
         /**
          * @brief Access the ith row of the matrix

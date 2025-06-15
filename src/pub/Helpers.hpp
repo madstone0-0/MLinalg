@@ -4,6 +4,7 @@
  */
 
 #pragma once
+#include <iterator>
 #define BOOST_STACKTRACE_USE_ADDR2LINE
 #include <algorithm>
 #include <boost/stacktrace.hpp>
@@ -62,15 +63,21 @@ namespace mlinalg::structures::helpers {
     using TransposeVariant = std::variant<Vector<number, m>, Matrix<number, n, m>>;
 
     template <Number num>
-    num rng(int min, int max, std::optional<size_t> seed = std::nullopt) {
+    num rng(int min, int max, std::optional<size_t> seed = std::nullopt)
+        requires(std::is_integral_v<num>)
+    {
         static std::mt19937 generator(seed.value_or(std::random_device{}()));
-        if constexpr (std::is_integral_v<num>) {
-            std::uniform_int_distribution<num> distribution(min, max);
-            return distribution(generator);
-        } else {
-            std::uniform_real_distribution<num> distribution(min, max);
-            return distribution(generator);
-        }
+        std::uniform_int_distribution<num> distribution(min, max);
+        return distribution(generator);
+    }
+
+    template <Number num>
+    num rng(double min, double max, std::optional<size_t> seed = std::nullopt)
+        requires(!std::is_integral_v<num>)
+    {
+        static std::mt19937 generator(seed.value_or(std::random_device{}()));
+        std::uniform_real_distribution<num> distribution(min, max);
+        return distribution(generator);
     }
 
     /**
@@ -175,12 +182,54 @@ namespace mlinalg::structures::helpers {
         return v;
     }
 
-    // https://stackoverflow.com/a/17074810
-    template <typename T, typename Compare = std::less<>>
-    vector<size_t> sortPermutation(const vector<T>& vec, Compare cmp = Compare()) {
-        vector<size_t> res(vec.size());
-        std::iota(res.begin(), res.end(), 0);
-        std::sort(res.begin(), res.end(), [&vec, &cmp](size_t i, size_t j) { return cmp(vec[i], vec[j]); });
+    template <Number number, int m, int n>
+    void copyVectorIntoMatrixCol(Matrix<number, m, n>& A, const Vector<number, m>& v, size_t j) {
+        const auto& [nR, nC] = A.shape();
+        if (j >= nC) throw StackError<std::out_of_range>{"Column index out of range"};
+
+        for (size_t i{}; i < nR; ++i) A(i, j) = v[i];
+    }
+
+    template <Number number, int m, int n>
+    void copyVectorIntoMatrixRow(Matrix<number, m, n>& A, const Vector<number, n>& v, size_t i) {
+        const auto& [nR, nC] = A.shape();
+        if (i >= nR) throw StackError<std::out_of_range>{"Row index out of range"};
+
+        for (size_t j{}; j < nC; ++j) A(i, j) = v[j];
+    }
+
+    template <Number number, int m, int n>
+    Matrix<number, std::max(m, n), std::max(m, n)> padMatrixToSquare(const Matrix<number, m, n>& A,
+                                                                     number a = number(0)) {
+        if constexpr (m == n) return A;
+
+        const auto& [nR, nC] = A.shape();
+        if constexpr (m == Dynamic || n == Dynamic) {
+            if (nR == nC) return A;
+        }
+
+        constexpr auto nM = std::max(m, n);
+        auto nD = std::max(nR, nC);
+
+        Matrix<number, nM, nM> res(nM, nM);
+        for (size_t i{}; i < nD; ++i) {
+            for (size_t j{}; j < nD; ++j) {
+                if (i < nR && j < nC) {
+                    res(i, j) = A(i, j);
+                } else {
+                    res(i, j) = a;
+                }
+            }
+        }
+        return res;
+    }
+
+    // Adapted from https://stackoverflow.com/a/17074810
+    template <typename Itr, typename Compare = std::less<>>
+    vector<size_t> sortPermutation(Itr beg, Itr end, Compare cmp = Compare()) {
+        vector<size_t> res(std::distance(beg, end));
+        rg::iota(res, 0);
+        std::sort(res.begin(), res.end(), [&](size_t i, size_t j) { return cmp(*(beg + i), *(beg + j)); });
         return res;
     }
 
