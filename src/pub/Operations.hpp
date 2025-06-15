@@ -22,6 +22,7 @@
 
 #include "Concepts.hpp"
 #include "Helpers.hpp"
+#include "Logging.hpp"
 #include "Numeric.hpp"
 #include "Structures.hpp"
 #include "structures/Aliases.hpp"
@@ -720,6 +721,13 @@ namespace mlinalg {
         }
     }
 
+    /**
+     * @brief Compute the LU decomposition of a square matrix A using the Schur complement method.
+     *
+     * @param A The square matrix to decompose.
+     * @return A pair containing the lower triangular matrix L and the upper triangular matrix U such that \f$ A = LU
+     * \f$.
+     */
     template <Number number>
     auto LU(const Matrix<number, 1, 1>& A) {
         auto L = matrixZeros<number, 1, 1>(1, 1);
@@ -796,30 +804,98 @@ namespace mlinalg {
     /**
      * @brief Find an orthonormal basis for the column space of a matrix using the Gram-Schmidt process.
      *
+     * Using the iteration:
+     *
+     * \f[
+     *  \mathbf{v}_p  = \mathbf{x}_p - \frac{\mathbf{x}_p\cdot \mathbf{v}_1}{\mathbf{v}_1\cdot \mathbf{v}_1}
+     * \mathbf{v}_1 -
+     * \frac{\mathbf{x}_p \cdot  \mathbf{v}_2}{\mathbf{v}_2\cdot \mathbf{v}_2} \mathbf{v}_2 - \ldots -
+     * \frac{\mathbf{x}_p
+     * \cdot
+     *   \mathbf{v}_{p-1} }{\mathbf{v}_{p-1} \cdot \mathbf{v}_{p-1}} \mathbf{v}_{p-1}
+     * \f]
+     * Or in summation notation:
+     * \f[
+     *  v_p
+     *     = x_p
+     *     - \sum_{j=1}^{p-1} r_{j,p}\,v_j
+     * \f]
+     * Where \f[r_{j,p} = \frac{x_p \cdot v_j}{v_j \cdot v_j}\f]
+     *
      * @param A The matrix to find the orthonormal basis for.
+     * @param R Optional output matrix to store the upper triangular matrix from the Gram-Schmidt process.
      * @return A vector of orthonormal vectors that form the basis for the column space of A.
      */
     template <Number number, int m, int n>
-    vector<Vector<number, m>> GSOrth(const Matrix<number, m, n>& A) {
+    vector<Vector<number, m>> GSOrth(const Matrix<number, m, n>& A, Matrix<number, n, n>* R = nullptr) {
         const auto& [nRows, nCols] = A.shape();
         const auto& asCols = A.colToVectorSet();
         vector<Vector<number, m>> qs;
         qs.reserve(nCols);
-        qs.push_back(asCols[0] / asCols[0].length());
+        const auto& v0 = asCols[0];
+        const auto& norm0 = v0.length();
+        qs.push_back(v0 / norm0);
+        if (R) {
+            R->at(0, 0) = norm0;
+        }
 
         for (size_t i{1}; i < nCols; ++i) {
             auto vi = asCols[i];
 
             for (size_t j{}; j < i; ++j) {
-                vi -= ((vi * qs[j]) / (qs[j] * qs[j])) * qs[j];
+                number rji = vi.dot(qs[j]);
+                if (R) {
+                    R->at(j, i) = rji;
+                }
+                vi -= rji * qs[j];
             }
 
             const auto& norm = vi.length();
+            if (fuzzyCompare(norm, number(0)))
+                throw StackError<std::logic_error>{"Matrix A is singular or has linearly dependent columns"};
+
+            if (R) {
+                R->at(i, i) = norm;
+            }
             qs.push_back(vi / norm);
         }
         return qs;
     }
 
+    /**
+     * @brief Compute the QR decomposition of a square matrix A using the Gram-Schmidt process.
+     *
+     * We factorize \f$A=Q\,R\f$ by orthonormalizing the columns \f$\{x_1,\dots,x_n\}\f$ of \f$A\f$:
+     *
+     * \f[
+     *   v_p
+     *     = x_p
+     *     - \sum_{j=1}^{p-1} r_{j,p}\,v_j,
+     *   \quad\text{where}\quad
+     *   r_{j,p} = \frac{x_p \cdot v_j}{v_j \cdot v_j},
+     * \f]
+     *
+     * then normalize
+     *
+     * \f[
+     *   q_p = \frac{v_p}{\|v_p\|},
+     *   \quad
+     *   r_{p,p} = \|v_p\|.
+     * \f]
+     *
+     * The orthonormal vectors \f$\{q_1,\dots,q_n\}\f$ form the columns of \f$Q\f$, and
+     * all coefficients \f$r_{j,p}\f$ (for \f$j\le p\f$) assemble into the upper‑triangular matrix \f$R\f$.
+     * Hence,
+     *
+     * \f[
+     *   A = Q\,R,\quad
+     *   Q^\top Q = I,\quad
+     *   R_{j,i} = 0\quad\text{for }j>i.
+     * \f]
+     *
+     * @param A The square matrix to decompose.
+     * @return A pair containing the orthogonal matrix Q and the upper triangular matrix R.
+     */
     template <Number number, int n>
     auto QR(const Matrix<number, n, n>& A) {
         const auto [nR, nC] = A.shape();
@@ -827,37 +903,10 @@ namespace mlinalg {
         const int numCols = nC;
         if (numRows != numCols) throw StackError<std::invalid_argument>{"Matrix A must be square"};
 
-        auto U = matrixZeros<number, n, n>(numRows, numRows);
         auto R = matrixZeros<number, n, n>(numRows, numRows);
 
-        const auto& asCols{A.colToVectorSet()};
-        for (int i{}; i < numRows; i++) {
-            // Squared norm of w_i
-            const auto& wI{asCols[i]};
-            // const auto& wI{A[i]};
-            const auto wIN2{wI.dot(wI)};
-            // const auto wIN2{std::pow(wI.length(), 2)};
+        const auto& Q = helpers::fromColVectorSet<number, n, n>(GSOrth<number, n, n>(A, &R));
 
-            // Compute coefficients R_ji
-            number sum{0};
-            for (int j{}; j < i; j++) {
-                const auto dot = wI.dot(U[j]);
-                R(j, i) = dot;
-                sum += dot * dot;
-            }
-            const auto& diag = wIN2 - sum;
-            R(i, i) = sqrt(std::max(diag, EPSILON));
-
-            if (fuzzyCompare(R(i, i), number(0))) throw StackError<std::logic_error>{"Matrix A is singular"};
-
-            // Compute vector U_i using forward substitution
-            auto vec = vectorZeros<number, n>(numRows);
-            for (int j{}; j < i; j++) vec += R(j, i) * U[j];
-            U[i] = (wI - vec) / R(i, i);
-        }
-
-        // Q = U.T
-        const auto& Q = helpers::extractMatrixFromTranspose(U.T());
         return std::pair{Q, R};
     }
 
@@ -1092,6 +1141,7 @@ namespace mlinalg {
      * A & \mathbf{b}
      * \end{bmatrix}
      * \]
+     * \f]
      *
      * @param system The linear system to find the solutions of.
      * @return The solutions to the system if they exist, nullopt otherwise.
@@ -1123,6 +1173,53 @@ namespace mlinalg {
             }
         }
         return solutions;
+    }
+
+    /**
+     * @brief Solve an upper triangular system of equations
+     *
+     * @param sys The upper triangular system of equations to solve.
+     * @param b  The right-hand side vector of the system.
+     * @return The solution vector x to the system.
+     */
+    template <Number number, int m, int n>
+    Vector<number, m> solveUpperTriangular(const Matrix<number, m, n>& sys, const Vector<number, n>& b) {
+        const auto& A = sys;
+        const auto [numRows, numCols] = A.shape();
+        const int nR = numRows;
+        if (!isUpperTriangular(A))
+            throw StackError<std::invalid_argument>("Matrix A must be upper triangular for this solve");
+
+        Vector<number, m> x(nR);
+        number back{};
+        for (int i{nR - 1}; i >= 0; --i) {
+            back = 0;
+            for (int j{i + 1}; j <= nR - 1; ++j) {
+                back += x[j] * (A(i, j));
+            }
+            x[i] = (b[i] - back) / (A(i, i));
+        }
+        return x;
+    }
+
+    /**
+     * @brief Solve a linear system of equations using QR decomposition.
+     *
+     * @param A The matrix of the linear system.
+     * @param b The right-hand side vector of the linear system.
+     * @param method The method to use for QR decomposition (default is Gram-Schmidt).
+     * @return The solution vector x to the system.
+     */
+    template <Number number, int m, int n>
+    Vector<number, m> solveQR(const Matrix<number, m, n>& A, const Vector<number, n>& b, QRMethod method) {
+        const auto [nR, nC] = A.shape();
+        const auto bSize = b.size();
+        if (nR != bSize) throw StackError<invalid_argument>("The matrix and vector are incompatible");
+
+        const auto& [Q, R] = QR<QRType::Thin>(A, method);
+        const auto& rhs = Q * b;
+        const auto x = solveUpperTriangular(R, rhs);
+        return x;
     }
 
     template <Number number, int m, int n>
