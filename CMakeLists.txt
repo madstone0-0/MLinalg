@@ -8,6 +8,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 include(CheckCXXCompilerFlag)
 
+# Unity Build
+set(CMAKE_UNITY_BUILD ON)
+
 # Check if the compiler supports -mavx
 check_cxx_compiler_flag("-mavx" COMPILER_SUPPORTS_MAVX)
 if(COMPILER_SUPPORTS_MAVX)
