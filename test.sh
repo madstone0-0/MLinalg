@@ -4,12 +4,12 @@ OUT_DIR="build"
 test_release() {
 	echo "Testing Release"
 	LOCAL_OUT_DIR="$OUT_DIR-release"
-	ctest --test-dir "$LOCAL_OUT_DIR/test" --output-on-failure -j4 --output-on-failure
+	ctest --test-dir "$LOCAL_OUT_DIR/src/test" --output-on-failure -j4 --output-on-failure
 }
 
 test_debug() {
 	echo "Testing Debug"
-	ctest --test-dir "$OUT_DIR/test" --output-on-failure -j4 --output-on-failure
+	ctest --test-dir "$OUT_DIR/src/test" --output-on-failure -j4 --output-on-failure
 }
 
 MODE="$1"

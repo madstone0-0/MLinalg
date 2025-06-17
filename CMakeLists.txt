@@ -76,7 +76,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 find_package(Catch2 3 REQUIRED)
 
 add_subdirectory(src)
-add_subdirectory(test)
 
 #################
 # Boost         #

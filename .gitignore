@@ -12,5 +12,5 @@ docs
 *.data
 *.png
 compile_commands.json
-test/dummy.cpp
+src/test/dummy.cpp
 *.ipynb

@@ -89,3 +89,5 @@ export(
 )
 
 export(PACKAGE mlinalg)
+
+add_subdirectory(test)
