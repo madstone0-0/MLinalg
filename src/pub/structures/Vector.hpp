@@ -36,9 +36,14 @@ namespace mlinalg::structures {
        public:
         Vector() { checkDimensions(); }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+
         // Constructor to keep consistency with the Dynamic Vector specialization to allow them to be used
         // interchangeably
         explicit Vector(size_t size) {}  // NOLINT
+
+#pragma GCC diagnostic pop
 
         /**
          * @brief Construct a new Vector object from an initializer list

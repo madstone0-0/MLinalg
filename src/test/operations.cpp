@@ -1477,7 +1477,7 @@ TEST_CASE("Operations") {
             }
 
             SECTION("Gram-Schmidt Orthogonalization") {
-                const auto checks = [](const auto& qs, const auto& A) {
+                const auto checks = [](const auto& qs, const auto& /*A*/) {
                     // Check orthogonality
                     for (size_t i = 0; i < qs.size(); ++i) {
                         for (size_t j = i + 1; j < qs.size(); ++j) {
@@ -1550,8 +1550,7 @@ TEST_CASE("Operations") {
                     return true;
                 };
 
-                auto verifyLUDecomposition = [&](const auto& L, const auto& U, const auto& A,
-                                                 double tolerance = 1e-12) -> bool {
+                auto verifyLUDecomposition = [&](const auto& L, const auto& U, const auto& A) -> bool {
                     auto LU_product = L * U;
                     CAPTURE(A, L, U, LU_product, A == LU_product);
                     return A == LU_product;

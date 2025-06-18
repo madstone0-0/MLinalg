@@ -107,10 +107,10 @@ namespace mlinalg {
      */
     template <Number number, int m, int n>
     bool isInReducedEchelonForm(const LinearSystem<number, m, n>& system, const RowOptional<number, m>& pivots) {
-        for (int i{1}; i < pivots.size(); i++) {
+        for (int i{1}; i < static_cast<int>(pivots.size()); i++) {
             if (!pivots.at(i).has_value()) continue;
             for (int j{i - 1}; j >= 0; j--)
-                if (system.at(j).at(i) != 0) return false;
+                if (!fuzzyCompare(system(j, i), number(0))) return false;
         }
         return true;
     }
@@ -1317,7 +1317,7 @@ namespace mlinalg {
 
         const auto& [L, U] = LU(A);
 
-        for (int i = 0; i < nR; ++i) {
+        for (size_t i{}; i < nR; ++i) {
             const auto& abs = std::abs(U(i, i));
             if (fuzzyCompare(abs, number(0)) || abs < EPSILON) return true;
             // if (std::abs(U(i, i)) < EPSILON_FIXED) return true;

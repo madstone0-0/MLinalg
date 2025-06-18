@@ -56,9 +56,14 @@ namespace mlinalg::structures {
        public:
         Matrix() = default;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+
         // Constructor to keep consistency with the Dynamic Matrix specialization to allow them to be used
         // interchangeably
         Matrix(int nRows, int nCols) {}  // NOLINT
+
+#pragma GCC diagnostic pop
 
         /**
          * @brief Construct a new Matrix object from an initializer list of row vectors
@@ -481,6 +486,8 @@ namespace mlinalg::structures {
             return MatrixSubset<number, m, n>(matrix, i, j);
         }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
         /**
          * @brief Slice the matrix
          *
@@ -490,6 +497,7 @@ namespace mlinalg::structures {
         Matrix<number, (i1 - i0), (j1 - j0)> slice(SizeTPair i = {0, 0}, SizeTPair j = {0, 0}) const {
             return MatrixSlice<i0, i1, j0, j1, number, m, n>(matrix);
         }
+#pragma GCC diagnostic pop
 
         /**
          * @brief Create a view of the matrix

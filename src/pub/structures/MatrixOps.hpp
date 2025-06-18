@@ -174,7 +174,6 @@ namespace mlinalg::structures {
     void matrixAddI(T& matrix, const U& otherMatrix) {
         checkMatrixOperandSize(matrix, otherMatrix);
         const auto& nRows = matrix.size();
-        const auto& nCols = matrix.at(0).size();
         for (size_t i{}; i < nRows; i++) matrix.at(i) = matrix.at(i) + otherMatrix.at(i);
     }
 
@@ -192,7 +191,6 @@ namespace mlinalg::structures {
     void matrixSubI(T& matrix, const U& otherMatrix) {
         checkMatrixOperandSize(matrix, otherMatrix);
         const auto& nRows = matrix.size();
-        const auto& nCols = matrix.at(0).size();
         for (size_t i{}; i < nRows; i++) matrix.at(i) = matrix.at(i) - otherMatrix.at(i);
     }
 
@@ -737,14 +735,14 @@ namespace mlinalg::structures {
         const size_t& nRows = matrix.size();
         const size_t& nCols = matrix.at(0).size();
 
-        auto mutateMatrix = [&matrix, &nRows, &nCols, sizeP](auto& variant) {
+        auto mutateMatrix = [&](auto& variant) {
             if constexpr (is_same_v<std::decay_t<decltype(variant)>, Matrix<number, sizeP.second, sizeP.first>>) {
                 for (size_t i{}; i < nRows; i++)
                     for (size_t j{}; j < nCols; j++) variant.at(j).at(i) = matrix.at(i).at(j);
             }
         };
 
-        auto mutateVector = [&matrix, &nRows](auto& variant) {
+        auto mutateVector = [&](auto& variant) {
             if constexpr (is_same_v<std::decay_t<decltype(variant)>, Vector<number, vSize>>) {
                 for (size_t i{}; i < nRows; i++) variant.at(i) = matrix.at(i).at(0);
             }
