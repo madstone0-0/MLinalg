@@ -59,9 +59,6 @@ namespace mlinalg::structures::helpers {
     using std::vector;
     namespace rg = std::ranges;
 
-    template <Number number, int m, int n>
-    using TransposeVariant = std::variant<Vector<number, m>, Matrix<number, n, m>>;
-
     template <Number num>
     num rng(int min, int max, std::optional<size_t> seed = std::nullopt)
         requires(std::is_integral_v<num>)
@@ -144,8 +141,8 @@ namespace mlinalg::structures::helpers {
      * @return Vector<number, m>
      */
     template <Number num, int m, int n>
-    Vector<num, m> extractVectorFromTranspose(const TransposeVariant<num, m, n> T) {
-        return std::get<Vector<num, m>>(T);
+    Vector<num, n> extractVectorFromTranspose(const TransposeVariant<num, m, n> T) {
+        return std::get<Vector<num, n>>(T);
     }
 
     /**

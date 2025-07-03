@@ -729,7 +729,7 @@ namespace mlinalg::structures {
     TransposeVariant<number, m, n> TransposeMatrix(const T& matrix) {
         constexpr auto isDynamic = m == Dynamic || n == Dynamic;
 
-        constexpr int vSize = isDynamic ? Dynamic : m;
+        constexpr int vSize = isDynamic ? Dynamic : n;
         constexpr auto sizeP = isDynamic ? DynamicPair : SizePair{m, n};
 
         const size_t& nRows = matrix.size();
@@ -744,18 +744,18 @@ namespace mlinalg::structures {
 
         auto mutateVector = [&](auto& variant) {
             if constexpr (is_same_v<std::decay_t<decltype(variant)>, Vector<number, vSize>>) {
-                for (size_t i{}; i < nRows; i++) variant.at(i) = matrix.at(i).at(0);
+                for (size_t i{}; i < nCols; i++) variant.at(i) = matrix.at(0).at(i);
             }
         };
 
         TransposeVariant<number, sizeP.first, sizeP.second> res(
             std::in_place_index<1>, Matrix<number, sizeP.second, sizeP.first>(nCols, nRows));
-        if (nCols != 1) {
+        if (nRows != 1) {
             std::visit(mutateMatrix, res);
             return res;
         }
 
-        res = Vector<number, vSize>(nRows);
+        res = Vector<number, vSize>(nCols);
         std::visit(mutateVector, res);
         return res;
     }

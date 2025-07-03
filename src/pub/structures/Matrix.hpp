@@ -3,6 +3,8 @@
  * @brief Header file for the Matrix class
  */
 
+// FIX: Fix matrix-vector and vector-matrix multiplication order
+
 #pragma once
 
 #include <algorithm>
@@ -384,8 +386,8 @@ namespace mlinalg::structures {
         TransposeVariant<number, m, n> T() const { return TransposeMatrix<number, m, n>(matrix); }
 
         friend std::ostream& operator<<(std::ostream& os, const TransposeVariant<number, n, m>& system) {
-            if (std::holds_alternative<Vector<number, n>>(system)) {
-                os << get<Vector<number, n>>(system);
+            if (std::holds_alternative<Vector<number, m>>(system)) {
+                os << get<Vector<number, m>>(system);
             } else if (std::holds_alternative<Matrix<number, m, n>>(system)) {
                 os << get<Matrix<number, m, n>>(system);
             }
@@ -595,12 +597,26 @@ namespace mlinalg::structures {
     };
 
     template <Number number, int m, int n, int nOther>
-    TransposeVariant<number, m, nOther> operator*(TransposeVariant<number, m, n> lhs, Matrix<number, n, nOther> rhs) {
-        if (std::holds_alternative<Vector<number, m>>(lhs)) {
-            auto vec = get<Vector<number, m>>(lhs);
+    TransposeVariant<number, nOther, m> operator*(TransposeVariant<number, m, n> lhs, Matrix<number, n, nOther> rhs) {
+        if (std::holds_alternative<Vector<number, n>>(lhs)) {
+            auto vec = get<Vector<number, n>>(lhs);
             return vec * rhs;
         } else {
-            auto mat = get<Matrix<number, m, n>>(lhs);
+            auto mat = get<Matrix<number, n, m>>(lhs);
+            return mat * rhs;
+        }
+    }
+
+    template <Number number, int m, int n>
+    TransposeVariant<number, n, n> operator*(TransposeVariant<number, m, n> lhs, Matrix<number, m, n> rhs)
+        requires(m != n)
+    {
+        if (std::holds_alternative<Vector<number, n>>(lhs)) {
+            auto vec = get<Vector<number, n>>(lhs);
+            const auto& res = vec.T() * rhs;
+            return helpers::extractVectorFromTranspose(res.T());
+        } else {
+            auto mat = get<Matrix<number, n, m>>(lhs);
             return mat * rhs;
         }
     }

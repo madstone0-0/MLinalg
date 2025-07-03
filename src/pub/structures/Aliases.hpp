@@ -89,7 +89,7 @@ namespace mlinalg::structures {
      * matrix and the transpose of a matrix is an NxM matrix, this variant is used to represent either of these
      */
     template <Number number, int m, int n>
-    using TransposeVariant = std::variant<Vector<number, m>, Matrix<number, n, m>>;
+    using TransposeVariant = std::variant<Vector<number, n>, Matrix<number, n, m>>;
 
     /**
      * @brief Type alias for a Vector as a row in a Matrix
