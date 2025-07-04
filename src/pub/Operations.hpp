@@ -14,6 +14,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
+#include <format>
 #include <functional>
 #include <iterator>
 #include <map>
@@ -137,7 +138,7 @@ namespace mlinalg {
                 if (var.has_value()) {
                     res = var.value() * row.at(i) * number(-1);
                 } else {
-                    res = row.at(i) * number(-1);
+                    continue;  // Skip if the variable is not known
                 }
                 rightSum += res;
             }
@@ -556,37 +557,6 @@ namespace mlinalg {
     }
 
     /**
-     * @brief Find the identity matrix of a square linear system
-     * @return  The identity matrix of the system.
-     */
-    template <Number number, int m>
-    Matrix<number, m, m> I() {
-        Matrix<number, m, m> identity{};
-        for (size_t i{}; i < m; i++) {
-            identity.at(i).at(i) = 1;
-        }
-        return identity;
-    }
-
-    /**
-     * @brief Find the identity matrix of a square linear system
-     *
-     * @return  The identity matrix of the system.
-     */
-    template <Number number, int m>
-    Matrix<number, m, m> I(int nRows) {
-        if constexpr (m == -1) {
-            Matrix<number, m, m> identity(nRows, nRows);
-            for (int i{}; i < nRows; i++) {
-                identity.at(i, i) = 1;
-            }
-            return identity;
-        } else {
-            return I<number, m>();
-        }
-    }
-
-    /**
      * @brief Creates a zero matrix of the given size.
      *
      * @tparam m The number of rows in the matrix.
@@ -838,7 +808,7 @@ namespace mlinalg {
 
             // Calculate L21
             for (int i = 1; i < numRows; ++i) {
-                L(i, 0) = A(i, 0) / (a11 + EPSILON);
+                L(i, 0) = (A(i, 0)) / (a11 + EPSILON);
                 // Set the corresponding U values to 0 for lower triangular portion
                 U(i, 0) = 0;
             }
@@ -847,7 +817,7 @@ namespace mlinalg {
             auto S = A22;
             for (int i = 1; i < numRows; ++i) {
                 for (int j = 1; j < numRows; ++j) {
-                    S(i - 1, j - 1) = A(i, j) - L(i, 0) * U(0, j);
+                    S(i - 1, j - 1) = (A(i, j)) - (L(i, 0)) * (U(0, j));
                 }
             }
             const auto& S22{S};
@@ -899,9 +869,11 @@ namespace mlinalg {
         vector<Vector<number, m>> basis = qs;
         auto n = qs.size();
 
-        // We need (dimension - currentSize) more vectors
+        if (n == 0)
+            throw StackError<std::invalid_argument>{"At least one vector is required to extend to a complete basis"};
+
         for (size_t i = n; i < dim; ++i) {
-            // Start with a standard basis vector
+            // Standard basis vector e_i
             Vector<number, m> candidate(dim);
 
             // Try each standard basis vector until we find one that's not
@@ -909,7 +881,7 @@ namespace mlinalg {
             bool found = false;
             for (size_t basisIdx = 0; basisIdx < dim && !found; ++basisIdx) {
                 // Create e_basisIndex (standard basis vector)
-                candidate = Vector<number, m>{};
+                candidate = Vector<number, m>(qs[0].size());
                 candidate[basisIdx] = number(1);
 
                 // Orthogonalize against all existing vectors using Gram-Schmidt
@@ -1068,7 +1040,7 @@ namespace mlinalg {
             }
             return {Q, R};
         } else {
-            auto R = RType<type, number, m, n>(nR, std::min(nR, nC));
+            auto R = RType<type, number, m, n>(std::min(nR, nC), nC);
 
             const auto& qs = GSOrth<type>(A, &R);
             // For thin QR decomposition, we can return the orthogonal matrix directly
@@ -1638,6 +1610,38 @@ namespace mlinalg {
     }
 
     template <Number number, int m, int n>
+    Vector<number, m> solveUpperTriangular(const Matrix<number, m, n>& sys, const Vector<number, n>& b) {
+        const auto& A = sys;
+        const auto [numRows, numCols] = A.shape();
+        const int nR = numRows;
+        if (!isUpperTriangular(A))
+            throw StackError<std::invalid_argument>("Matrix A must be upper triangular for this solve");
+
+        Vector<number, m> x(nR);
+        number back{};
+        for (int i{nR - 1}; i >= 0; --i) {
+            back = 0;
+            for (int j{i + 1}; j <= nR - 1; ++j) {
+                back += x[j] * (A(i, j));
+            }
+            x[i] = (b[i] - back) / (A(i, i));
+        }
+        return x;
+    }
+
+    template <Number number, int m, int n>
+    Vector<number, m> solveQR(const Matrix<number, m, n>& A, const Vector<number, n>& b, QRMethod method) {
+        const auto [nR, nC] = A.shape();
+        const auto bSize = b.size();
+        if (nR != bSize) throw StackError<invalid_argument>("The matrix and vector are incompatible");
+
+        const auto& [Q, R] = QR<QRType::Thin>(A, method);
+        const auto& rhs = Q * b;
+        const auto x = solveUpperTriangular(R, rhs);
+        return x;
+    }
+
+    template <Number number, int m, int n>
     auto nulspace(const Matrix<number, m, n>& A) {
         const auto [nR, nC] = A.shape();
         const auto& zero{vectorZeros<number, m>((int)nR)};
@@ -1667,7 +1671,7 @@ namespace mlinalg {
             auto rrefAug = rref(augmented);
             auto inv = rrefAug.colToVectorSet();
             inv.erase(inv.begin(), inv.begin() + nRows);
-            return mlinalg::structures::helpers::fromColVectorSet<number, m, m>(inv);
+            return helpers::fromColVectorSet<number, m, m>(inv);
         }
     }
 
@@ -1680,7 +1684,7 @@ namespace mlinalg {
     template <Number number, int n>
     vector<number> diag(const Matrix<number, n, n>& matrix) {
         const auto [nR, nC] = matrix.shape();
-        if (nR != nC) throw StackError<runtime_error>("Matrix must be square to find a diagonal");
+        if (nR != nC) throw StackError("Matrix must be square to find a diagonal");
 
         vector<number> res;
         res.reserve(nR);
@@ -1708,6 +1712,27 @@ namespace mlinalg {
     }
 
     /**
+     * @brief Create a diagonal matrix with the given entries on the diagonal
+     * only for dynamic matrices
+     *
+     * @param a The value to fill the diagonal with.
+     * @param size The size of the diagonal matrix
+     * @return A diagonal matrix of size (size) with the given value on the diagonal
+     */
+    template <int n, Number number>
+    Matrix<number, n, n> diagonal(number a, size_t size)
+        requires(n == Dynamic)
+    {
+        Matrix<number, n, n> res(size, size);
+        size_t i{};
+        while (i < size) {
+            res(i, i) = a;
+            i++;
+        }
+        return res;
+    }
+
+    /**
      * @brief Create a diagonal matrix with the given entries on the diagonal.
      *
      * @param entries The entries to fill the diagonal with.
@@ -1728,6 +1753,26 @@ namespace mlinalg {
     /**
      * @brief Create a diagonal matrix with the given entries on the diagonal.
      *
+     * @param entries The entries to fill the diagonal with.
+     * @return A diagonal matrix with the given entries on the diagonal.
+     */
+    template <int n, Number number>
+    Matrix<number, n, n> diagonal(const std::initializer_list<number>& entries, size_t size)
+        requires(n == Dynamic)
+    {
+        Matrix<number, n, n> res(size, size);
+        size_t i{};
+        for (const auto& entry : entries) {
+            if (i >= size) throw StackError<std::out_of_range>{"Too many entries for diagonal matrix"};
+            res(i, i) = entry;
+            i++;
+        }
+        return res;
+    }
+
+    /**
+     * @brief Create a diagonal matrix with the given entries on the diagonal.
+     *
      * @tparam Itr The iterator type for the entries.
      * @param begin The beginning iterator for the entries.
      * @param end  The ending iterator for the entries.
@@ -1736,15 +1781,25 @@ namespace mlinalg {
     template <int n, Number number, typename Itr>
     Matrix<number, n, n> diagonal(Itr begin, Itr end) {
         auto dist = std::distance(begin, end);
-        if (n != dist) throw StackError<std::out_of_range>{"Too many entries for diagonal matrix"};
-        Matrix<number, n, n> res(n, n);
 
-        size_t i{};
-        for (auto itr{begin}; itr != end; itr++) {
-            res(i, i) = *itr;
-            i++;
+        if constexpr (n == Dynamic) {
+            Matrix<number, n, n> res(dist, dist);
+            size_t i{};
+            for (auto itr{begin}; itr != end; ++itr) {
+                res(i, i) = *itr;
+                i++;
+            }
+            return res;
+        } else {
+            if (n != dist) throw StackError<std::out_of_range>{"Too many entries for diagonal matrix"};
+            Matrix<number, n, n> res(n, n);
+            size_t i{};
+            for (auto itr{begin}; itr != end; ++itr) {
+                res(i, i) = *itr;
+                i++;
+            }
+            return res;
         }
-        return res;
     }
 
     /**
@@ -1762,34 +1817,67 @@ namespace mlinalg {
         return res;
     }
 
-    template <Number number, int n>
-    auto eigenQR(const Matrix<number, n, n>& A, size_t iters = 10'000) {
+    template <QRType type, Number number, int n>
+    auto schurCommon(const Matrix<number, n, n>& A, bool checkSingular = true, QRMethod method = QRMethod::Householder,
+                     size_t iters = 10'000) {
         const auto [nR, nC] = A.shape();
         const int numRows = nR;
         const int numCols = nC;
         if (numRows != numCols) throw StackError<std::invalid_argument>{"Matrix A must be square"};
-        if (isSingular(A)) throw StackError<std::invalid_argument>{"Matrix A is singular"};
+        if (checkSingular)
+            if (isSingular(A)) throw StackError<std::invalid_argument>{"Matrix A is singular"};
 
-        auto Ai = A;
-        Matrix<number, n, n> Q;
-        Matrix<number, n, n> R;
-        auto Qprod{diagonal<n>(number(1))};
-        for (size_t i{1}; i < iters; i++) {
-            const auto& res = QR<QRType::Full>(Ai);
+        auto S = A;
+        QType<type, number, n, n> Q(nC, nC);
+        RType<type, number, n, n> R(nC, nC);
+        auto QProd = I<number, n>(nC);
+
+        bool converged{false};
+        size_t i{1};
+        for (; i < iters; ++i) {
+            const auto& res = QR<type>(S, method);
             Q = std::move(res.first);
             R = std::move(res.second);
-            Qprod = Qprod * Q;
+            QProd = QProd * Q;
 
-            Ai = R * Q;
+            S = R * Q;
 
-            if (isUpperTriangular(A)) break;
+            if (isUpperTriangular(S)) {
+                converged = true;
+                logging::log(format("Converged after {} iterations", i), "schurCommon");
+                break;
+            }
         }
-        logging::log(format("Qprod -> {}", Qprod), "eigenQR");
+        if (!converged) logging::log(format("Converged after {} iterations", i), "schurCommon");
+        logging::log(format("Qprod -> {}", QProd), "Schur");
 
-        const auto& values = diag(Ai);
-        auto vectors{Qprod.colToVectorSet()};
+        return pair{QProd, S};
+    }
+
+    template <QRType type, Number number, int n>
+    auto schur(const Matrix<number, n, n>& A, bool checkSingular = true, QRMethod method = QRMethod::Householder,
+               size_t iters = 10'000) {
+        const auto& [Q, S] = schurCommon<type>(A, checkSingular, method, iters);
+
+        return std::tuple{Q, S, helpers::extractMatrixFromTranspose(Q.T())};
+    }
+
+    template <QRType type, Number number, int n>
+    auto eigenQR(const Matrix<number, n, n>& A, bool checkSingular = true, QRMethod method = QRMethod::Householder,
+                 size_t iters = 10'000) {
+        const auto [nR, nC] = A.shape();
+        const auto& [Q, S] = schurCommon<type>(A, checkSingular, method, iters);
+
+        const auto& values = diag(S);
+        const auto& vectors = Q.colToVectorSet();
 
         return pair{values, vectors};
+    }
+
+    template <Number number, int n>
+    auto eigenQR(const Matrix<number, n, n>& A, bool checkSingular = true, QRMethod method = QRMethod::Householder,
+                 size_t iters = 10'000) {
+        return eigenQR<QRType::Thin>(A, checkSingular, method, iters);
     }
 
     /**
@@ -1827,51 +1915,93 @@ namespace mlinalg {
      *      A = U\,\Sigma\,V^T.
      *    \f]
      *
-     * @param A The matrix to decompose.
+     * @param sys The matrix to decompose.
      * @return A std::tuple containing
      *         - \f$U\in\mathbb{R}^{m\times r}\f$: the left singular vectors,
      *         - \f$\Sigma\in\mathbb{R}^{r\times r}\f$: the diagonal matrix of singular values,
      *         - \f$V\in\mathbb{R}^{n\times r}\f$: the right singular vectors.
      */
     template <Number number, int m, int n>
-    auto svdEigen(const LinearSystem<number, m, n>& sys) {
+    auto svdEigen(const LinearSystem<number, m, n>& A) {
         // Find the eigen values and eigenvectors of A*A^T
-        const auto [nR, nC] = sys.shape();
-        const auto& ATA{sys * helpers::extractMatrixFromTranspose(sys.T())};
-        auto [l, v] = eigenQR(ATA);
-        const auto& A = helpers::padMatrixToSquare<number, m, n>(sys);
+        const auto [nR, nC] = A.shape();
+        const auto& ATA{helpers::extractMatrixFromTranspose(A.T() * A)};
+        logging::log(format("SVD ATA: {}", ATA), "svdEigen");
 
-        const auto& p = helpers::sortPermutation(l.begin(), l.end(), std::greater<>());
-        helpers::applySortPermutation(l, p);
-        helpers::applySortPermutation(v, p);
-        logging::log(format("SVD Eigenvalues: {}", l), "svdEigen");
-        logging::log(format("SVD Eigenvectors: {}", v), "svdEigen");
+        vector<Vector<number, n>> v;
+        vector<number> l;
+        try {
+            auto [lam, val] = eigenQR(ATA, false);
+            l = std::move(lam);
+            v = std::move(val);
+            // const auto& A = helpers::padMatrixToSquare<number, m, n>(sys);
+            logging::log(format("A: {}", A), "svdEigen");
+
+            const auto& p = helpers::sortPermutation(l.begin(), l.end(), std::greater<>());
+            helpers::applySortPermutation(l, p);
+            helpers::applySortPermutation(v, p);
+            logging::log(format("SVD Eigenvalues: {}", l), "svdEigen");
+            logging::log(format("SVD Eigenvectors: {}", v), "svdEigen");
+        } catch (const std::exception& e) {
+            logging::E(format("Error finding eigen values and vectors -> {}", e.what()), "svdEigen");
+            throw e;
+        }
 
         // Construct the Sigma matrix from the eigenvalues by taking the square root of the eigenvalues.
-        auto Sigma = matrixZeros<number, n, n>(nC, nC);
         const auto minDim = std::min(nR, nC);
-        for (size_t i{}; i < minDim; i++) {
-            Sigma(i, i) = l[i] > 0 ? sqrt(l[i]) : 0;
+        auto Sigma = matrixZeros<number, m, n>(nR, nC);
+        try {
+            for (size_t i{}; i < minDim; i++) {
+                Sigma(i, i) = l[i] > number(0) ? sqrt(l[i]) : number(0);
+            }
+            logging::log(format("SVD Sigma: {}", Sigma), "svdEigen");
+        } catch (const std::exception& e) {
+            logging::E(format("Error construction Sigma -> {}", e.what()), "svdEigen");
+            throw e;
         }
-        logging::log(format("SVD Sigma: {}", Sigma), "svdEigen");
 
         // Construct the V matrix from the eigenvectors.
         const auto& V = helpers::fromColVectorSet<number, ATA.rows, ATA.cols>(v);
         logging::log(format("SVD V: {}", V), "svdEigen");
 
         // Construct the U matrix using the eigenvectors and the Sigma matrix.
-        auto U = matrixZeros<number, m, m>(nR, nR);
-        for (size_t i{}; i < minDim; i++)
-            // Normalize the eigenvectors and multiply by the corresponding singular value.
-            if (!fuzzyCompare(Sigma(i, i), number(0))) {
-                auto ui = (A * v[i]).normalize();
-                for (size_t j = 0; j < m; j++) {
-                    U(j, i) = ui[j];
+        Matrix<number, m, m> U(nR, nR);
+        try {
+            vector<Vector<number, m>> us;
+            us.reserve(minDim);
+            size_t foundOrthCols{};
+            for (size_t i{}; i < minDim; ++i) {
+                // Normalize the eigenvectors and multiply by the corresponding singular value.
+                const auto& sigma = Sigma(i, i);
+                const auto& Avi = A * v[i];
+                if (!fuzzyCompare(sigma, number(0))) {
+                    const auto& ui = Avi / sigma;
+                    us.emplace_back(ui);
+                    foundOrthCols++;
                 }
             }
+            vector<Vector<number, m>> qs;
+            // If the number of orthonormal columns found is less than the maximum dimension,
+            // for example as a result of a zero singular value, generate the remaning columns
+            // to complete the orthonormal basis.
+            if (foundOrthCols < nR) {
+                qs = extendToCompleteBasis(us, nR);
+            } else
+                qs = us;
+
+            U = helpers::fromColVectorSet<number, m, m>(qs);
+        } catch (const std::exception& e) {
+            logging::E(format("Error constructiong U -> {}", e.what()), "svdEigen");
+            throw e;
+        }
+
+        const auto& VT = helpers::extractMatrixFromTranspose(V.T());
+
         logging::log(format("SVD U: {}", U), "svdEigen");
 
-        return std::tuple{U, Sigma, helpers::extractMatrixFromTranspose(V.T())};
+        logging::log(format("A = U * Sigma * V^T: {}", U * Sigma * VT), "svdEigen");
+
+        return std::tuple{U, Sigma, VT};
     }
 
     /**

@@ -5,6 +5,7 @@
 #include <catch2/catch_message.hpp>
 #include <catch2/catch_test_macros.hpp>
 
+#include "Concepts.hpp"
 #include "Helpers.hpp"
 #include "Structures.hpp"
 #include "structures/Aliases.hpp"
@@ -1201,6 +1202,20 @@ TEST_CASE("Operations") {
     }
 
     SECTION("Linear Algebra Operations", "[linalg]") {
+        const auto gsOrthChecks = [](const auto& qs, const auto& /*A*/) {
+            // Check orthogonality
+            for (size_t i = 0; i < qs.size(); ++i) {
+                for (size_t j = i + 1; j < qs.size(); ++j) {
+                    REQUIRE(fuzzyCompare(qs.at(i) * qs.at(j), 0.0));
+                }
+            }
+
+            // Check normality
+            for (const auto& vec : qs) {
+                REQUIRE(fuzzyCompare(vec.length(), 1.0));
+            }
+        };
+
         SECTION("Compile Time") {
             SECTION("Echelon Form") {
                 auto ref1 = ref(system1);
@@ -1477,19 +1492,6 @@ TEST_CASE("Operations") {
             }
 
             SECTION("Gram-Schmidt Orthogonalization") {
-                const auto checks = [](const auto& qs, const auto& /*A*/) {
-                    // Check orthogonality
-                    for (size_t i = 0; i < qs.size(); ++i) {
-                        for (size_t j = i + 1; j < qs.size(); ++j) {
-                            REQUIRE(fuzzyCompare(qs.at(i) * qs.at(j), 0.0));
-                        }
-                    }
-
-                    // Check normality
-                    for (const auto& vec : qs) {
-                        REQUIRE(fuzzyCompare(vec.length(), 1.0));
-                    }
-                };
                 {
                     // Account for linear dependence
                     Matrix<double, 4, 3> A1{
@@ -1500,7 +1502,7 @@ TEST_CASE("Operations") {
                     };
                     const auto& qs = GSOrth<QRType::Thin>(A1);
 
-                    checks(qs, A1);
+                    gsOrthChecks(qs, A1);
                 }
                 {
                     // Account for linear dependence
@@ -1512,7 +1514,7 @@ TEST_CASE("Operations") {
                     };
                     const auto& qs = GSOrth<QRType::Thin>(A1);
 
-                    checks(qs, A1);
+                    gsOrthChecks(qs, A1);
                 }
             }
 
@@ -1590,103 +1592,69 @@ TEST_CASE("Operations") {
                     }
                 };
 
-                // Test the original matrix A1
-                // {
-                //     Matrix<double, 4, 3> A1{
-                //         {1, 0, 0},
-                //         {1, 1, 0},
-                //         {1, 1, 1},
-                //         {1, 1, 1},
-                //     };
-                //     testMatrix(A1, "Original A1 matrix");
-                // }
-
-                // Test additional matrices with different characteristics
-                {
+                SECTION("Square Matrix") {
                     // Square matrix - basic case
-                    Matrix<double, 3, 3> square{
+                    Matrix<double, 3, 3> A{
                         {2, 1, 1},
                         {4, 3, 3},
                         {8, 7, 9},
                     };
-                    testMatrix(square, "Square matrix");
+                    testMatrix(A, "Square matrix");
                 }
 
-                {
-                    // Matrix with larger values
-                    Matrix<double, 3, 3> larger_values{
+                SECTION("Larget Values") {
+                    Matrix<double, 3, 3> A{
                         {10, 5, 2},
                         {3, 15, 4},
                         {1, 2, 20},
                     };
-                    testMatrix(larger_values, "Larger values matrix");
+                    testMatrix(A, "Larger values matrix");
                 }
 
-                {
-                    // Matrix with negative values
-                    Matrix<double, 3, 3> negative_values{
+                SECTION("Negative Values") {
+                    Matrix<double, 3, 3> A{
                         {1, -2, 3},
                         {-4, 5, -6},
                         {7, -8, 9},
                     };
-                    testMatrix(negative_values, "Mixed sign matrix");
+                    testMatrix(A, "Mixed sign matrix");
                 }
 
-                {
-                    // Identity matrix (trivial case)
-                    Matrix<double, 3, 3> identity{
+                SECTION("Identity Matrix") {
+                    Matrix<double, 3, 3> A{
                         {1, 0, 0},
                         {0, 1, 0},
                         {0, 0, 1},
                     };
-                    testMatrix(identity, "Identity matrix");
+                    testMatrix(A, "Identity matrix");
                 }
 
                 // Test edge cases that might cause issues
                 SECTION("Edge Cases") {
                     // Test matrix with zeros
                     {
-                        Matrix<double, 3, 3> with_zeros{
+                        Matrix<double, 3, 3> A{
                             {1, 0, 3},
                             {0, 2, 0},
                             {4, 0, 5},
                         };
 
                         INFO("Testing matrix with strategic zeros");
-                        const auto& [L, U] = LU(with_zeros);
-                        REQUIRE(verifyLUDecomposition(L, U, with_zeros));
+                        const auto& [L, U] = LU(A);
+                        REQUIRE(verifyLUDecomposition(L, U, A));
                     }
-
-                    // Test matrix that might need pivoting (if your LU supports it)
-                    // {
-                    //     Matrix<double, 3, 3> needs_pivoting{
-                    //         {0, 1, 2},
-                    //         {1, 1, 1},
-                    //         {2, 1, 0},
-                    //     };
-                    //
-                    //     INFO("Testing matrix that might need pivoting");
-                    //     try {
-                    //         const auto& [L, U] = LU(needs_pivoting);
-                    //         REQUIRE(verifyLUDecomposition(L, U, needs_pivoting));
-                    //     } catch (const std::exception& e) {
-                    //         // If LU decomposition fails due to zero pivot, that's expected
-                    //         // for matrices that need pivoting in naive LU implementation
-                    //         INFO("Matrix requires pivoting - exception expected: " << e.what());
-                    //     }
-                    // }
 
                     // Test small matrix
                     {
-                        Matrix<double, 2, 2> small{
+                        Matrix<double, 2, 2> A{
                             {3, 2},
                             {6, 4},
                         };
 
                         INFO("Testing 2x2 matrix");
                         try {
-                            const auto& [L, U] = LU(small);
-                            REQUIRE(verifyLUDecomposition(L, U, small));
+                            const auto& [L, U] = LU(A);
+                            REQUIRE(verifyLUDecomposition(L, U, A));
                         } catch (const std::exception& e) {
                             // This matrix is singular (rank 1), so LU might fail
                             INFO("Singular matrix - exception expected: " << e.what());
@@ -1696,14 +1664,14 @@ TEST_CASE("Operations") {
 
                 // Test numerical precision
                 SECTION("Numerical Precision") {
-                    Matrix<double, 3, 3> precision_test{
+                    Matrix<double, 3, 3> A{
                         {1.0001, 1, 1},
                         {1, 1.0001, 1},
                         {1, 1, 1.0001},
                     };
 
                     INFO("Testing numerical precision with near-singular matrix");
-                    const auto& [L, U] = LU(precision_test);
+                    const auto& [L, U] = LU(A);
 
                     // Use slightly relaxed tolerance for near-singular cases
                     auto relaxed_verify = [&](const auto& L, const auto& U, const auto& A) -> bool {
@@ -1721,22 +1689,22 @@ TEST_CASE("Operations") {
                     REQUIRE(isLowerTriangular(L));
                     REQUIRE(isUpperTriangular(U));
                     REQUIRE(hasUnitDiagonal(L));
-                    REQUIRE(relaxed_verify(L, U, precision_test));
+                    REQUIRE(relaxed_verify(L, U, A));
                 }
 
                 // Test determinant preservation (if applicable)
                 SECTION("Determinant Properties") {
-                    Matrix<double, 3, 3> det_test{
+                    Matrix<double, 3, 3> A{
                         {2, 1, 0},
                         {1, 3, 1},
                         {0, 1, 2},
                     };
 
-                    const auto& [L, U] = LU(det_test);
+                    const auto& [L, U] = LU(A);
 
                     // For LU decomposition: det(A) = det(L) * det(U) = det(U) (since det(L) = 1)
                     // This is a consistency check if you have determinant calculation available
-                    REQUIRE(verifyLUDecomposition(L, U, det_test));
+                    REQUIRE(verifyLUDecomposition(L, U, A));
 
                     // Verify that diagonal of U contains meaningful values (no unexpected zeros)
                     for (size_t i = 0; i < std::min(U.numRows(), U.numCols()); ++i) {
@@ -1746,22 +1714,7 @@ TEST_CASE("Operations") {
                 }
             }
 
-            // Enhanced test cases
             SECTION("QR Decomposition") {
-                auto isOrthogonal = [](auto const& Q) {
-                    const auto& QCols = Q.colToVectorSet();
-                    const size_t n = Q.numCols();
-
-                    for (size_t i = 0; i < n; ++i) {
-                        for (size_t j = 0; j < n; ++j) {
-                            double dot_product = QCols[i].dot(QCols[j]);
-                            double expected = (i == j) ? 1.0 : 0.0;
-                            if (!fuzzyCompare(dot_product, expected)) return false;
-                        }
-                    }
-                    return true;
-                };
-
                 auto isUpperTriangular = [](auto const& R) {
                     const size_t m = R.numRows();
                     const size_t n = R.numCols();
@@ -1823,8 +1776,8 @@ TEST_CASE("Operations") {
                         {0, 0, 1},
                     };
 
-                    auto testMatrix = [&isOrthogonal, &isUpperTriangular, &verifyDecomposition](
-                                          const auto& A, const std::string& name) {
+                    auto testMatrix = [&isUpperTriangular, &verifyDecomposition](const auto& A,
+                                                                                 const std::string& name) {
                         INFO("Testing matrix: " << name);
 
                         SECTION("Thin QR - Gram-Schmidt") {
@@ -1841,33 +1794,6 @@ TEST_CASE("Operations") {
                             REQUIRE(isUpperTriangular(R));
                             REQUIRE(verifyDecomposition(Q, R, A));
                         }
-
-                        // Only test Full QR for tall/square matrices
-                        // if (A.numRows() >= A.numCols()) {
-                        //     SECTION("Full QR - Gram-Schmidt") {
-                        //         const auto& [Q, R] = QR<QRType::Full>(A, QRMethod::GramSchmidt);
-                        //
-                        //         // Verify dimensions
-                        //         REQUIRE(Q.numRows() == A.numRows());
-                        //         REQUIRE(Q.numCols() == A.numRows());
-                        //         REQUIRE(R.numRows() == A.numRows());
-                        //         REQUIRE(R.numCols() == A.numCols());
-                        //
-                        //         // Verify mathematical properties
-                        //         REQUIRE(isOrthogonal(Q));
-                        //         REQUIRE(isUpperTriangular(R));
-                        //         REQUIRE(verifyDecomposition(Q, R, A));
-                        //
-                        //         // Additional check: bottom rows of R should be zero for tall matrices
-                        //         if (A.numRows() > A.numCols()) {
-                        //             for (size_t i = A.numCols(); i < A.numRows(); ++i) {
-                        //                 for (size_t j = 0; j < A.numCols(); ++j) {
-                        //                     REQUIRE(fuzzyCompare(R(i, j), 0.0));
-                        //                 }
-                        //             }
-                        //         }
-                        //     }
-                        // }
 
                         // Test Householder method for comparison
                         SECTION("Thin QR - Householder") {
@@ -1899,7 +1825,7 @@ TEST_CASE("Operations") {
                 }
 
                 SECTION("Method Comparison") {
-                    Matrix<double, 4, 3> test_matrix{
+                    Matrix<double, 4, 3> A{
                         {1, -1, 4},
                         {1, 4, -2},
                         {1, 4, 2},
@@ -1907,12 +1833,12 @@ TEST_CASE("Operations") {
                     };
 
                     // Compare Gram-Schmidt vs Householder
-                    const auto& [Q_gs, R_gs] = QR<QRType::Thin>(test_matrix, QRMethod::GramSchmidt);
-                    const auto& [Q_hh, R_hh] = QR<QRType::Thin>(test_matrix, QRMethod::Householder);
+                    const auto& [Q_gs, R_gs] = QR<QRType::Thin>(A, QRMethod::GramSchmidt);
+                    const auto& [Q_hh, R_hh] = QR<QRType::Thin>(A, QRMethod::Householder);
 
                     // Both should give valid decompositions
-                    REQUIRE(verifyDecomposition(Q_gs, R_gs, test_matrix));
-                    REQUIRE(verifyDecomposition(Q_hh, R_hh, test_matrix));
+                    REQUIRE(verifyDecomposition(Q_gs, R_gs, A));
+                    REQUIRE(verifyDecomposition(Q_hh, R_hh, A));
 
                     // R matrices should be essentially the same (up to sign differences)
                     for (size_t i = 0; i < R_gs.numRows(); ++i) {
@@ -1926,35 +1852,27 @@ TEST_CASE("Operations") {
 
                 SECTION("Edge Cases") {
                     SECTION("Single column matrix") {
-                        Matrix<double, 3, 1> single_col{
+                        Matrix<double, 3, 1> A{
                             {2},
                             {3},
                             {4},
                         };
 
-                        const auto& [Q, R] = QR<QRType::Thin>(single_col, QRMethod::GramSchmidt);
+                        const auto& [Q, R] = QR<QRType::Thin>(A, QRMethod::GramSchmidt);
                         REQUIRE(isOrthogonal(Q));
-                        REQUIRE(verifyDecomposition(Q, R, single_col));
+                        REQUIRE(verifyDecomposition(Q, R, A));
                     }
 
-                    // SECTION("Single row matrix") {
-                    //     Matrix<double, 1, 3> single_row{
-                    //         {1, 2, 3},
-                    //     };
-                    //
-                    //     const auto& [Q, R] = QR<QRType::Thin>(single_row, QRMethod::GramSchmidt);
-                    //     REQUIRE(isOrthogonal(Q));
-                    //     REQUIRE(verifyDecomposition(Q, R, single_row));
-                    // }
-
                     SECTION("Square matrix") {
-                        Matrix<double, 3, 3> square{
-                            {1, 2, 3}, {4, 5, 6}, {7, 8, 10},  // Slightly modified to avoid singularity
+                        Matrix<double, 3, 3> A{
+                            {1, 2, 3},
+                            {4, 5, 6},
+                            {7, 8, 10},
                         };
 
                         // For square matrices, Full and Thin should give same dimensions
-                        const auto& [Q_full, R_full] = QR<QRType::Full>(square, QRMethod::GramSchmidt);
-                        const auto& [Q_thin, R_thin] = QR<QRType::Thin>(square, QRMethod::GramSchmidt);
+                        const auto& [Q_full, R_full] = QR<QRType::Full>(A, QRMethod::GramSchmidt);
+                        const auto& [Q_thin, R_thin] = QR<QRType::Thin>(A, QRMethod::GramSchmidt);
 
                         REQUIRE(Q_full.numRows() == Q_thin.numRows());
                         REQUIRE(Q_full.numCols() == Q_thin.numCols());
@@ -1965,18 +1883,204 @@ TEST_CASE("Operations") {
 
                 SECTION("Numerical Stability") {
                     // Test with a matrix that might cause numerical issues
-                    Matrix<double, 3, 3> challenging{
+                    Matrix<double, 3, 3> A{
                         {1e-15, 1, 0},
                         {0, 1e-15, 1},
                         {1, 0, 1e-15},
                     };
 
-                    const auto& [Q, R] = QR<QRType::Thin>(challenging, QRMethod::Householder);
+                    const auto& [Q, R] = QR<QRType::Thin>(A, QRMethod::Householder);
 
                     // Should still maintain mathematical properties (with relaxed tolerance)
                     REQUIRE(isOrthogonal(Q));
                     REQUIRE(isUpperTriangular(R));
-                    REQUIRE(verifyDecomposition(Q, R, challenging));
+                    REQUIRE(verifyDecomposition(Q, R, A));
+                }
+            }
+
+            SECTION("Singular Value Decomposition") {
+                auto isDiagonal = [](const auto& matrix, double tolerance = 1e-12) -> bool {
+                    for (size_t i = 0; i < matrix.numRows(); ++i) {
+                        for (size_t j = 0; j < matrix.numCols(); ++j) {
+                            if (i != j && !fuzzyCompare(matrix(i, j), 0.0, tolerance)) {
+                                return false;
+                            }
+                        }
+                    }
+                    return true;
+                };
+
+                auto singularValuesDescending = [](const auto& Sigma, double tolerance = 1e-12) -> bool {
+                    size_t minDim = std::min(Sigma.numRows(), Sigma.numCols());
+                    for (size_t i = 0; i < minDim - 1; ++i) {
+                        if (Sigma(i, i) < Sigma(i + 1, i + 1) - tolerance) {
+                            return false;
+                        }
+                    }
+                    return true;
+                };
+
+                auto singularValuesNonNegative = [](const auto& Sigma, double tolerance = 1e-12) -> bool {
+                    size_t minDim = std::min(Sigma.numRows(), Sigma.numCols());
+                    for (size_t i = 0; i < minDim; ++i) {
+                        if (Sigma(i, i) < -tolerance) {
+                            return false;
+                        }
+                    }
+                    return true;
+                };
+
+                auto verifySVDDecomposition = [](const auto& U, const auto& Sigma, const auto& VT,
+                                                 const auto& A) -> bool { return A == U * Sigma * VT; };
+
+                auto testSVD = [&](const auto& A, const std::string& name) {
+                    INFO("Testing SVD for: " << name);
+
+                    try {
+                        const auto& [U, Sigma, VT] = svd(A);
+
+                        // Verify matrix dimensions
+                        REQUIRE(U.numRows() == A.numRows());
+                        REQUIRE(U.numCols() == A.numRows());  // U should be m×m
+                        REQUIRE(Sigma.numRows() == A.numRows());
+                        REQUIRE(Sigma.numCols() == A.numCols());  // Sigma should be m×n
+                        REQUIRE(VT.numRows() == A.numCols());     // V^T should be n×n
+                        REQUIRE(VT.numCols() == A.numCols());
+
+                        // Verify orthogonality properties
+                        REQUIRE(isOrthogonal(U));
+                        REQUIRE(isOrthogonal(VT));  // V^T should be orthogonal (so V^T * V = I)
+
+                        // Verify Sigma is diagonal
+                        REQUIRE(isDiagonal(Sigma));
+
+                        // Verify singular values are non-negative and in descending order
+                        REQUIRE(singularValuesNonNegative(Sigma));
+                        REQUIRE(singularValuesDescending(Sigma));
+
+                        // Verify the fundamental equation A = U * Sigma * V^T
+                        REQUIRE(verifySVDDecomposition(U, Sigma, VT, A));
+
+                        // Log singular values for debugging
+                        INFO("Singular values:");
+                        size_t minDim = std::min(Sigma.numRows(), Sigma.numCols());
+                        for (size_t i = 0; i < minDim; ++i) {
+                            INFO("  σ[" << i << "] = " << Sigma(i, i));
+                        }
+
+                    } catch (const std::exception& e) {
+                        INFO("SVD failed with exception: " << e.what());
+                        FAIL("SVD threw unexpected exception");
+                    }
+                };
+
+                // Test the original diagonal matrix
+                SECTION("SVD Eigen") {
+                    // SVD Eigen tests
+                    SECTION("Original diagonal matrix") {
+                        Matrix<double, 2, 2> A{
+                            {3, 0},
+                            {0, -2},
+                        };
+                        testSVD(A, "Original diagonal matrix");
+                    }
+
+                    SECTION("Simple 2x2 matrix") {
+                        Matrix<double, 2, 2> A{
+                            {1, 2},
+                            {3, 4},
+                        };
+                        testSVD(A, "Simple 2x2 matrix");
+                    }
+
+                    SECTION("Symmetric matrix") {
+                        Matrix<double, 3, 3> A{
+                            {4, 1, 2},
+                            {1, 3, 1},
+                            {2, 1, 5},
+                        };
+                        testSVD(A, "Symmetric matrix");
+                    }
+
+                    SECTION("Tall rectangular matrix") {
+                        Matrix<double, 4, 3> A{
+                            {1, 2, 3},
+                            {4, 5, 6},
+                            {7, 8, 9},
+                            {10, 11, 12},
+                        };
+                        testSVD(A, "Tall rectangular matrix");
+                    }
+
+                    SECTION("Wide rectangular matrix") {
+                        Matrix<double, 2, 4> A{
+                            {1, 2, 3, 4},
+                            {5, 6, 7, 8},
+                        };
+                        testSVD(A, "Wide rectangular matrix");
+                    }
+
+                    SECTION("Identity matrix") {
+                        Matrix<double, 3, 3> A{
+                            {1, 0, 0},
+                            {0, 1, 0},
+                            {0, 0, 1},
+                        };
+                        testSVD(A, "Identity matrix");
+                    }
+
+                    SECTION("Matrix with negative values") {
+                        Matrix<double, 3, 3> A{
+                            {-1, 2, -3},
+                            {4, -5, 6},
+                            {-7, 8, -9},
+                        };
+                        testSVD(A, "Matrix with negative values");
+                    }
+
+                    SECTION("Mathematical Properties") {
+                        Matrix<double, 3, 2> A{
+                            {2, 1},
+                            {1, 3},
+                            {0, 1},
+                        };
+
+                        const auto& [U, Sigma, VT] = svd(A);
+
+                        // Test that U^T * U = I
+                        auto UtU = helpers::extractMatrixFromTranspose(U.T() * U);
+                        for (size_t i = 0; i < U.numCols(); ++i)
+                            for (size_t j = 0; j < U.numCols(); ++j)
+                                REQUIRE(fuzzyCompare(UtU(i, j), i == j ? 1.0 : 0.0));
+
+                        // Test that V^T * V = I
+                        auto VtV = VT * VT.T();
+                        for (size_t i = 0; i < VT.numRows(); ++i)
+                            for (size_t j = 0; j < VT.numRows(); ++j)
+                                REQUIRE(fuzzyCompare(VtV(i, j), i == j ? 1.0 : 0.0));
+
+                        // Frobenius norm preservation
+                        double frob2 = A.frob();
+                        frob2 *= frob2;
+                        double sumσ2 = 0.0;
+                        size_t m = std::min(Sigma.numRows(), Sigma.numCols());
+                        for (size_t i = 0; i < m; ++i) sumσ2 += Sigma(i, i) * Sigma(i, i);
+                        REQUIRE(fuzzyCompare(frob2, sumσ2));
+                    }
+
+                    SECTION("Numerical Stability") {
+                        Matrix<double, 2, 2> A{
+                            {1e6, 1e-6},
+                            {1e-6, 1e6},
+                        };
+
+                        INFO("Testing numerically challenging matrix");
+                        const auto& [U, Sigma, VT] = svd(A);
+
+                        REQUIRE(verifySVDDecomposition(U, Sigma, VT, A));
+                        REQUIRE(isOrthogonal(U));
+                        REQUIRE(isOrthogonal(VT));
+                    }
                 }
             }
         }
@@ -2254,6 +2358,613 @@ TEST_CASE("Operations") {
 
                 REQUIRE(inv4.has_value());
                 REQUIRE(inverse(inv4.value()).value() == AInv3);
+            }
+
+            SECTION("Gram-Schmidt Orthogonalization") {
+                const auto checks = [](const auto& qs, const auto& /*A*/) {
+                    // Check orthogonality
+                    for (size_t i = 0; i < qs.size(); ++i) {
+                        for (size_t j = i + 1; j < qs.size(); ++j) {
+                            REQUIRE(fuzzyCompare(qs.at(i) * qs.at(j), 0.0));
+                        }
+                    }
+
+                    // Check normality
+                    for (const auto& vec : qs) {
+                        REQUIRE(fuzzyCompare(vec.length(), 1.0));
+                    }
+                };
+
+                {
+                    // Account for linear dependence
+                    Matrix<double, Dynamic, Dynamic> A1{
+                        {1, 0, 0},
+                        {1, 1, 0},
+                        {1, 1, 1},
+                        {1, 1, 1},
+                    };
+                    const auto& qs = GSOrth<QRType::Thin>(A1);
+
+                    checks(qs, A1);
+                }
+                {
+                    // Account for linear dependence
+                    Matrix<double, Dynamic, Dynamic> A1{
+                        {1, -1, 4},
+                        {1, 4, -2},
+                        {1, 4, 2},
+                        {1, -1, 0},
+                    };
+                    const auto& qs = GSOrth<QRType::Thin>(A1);
+
+                    checks(qs, A1);
+                }
+            }
+
+            SECTION("LU Decomposition", "[LU]") {
+                // Helper lambda functions
+                auto isLowerTriangular = [](const auto& L, double tolerance = 1e-12) -> bool {
+                    for (size_t i = 0; i < L.numRows(); ++i) {
+                        for (size_t j = i + 1; j < L.numCols(); ++j) {
+                            if (!fuzzyCompare(L(i, j), 0.0, tolerance)) {
+                                return false;
+                            }
+                        }
+                    }
+                    return true;
+                };
+
+                auto isUpperTriangular = [](const auto& U, double tolerance = 1e-12) -> bool {
+                    for (size_t i = 1; i < U.numRows(); ++i) {
+                        for (size_t j = 0; j < std::min(i, U.numCols()); ++j) {
+                            if (!fuzzyCompare(U(i, j), 0.0, tolerance)) {
+                                return false;
+                            }
+                        }
+                    }
+                    return true;
+                };
+
+                auto hasUnitDiagonal = [](const auto& L, double tolerance = 1e-12) -> bool {
+                    size_t minDim = std::min(L.numRows(), L.numCols());
+                    for (size_t i = 0; i < minDim; ++i) {
+                        if (!fuzzyCompare(L(i, i), 1.0, tolerance)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                };
+
+                auto verifyLUDecomposition = [&](const auto& L, const auto& U, const auto& A) -> bool {
+                    auto LU_product = L * U;
+                    CAPTURE(A, L, U, LU_product, A == LU_product);
+                    return A == LU_product;
+                };
+
+                auto testMatrix = [&](const auto& A, const std::string& name) {
+                    INFO("Testing LU decomposition for: " << name);
+
+                    try {
+                        const auto& [L, U] = LU(A);
+
+                        // Verify matrix dimensions
+                        REQUIRE(L.numRows() == A.numRows());
+                        REQUIRE(L.numCols() == A.numRows());  // L should be square
+                        REQUIRE(U.numRows() == A.numRows());
+                        REQUIRE(U.numCols() == A.numCols());
+
+                        // Verify structural properties
+                        REQUIRE(isLowerTriangular(L));
+                        REQUIRE(isUpperTriangular(U));
+                        REQUIRE(hasUnitDiagonal(L));  // L should have unit diagonal
+
+                        // Verify mathematical correctness
+                        REQUIRE(verifyLUDecomposition(L, U, A));
+
+                        // Additional checks for numerical stability
+                        INFO("L matrix condition verified");
+                        INFO("U matrix condition verified");
+                        INFO("A = LU verified");
+                        CAPTURE(A, L, U, L * U);
+
+                    } catch (const std::exception& e) {
+                        INFO("LU decomposition failed with exception: " << e.what());
+                        // For matrices that should have valid LU decomposition, this is a failure
+                        // For matrices that are expected to fail (singular, etc.), this might be OK
+                        FAIL("LU decomposition threw unexpected exception");
+                    }
+                };
+
+                SECTION("Square Matrix") {
+                    // Square matrix - basic case
+                    Matrix<double, Dynamic, Dynamic> A{
+                        {2, 1, 1},
+                        {4, 3, 3},
+                        {8, 7, 9},
+                    };
+                    testMatrix(A, "Square matrix");
+                }
+
+                SECTION("Larget Values") {
+                    Matrix<double, Dynamic, Dynamic> A{
+                        {10, 5, 2},
+                        {3, 15, 4},
+                        {1, 2, 20},
+                    };
+                    testMatrix(A, "Larger values matrix");
+                }
+
+                SECTION("Negative Values") {
+                    Matrix<double, Dynamic, Dynamic> A{
+                        {1, -2, 3},
+                        {-4, 5, -6},
+                        {7, -8, 9},
+                    };
+                    testMatrix(A, "Mixed sign matrix");
+                }
+
+                SECTION("Identity Matrix") {
+                    Matrix<double, Dynamic, Dynamic> A{
+                        {1, 0, 0},
+                        {0, 1, 0},
+                        {0, 0, 1},
+                    };
+                    testMatrix(A, "Identity matrix");
+                }
+
+                // Test edge cases that might cause issues
+                SECTION("Edge Cases") {
+                    // Test matrix with zeros
+                    {
+                        Matrix<double, Dynamic, Dynamic> A{
+                            {1, 0, 3},
+                            {0, 2, 0},
+                            {4, 0, 5},
+                        };
+
+                        INFO("Testing matrix with strategic zeros");
+                        const auto& [L, U] = LU(A);
+                        REQUIRE(verifyLUDecomposition(L, U, A));
+                    }
+
+                    // Test small matrix
+                    {
+                        Matrix<double, Dynamic, Dynamic> A{
+                            {3, 2},
+                            {6, 4},
+                        };
+
+                        INFO("Testing 2x2 matrix");
+                        try {
+                            const auto& [L, U] = LU(A);
+                            REQUIRE(verifyLUDecomposition(L, U, A));
+                        } catch (const std::exception& e) {
+                            // This matrix is singular (rank 1), so LU might fail
+                            INFO("Singular matrix - exception expected: " << e.what());
+                        }
+                    }
+                }
+
+                // Test numerical precision
+                SECTION("Numerical Precision") {
+                    Matrix<double, Dynamic, Dynamic> A{
+                        {1.0001, 1, 1},
+                        {1, 1.0001, 1},
+                        {1, 1, 1.0001},
+                    };
+
+                    INFO("Testing numerical precision with near-singular matrix");
+                    const auto& [L, U] = LU(A);
+
+                    // Use slightly relaxed tolerance for near-singular cases
+                    auto relaxed_verify = [&](const auto& L, const auto& U, const auto& A) -> bool {
+                        auto LU_product = L * U;
+                        for (size_t i = 0; i < A.numRows(); ++i) {
+                            for (size_t j = 0; j < A.numCols(); ++j) {
+                                if (!fuzzyCompare(A(i, j), LU_product(i, j), 1e-10)) {
+                                    return false;
+                                }
+                            }
+                        }
+                        return true;
+                    };
+
+                    REQUIRE(isLowerTriangular(L));
+                    REQUIRE(isUpperTriangular(U));
+                    REQUIRE(hasUnitDiagonal(L));
+                    REQUIRE(relaxed_verify(L, U, A));
+                }
+
+                // Test determinant preservation (if applicable)
+                SECTION("Determinant Properties") {
+                    Matrix<double, Dynamic, Dynamic> A{
+                        {2, 1, 0},
+                        {1, 3, 1},
+                        {0, 1, 2},
+                    };
+
+                    const auto& [L, U] = LU(A);
+
+                    // For LU decomposition: det(A) = det(L) * det(U) = det(U) (since det(L) = 1)
+                    // This is a consistency check if you have determinant calculation available
+                    REQUIRE(verifyLUDecomposition(L, U, A));
+
+                    // Verify that diagonal of U contains meaningful values (no unexpected zeros)
+                    for (size_t i = 0; i < std::min(U.numRows(), U.numCols()); ++i) {
+                        INFO("U(" << i << "," << i << ") = " << U(i, i));
+                        // Don't require non-zero (matrix might be singular), just document the values
+                    }
+                }
+            }
+
+            SECTION("QR Decomposition") {
+                auto isUpperTriangular = [](auto const& R) {
+                    const size_t m = R.numRows();
+                    const size_t n = R.numCols();
+
+                    for (size_t i = 0; i < m; ++i) {
+                        for (size_t j = 0; j < std::min(i, n); ++j) {
+                            if (!fuzzyCompare(R(i, j), 0.0)) return false;
+                        }
+                    }
+                    return true;
+                };
+
+                auto verifyDecomposition = [](auto const& Q, auto const& R, auto const& A) {
+                    auto QR = Q * R;
+                    return A == QR;
+                };
+
+                SECTION("Test Matrix Collection") {
+                    // Test 1: Simple lower triangular matrix
+                    Matrix<double, Dynamic, Dynamic> simple{
+                        {1, 0, 0},
+                        {1, 1, 0},
+                        {1, 1, 1},
+                        {1, 1, 1},
+                    };
+
+                    // Test 2: Matrix with negative values
+                    Matrix<double, Dynamic, Dynamic> mixed_signs{
+                        {1, -1, 4},
+                        {1, 4, -2},
+                        {1, 4, 2},
+                        {1, -1, 0},
+                    };
+
+                    // Test 3: Nearly singular matrix (to test numerical stability)
+                    Matrix<double, Dynamic, Dynamic> near_singular{
+                        {1, 1, 1},
+                        {1, 1.000001, 1},
+                        {1, 1, 1.000001},
+                    };
+
+                    // Test 4: Random-like matrix
+                    Matrix<double, Dynamic, Dynamic> random_like{
+                        {2.3, -1.7, 0.8},
+                        {-0.5, 3.1, 2.4},
+                        {1.2, 0.6, -1.9},
+                    };
+
+                    // Test 5: Wide matrix (more columns than rows)
+                    Matrix<double, Dynamic, Dynamic> wide{
+                        {1, 2, 3, 4},
+                        {5, 6, 7, 8},
+                    };
+
+                    // Test 6: Identity matrix (should be trivial)
+                    Matrix<double, Dynamic, Dynamic> identity{
+                        {1, 0, 0},
+                        {0, 1, 0},
+                        {0, 0, 1},
+                    };
+
+                    auto testMatrix = [&isUpperTriangular, &verifyDecomposition](const auto& A,
+                                                                                 const std::string& name) {
+                        INFO("Testing matrix: " << name);
+
+                        SECTION("Thin QR - Gram-Schmidt") {
+                            const auto& [Q, R] = QR<QRType::Thin>(A, QRMethod::GramSchmidt);
+
+                            // Verify dimensions
+                            REQUIRE(Q.numRows() == A.numRows());
+                            REQUIRE(Q.numCols() == std::min(A.numRows(), A.numCols()));
+                            REQUIRE(R.numRows() == std::min(A.numRows(), A.numCols()));
+                            REQUIRE(R.numCols() == A.numCols());
+
+                            // Verify mathematical properties
+                            REQUIRE(isOrthogonal(Q));
+                            REQUIRE(isUpperTriangular(R));
+                            REQUIRE(verifyDecomposition(Q, R, A));
+                        }
+
+                        // Test Householder method for comparison
+                        SECTION("Thin QR - Householder") {
+                            const auto& [Q, R] = QR<QRType::Thin>(A, QRMethod::Householder);
+
+                            REQUIRE(isOrthogonal(Q));
+                            REQUIRE(isUpperTriangular(R));
+                            REQUIRE(verifyDecomposition(Q, R, A));
+                        }
+
+                        if (A.numRows() >= A.numCols()) {
+                            SECTION("Full QR - Householder") {
+                                const auto& [Q, R] = QR<QRType::Full>(A, QRMethod::Householder);
+
+                                REQUIRE(isOrthogonal(Q));
+                                REQUIRE(isUpperTriangular(R));
+                                REQUIRE(verifyDecomposition(Q, R, A));
+                            }
+                        }
+                    };
+
+                    // Run tests on all matrices
+                    testMatrix(simple, "Simple Lower Triangular");
+                    testMatrix(mixed_signs, "Mixed Signs");
+                    testMatrix(near_singular, "Near Singular");
+                    testMatrix(random_like, "Random-like");
+                    testMatrix(wide, "Wide Matrix");
+                    testMatrix(identity, "Identity Matrix");
+                }
+
+                SECTION("Method Comparison") {
+                    Matrix<double, Dynamic, Dynamic> A{
+                        {1, -1, 4},
+                        {1, 4, -2},
+                        {1, 4, 2},
+                        {1, -1, 0},
+                    };
+
+                    // Compare Gram-Schmidt vs Householder
+                    const auto& [Q_gs, R_gs] = QR<QRType::Thin>(A, QRMethod::GramSchmidt);
+                    const auto& [Q_hh, R_hh] = QR<QRType::Thin>(A, QRMethod::Householder);
+
+                    // Both should give valid decompositions
+                    REQUIRE(verifyDecomposition(Q_gs, R_gs, A));
+                    REQUIRE(verifyDecomposition(Q_hh, R_hh, A));
+
+                    // R matrices should be essentially the same (up to sign differences)
+                    for (size_t i = 0; i < R_gs.numRows(); ++i) {
+                        for (size_t j = i; j < R_gs.numCols(); ++j) {
+                            // Allow for sign differences in the decomposition
+                            double ratio = R_gs(i, j) / R_hh(i, j);
+                            REQUIRE((fuzzyCompare(ratio, 1.0, 1e-10) || fuzzyCompare(ratio, -1.0, 1e-10)));
+                        }
+                    }
+                }
+
+                SECTION("Edge Cases") {
+                    SECTION("Single column matrix") {
+                        Matrix<double, Dynamic, Dynamic> A{
+                            {2},
+                            {3},
+                            {4},
+                        };
+
+                        const auto& [Q, R] = QR<QRType::Thin>(A, QRMethod::GramSchmidt);
+                        REQUIRE(isOrthogonal(Q));
+                        REQUIRE(verifyDecomposition(Q, R, A));
+                    }
+
+                    SECTION("Square matrix") {
+                        Matrix<double, Dynamic, Dynamic> A{
+                            {1, 2, 3},
+                            {4, 5, 6},
+                            {7, 8, 10},
+                        };
+
+                        // For square matrices, Full and Thin should give same dimensions
+                        const auto& [Q_full, R_full] = QR<QRType::Full>(A, QRMethod::GramSchmidt);
+                        const auto& [Q_thin, R_thin] = QR<QRType::Thin>(A, QRMethod::GramSchmidt);
+
+                        REQUIRE(Q_full.numRows() == Q_thin.numRows());
+                        REQUIRE(Q_full.numCols() == Q_thin.numCols());
+                        REQUIRE(R_full.numRows() == R_thin.numRows());
+                        REQUIRE(R_full.numCols() == R_thin.numCols());
+                    }
+                }
+
+                SECTION("Numerical Stability") {
+                    // Test with a matrix that might cause numerical issues
+                    Matrix<double, Dynamic, Dynamic> A{
+                        {1e-15, 1, 0},
+                        {0, 1e-15, 1},
+                        {1, 0, 1e-15},
+                    };
+
+                    const auto& [Q, R] = QR<QRType::Thin>(A, QRMethod::Householder);
+
+                    // Should still maintain mathematical properties (with relaxed tolerance)
+                    REQUIRE(isOrthogonal(Q));
+                    REQUIRE(isUpperTriangular(R));
+                    REQUIRE(verifyDecomposition(Q, R, A));
+                }
+            }
+
+            SECTION("Singular Value Decomposition") {
+                auto isDiagonal = [](const auto& matrix, double tolerance = 1e-12) -> bool {
+                    for (size_t i = 0; i < matrix.numRows(); ++i) {
+                        for (size_t j = 0; j < matrix.numCols(); ++j) {
+                            if (i != j && !fuzzyCompare(matrix(i, j), 0.0, tolerance)) {
+                                return false;
+                            }
+                        }
+                    }
+                    return true;
+                };
+
+                auto singularValuesDescending = [](const auto& Sigma, double tolerance = 1e-12) -> bool {
+                    size_t minDim = std::min(Sigma.numRows(), Sigma.numCols());
+                    for (size_t i = 0; i < minDim - 1; ++i) {
+                        if (Sigma(i, i) < Sigma(i + 1, i + 1) - tolerance) {
+                            return false;
+                        }
+                    }
+                    return true;
+                };
+
+                auto singularValuesNonNegative = [](const auto& Sigma, double tolerance = 1e-12) -> bool {
+                    size_t minDim = std::min(Sigma.numRows(), Sigma.numCols());
+                    for (size_t i = 0; i < minDim; ++i) {
+                        if (Sigma(i, i) < -tolerance) {
+                            return false;
+                        }
+                    }
+                    return true;
+                };
+
+                auto verifySVDDecomposition = [](const auto& U, const auto& Sigma, const auto& VT,
+                                                 const auto& A) -> bool { return A == U * Sigma * VT; };
+
+                auto testSVD = [&](const auto& A, const std::string& name) {
+                    INFO("Testing SVD for: " << name);
+
+                    try {
+                        const auto& [U, Sigma, VT] = svd(A);
+
+                        // Verify matrix dimensions
+                        REQUIRE(U.numRows() == A.numRows());
+                        REQUIRE(U.numCols() == A.numRows());  // U should be m×m
+                        REQUIRE(Sigma.numRows() == A.numRows());
+                        REQUIRE(Sigma.numCols() == A.numCols());  // Sigma should be m×n
+                        REQUIRE(VT.numRows() == A.numCols());     // V^T should be n×n
+                        REQUIRE(VT.numCols() == A.numCols());
+
+                        // Verify orthogonality properties
+                        REQUIRE(isOrthogonal(U));
+                        REQUIRE(isOrthogonal(VT));  // V^T should be orthogonal (so V^T * V = I)
+
+                        // Verify Sigma is diagonal
+                        REQUIRE(isDiagonal(Sigma));
+
+                        // Verify singular values are non-negative and in descending order
+                        REQUIRE(singularValuesNonNegative(Sigma));
+                        REQUIRE(singularValuesDescending(Sigma));
+
+                        // Verify the fundamental equation A = U * Sigma * V^T
+                        REQUIRE(verifySVDDecomposition(U, Sigma, VT, A));
+
+                        // Log singular values for debugging
+                        INFO("Singular values:");
+                        size_t minDim = std::min(Sigma.numRows(), Sigma.numCols());
+                        for (size_t i = 0; i < minDim; ++i) {
+                            INFO("  σ[" << i << "] = " << Sigma(i, i));
+                        }
+
+                    } catch (const std::exception& e) {
+                        INFO("SVD failed with exception: " << e.what());
+                        FAIL("SVD threw unexpected exception");
+                    }
+                };
+
+                // Test the original diagonal matrix
+                SECTION("SVD Eigen") {
+                    // SVD Eigen tests
+                    SECTION("Original diagonal matrix") {
+                        Matrix<double, Dynamic, Dynamic> A{
+                            {3, 0},
+                            {0, -2},
+                        };
+                        testSVD(A, "Original diagonal matrix");
+                    }
+
+                    SECTION("Simple 2x2 matrix") {
+                        Matrix<double, Dynamic, Dynamic> A{
+                            {1, 2},
+                            {3, 4},
+                        };
+                        testSVD(A, "Simple 2x2 matrix");
+                    }
+
+                    SECTION("Symmetric matrix") {
+                        Matrix<double, Dynamic, Dynamic> A{
+                            {4, 1, 2},
+                            {1, 3, 1},
+                            {2, 1, 5},
+                        };
+                        testSVD(A, "Symmetric matrix");
+                    }
+
+                    SECTION("Tall rectangular matrix") {
+                        Matrix<double, Dynamic, Dynamic> A{
+                            {1, 2, 3},
+                            {4, 5, 6},
+                            {7, 8, 9},
+                            {10, 11, 12},
+                        };
+                        testSVD(A, "Tall rectangular matrix");
+                    }
+
+                    SECTION("Wide rectangular matrix") {
+                        Matrix<double, Dynamic, Dynamic> A{
+                            {1, 2, 3, 4},
+                            {5, 6, 7, 8},
+                        };
+                        testSVD(A, "Wide rectangular matrix");
+                    }
+
+                    SECTION("Identity matrix") {
+                        Matrix<double, Dynamic, Dynamic> A{
+                            {1, 0, 0},
+                            {0, 1, 0},
+                            {0, 0, 1},
+                        };
+                        testSVD(A, "Identity matrix");
+                    }
+
+                    SECTION("Matrix with negative values") {
+                        Matrix<double, Dynamic, Dynamic> A{
+                            {-1, 2, -3},
+                            {4, -5, 6},
+                            {-7, 8, -9},
+                        };
+                        testSVD(A, "Matrix with negative values");
+                    }
+
+                    SECTION("Mathematical Properties") {
+                        Matrix<double, Dynamic, Dynamic> A{
+                            {2, 1},
+                            {1, 3},
+                            {0, 1},
+                        };
+
+                        const auto& [U, Sigma, VT] = svd(A);
+
+                        // Test that U^T * U = I
+                        auto UtU = helpers::extractMatrixFromTranspose(U.T() * U);
+                        for (size_t i = 0; i < U.numCols(); ++i)
+                            for (size_t j = 0; j < U.numCols(); ++j)
+                                REQUIRE(fuzzyCompare(UtU(i, j), i == j ? 1.0 : 0.0));
+
+                        // Test that V^T * V = I
+                        auto VtV = VT * helpers::extractMatrixFromTranspose(VT.T());
+                        for (size_t i = 0; i < VT.numRows(); ++i)
+                            for (size_t j = 0; j < VT.numRows(); ++j)
+                                REQUIRE(fuzzyCompare(VtV(i, j), i == j ? 1.0 : 0.0));
+
+                        // Frobenius norm preservation
+                        double frob2 = A.frob();
+                        frob2 *= frob2;
+                        double sumσ2 = 0.0;
+                        size_t m = std::min(Sigma.numRows(), Sigma.numCols());
+                        for (size_t i = 0; i < m; ++i) sumσ2 += Sigma(i, i) * Sigma(i, i);
+                        REQUIRE(fuzzyCompare(frob2, sumσ2));
+                    }
+
+                    SECTION("Numerical Stability") {
+                        Matrix<double, Dynamic, Dynamic> A{
+                            {1e6, 1e-6},
+                            {1e-6, 1e6},
+                        };
+
+                        INFO("Testing numerically challenging matrix");
+                        const auto& [U, Sigma, VT] = svd(A);
+
+                        REQUIRE(verifySVDDecomposition(U, Sigma, VT, A));
+                        REQUIRE(isOrthogonal(U));
+                        REQUIRE(isOrthogonal(VT));
+                    }
+                }
             }
         }
     }

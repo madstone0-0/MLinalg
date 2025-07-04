@@ -294,6 +294,10 @@ TEST_CASE("Vector", "[vector]") {
                 auto u = Vector<int, 1>{1};
                 auto u2 = u.T();
                 REQUIRE(u2.at(0).at(0) == 1);
+
+                auto vTT = helpers::extractVectorFromTranspose(v2.T());
+                REQUIRE(vTT.at(0) == 1);
+                REQUIRE(vTT.at(1) == 2);
             }
 
             SECTION("Iteration") {

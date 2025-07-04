@@ -215,7 +215,7 @@ namespace mlinalg::structures {
          *
          * @return the normalized vector
          */
-        Vector<double, n> normalize() { return vectorNormalize(*this); }
+        Vector<double, n> normalize() const { return vectorNormalize(*this); }
 
         /**
          * @brief Vector subtraction

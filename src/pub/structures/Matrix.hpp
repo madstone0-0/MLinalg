@@ -180,6 +180,10 @@ namespace mlinalg::structures {
         /**
          * @brief Const access the element at the ith row and jth column
          *
+         * NOTE: When using this operator in an expression it should be encased in parathese to avoid being
+         * intepreted as a comma operator. For example, instead of writing:
+         * `matrix(i, j) + 1`, you should write `(matrix(i, j)) + 1`. (2025-06-23 09:53)
+         *
          * @param i The index of the row
          * @param j The index of the column
          * @return The element at the ith row and jth column

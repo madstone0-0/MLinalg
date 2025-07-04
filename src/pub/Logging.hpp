@@ -21,8 +21,6 @@ constexpr const char* CYN = "\e[0;36m";
 constexpr const char* WHT = "\e[0;37m";
 
 constexpr const char* reset = "\e[0m";
-constexpr const char* CRESET = "\e[0m";
-constexpr const char* COLOR_RESET = "\e[0m";
 
 namespace logging {
 
@@ -50,4 +48,12 @@ namespace logging {
         }
 #endif
     }
+
+    inline void I(string_view message, string_view function) { log(message, function, Level::INF); }
+
+    inline void D(string_view message, string_view function) { log(message, function, Level::DEB); }
+
+    inline void W(string_view message, string_view function) { log(message, function, Level::WARN); }
+
+    inline void E(string_view message, string_view function) { log(message, function, Level::ERR); }
 }  // namespace logging

@@ -61,6 +61,12 @@ namespace mlinalg::structures {
     template <Number number>
     using V3 = Vector<number, 3>;
 
+    /**
+     * @brief Type alias for a dynamic vector
+     */
+    template <Number number>
+    using VD = Vector<number, Dynamic>;
+
     // Convenience vector aliases
     using V2f = V2<float>;
     using V2d = V2<double>;
@@ -107,6 +113,35 @@ namespace mlinalg::structures {
     using TDArrayDynamic = std::vector<RowDynamic<number>>;
 
     constexpr SizePair DynamicPair{Dynamic, Dynamic};
+
+    /**
+     * @brief Type alias for a 2x2 Matrix
+     */
+    template <Number number>
+    using M2x2 = Matrix<number, 2, 2>;
+
+    /**
+     * @brief Type alias for a 3x3 Matrix
+     */
+    template <Number number>
+    using M3x3 = Matrix<number, 3, 3>;
+
+    /**
+     * @brief Type alias for a dynamic matrix
+     */
+    template <Number number>
+    using MD = Matrix<number, Dynamic, Dynamic>;
+
+    // Convenience matrix aliases
+    using M2x2f = M2x2<float>;
+    using M2x2d = M2x2<double>;
+    using M2x2i = M2x2<int>;
+    using M2x2ui = M2x2<unsigned int>;
+
+    using M3x3f = M3x3<float>;
+    using M3x3d = M3x3<double>;
+    using M3x3i = M3x3<int>;
+    using M3x3ui = M3x3<unsigned int>;
 
     // ==================
     // Misc Aliases

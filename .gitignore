@@ -14,3 +14,5 @@ docs
 compile_commands.json
 src/test/dummy.cpp
 *.ipynb
+.idea
+.python-version
