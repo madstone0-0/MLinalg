@@ -1610,38 +1610,6 @@ namespace mlinalg {
     }
 
     template <Number number, int m, int n>
-    Vector<number, m> solveUpperTriangular(const Matrix<number, m, n>& sys, const Vector<number, n>& b) {
-        const auto& A = sys;
-        const auto [numRows, numCols] = A.shape();
-        const int nR = numRows;
-        if (!isUpperTriangular(A))
-            throw StackError<std::invalid_argument>("Matrix A must be upper triangular for this solve");
-
-        Vector<number, m> x(nR);
-        number back{};
-        for (int i{nR - 1}; i >= 0; --i) {
-            back = 0;
-            for (int j{i + 1}; j <= nR - 1; ++j) {
-                back += x[j] * (A(i, j));
-            }
-            x[i] = (b[i] - back) / (A(i, i));
-        }
-        return x;
-    }
-
-    template <Number number, int m, int n>
-    Vector<number, m> solveQR(const Matrix<number, m, n>& A, const Vector<number, n>& b, QRMethod method) {
-        const auto [nR, nC] = A.shape();
-        const auto bSize = b.size();
-        if (nR != bSize) throw StackError<invalid_argument>("The matrix and vector are incompatible");
-
-        const auto& [Q, R] = QR<QRType::Thin>(A, method);
-        const auto& rhs = Q * b;
-        const auto x = solveUpperTriangular(R, rhs);
-        return x;
-    }
-
-    template <Number number, int m, int n>
     auto nulspace(const Matrix<number, m, n>& A) {
         const auto [nR, nC] = A.shape();
         const auto& zero{vectorZeros<number, m>((int)nR)};
