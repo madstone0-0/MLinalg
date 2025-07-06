@@ -1491,6 +1491,89 @@ TEST_CASE("Operations") {
                 REQUIRE(inverse(inv4.value()).value() == AInv3);
             }
 
+            SECTION("Pseudo Inverse of a Matrix") {
+                SECTION("2×2 invertible matrix") {
+                    // A = [4 7; 2 6], inverse = [0.6  –0.7; –0.2  0.4]
+                    M2x2d A{{4, 7}, {2, 6}};
+                    auto P = pinv(A);
+                    // Check shape
+                    auto [pR, pC] = P.shape();
+                    REQUIRE(pR == 2);
+                    REQUIRE(pC == 2);
+                    // Element‑wise check
+                    CHECK(fuzzyCompare(P(0, 0), 0.6));
+                    CHECK(fuzzyCompare(P(0, 1), -0.7));
+                    CHECK(fuzzyCompare(P(1, 0), -0.2));
+                    CHECK(fuzzyCompare(P(1, 1), 0.4));
+                }
+
+                SECTION("2×3 wide matrix (underdetermined)") {
+                    Matrix<double, 2, 3> A{{1, 2, 3}, {4, 5, 6}};
+                    auto P = pinv(A);      // shape 3×2
+                    auto APA = A * P * A;  // should equal A
+                    auto PAP = P * A * P;  // should equal P
+
+                    // Check A*P*A ≈ A
+                    {
+                        auto [rA, cA] = A.shape();
+                        auto [rAPA, cAPA] = APA.shape();
+                        REQUIRE(rAPA == rA);
+                        REQUIRE(cAPA == cA);
+                        for (size_t i = 0; i < rA; ++i) {
+                            for (size_t j = 0; j < cA; ++j) {
+                                CHECK(fuzzyCompare(APA(i, j), A(i, j)));
+                            }
+                        }
+                    }
+
+                    // Check P*A*P ≈ P
+                    {
+                        auto [rP, cP] = P.shape();
+                        auto [rPAP, cPAP] = PAP.shape();
+                        REQUIRE(rPAP == rP);
+                        REQUIRE(cPAP == cP);
+                        for (size_t i = 0; i < rP; ++i) {
+                            for (size_t j = 0; j < cP; ++j) {
+                                CHECK(fuzzyCompare(PAP(i, j), P(i, j)));
+                            }
+                        }
+                    }
+                }
+
+                SECTION("3×2 tall matrix (overdetermined)") {
+                    Matrix<double, 3, 2> B{{1, 0}, {0, 1}, {1, 1}};
+                    auto P = pinv(B);        // shape 2×3
+                    auto B_P_B = B * P * B;  // should equal B
+                    auto P_B_P = P * B * P;  // should equal P
+
+                    // Check B*P*B ≈ B
+                    {
+                        auto [rB, cB] = B.shape();
+                        auto [rBPB, cBPB] = B_P_B.shape();
+                        REQUIRE(rBPB == rB);
+                        REQUIRE(cBPB == cB);
+                        for (size_t i = 0; i < rB; ++i) {
+                            for (size_t j = 0; j < cB; ++j) {
+                                CHECK(fuzzyCompare(B_P_B(i, j), B(i, j)));
+                            }
+                        }
+                    }
+
+                    // Check P*B*P ≈ P
+                    {
+                        auto [rP, cP] = P.shape();
+                        auto [rPBP, cPBP] = P_B_P.shape();
+                        REQUIRE(rPBP == rP);
+                        REQUIRE(cPBP == cP);
+                        for (size_t i = 0; i < rP; ++i) {
+                            for (size_t j = 0; j < cP; ++j) {
+                                CHECK(fuzzyCompare(P_B_P(i, j), P(i, j)));
+                            }
+                        }
+                    }
+                }
+            }
+
             SECTION("Gram-Schmidt Orthogonalization") {
                 {
                     // Account for linear dependence
@@ -2358,6 +2441,89 @@ TEST_CASE("Operations") {
 
                 REQUIRE(inv4.has_value());
                 REQUIRE(inverse(inv4.value()).value() == AInv3);
+            }
+
+            SECTION("Pseudo Inverse of a Matrix") {
+                SECTION("2×2 invertible matrix") {
+                    // A = [4 7; 2 6], inverse = [0.6  –0.7; –0.2  0.4]
+                    MD<double> A{{4, 7}, {2, 6}};
+                    auto P = pinv(A);
+                    // Check shape
+                    auto [pR, pC] = P.shape();
+                    REQUIRE(pR == 2);
+                    REQUIRE(pC == 2);
+                    // Element‑wise check
+                    CHECK(fuzzyCompare(P(0, 0), 0.6));
+                    CHECK(fuzzyCompare(P(0, 1), -0.7));
+                    CHECK(fuzzyCompare(P(1, 0), -0.2));
+                    CHECK(fuzzyCompare(P(1, 1), 0.4));
+                }
+
+                SECTION("2×3 wide matrix (underdetermined)") {
+                    MD<double> A{{1, 2, 3}, {4, 5, 6}};
+                    auto P = pinv(A);      // shape 3×2
+                    auto APA = A * P * A;  // should equal A
+                    auto PAP = P * A * P;  // should equal P
+
+                    // Check A*P*A ≈ A
+                    {
+                        auto [rA, cA] = A.shape();
+                        auto [rAPA, cAPA] = APA.shape();
+                        REQUIRE(rAPA == rA);
+                        REQUIRE(cAPA == cA);
+                        for (size_t i = 0; i < rA; ++i) {
+                            for (size_t j = 0; j < cA; ++j) {
+                                CHECK(fuzzyCompare(APA(i, j), A(i, j)));
+                            }
+                        }
+                    }
+
+                    // Check P*A*P ≈ P
+                    {
+                        auto [rP, cP] = P.shape();
+                        auto [rPAP, cPAP] = PAP.shape();
+                        REQUIRE(rPAP == rP);
+                        REQUIRE(cPAP == cP);
+                        for (size_t i = 0; i < rP; ++i) {
+                            for (size_t j = 0; j < cP; ++j) {
+                                CHECK(fuzzyCompare(PAP(i, j), P(i, j)));
+                            }
+                        }
+                    }
+                }
+
+                SECTION("3×2 tall matrix (overdetermined)") {
+                    MD<double> B{{1, 0}, {0, 1}, {1, 1}};
+                    auto P = pinv(B);        // shape 2×3
+                    auto B_P_B = B * P * B;  // should equal B
+                    auto P_B_P = P * B * P;  // should equal P
+
+                    // Check B*P*B ≈ B
+                    {
+                        auto [rB, cB] = B.shape();
+                        auto [rBPB, cBPB] = B_P_B.shape();
+                        REQUIRE(rBPB == rB);
+                        REQUIRE(cBPB == cB);
+                        for (size_t i = 0; i < rB; ++i) {
+                            for (size_t j = 0; j < cB; ++j) {
+                                CHECK(fuzzyCompare(B_P_B(i, j), B(i, j)));
+                            }
+                        }
+                    }
+
+                    // Check P*B*P ≈ P
+                    {
+                        auto [rP, cP] = P.shape();
+                        auto [rPBP, cPBP] = P_B_P.shape();
+                        REQUIRE(rPBP == rP);
+                        REQUIRE(cPBP == cP);
+                        for (size_t i = 0; i < rP; ++i) {
+                            for (size_t j = 0; j < cP; ++j) {
+                                CHECK(fuzzyCompare(P_B_P(i, j), P(i, j)));
+                            }
+                        }
+                    }
+                }
             }
 
             SECTION("Gram-Schmidt Orthogonalization") {
