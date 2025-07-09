@@ -465,7 +465,7 @@ namespace mlinalg::structures {
          * @return The augmented matrix of size mx(n + 1)
          */
         Matrix<number, m, n + 1> augment(const Vector<number, m>& other) const {
-            return MatrixAugmentVector<number, m, n>(matrix, *other.row);
+            return MatrixAugmentVector<number, m, n>(matrix, other.row);
         }
 
         /**
@@ -680,7 +680,9 @@ namespace mlinalg::structures {
             requires(m != -1 && n != -1)
             : m{m}, n{n} {
             matrix.reserve(m);
-            for (const auto& row : other.matrix) matrix.emplace_back(row);
+            for (size_t i{}; i < other.numRows(); ++i) {
+                matrix.emplace_back(other.at(i));
+            }
         }
 
         static constexpr int rows = Dynamic;
@@ -1107,7 +1109,7 @@ namespace mlinalg::structures {
          * @return The augmented matrix of size mx(n + 1)
          */
         Matrix<number, Dynamic, Dynamic> augment(const Vector<number, Dynamic>& other) const {
-            return MatrixAugmentVector<number, Dynamic, -2>(matrix, *other.row);
+            return MatrixAugmentVector<number, Dynamic, -2>(matrix, other.row);
         }
 
         /**

@@ -164,7 +164,8 @@ namespace mlinalg::structures::helpers {
      */
     template <Number num, int m, int n>
     Matrix<num, Dynamic, Dynamic> toDynamic(const Matrix<num, m, n> matrix) {
-        return Matrix<num, Dynamic, Dynamic>{matrix};
+        const auto& dyna = Matrix<num, Dynamic, Dynamic>{matrix};
+        return dyna;
     }
 
     template <Number to, Number from, int m, int n>
@@ -258,8 +259,14 @@ namespace mlinalg::structures::helpers {
         }
     }
 
+    template <Number number, int m, int n>
+    std::string formatMatrix(const Matrix<number, m, n>& A) {
+        const auto& [nR, nC] = A.shape();
+        return (std::stringstream{} << A).str();
+    }
+
     template <Container T>
-    auto unwrapIfPtr(T&& c) {
+    auto unwrap(T&& c) {
         return [](auto&& x) -> decltype(auto) {
             if constexpr (std::is_pointer_v<std::decay_t<decltype(x)>>) {
                 return *x;

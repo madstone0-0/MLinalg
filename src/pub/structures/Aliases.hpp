@@ -29,8 +29,10 @@ namespace mlinalg::structures {
     /**
      * @brief  Type alias for the backing array of a Vector
      */
+    // template <Number number, int n>
+    // using VectorRow = std::array<number, n>;
     template <Number number, int n>
-    using VectorRow = std::array<number, n>;
+    using VectorRow = std::vector<number>;
 
     /**
      * @brief Type alias for the backing array of a dynamic Vector
@@ -69,6 +71,15 @@ namespace mlinalg::structures {
     using VD = Vector<number, Dynamic>;
 
     // Convenience vector aliases
+    template <int n>
+    using Vf = Vector<float, n>;
+    template <int n>
+    using Vd = Vector<double, n>;
+    template <int n>
+    using Vi = Vector<int, n>;
+    template <int n>
+    using Vui = Vector<unsigned int, n>;
+
     using V2f = V2<float>;
     using V2d = V2<double>;
     using V2i = V2<int>;
@@ -143,6 +154,15 @@ namespace mlinalg::structures {
     using MD = Matrix<number, Dynamic, Dynamic>;
 
     // Convenience matrix aliases
+    template <int m, int n>
+    using Mf = Matrix<float, m, n>;
+    template <int m, int n>
+    using Md = Matrix<double, m, n>;
+    template <int m, int n>
+    using Mi = Matrix<int, m, n>;
+    template <int m, int n>
+    using Mui = Matrix<unsigned int, m, n>;
+
     using M2x2f = M2x2<float>;
     using M2x2d = M2x2<double>;
     using M2x2i = M2x2<int>;

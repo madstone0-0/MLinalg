@@ -47,18 +47,6 @@ void printSol(const mlinalg::Matrix<number, m, n>& A, const mlinalg::Vector<numb
             const auto& leastSquaresSols = sols.leastSquaresSolutions();
             cout << "Least squares solutions: " << leastSquaresSols << '\n';
         }
-
-        // if (!sol.has_value()) {
-        //     cout << std::format("The system is inconsistent\n\n");
-        //     return;
-        // }
-        // for (const auto& val : sol.value()) {
-        //     if (val.has_value())
-        //         cout << val.value() << " ";
-        //     else
-        //         cout << "None ";
-        // }
-        // cout << "\n";
     } catch (const std::exception& e) {
         cout << e.what() << "\n";
     }

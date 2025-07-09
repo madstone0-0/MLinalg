@@ -4,6 +4,7 @@
  */
 
 #pragma once
+#include <memory>
 #include <string>
 #include <type_traits>
 
@@ -18,6 +19,24 @@ concept Number = requires {
     std::is_convertible_v<T, std::string>;
 };
 
+template <typename T, typename = void>
+struct ContainerTraits {
+    using CleanT = std::remove_cvref_t<T>;
+    using value_type = typename CleanT::value_type;
+    using size_type = typename CleanT::size_type;
+    using iterator = typename CleanT::iterator;
+};
+
+template <typename T>
+struct ContainerTraits<
+    T, std::enable_if_t<
+           std::is_same_v<std::remove_cvref_t<T>, std::unique_ptr<typename std::remove_cvref_t<T>::element_type>>>> {
+    using ElementType = typename std::remove_cvref_t<T>::element_type;
+    using value_type = typename ElementType::value_type;
+    using size_type = typename ElementType::size_type;
+    using iterator = typename ElementType::iterator;
+};
+
 /**
  * @brief Concept for a container type
  *
@@ -25,7 +44,7 @@ concept Number = requires {
  */
 template <typename T>
 concept Container = requires {
-    typename T::value_type;
-    typename T::size_type;
-    typename T::iterator;
+    typename ContainerTraits<T>::value_type;
+    typename ContainerTraits<T>::size_type;
+    typename ContainerTraits<T>::iterator;
 };

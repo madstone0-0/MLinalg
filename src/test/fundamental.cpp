@@ -302,7 +302,7 @@ TEST_CASE("Vector", "[vector]") {
 
             SECTION("Iteration") {
                 auto v = Vector<int, 2>{1, 2};
-                const auto *it = v.begin();
+                auto it = v.begin();
                 REQUIRE(*it == 1);
                 ++it;
                 REQUIRE(*it == 2);
@@ -848,14 +848,14 @@ TEST_CASE("Vector", "[vector]") {
                 auto v = Vector<int, 2>{1, 2};
 
                 // Non-const iterator
-                const auto *it = v.begin();
+                auto it = v.begin();
                 REQUIRE(*it == 1);
                 ++it;
                 REQUIRE(*it == 2);
 
                 // Const iterator
                 const auto &v_const = v;
-                const auto *const_it = v_const.begin();
+                auto const_it = v_const.cbegin();
                 REQUIRE(*const_it == 1);
                 ++const_it;
                 REQUIRE(*const_it == 2);
