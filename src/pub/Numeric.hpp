@@ -32,6 +32,7 @@ namespace mlinalg {
      * Adapted from https://embeddeduse.com/2019/08/26/qt-compare-two-floats/
      * @param a
      * @param b
+     * @param tolerance The tolerance for comparison, default is EPSILON_FIXED
      * @return True if the numbers are equal within EPSILON, false otherwise
      */
     template <Number number>

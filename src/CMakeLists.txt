@@ -8,6 +8,7 @@ file(
     GLOB HPP
     CONFIGURE_DEPENDS
     ${CMAKE_SOURCE_DIR}/src/pub/structures/*.hpp
+    ${CMAKE_SOURCE_DIR}/src/pub/operations/*.hpp
     ${CMAKE_SOURCE_DIR}/src/pub/*.hpp
     ${CMAKE_SOURCE_DIR}/src/*.hpp
 )

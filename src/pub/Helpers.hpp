@@ -130,8 +130,8 @@ namespace mlinalg::structures::helpers {
      * @return Matrix<number, n, m>
      */
     template <Number num, int m, int n>
-    Matrix<num, n, m> extractMatrixFromTranspose(const TransposeVariant<num, m, n> T) {
-        return std::get<Matrix<num, n, m>>(T);
+    auto extractMatrixFromTranspose(const TransposeVariant<num, m, n> T) -> MatrixTransposeVariant<num, m, n> {
+        return std::get<MatrixTransposeVariant<num, m, n>>(T);
     }
 
     /**
@@ -141,8 +141,19 @@ namespace mlinalg::structures::helpers {
      * @return Vector<number, m>
      */
     template <Number num, int m, int n>
-    Vector<num, n> extractVectorFromTranspose(const TransposeVariant<num, m, n> T) {
-        return std::get<Vector<num, n>>(T);
+    auto extractVectorFromTranspose(const TransposeVariant<num, m, n> T) -> VectorTransposeVariant<num, m, n> {
+        return std::get<VectorTransposeVariant<num, m, n>>(T);
+    }
+
+    /**
+     * @brief Check if a TransposeVariant contains a MatrixTransposeVariant
+     *
+     * @param T the transpose variant to check
+     * @return true if it contains a VectorTransposeVariant, false otherwise
+     */
+    template <Number num, int m, int n>
+    bool containsVectorVariant(const TransposeVariant<num, m, n>& T) {
+        return std::holds_alternative<VectorTransposeVariant<num, m, n>>(T);
     }
 
     /**
@@ -245,6 +256,17 @@ namespace mlinalg::structures::helpers {
                 j = permutation[j];
             }
         }
+    }
+
+    template <Container T>
+    auto unwrapIfPtr(T&& c) {
+        return [](auto&& x) -> decltype(auto) {
+            if constexpr (std::is_pointer_v<std::decay_t<decltype(x)>>) {
+                return *x;
+            } else {
+                return x;
+            }
+        }(std::forward<T>(c));
     }
 
 }  // namespace mlinalg::structures::helpers

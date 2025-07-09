@@ -16,3 +16,4 @@ src/test/dummy.cpp
 *.ipynb
 .idea
 .python-version
+perf.*

@@ -13,6 +13,7 @@
 #include <iostream>
 
 #include "MLinalg.hpp"
+#include "operations/Solve.hpp"
 
 using std::cout;
 
@@ -33,22 +34,31 @@ template <Number number, int m, int n>
 void printSol(const mlinalg::Matrix<number, m, n>& A, const mlinalg::Vector<number, m>& b) {
     using namespace mlinalg;
     try {
-        auto sol{findSolutions(A, b)};
+        const auto& sols{findSolutions<SolveMode::AUTO>(A, b)};
         cout << std::format("For the system (augmented matrix):\n");
         cout << A.augment(b);
         cout << std::format("\nThe solutions are:\n");
 
-        if (!sol.has_value()) {
-            cout << std::format("The system is inconsistent\n\n");
-            return;
+        try {
+            const auto& exactSols = sols.exactSolutions();
+            const auto& x = extractSolutionVector(exactSols.value());
+            cout << "Exact solutions: " << x << '\n';
+        } catch (const std::exception& e) {
+            const auto& leastSquaresSols = sols.leastSquaresSolutions();
+            cout << "Least squares solutions: " << leastSquaresSols << '\n';
         }
-        for (const auto& val : sol.value()) {
-            if (val.has_value())
-                cout << val.value() << " ";
-            else
-                cout << "None ";
-        }
-        cout << "\n";
+
+        // if (!sol.has_value()) {
+        //     cout << std::format("The system is inconsistent\n\n");
+        //     return;
+        // }
+        // for (const auto& val : sol.value()) {
+        //     if (val.has_value())
+        //         cout << val.value() << " ";
+        //     else
+        //         cout << "None ";
+        // }
+        // cout << "\n";
     } catch (const std::exception& e) {
         cout << e.what() << "\n";
     }
@@ -69,22 +79,31 @@ template <Number number, int m, int n>
 void printSol(const mlinalg::LinearSystem<number, m, n>& system) {
     using namespace mlinalg;
     try {
-        auto sol{findSolutions(system)};
+        const auto& sols{findSolutions<SolveMode::AUTO>(system)};
         cout << std::format("For the system:\n");
         cout << system;
         cout << std::format("\nThe solutions are:\n");
 
-        if (!sol.has_value()) {
-            cout << std::format("The system is inconsistent\n\n");
-            return;
+        try {
+            const auto& exactSols = sols.exactSolutions();
+            const auto& x = extractSolutionVector(exactSols.value());
+            cout << "Exact solutions: " << x << '\n';
+        } catch (const std::exception& e) {
+            const auto& leastSquaresSols = sols.leastSquaresSolutions();
+            cout << "Least squares solutions: " << leastSquaresSols << '\n';
         }
-        for (const auto& val : sol.value()) {
-            if (val.has_value())
-                cout << val.value() << " ";
-            else
-                cout << "None ";
-        }
-        cout << "\n";
+
+        // if (!sol.has_value()) {
+        //     cout << std::format("The system is inconsistent\n\n");
+        //     return;
+        // }
+        // for (const auto& val : sol.value()) {
+        //     if (val.has_value())
+        //         cout << val.value() << " ";
+        //     else
+        //         cout << "None ";
+        // }
+        // cout << "\n";
     } catch (const std::exception& e) {
         cout << e.what() << "\n";
     }

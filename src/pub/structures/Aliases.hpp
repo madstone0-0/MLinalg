@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <memory>
 #include <optional>
+#include <type_traits>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -88,6 +89,9 @@ namespace mlinalg::structures {
 
     using SizeTPair = std::pair<size_t, size_t>;
 
+    template <Number number, int m, int n>
+    using VectorVariant = std::conditional_t<n != 1, Vector<number, n>, Vector<number, m>>;
+
     /**
      * @brief Type alias for a variant of a Vector and a Matrix
      *
@@ -95,7 +99,13 @@ namespace mlinalg::structures {
      * matrix and the transpose of a matrix is an NxM matrix, this variant is used to represent either of these
      */
     template <Number number, int m, int n>
-    using TransposeVariant = std::variant<Vector<number, n>, Matrix<number, n, m>>;
+    using TransposeVariant = std::variant<VectorVariant<number, m, n>, Matrix<number, n, m>>;
+
+    template <Number number, int m, int n>
+    using VectorTransposeVariant = std::variant_alternative_t<0, TransposeVariant<number, m, n>>;
+
+    template <Number number, int m, int n>
+    using MatrixTransposeVariant = std::variant_alternative_t<1, TransposeVariant<number, m, n>>;
 
     /**
      * @brief Type alias for a Vector as a row in a Matrix
@@ -157,6 +167,10 @@ namespace mlinalg::structures {
     using ConditionalOptionalRowOptional =
         std::conditional_t<m == Dynamic || n == Dynamic, std::optional<RowOptional<number, Dynamic>>,
                            std::optional<RowOptional<number, n - 1>>>;
+
+    template <Number number, int m, int n>
+    using ConditionalRow =
+        std::conditional_t<m == Dynamic || n == Dynamic, Vector<number, Dynamic>, Vector<number, n - 1>>;
 
     template <Number number, int m, int n>
     using ConditionalRowOptional =

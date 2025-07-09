@@ -390,10 +390,10 @@ namespace mlinalg::structures {
         TransposeVariant<number, m, n> T() const { return TransposeMatrix<number, m, n>(matrix); }
 
         friend std::ostream& operator<<(std::ostream& os, const TransposeVariant<number, n, m>& system) {
-            if (std::holds_alternative<Vector<number, m>>(system)) {
-                os << get<Vector<number, m>>(system);
-            } else if (std::holds_alternative<Matrix<number, m, n>>(system)) {
-                os << get<Matrix<number, m, n>>(system);
+            if (std::holds_alternative<VectorTransposeVariant<number, n, m>>(system)) {
+                os << get<VectorTransposeVariant<number, n, m>>(system);
+            } else if (std::holds_alternative<MatrixTransposeVariant<number, n, m>>(system)) {
+                os << get<MatrixTransposeVariant<number, n, m>>(system);
             }
             return os;
         }

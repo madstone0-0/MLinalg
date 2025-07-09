@@ -1340,7 +1340,7 @@ TEST_CASE("Operations") {
                                  });
             }
 
-            SECTION("Find Solutions To A Linear System") {
+            SECTION("Find Exact Solutions To A Linear System") {
                 SECTION("[A | b]") {
                     // auto sol1 = findSolutions(system1);
                     //
@@ -1351,7 +1351,7 @@ TEST_CASE("Operations") {
                             {2.0, 3.0, 8.0},
                             {1.0, 2.0, 5.0},
                         };
-                        auto sol = findSolutions(sys);
+                        auto sol = findSolutions(sys).exactSolutions();
                         REQUIRE(sol.has_value());
                         REQUIRE(sol.value().at(0) == Approx(1.0));
                         REQUIRE(sol.value().at(1) == Approx(2.0));
@@ -1364,7 +1364,7 @@ TEST_CASE("Operations") {
                             {1.0, 1.0, 3.0},
                             {2.0, 2.0, 4.0},
                         };
-                        auto sol = findSolutions(sys);
+                        auto sol = findSolutions(sys).exactSolutions();
                         REQUIRE_FALSE(sol.has_value());
                     }
                 }
@@ -1381,7 +1381,7 @@ TEST_CASE("Operations") {
                             {1.0, 2.0},
                         };
                         Vector<double, 2> b{{8.0, 5.0}};
-                        auto sol = findSolutions(A, b);
+                        auto sol = findSolutions(A, b).exactSolutions();
                         REQUIRE(sol.has_value());
                         REQUIRE(sol.value().at(0) == Approx(1.0));
                         REQUIRE(sol.value().at(1) == Approx(2.0));
@@ -1391,7 +1391,7 @@ TEST_CASE("Operations") {
                         // Inconsistent system: x + y = 3 and 2x + 2y = 4 (should be 6 if consistent)
                         Matrix<double, 2, 2> A{{1.0, 1.0}, {2.0, 2.0}};
                         Vector<double, 2> b{{3.0, 4.0}};
-                        auto sol = findSolutions(A, b);
+                        auto sol = findSolutions(A, b).exactSolutions();
                         REQUIRE_FALSE(sol.has_value());
                     }
 
@@ -1399,7 +1399,7 @@ TEST_CASE("Operations") {
                         // A 3x3 system.
                         Matrix<double, 3, 3> A{{3.0, -1.0, 2.0}, {2.0, 4.0, 1.0}, {-1.0, 2.0, 5.0}};
                         Vector<double, 3> b{{5.0, 11.0, 8.0}};
-                        auto sol = findSolutions(A, b);
+                        auto sol = findSolutions(A, b).exactSolutions();
                         REQUIRE(sol.has_value());
                         auto computed_b = A * extractSolutionVector(sol.value());
                         for (int i = 0; i < 3; ++i) {
@@ -1418,7 +1418,7 @@ TEST_CASE("Operations") {
                         Vector<double, 3> b{
                             {2.0, 3.0, 5.0},
                         };
-                        auto sol = findSolutions(A, b);
+                        auto sol = findSolutions(A, b).exactSolutions();
                         REQUIRE(sol.has_value());
                         REQUIRE(sol.value().at(0) == Approx(2.0));
                         REQUIRE(sol.value().at(1) == Approx(3.0));
@@ -1432,7 +1432,7 @@ TEST_CASE("Operations") {
                         Vector<double, 2> b{
                             {6.0, 8.0},
                         };
-                        auto sol = findSolutions(A, b);
+                        auto sol = findSolutions(A, b).exactSolutions();
                         REQUIRE(sol.has_value());
                         auto computed_b = A * extractSolutionVector(sol.value());
                         for (int i = 0; i < 2; ++i) {
@@ -2166,6 +2166,138 @@ TEST_CASE("Operations") {
                     }
                 }
             }
+
+            constexpr double tol{1e-05};
+            SECTION("Least Squares") {
+                SECTION("Solves overdetermined system correctly") {
+                    // A is 3x2 (overdetermined), b is 3x1
+                    Matrix<double, 3, 2> A = {{
+                        {1.0, 2.0},
+                        {2.0, 3.0},
+                        {3.0, 4.0},
+                    }};
+                    Vector<double, 3> b = {
+                        6.0,
+                        9.0,
+                        12.0,
+                    };
+
+                    // Expected x minimizes ||Ax - b||^2
+                    auto x = solveLeastSquares(A, b);
+
+                    // Compute Ax
+                    auto Ax = A * x;
+
+                    // Check ||Ax - b|| is small
+                    auto norm = (Ax - b).length();
+
+                    REQUIRE(fuzzyCompare(norm, tol));
+                }
+
+                SECTION("Solves system from LinearSystem wrapper") {
+                    LinearSystem<double, 3, 3> sys = {{
+                        {1.0, 2.0, 6.0},
+                        {2.0, 3.0, 9.0},
+                        {3.0, 4.0, 12.0},
+                    }};
+
+                    auto x = solveLeastSquares(sys);
+
+                    Matrix<double, 3, 2> A = sys.slice<0, 3, 0, 2>();
+                    Vector<double, 3> b = helpers::extractVectorFromTranspose(sys.slice<0, 3, 2, 3>().T());
+                    auto Ax = A * x;
+
+                    auto norm = (Ax - b).length();
+                    REQUIRE(fuzzyCompare(norm, tol));
+                }
+            }
+
+            SECTION("Find Solutions to a Linear System") {
+                SECTION("Exact solution for 2x2 system") {
+                    M2x2d A = {{
+                        {2.0, 1.0},
+                        {1.0, 3.0},
+                    }};
+                    V2d b = {
+                        8.0,
+                        13.0,
+                    };
+
+                    auto result = findSolutions<SolveMode::EXACT>(A, b);
+                    auto sols = result.exactSolutions();
+
+                    REQUIRE(sols.has_value());
+                    auto x = extractSolutionVector(sols.value());
+
+                    V2d expected = {2.2, 3.6};
+                    REQUIRE(fuzzyCompare(x[0], expected[0]));
+                    REQUIRE(fuzzyCompare(x[1], expected[1]));
+                }
+
+                SECTION("Least squares solution for 3x2 overdetermined system") {
+                    Matrix<double, 3, 2> A = {{
+                        {1.0, 2.0},
+                        {2.0, 1.0},
+                        {3.0, 4.0},
+                    }};
+                    V3d b = {
+                        5.0,
+                        6.0,
+                        10.0,
+                    };
+
+                    auto result = findSolutions<SolveMode::LSTS>(A, b);
+                    auto x = result.leastSquaresSolutions();
+
+                    auto Ax = A * x;
+                    auto residual = Ax - b;
+                    double norm = residual.length();
+                    REQUIRE(norm < 2);
+                }
+
+                SECTION("AUTO mode: switches to least squares for inconsistent 3x2 system") {
+                    Matrix<double, 3, 2> A = {{
+                        {1.0, 2.0},
+                        {1.0, 2.0},
+                        {1.0, 2.0},
+                    }};
+                    V3d b = {
+                        1.0,
+                        2.0,
+                        3.0,
+                    };
+
+                    auto result = findSolutions<SolveMode::AUTO>(A, b);
+                    auto x = result.leastSquaresSolutions();
+                    auto Ax = A * x;
+
+                    double norm = (Ax - b).length();
+                    REQUIRE(norm < 2);
+                }
+
+                SECTION("Exact solution from LinearSystem wrapper") {
+                    LinearSystem<double, 3, 4> sys = {{
+                        {1.0, 1.0, 1.0, 6.0},
+                        {0.0, 2.0, 5.0, -4.0},
+                        {2.0, 5.0, -1.0, 27.0},
+                    }};
+
+                    auto result = findSolutions<SolveMode::EXACT>(sys);
+                    auto sols = result.exactSolutions();
+
+                    REQUIRE(sols.has_value());
+                    auto x = extractSolutionVector(sols.value());
+
+                    Vector<double, 3> expected = {
+                        5.0,
+                        3.0,
+                        -2.0,
+                    };
+                    for (int i = 0; i < 3; ++i) {
+                        REQUIRE(fuzzyCompare(x[i], expected[i], tol));
+                    }
+                }
+            }
         }
 
         SECTION("Dynamic") {
@@ -2303,7 +2435,7 @@ TEST_CASE("Operations") {
                             {2.0, 3.0, 8.0},
                             {1.0, 2.0, 5.0},
                         };
-                        auto sol = findSolutions(sys);
+                        auto sol = findSolutions(sys).exactSolutions();
                         REQUIRE(sol.has_value());
                         REQUIRE(sol.value().at(0) == Approx(1.0));
                         REQUIRE(sol.value().at(1) == Approx(2.0));
@@ -2316,7 +2448,7 @@ TEST_CASE("Operations") {
                             {1.0, 1.0, 3.0},
                             {2.0, 2.0, 4.0},
                         };
-                        auto sol = findSolutions(sys);
+                        auto sol = findSolutions(sys).exactSolutions();
                         REQUIRE_FALSE(sol.has_value());
                     }
                 }
@@ -2333,7 +2465,7 @@ TEST_CASE("Operations") {
                             {1.0, 2.0},
                         };
                         Vector<double, Dynamic> b{{8.0, 5.0}};
-                        auto sol = findSolutions(A, b);
+                        auto sol = findSolutions(A, b).exactSolutions();
                         REQUIRE(sol.has_value());
                         REQUIRE(sol.value().at(0) == Approx(1.0));
                         REQUIRE(sol.value().at(1) == Approx(2.0));
@@ -2343,7 +2475,7 @@ TEST_CASE("Operations") {
                         // Inconsistent system: x + y = 3 and 2x + 2y = 4 (should be 6 if consistent)
                         Matrix<double, Dynamic, Dynamic> A{{1.0, 1.0}, {2.0, 2.0}};
                         Vector<double, Dynamic> b{{3.0, 4.0}};
-                        auto sol = findSolutions(A, b);
+                        auto sol = findSolutions(A, b).exactSolutions();
                         REQUIRE_FALSE(sol.has_value());
                     }
 
@@ -2351,7 +2483,7 @@ TEST_CASE("Operations") {
                         // A 3x3 system.
                         Matrix<double, Dynamic, Dynamic> A{{3.0, -1.0, 2.0}, {2.0, 4.0, 1.0}, {-1.0, 2.0, 5.0}};
                         Vector<double, Dynamic> b{{5.0, 11.0, 8.0}};
-                        auto sol = findSolutions(A, b);
+                        auto sol = findSolutions(A, b).exactSolutions();
                         REQUIRE(sol.has_value());
                         auto computed_b = A * extractSolutionVector(sol.value());
                         for (int i = 0; i < 3; ++i) {
@@ -2370,7 +2502,7 @@ TEST_CASE("Operations") {
                         Vector<double, Dynamic> b{
                             {2.0, 3.0, 5.0},
                         };
-                        auto sol = findSolutions(A, b);
+                        auto sol = findSolutions(A, b).exactSolutions();
                         REQUIRE(sol.has_value());
                         REQUIRE(sol.value().at(0) == Approx(2.0));
                         REQUIRE(sol.value().at(1) == Approx(3.0));
@@ -2384,7 +2516,7 @@ TEST_CASE("Operations") {
                         Vector<double, Dynamic> b{
                             {6.0, 8.0},
                         };
-                        auto sol = findSolutions(A, b);
+                        auto sol = findSolutions(A, b).exactSolutions();
                         REQUIRE(sol.has_value());
                         auto computed_b = A * extractSolutionVector(sol.value());
                         for (int i = 0; i < 2; ++i) {
