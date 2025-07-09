@@ -545,6 +545,18 @@ namespace mlinalg {
         }
     }
 
+    /**
+     * @brief Compute the Schur matrix and the Orthogonal matrix Q such that
+     * \f[
+     * A = Q\,S\,Q^T
+     * \f]
+     *
+     * @param A The square matrix to decompose.
+     * @param checkSingular If true, checks if the matrix is singular before proceeding with the decomposition.
+     * @param method  The method to use for QR decomposition (default is Householder).
+     * @param iters The maximum number of iterations to perform for convergence (default is 10,000).
+     * @return A pair containing the orthogonal matrix Q and the Schur matrix S.
+     */
     template <QRType type, Number number, int n>
     auto schurCommon(const Matrix<number, n, n>& A, bool checkSingular = true, QRMethod method = QRMethod::Householder,
                      size_t iters = 10'000) {
@@ -577,11 +589,22 @@ namespace mlinalg {
             }
         }
         if (!converged) logging::log(format("Converged after {} iterations", i), "schurCommon");
-        logging::log(format("Qprod -> {}", QProd), "Schur");
 
         return pair{QProd, S};
     }
 
+    /**
+     * @brief Compute the Schur decomposition of a square matrix A.
+     *
+     * @param A The square matrix to decompose.
+     * @param checkSingular If true, checks if the matrix is singular before proceeding with the decomposition.
+     * @param method The method to use for QR decomposition (default is Householder).
+     * @param iters The maximum number of iterations to perform for convergence (default is 10,000).
+     * @return A tuple containing:
+     *         - \f$Q\in\mathbb{R}^{n\times n}\f$: the orthogonal matrix,
+     *         - \f$S\in\mathbb{R}^{n\times n}\f$: the Schur matrix (upper triangular),
+     *         - \f$Q^T\in\mathbb{R}^{n\times n}\f$: the transpose of the orthogonal matrix Q.
+     */
     template <QRType type, Number number, int n>
     auto schur(const Matrix<number, n, n>& A, bool checkSingular = true, QRMethod method = QRMethod::Householder,
                size_t iters = 10'000) {
@@ -590,6 +613,21 @@ namespace mlinalg {
         return std::tuple{Q, S, helpers::extractMatrixFromTranspose(Q.T())};
     }
 
+    /**
+     * @brief Compute the eigenvalues and eigenvectors of a square matrix A using the QR algorithm.
+     *
+     * Uses Schur decomposition to find the eigenvalues and eigenvectors, iteratively refining the
+     * decomposition until convergence. The eigenvalues are the diagonal elements of the Schur matrix S,
+     * and the eigenvectors are the columns of the orthogonal matrix Q.
+     *
+     * @param A The square matrix to decompose.
+     * @param checkSingular If true, checks if the matrix is singular before proceeding with the decomposition.
+     * @param method The method to use for QR decomposition (default is Householder).
+     * @param iters The maximum number of iterations to perform for convergence (default is 10,000).
+     * @return A pair containing:
+     *         - A vector of eigenvalues,
+     *         - A vector of eigenvectors (as column vectors).
+     */
     template <QRType type, Number number, int n>
     auto eigenQR(const Matrix<number, n, n>& A, bool checkSingular = true, QRMethod method = QRMethod::Householder,
                  size_t iters = 10'000) {
@@ -654,7 +692,7 @@ namespace mlinalg {
         // Find the eigen values and eigenvectors of A*A^T
         const auto [nR, nC] = A.shape();
         const auto& ATA{helpers::extractMatrixFromTranspose(A.T() * A)};
-        logging::log(format("SVD ATA: {}", ATA), "svdEigen");
+        // logging::log(format("SVD ATA: {}", ATA), "svdEigen");
 
         vector<Vector<number, n>> v;
         vector<number> l;
@@ -663,13 +701,13 @@ namespace mlinalg {
             l = std::move(lam);
             v = std::move(val);
             // const auto& A = helpers::padMatrixToSquare<number, m, n>(sys);
-            logging::log(format("A: {}", A), "svdEigen");
+            // logging::log(format("A: {}", A), "svdEigen");
 
             const auto& p = helpers::sortPermutation(l.begin(), l.end(), std::greater<>());
             helpers::applySortPermutation(l, p);
             helpers::applySortPermutation(v, p);
-            logging::log(format("SVD Eigenvalues: {}", l), "svdEigen");
-            logging::log(format("SVD Eigenvectors: {}", v), "svdEigen");
+            // logging::log(format("SVD Eigenvalues: {}", l), "svdEigen");
+            // logging::log(format("SVD Eigenvectors: {}", v), "svdEigen");
         } catch (const std::exception& e) {
             logging::E(format("Error finding eigen values and vectors -> {}", e.what()), "svdEigen");
             throw e;
@@ -682,7 +720,7 @@ namespace mlinalg {
             for (size_t i{}; i < minDim; i++) {
                 Sigma(i, i) = l[i] > number(0) ? sqrt(l[i]) : number(0);
             }
-            logging::log(format("SVD Sigma: {}", Sigma), "svdEigen");
+            // logging::log(format("SVD Sigma: {}", Sigma), "svdEigen");
         } catch (const std::exception& e) {
             logging::E(format("Error construction Sigma -> {}", e.what()), "svdEigen");
             throw e;
@@ -690,7 +728,7 @@ namespace mlinalg {
 
         // Construct the V matrix from the eigenvectors.
         const auto& V = helpers::fromColVectorSet<number, ATA.rows, ATA.cols>(v);
-        logging::log(format("SVD V: {}", V), "svdEigen");
+        // logging::log(format("SVD V: {}", V), "svdEigen");
 
         // Construct the U matrix using the eigenvectors and the Sigma matrix.
         Matrix<number, m, m> U(nR, nR);
@@ -725,9 +763,9 @@ namespace mlinalg {
 
         const auto& VT = helpers::extractMatrixFromTranspose(V.T());
 
-        logging::log(format("SVD U: {}", U), "svdEigen");
+        // logging::log(format("SVD U: {}", U), "svdEigen");
 
-        logging::log(format("A = U * Sigma * V^T: {}", U * Sigma * VT), "svdEigen");
+        // logging::log(format("A = U * Sigma * V^T: {}", U * Sigma * VT), "svdEigen");
 
         return std::tuple{U, Sigma, VT};
     }
