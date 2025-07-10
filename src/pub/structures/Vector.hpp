@@ -428,6 +428,9 @@ namespace mlinalg::structures {
          */
         constexpr auto rend() { return row.rend(); }
 
+        const number* data() const noexcept { return row.data(); }
+
+        number* data() noexcept { return row.data(); }
         explicit operator std::string() const { return vectorStringRepr(row); }
 
         friend std::ostream& operator<<(std::ostream& os, const Vector<number, n>& row) {
@@ -913,6 +916,10 @@ namespace mlinalg::structures {
          * @return An iterator to the end of the vector in reverse
          */
         constexpr auto rend() { return row.rend(); }
+
+        const number* data() const noexcept { return row.data(); }
+
+        number* data() noexcept { return row.data(); }
 
         explicit operator std::string() const { return vectorStringRepr(row); }
 

@@ -337,7 +337,7 @@ namespace mlinalg::structures {
 
 #if defined(__AVX__) && defined(__FMA__)
     template <Number number, int m, int n, int mOther, int nOther, Container T, Container U>
-    Matrix<float, m, nOther> multMatSIMD(const T& matrix, const U& otherMatrix)
+    constexpr Matrix<float, m, nOther> multMatSIMD(const T& matrix, const U& otherMatrix)
         requires(is_same_v<number, float>)
     {
         if (matrix[0].size() != static_cast<size_t>(otherMatrix.size()))
@@ -357,11 +357,11 @@ namespace mlinalg::structures {
 
         for (size_t i{}; i < nRows; i++) {
             for (size_t k{}; k < nCols; k++) {
-                const float a = matrix.at(i).at(k);
+                const float a = matrix[i][k];
                 __m256 avxA = _mm256_set1_ps(a);
 
-                auto& kRow = otherMatrix.at(k);
-                auto& iRow = res.at(i);
+                auto kRow = otherMatrix[k].data();
+                auto iRow = res[i].data();
 
                 // Only vectorize if there are at least 8 columns.
                 if (nColsOther >= vecSize) {
@@ -390,7 +390,7 @@ namespace mlinalg::structures {
     }
 
     template <Number number, int m, int n, int mOther, int nOther, Container T, Container U>
-    Matrix<double, m, nOther> multMatSIMD(const T& matrix, const U& otherMatrix)
+    constexpr Matrix<double, m, nOther> multMatSIMD(const T& matrix, const U& otherMatrix)
         requires(is_same_v<number, double>)
     {
         if (matrix[0].size() != static_cast<size_t>(otherMatrix.size()))
@@ -410,11 +410,11 @@ namespace mlinalg::structures {
 
         for (size_t i{}; i < nRows; i++) {
             for (size_t k{}; k < nCols; k++) {
-                const double a = matrix.at(i).at(k);
+                const double a = matrix[i][k];
                 __m256d avxA = _mm256_set1_pd(a);
 
-                auto& kRow = otherMatrix.at(k);
-                auto& iRow = res.at(i);
+                auto kRow = otherMatrix[k].data();
+                auto iRow = res[i].data();
 
                 // Only vectorize if there are at least 4 columns.
                 if (nColsOther >= vecSize) {
