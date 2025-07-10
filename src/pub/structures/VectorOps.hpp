@@ -73,6 +73,12 @@ namespace mlinalg::structures {
         return res;
     }
 
+    template <Number number, Container T>
+    void vectorNeg(T& row) {
+        auto size = row.size();
+        for (size_t i{}; i < size; i++) row[i] = -row[i];
+    }
+
     template <Number number, Container T, Container U>
     void vectorAddI(T& row, const U& otherRow) {
         checkOperandSize(row, otherRow);
@@ -197,7 +203,7 @@ namespace mlinalg::structures {
      * @param row Vector to compute the norm of
      * @return L1-Norm of the vector
      */
-    template <Number number, int n, Container T>
+    template <Number number, Container T>
     double L1Norm(const T& row) {
         double sum{};
         for (const auto& elem : row) {
@@ -227,7 +233,7 @@ namespace mlinalg::structures {
      * @param vec Vector to compute the norm of
      * @return Weighted L2-Norm of the vector
      */
-    template <Number number, int n, Container T>
+    template <Number number, Container T>
     double WeightedL2Norm(const T& row, const T& otherRow) {
         if (otherRow.size() != row.size())
             throw StackError<std::invalid_argument>("Matrix and vector must have the same size");

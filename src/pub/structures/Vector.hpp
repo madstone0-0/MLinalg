@@ -5,22 +5,7 @@
 
 #pragma once
 
-#include <algorithm>
-#include <array>
-#include <cmath>
-#include <iterator>
-#include <memory>
-#include <optional>
-#include <ostream>
-#include <stdexcept>
-#include <string>
-#include <utility>
-#include <vector>
-
-#include "../Concepts.hpp"
-#include "Aliases.hpp"
-#include "Matrix.hpp"
-#include "VectorOps.hpp"
+#include "VectorBase.hpp"
 
 using std::vector, std::array, std::optional, std::unique_ptr, std::shared_ptr, mlinalg::structures::helpers::unwrap;
 
@@ -32,8 +17,14 @@ namespace mlinalg::structures {
      * @param n The number of elements in the vector
      */
     template <Number number, int n>
-    class Vector {
+    class Vector : public VectorBase<Vector<number, n>, number> {
        public:
+        using Base = VectorBase<Vector<number, n>, number>;
+
+        // ===========================
+        // Constructors and Destructor
+        // ===========================
+
         Vector() { checkDimensions(); }
 
 #pragma GCC diagnostic push
@@ -102,246 +93,11 @@ namespace mlinalg::structures {
             return *this;
         }
 
-        /**
-         * @brief Equality operator
-         *
-         * @param other Vector to compare
-         * @return true if all the entires in the vector are equal to all the entires in the other vector else false
-         */
-        bool operator==(const Vector& other) const { return vectorEqual(row, other.row); }
-
         ~Vector() = default;
 
-        /**
-         * @brief Access the ith element of the vector
-         *
-         * @param i the index of the element to access
-         * @return a reference to the ith element
-         */
-        constexpr number& at(size_t i) { return vectorAt<number>(row, i); }
-
-        /**
-         * @brief Access the ith element of the vector
-         *
-         * @param i  the index of the element to access
-         * @return a reference to the ith element
-         */
-        constexpr number& operator[](size_t i) { return row[i]; }
-
-        /**
-         * @brief Const access the ith element of the vector
-         *
-         * @param i the index of the element to access
-         * @return  the ith element
-         */
-        constexpr const number& at(size_t i) const { return vectorConstAt<number>(row, i); }
-
-        /**
-         * @brief Const access the ith element of the vector
-         *
-         * @param i  the index of the element to access
-         * @return The ith element
-         */
-        constexpr number& operator[](size_t i) const { return const_cast<number&>(row[i]); }
-
-        /**
-         * @brief Find the dot product of this vector and another vector
-         *
-         * @param other The other vector
-         * @return the dot product of the two vectors
-         */
-        double dot(const Vector<number, n>& other) const { return vectorDot(*this, other); }
-
-        /**
-         * @brief Find the length of the vector
-         *
-         * @return the length of the vector
-         */
-        [[nodiscard]] double length() const { return EuclideanNorm(*this); }
-
-        /**
-         * @brief Find the euclidean norm of the vector
-         *
-         * This is the same as the length of the vector
-         *
-         * \f[
-         * ||x||_2 = \sqrt{x^T \cdot x}
-         * \f]
-         *
-         * @return the euclidean norm of the vector
-         */
-        [[nodiscard]] double euclid() const { return length(); }
-
-        /**
-         * @brief Find the L1 norm of the vector
-         *
-         * This is the same as the sum of the absolute values of the elements in the vector
-         *
-         * \f[
-         * ||x||_1 = \sum{|x_i|}
-         * \f]
-         *
-         * @return the L1 norm of the vector
-         */
-        [[nodiscard]] double l1() const { return L1Norm<number, n>(row); }
-
-        /**
-         * @brief Find the weighted L2 norm of the vector
-         *
-         * Each of the coordinates of a vector space is given a weight
-         *
-         * \f[
-         * ||x||_W = \sqrt{\sum{w_i * x_i^2}}
-         * \f]
-         *
-         * @param otherVec The other vector
-         * @return the weighted L2 norm of the vector
-         */
-        template <int otherN>
-        double weightedL2(const Vector<number, otherN>& otherVec) const {
-            return WeightedL2Norm<number, n>(row, otherVec.row);
-        }
-
-        /**
-         * @brief Find the distance between this vector and another vector
-         *
-         * @param other The other vector
-         * @return the distance between the two vectors
-         */
-        [[nodiscard]] double dist(const Vector<number, n>& other) const { return vectorDist(*this, other); }
-
-        /**
-         * @brief Normalize a vector into a unit vector
-         *
-         * @return the normalized vector
-         */
-        Vector<number, n> normalize() const { return vectorNormalize(*this); }
-
-        /**
-         * @brief Normalize a vector into a unit vector in-place
-         *
-         * @return A reference to the same vector
-         */
-        Vector<number, n>& normalizeI() { return vectorNormalizeI(*this); }
-
-        /**
-         * @brief Clear the vector, i.e. set all elements to zero
-         */
-        void clear() { vectorClear(*this); }
-
-        /**
-         * @brief Vector subtraction
-         *
-         * @param other the vector to subtract
-         * @return the vector resulting from the subtraction
-         */
-        Vector<number, n> operator-(const Vector<number, n>& other) const {
-            auto res = *this;
-            res -= other;
-            return res;
-        }
-
-        /**
-         * @brief Vector Negation
-         *
-         * @return the negeated vector
-         */
-        Vector<number, n> operator-() const { return vectorNeg<number, n>(row); }
-
-        /**
-         * @brief In-place vector subtraction
-         *
-         * @param other  the vector to add
-         * @return A reference to the same vector
-         */
-        Vector<number, n>& operator-=(const Vector<number, n>& other) {
-            vectorSubI<number>(row, other.row);
-            return *this;
-        }
-
-        /**
-         * @brief Vector addition
-         *
-         * @param other the vector to add
-         * @return the vector resulting from the addition
-         */
-        Vector<number, n> operator+(const Vector<number, n>& other) const {
-            auto res = *this;
-            res += other;
-            return res;
-        }
-
-        /**
-         * @brief In-place vector addition
-         *
-         * @param other  the vector to add
-         * @return A reference to the same vector
-         */
-        Vector<number, n>& operator+=(const Vector<number, n>& other) {
-            vectorAddI<number>(row, other.row);
-            return *this;
-        }
-
-        /**
-         * @brief Size of the vector, i.e the number of elements in the vector
-         *
-         * @return the size of the vector
-         */
-        [[nodiscard]] size_t size() const { return static_cast<size_t>(n); }
-
-        /**
-         * @brief Vector multiplication by a scalar
-         *
-         * @param scalar A scalar of the same type as the vector
-         * @return the vector resulting from the multiplication
-         */
-        Vector<number, n> operator*(const number& scalar) const {
-            auto res = *this;
-            res *= scalar;
-            return res;
-        }
-
-        /**
-         * @brief Vector division by a scalar
-         *
-         * @param scalar A scalar of the same type as the vector
-         * @return  The vector resulting from the division
-         */
-        Vector<number, n> operator/(const number& scalar) const {
-            auto res = *this;
-            res /= scalar;
-            return res;
-        }
-
-        /**
-         * @brief In-place vector multiplication by a scalar.
-         *
-         * @param scalar A scalar of the same type as the vector.
-         * @return
-         */
-        Vector<number, n>& operator*=(const number& scalar) {
-            vectorScalarMultI<number>(row, scalar);
-            return *this;
-        }
-
-        /**
-         * @brief In-place vector division by a scalar
-         *
-         * @param scalar A scalar of the same type as the vector
-         * @return
-         */
-        Vector<number, n>& operator/=(const number& scalar) {
-            vectorScalarDivI(row, scalar);
-            return *this;
-        }
-
-        /**
-         * @brief Vector multiplication by a vector
-         *
-         * @param vec Another vector of the same size as the vector
-         * @return  A 1x1 vector containing the dot product of the two vectors
-         */
-        auto operator*(const Vector<number, n>& vec) const { return vectorVectorMult(*this, vec); }
+        // =====================
+        // Arithmetic Operators
+        // ====================
 
         /**
          * @brief Vector multiplication by a matrix
@@ -377,6 +133,10 @@ namespace mlinalg::structures {
             return res;
         }
 
+        // =================
+        // Vector Operations
+        // =================
+
         /**
          * @brief Transpose a row vector to a column vector
          *
@@ -384,108 +144,16 @@ namespace mlinalg::structures {
          */
         [[nodiscard]] Matrix<number, 1, n> T() const { return vectorTranspose<number, 1, n>(row); }
 
-        /**
-         * @brief Begin iterator for the vector
-         *
-         * @return An iterator to the beginning of the vector
-         */
-        constexpr auto begin() const { return row.begin(); }
+        // ======================
+        // Miscellaneous Operations
+        // ======================
 
         /**
-         * @brief End iterator for the vector
+         * @brief Size of the vector, i.e the number of elements in the vector
          *
-         * @return An iterator to the end of the vector
+         * @return the size of the vector
          */
-        constexpr auto end() const { return row.end(); }
-
-        /**
-         * @brief Const begin iterator for the vector
-         *
-         * @return A const iterator to the beginning of the vector
-         */
-        constexpr auto cbegin() const { return row.cbegin(); }
-
-        /**
-         * @brief Const end iterator for the vector
-         *
-         * @return A c onst iterator to the end of the vector
-         */
-        constexpr auto cend() const { return row.cend(); }
-
-        /**
-         * @brief Last element of the vector
-         *
-         * @return A reference to the last element of the vector
-         */
-        constexpr auto& back() { return row.back(); }
-
-        /**
-         * @brief Const last element of the vector
-         *
-         * @return A const reference to the last element of the vector
-         */
-        constexpr auto& back() const { return row.back(); }
-
-        /**
-         * @brief Reverse begin iterator for the vector
-         *
-         * @return An iterator to the beginning of the vector in reverse
-         */
-        constexpr auto rbegin() { return row.rbegin(); }
-
-        /**
-         * @brief Reverse end iterator for the vector
-         *
-         * @return An iterator to the end of the vector in reverse
-         */
-        constexpr auto rend() { return row.rend(); }
-
-        const number* data() const noexcept { return row.data(); }
-
-        number* data() noexcept { return row.data(); }
-
-        /**
-         * @brief Apply a function to each element of the vector
-         *
-         * @tparam F Function type that takes a number and returns void
-         * @param f Function to apply to each element of the vector
-         * @return A reference to the same vector
-         */
-        template <typename F>
-        Vector<number, n>& apply(F f) {
-            vectorApply(row, f);
-            return *this;
-        }
-
-        /**
-         * @brief Apply a function to each element of the vector with another vector
-         *
-         * @tparam F Function type that takes two numbers and returns void
-         * @param other The other vector to apply the function with
-         * @param f Function to apply to each element of the vector
-         * @return A reference to the same vector
-         */
-        template <typename F>
-        Vector<number, n>& apply(const Vector<number, n>& other, F f) {
-            vectorApply(row, other.row, f);
-            return *this;
-        }
-
-        explicit operator std::string() const { return vectorStringRepr(row); }
-
-        friend std::ostream& operator<<(std::ostream& os, const Vector<number, n>& row) {
-            os << std::string(row);
-            return os;
-        }
-
-        friend std::ostream& operator<<(std::ostream& os, const optional<Vector<number, n>>& rowPot) {
-            if (!rowPot.has_value()) {
-                os << "Empty Vector";
-                return os;
-            }
-
-            return vectorOptionalRepr(os, rowPot.value().row);
-        }
+        [[nodiscard]] size_t size() const { return static_cast<size_t>(n); }
 
        private:
         template <Number num, int mM, int nN>
@@ -493,6 +161,9 @@ namespace mlinalg::structures {
 
         template <Number num, int nN>
         friend class Vector;
+
+        template <typename D, Number num>
+        friend class VectorBase;
 
         /**
          * @brief Swap the contents of two vectors
@@ -513,11 +184,6 @@ namespace mlinalg::structures {
         VectorRow<number, n> row{VectorRow<number, n>(n, number{})};
     };
 
-    template <Number number, int n>
-    Vector<number, n> operator*(const number& scalar, const Vector<number, n>& vec) {
-        return vec * scalar;
-    }
-
 }  // namespace mlinalg::structures
 
 namespace mlinalg::structures {
@@ -526,8 +192,14 @@ namespace mlinalg::structures {
      * @brief Dynamic Vector class for representing both row and column vectors in n-dimensional space
      */
     template <Number number>
-    class Vector<number, Dynamic> {
+    class Vector<number, Dynamic> : public VectorBase<Vector<number, Dynamic>, number> {
        public:
+        using Base = VectorBase<Vector<number, Dynamic>, number>;
+
+        // ===========================
+        // Constructors and Destructor
+        // ===========================
+
         Vector() = delete;
         explicit Vector(size_t size) : n{size}, row(size) {}
 
@@ -595,282 +267,11 @@ namespace mlinalg::structures {
             return *this;
         }
 
-        /**
-         * @brief Equality operator
-         *
-         * @param other Vector to compare
-         * @return true if all the entires in the vector are equal to all the entires in the other vector else false
-         */
-        template <int otherN>
-        bool operator==(const Vector<number, otherN>& other) const {
-            return vectorEqual(row, other.row);
-        }
-
-        template <int n, int otherN>
-        friend bool operator==(const Vector<number, otherN>& lhs, const Vector<number, n> rhs)
-            requires(n == Dynamic && otherN != Dynamic)
-        {
-            return vectorEqual(lhs.row, rhs.row);
-        }
-
         ~Vector() = default;
 
-        /**
-         * @brief Access the ith element of the vector
-         *
-         * @param i the index of the element to access
-         * @return a reference to the ith element
-         */
-        number& at(size_t i) { return vectorAt<number>(row, i); }
-
-        /**
-         * @brief Access the ith element of the vector
-         *
-         * @param i  the index of the element to access
-         * @return a reference to the ith element
-         */
-        number& operator[](size_t i) { return row[i]; }
-
-        /**
-         * @brief Const access the ith element of the vector
-         *
-         * @param i the index of the element to access
-         * @return  the ith element
-         */
-        number at(size_t i) const { return vectorConstAt<number>(row, i); }
-
-        /**
-         * @brief Const access the ith element of the vector
-         *
-         * @param i  the index of the element to access
-         * @return The ith element
-         */
-        number& operator[](size_t i) const { return const_cast<number&>(row[i]); }
-
-        /**
-         * @brief Find the dot product of this vector and another vector
-         *
-         * @param other The other vector
-         * @return the dot product of the two vectors
-         */
-        template <int otherN>
-        double dot(const Vector<number, otherN>& other) const {
-            return vectorDot(*this, other);
-        }
-
-        /**
-         * @brief Find the length of the vector
-         *
-         * @return the length of the vector
-         */
-        [[nodiscard]] double length() const { return EuclideanNorm(*this); }
-
-        /**
-         * @brief Find the euclidean norm of the vector
-         *
-         * This is the same as the length of the vector
-         *
-         * \f[
-         * ||x||_2 = \sqrt{x^T \cdot x}
-         * \f]
-         *
-         * @return the euclidean norm of the vector
-         */
-        [[nodiscard]] double euclid() const { return length(); }
-
-        /**
-         * @brief Find the L1 norm of the vector
-         *
-         * This is the same as the sum of the absolute values of the elements in the vector
-         *
-         * \f[
-         * ||x||_1 = \sum{|x_i|}
-         * \f]
-         *
-         * @return the L1 norm of the vector
-         */
-        [[nodiscard]] double l1() const { return L1Norm<number, Dynamic>(row); }
-
-        /**
-         * @brief Find the weighted L2 norm of the vector
-         *
-         * Each of the coordinates of a vector space is given a weight
-         *
-         * \f[
-         * ||x||_W = \sqrt{\sum{|w_i * x_i|^2}}
-         * \f]
-         *
-         * @param otherVec The other vector
-         * @return the weighted L2 norm of the vector
-         */
-        template <int otherN>
-        double weightedL2(const Vector<number, otherN>& otherVec) const {
-            return WeightedL2Norm<number, Dynamic>(row, otherVec.row);
-        }
-
-        /**
-         * @brief Find the distance between this vector and another vector
-         *
-         * @param other The other vector
-         * @return the distance between the two vectors
-         */
-
-        template <int otherN>
-        [[nodiscard]] double dist(const Vector<number, otherN>& other) const {
-            return vectorDist(*this, other);
-        }
-
-        /**
-         * @brief Normalize a vector into a unit vector
-         *
-         * @return the normalized vector
-         */
-        Vector<number, Dynamic> normalize() { return vectorNormalize(*this); }
-
-        /**
-         * @brief Normalize a vector into a unit vector in-place
-         *
-         * @return A reference to the same vector
-         */
-        Vector<number, Dynamic>& normalizeI() { return vectorNormalizeI(*this); }
-
-        /**
-         * @brief Clear the vector, i.e. set all elements to zero
-         */
-        void clear() { vectorClear(*this); }
-
-        /**
-         * @brief Vector subtraction
-         *
-         * @param other the vector to subtract
-         * @return the vector resulting from the subtraction
-         */
-        template <int otherN>
-        Vector<number, Dynamic> operator-(const Vector<number, otherN>& other) const {
-            auto res = *this;
-            res -= other;
-            return res;
-        }
-
-        template <int n, int otherN>
-        friend Vector<number, Dynamic> operator-(const Vector<number, otherN>& lhs, const Vector<number, n> rhs)
-            requires(n == Dynamic && otherN != Dynamic)
-        {
-            auto res = lhs;
-            vectorSubI<number>(res.row, rhs.row);
-            return res;
-        }
-
-        /**
-         * @brief Vector addition
-         *
-         * @param other the vector to add
-         * @return the vector resulting from the addition
-         */
-        template <int otherN>
-        Vector<number, Dynamic> operator+(const Vector<number, otherN>& other) const {
-            auto res = *this;
-            res += other;
-            return res;
-        }
-
-        template <int n, int otherN>
-        friend Vector<number, Dynamic> operator+(const Vector<number, otherN>& lhs, const Vector<number, n> rhs)
-            requires(n == Dynamic && otherN != Dynamic)
-        {
-            auto res = lhs;
-            vectorAddI<number>(res.row, rhs.row);
-            return res;
-        }
-
-        /**
-         * @brief In-place vector addition
-         *
-         * @param other  the vector to add
-         * @return A reference to the same vector
-         */
-        template <int otherN>
-        Vector<number, Dynamic>& operator+=(const Vector<number, otherN>& other) {
-            vectorAddI<number>(row, other.row);
-            return *this;
-        }
-
-        /**
-         * @brief In-place vector subtraction
-         *
-         * @param other  the vector to add
-         * @return A reference to the same vector
-         */
-        template <int otherN>
-        Vector<number, Dynamic>& operator-=(const Vector<number, otherN>& other) {
-            vectorSubI<number>(row, other.row);
-            return *this;
-        }
-
-        /**
-         * @brief Size of the vector, i.e the number of elements in the vector
-         *
-         * @return the size of the vector
-         */
-        [[nodiscard]] size_t size() const { return n; }
-
-        /**
-         * @brief Vector multiplication by a scalar
-         *
-         * @param scalar A scalar of the same type as the vector
-         * @return the vector resulting from the multiplication
-         */
-        Vector<number, Dynamic> operator*(const number& scalar) const {
-            auto res = *this;
-            res *= scalar;
-            return res;
-        }
-
-        /**
-         * @brief Vector division by a scalar
-         *
-         * @param scalar A scalar of the same type as the vector
-         * @return  The vector resulting from the division
-         */
-        Vector<number, Dynamic> operator/(const number& scalar) const {
-            auto res = *this;
-            res /= scalar;
-            return res;
-        }
-
-        /**
-         * @brief In-place vector multiplication by a scalar.
-         *
-         * @param scalar A scalar of the same type as the vector.
-         * @return
-         */
-        Vector<number, Dynamic>& operator*=(const number& scalar) {
-            vectorScalarMultI<number>(row, scalar);
-            return *this;
-        }
-
-        /**
-         * @brief In-place vector division by a scalar
-         *
-         * @param scalar A scalar of the same type as the vector
-         * @return
-         */
-        Vector<number, Dynamic>& operator/=(const number& scalar) {
-            vectorScalarDivI(row, scalar);
-            return *this;
-        }
-
-        /**
-         * @brief Vector multiplication by a vector
-         *
-         * @param vec Another vector of the same size as the vector
-         * @return  A 1x1 vector containing the dot product of the two vectors
-         */
-        template <int otherN>
-        auto operator*(const Vector<number, otherN>& vec) const {
-            checkOperandSize(row, vec.row);
-            return vectorVectorMult(*this, vec);
-        }
+        // ====================
+        // Arithmetic Operators
+        // ====================
 
         /**
          * @brief Vector multiplication by a matrix
@@ -904,6 +305,10 @@ namespace mlinalg::structures {
             }
         }
 
+        // =================
+        // Vector Operations
+        // =================
+
         /**
          * @brief Transpose a row vector to a column vector
          *
@@ -913,108 +318,16 @@ namespace mlinalg::structures {
             return vectorTranspose<number, Dynamic, Dynamic>(row);
         }
 
-        /**
-         * @brief Begin iterator for the vector
-         *
-         * @return An iterator to the beginning of the vector
-         */
-        constexpr auto begin() const { return row.begin(); }
+        // ========================
+        // Miscellaneous Operations
+        // ========================
 
         /**
-         * @brief End iterator for the vector
+         * @brief Size of the vector, i.e the number of elements in the vector
          *
-         * @return An iterator to the end of the vector
+         * @return the size of the vector
          */
-        constexpr auto end() const { return row.end(); }
-
-        /**
-         * @brief Const begin iterator for the vector
-         *
-         * @return A const iterator to the beginning of the vector
-         */
-        constexpr auto cbegin() const { return row.cbegin(); }
-
-        /**
-         * @brief Const end iterator for the vector
-         *
-         * @return A c onst iterator to the end of the vector
-         */
-        constexpr auto cend() const { return row.cend(); }
-
-        /**
-         * @brief Last element of the vector
-         *
-         * @return A reference to the last element of the vector
-         */
-        constexpr auto& back() { return row.back(); }
-
-        /**
-         * @brief Const last element of the vector
-         *
-         * @return A const reference to the last element of the vector
-         */
-        constexpr auto& back() const { return row.back(); }
-
-        /**
-         * @brief Reverse begin iterator for the vector
-         *
-         * @return An iterator to the beginning of the vector in reverse
-         */
-        constexpr auto rbegin() { return row.rbegin(); }
-
-        /**
-         * @brief Reverse end iterator for the vector
-         *
-         * @return An iterator to the end of the vector in reverse
-         */
-        constexpr auto rend() { return row.rend(); }
-
-        const number* data() const noexcept { return row.data(); }
-
-        number* data() noexcept { return row.data(); }
-
-        /**
-         * @brief Apply a function to each element of the vector
-         *
-         * @tparam F Function type that takes a number and returns void
-         * @param f Function to apply to each element of the vector
-         * @return A reference to the same vector
-         */
-        template <typename F>
-        Vector<number, Dynamic>& apply(F f) {
-            vectorApply(row, f);
-            return *this;
-        }
-
-        /**
-         * @brief Apply a function to each element of the vector with another vector
-         *
-         * @tparam F Function type that takes two numbers and returns void
-         * @param other The other vector to apply the function with
-         * @param f Function to apply to each element of the vector
-         * @return A reference to the same vector
-         */
-        template <typename F, int nN>
-        Vector<number, Dynamic>& apply(const Vector<number, nN>& other, F f) {
-            vectorApply<F, decltype(row), decltype(other.row), true>(row, other.row, f);
-            return *this;
-        }
-
-        explicit operator std::string() const { return vectorStringRepr(row); }
-
-        friend std::ostream& operator<<(std::ostream& os, const Vector<number, Dynamic>& row) {
-            os << std::string(row);
-            return os;
-        }
-
-        friend std::ostream& operator<<(std::ostream& os, const optional<Vector<number, Dynamic>>& rowPot) {
-            if (!rowPot.has_value()) {
-                os << "Empty Vector";
-                return os;
-            }
-
-            return vectorOptionalRepr(os, rowPot.value().row);
-        }
+        [[nodiscard]] size_t size() const { return n; }
 
        private:
         template <Number num, int mM, int nN>
@@ -1022,6 +335,9 @@ namespace mlinalg::structures {
 
         template <Number num, int nN>
         friend class Vector;
+
+        template <typename D, Number num>
+        friend class VectorBase;
 
         /**
          * @brief Swap the contents of two vectors
@@ -1035,7 +351,6 @@ namespace mlinalg::structures {
         }
 
         size_t n;
-        // VectorRowDynamicPtr<number> row{std::make_unique<VectorRowDynamic<number>>()};
         VectorRowDynamic<number> row{};
     };
 }  // namespace mlinalg::structures
