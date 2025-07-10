@@ -466,6 +466,7 @@ namespace mlinalg {
         auto R = A;                      // will become upper‑triangular
         auto Q = I<number, m>(numRows);  // accumulate left reflectors
 
+        auto Qk = I<number, m>(numRows);
         const size_t p = std::min(numRows, numCols);
         for (size_t k = 0; k < p; ++k) {
             // ---------------------------------------------------
@@ -485,7 +486,7 @@ namespace mlinalg {
                 auto H = houseHolder(v);  // small (numRows-k)×(numRows-k)
 
                 // embed H into full-size identity Qk
-                auto Qk = I<number, m>(numRows);
+                I(Qk);
                 for (size_t i = k; i < numRows; ++i)
                     for (size_t j = k; j < numRows; ++j) Qk(i, j) = H(i - k, j - k);
 
@@ -576,8 +577,8 @@ namespace mlinalg {
         size_t i{1};
         for (; i < iters; ++i) {
             const auto& res = QR<type>(S, method);
-            Q = std::move(res.first);
-            R = std::move(res.second);
+            Q = res.first;
+            R = res.second;
             QProd = QProd * Q;
 
             S = R * Q;

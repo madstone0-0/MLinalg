@@ -1,7 +1,10 @@
 #pragma once
 
+#include <stdexcept>
+
 #include "../Concepts.hpp"
 #include "../structures/Matrix.hpp"
+#include "Helpers.hpp"
 
 namespace mlinalg {
     using namespace structures;
@@ -18,6 +21,18 @@ namespace mlinalg {
             res.at(i) = solutions.at(i).value();
         }
         return res;
+    }
+
+    template <Number number, int m, int n>
+    void I(Matrix<number, m, n>& A)
+        requires(m == n)
+    {
+        const auto& [nR, nC] = A.shape();
+        if (nR != nC) throw StackError<std::invalid_argument>{"The matrix must be square"};
+        A.clear();
+        for (size_t i{}; i < nR; i++) {
+            A(i, i) = 1;
+        }
     }
 
     /**
@@ -202,7 +217,8 @@ namespace mlinalg {
      * @return The random vector of the given size.
      */
     template <Number number, int n>
-    Vector<number, n> vectorRandom(const int size, const int min = 0, const int max = 100, const Seed& seed = std::nullopt) {
+    Vector<number, n> vectorRandom(const int size, const int min = 0, const int max = 100,
+                                   const Seed& seed = std::nullopt) {
         if constexpr (n == Dynamic) {
             Vector<number, n> vec(size);
             for (int i{}; i < size; i++) {
@@ -246,7 +262,8 @@ namespace mlinalg {
      * @return The random matrix of the given size.
      */
     template <Number number, int m, int n>
-    Matrix<number, m, n> matrixRandom(const int numRows, const int numCols, const int min = 0, const int max = 100, const Seed& seed = std::nullopt) {
+    Matrix<number, m, n> matrixRandom(const int numRows, const int numCols, const int min = 0, const int max = 100,
+                                      const Seed& seed = std::nullopt) {
         if constexpr (n == Dynamic || m == Dynamic) {
             Matrix<number, m, n> res(numRows, numCols);
             for (int i{}; i < m; i++) {
@@ -307,7 +324,8 @@ namespace mlinalg {
         Matrix<number, n, n> res{n, n};
         size_t i{};
         for (const auto& entry : entries) {
-            if (i >= static_cast<size_t>(n)) throw StackError<std::out_of_range>{"Too many entries for diagonal matrix"};
+            if (i >= static_cast<size_t>(n))
+                throw StackError<std::out_of_range>{"Too many entries for diagonal matrix"};
             res(i, i) = entry;
             i++;
         }

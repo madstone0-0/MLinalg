@@ -48,7 +48,7 @@ namespace mlinalg::structures {
     class Matrix;
 
     /**
-     * @brief Matrix class for representing NxM matrices
+     * @brief Matrix class for representing MxN matrices
      *
      * @param m Number of rows
      * @param n Number of columns
@@ -180,7 +180,7 @@ namespace mlinalg::structures {
         /**
          * @brief Const access the element at the ith row and jth column
          *
-         * NOTE: When using this operator in an expression it should be encased in parathese to avoid being
+         * NOTE: When using this operator in an expression it should be encased in parantheses to avoid being
          * intepreted as a comma operator. For example, instead of writing:
          * `matrix(i, j) + 1`, you should write `(matrix(i, j)) + 1`. (2025-06-23 09:53)
          *
@@ -566,6 +566,11 @@ namespace mlinalg::structures {
          */
         number trace() const { return MatrixTrace<number, m>(matrix); }
 
+        /**
+         * @brief Clear the matrix, i.e. set all elements to zero
+         */
+        void clear() { return matrixClear(*this); }
+
         auto getMatrix() const { return matrix; }
 
        private:
@@ -645,7 +650,7 @@ namespace mlinalg::structures {
 
 namespace mlinalg::structures {
     /**
-     * @brief Dynamic Matrix class for representing NxM matrices
+     * @brief Dynamic Matrix class for representing MxN matrices
      *
      * @param m  Number of rows
      * @param n  Number of columns
@@ -1208,6 +1213,11 @@ namespace mlinalg::structures {
          * @return The trace of the matrix
          */
         number trace() const { return MatrixTrace<number, Dynamic>(matrix); }
+
+        /**
+         * @brief Clear the matrix, i.e. set all elements to zero
+         */
+        void clear() { return matrixClear(*this); }
 
        private:
         template <Number num, int mM, int nN>

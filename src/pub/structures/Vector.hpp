@@ -118,7 +118,7 @@ namespace mlinalg::structures {
          * @param i the index of the element to access
          * @return a reference to the ith element
          */
-        number& at(size_t i) { return vectorAt<number>(row, i); }
+        constexpr number& at(size_t i) { return vectorAt<number>(row, i); }
 
         /**
          * @brief Access the ith element of the vector
@@ -126,7 +126,7 @@ namespace mlinalg::structures {
          * @param i  the index of the element to access
          * @return a reference to the ith element
          */
-        number& operator[](size_t i) { return row[i]; }
+        constexpr number& operator[](size_t i) { return row[i]; }
 
         /**
          * @brief Const access the ith element of the vector
@@ -134,7 +134,7 @@ namespace mlinalg::structures {
          * @param i the index of the element to access
          * @return  the ith element
          */
-        const number& at(size_t i) const { return vectorConstAt<number>(row, i); }
+        constexpr const number& at(size_t i) const { return vectorConstAt<number>(row, i); }
 
         /**
          * @brief Const access the ith element of the vector
@@ -142,7 +142,7 @@ namespace mlinalg::structures {
          * @param i  the index of the element to access
          * @return The ith element
          */
-        number& operator[](size_t i) const { return const_cast<number&>(row[i]); }
+        constexpr number& operator[](size_t i) const { return const_cast<number&>(row[i]); }
 
         /**
          * @brief Find the dot product of this vector and another vector
@@ -215,7 +215,19 @@ namespace mlinalg::structures {
          *
          * @return the normalized vector
          */
-        Vector<double, n> normalize() const { return vectorNormalize(*this); }
+        Vector<number, n> normalize() const { return vectorNormalize(*this); }
+
+        /**
+         * @brief Normalize a vector into a unit vector in-place
+         *
+         * @return A reference to the same vector
+         */
+        Vector<number, n>& normalizeI() { return vectorNormalizeI(*this); }
+
+        /**
+         * @brief Clear the vector, i.e. set all elements to zero
+         */
+        void clear() { vectorClear(*this); }
 
         /**
          * @brief Vector subtraction
@@ -670,7 +682,19 @@ namespace mlinalg::structures {
          *
          * @return the normalized vector
          */
-        Vector<double, Dynamic> normalize() { return vectorNormalize(*this); }
+        Vector<number, Dynamic> normalize() { return vectorNormalize(*this); }
+
+        /**
+         * @brief Normalize a vector into a unit vector in-place
+         *
+         * @return A reference to the same vector
+         */
+        Vector<number, Dynamic>& normalizeI() { return vectorNormalizeI(*this); }
+
+        /**
+         * @brief Clear the vector, i.e. set all elements to zero
+         */
+        void clear() { vectorClear(*this); }
 
         /**
          * @brief Vector subtraction

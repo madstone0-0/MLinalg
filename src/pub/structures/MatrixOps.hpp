@@ -995,6 +995,15 @@ namespace mlinalg::structures {
         return sum;
     }
 
+    template <Number number, int m, int n>
+    void matrixClear(Matrix<number, m, n>& A) {
+        for (size_t i{}; i < A.numRows(); i++) {
+            for (size_t j{}; j < A.numCols(); j++) {
+                A(i, j) = number{};
+            }
+        }
+    }
+
     // =====================
     // Induced Matrix Norms
     // =====================

@@ -196,6 +196,19 @@ namespace mlinalg::structures {
         return v / len;
     }
 
+    template <Number number, int n>
+    void vectorNormalizeI(Vector<number, n>& v) {
+        auto len = v.length();
+        v /= len;
+    }
+
+    template <Number number, int n>
+    void vectorClear(Vector<number, n>& v) {
+        for (size_t i{}; i < v.size(); i++) {
+            v[i] = number{};
+        }
+    }
+
     // ===========
     // P-Norms
     // ===========
