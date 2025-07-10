@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <cassert>
 #include <cmath>
 #include <cstdlib>
 #include <iomanip>
@@ -34,7 +35,7 @@ namespace mlinalg::structures {
         checkOperandSize(row, otherRow);
         auto n = row.size();
         for (size_t i{}; i < n; i++)
-            if (!fuzzyCompare(row.at(i), otherRow.at(i))) return false;
+            if (!fuzzyCompare(row[i], otherRow[i])) return false;
         return true;
     }
 
@@ -48,14 +49,19 @@ namespace mlinalg::structures {
         return row.at(i);
     }
 
-    template <Number number, int n, Container T, Container U>
-    Vector<number, n> vectorSub(const T& row, const U& otherRow) {
-        checkOperandSize(row, otherRow);
-        constexpr int vSize = (n != Dynamic) ? n : Dynamic;
-        auto size = row.size();
-        Vector<number, vSize> res(size);
-        for (size_t i{}; i < size; i++) res.at(i) = row.at(i) - otherRow.at(i);
-        return res;
+    template <typename F, Container T>
+    void vectorApply(T& row, F f) {
+        for (auto& x : row) f(x);
+    }
+
+    template <typename F, Container T, Container U, bool checkSizes = false>
+    void vectorApply(T& row, const U& otherRow, F f) {
+        const auto n = row.size();
+        const auto otherN = otherRow.size();
+        if constexpr (checkSizes) assert(n == otherN && "Vectors must be of the same size for vectorApply");
+        auto i = row.begin();
+        auto j = otherRow.begin();
+        for (; i != row.end(); ++i, ++j) f(*i, *j);
     }
 
     template <Number number, int n, Container T>
@@ -63,59 +69,31 @@ namespace mlinalg::structures {
         constexpr int vSize = (n != Dynamic) ? n : Dynamic;
         auto size = row.size();
         Vector<number, vSize> res(size);
-        for (size_t i{}; i < size; i++) res.at(i) = -row.at(i);
-        return res;
-    }
-
-    template <Number number, Container T, Container U>
-    void vectorSubI(T& row, const U& otherRow) {
-        checkOperandSize(row, otherRow);
-        for (size_t i{}; i < row.size(); i++) row.at(i) -= otherRow.at(i);
-    }
-
-    template <Number number, int n, Container T, Container U>
-    Vector<number, n> vectorAdd(const T& row, const U& otherRow) {
-        checkOperandSize(row, otherRow);
-        constexpr int vSize = (n != Dynamic) ? n : Dynamic;
-        auto size = row.size();
-        Vector<number, vSize> res(size);
-        for (size_t i{}; i < size; i++) res.at(i) = row.at(i) + otherRow.at(i);
+        for (size_t i{}; i < size; i++) res[i] = -row[i];
         return res;
     }
 
     template <Number number, Container T, Container U>
     void vectorAddI(T& row, const U& otherRow) {
         checkOperandSize(row, otherRow);
-        for (size_t i{}; i < row.size(); i++) row.at(i) += otherRow.at(i);
+        vectorApply(row, otherRow, [&](auto& x, const auto& y) { x += y; });
     }
 
-    template <Number number, int n, Container T>
-    Vector<number, n> vectorScalarMult(const T& row, const number& scalar) {
-        constexpr int vSize = (n != Dynamic) ? n : Dynamic;
-        auto size = row.size();
-        Vector<number, vSize> res(size);
-        for (size_t i{}; i < size; i++) res.at(i) = scalar * row[i];
-        return res;
-    }
-
-    template <Number number, int n, Container T>
-    Vector<number, n> vectorScalarDiv(const T& row, const number& scalar) {
-        if (fuzzyCompare(scalar, number(0))) throw StackError<std::domain_error>("Division by zero");
-        constexpr int vSize = (n != Dynamic) ? n : Dynamic;
-        auto size = row.size();
-        Vector<number, vSize> res(size);
-        for (size_t i{}; i < size; i++) res.at(i) = row.at(i) / scalar;
-        return res;
+    template <Number number, Container T, Container U>
+    void vectorSubI(T& row, const U& otherRow) {
+        checkOperandSize(row, otherRow);
+        vectorApply(row, otherRow, [&](auto& x, const auto& y) { x -= y; });
     }
 
     template <Number number, Container T>
     void vectorScalarMultI(T& row, const number& scalar) {
-        for (size_t i{}; i < row.size(); i++) row.at(i) *= scalar;
+        vectorApply(row, [&](auto& x) { x *= scalar; });
     }
 
     template <Number number, Container T>
     void vectorScalarDivI(T& row, const number& scalar) {
-        for (size_t i{}; i < row.size(); i++) row.at(i) /= scalar;
+        if (fuzzyCompare(scalar, number(0))) throw StackError<std::domain_error>("Division by zero");
+        vectorApply(row, [&](auto& x) { x /= scalar; });
     }
 
     template <Number number, int n, int otherN>
@@ -173,14 +151,14 @@ namespace mlinalg::structures {
         constexpr auto sizeP = (n == Dynamic) ? SizePair{Dynamic, Dynamic} : SizePair{1, n};
         const auto size = row.size();
         Matrix<number, sizeP.first, sizeP.second> res(1, size);
-        for (size_t i{}; i < size; i++) res.at(0, i) = row.at(i);
+        for (size_t i{}; i < size; i++) res(0, i) = row[i];
         return res;
     }
 
     template <Number number, int n, int otherN>
     double vectorDot(const Vector<number, n>& v, const Vector<number, otherN>& w) {
         if (v.size() != w.size()) throw StackError<std::invalid_argument>("Vectors must be of the same size");
-        return (v.T() * w).at(0);
+        return (v.T() * w)[0];
     }
 
     template <Number number, int n, int otherN>

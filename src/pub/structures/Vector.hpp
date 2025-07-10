@@ -236,7 +236,9 @@ namespace mlinalg::structures {
          * @return the vector resulting from the subtraction
          */
         Vector<number, n> operator-(const Vector<number, n>& other) const {
-            return vectorSub<number, n>(row, other.row);
+            auto res = *this;
+            res -= other;
+            return res;
         }
 
         /**
@@ -264,7 +266,9 @@ namespace mlinalg::structures {
          * @return the vector resulting from the addition
          */
         Vector<number, n> operator+(const Vector<number, n>& other) const {
-            return vectorAdd<number, n>(row, other.row);
+            auto res = *this;
+            res += other;
+            return res;
         }
 
         /**
@@ -291,7 +295,11 @@ namespace mlinalg::structures {
          * @param scalar A scalar of the same type as the vector
          * @return the vector resulting from the multiplication
          */
-        Vector<number, n> operator*(const number& scalar) const { return vectorScalarMult<number, n>(row, scalar); }
+        Vector<number, n> operator*(const number& scalar) const {
+            auto res = *this;
+            res *= scalar;
+            return res;
+        }
 
         /**
          * @brief Vector division by a scalar
@@ -299,7 +307,11 @@ namespace mlinalg::structures {
          * @param scalar A scalar of the same type as the vector
          * @return  The vector resulting from the division
          */
-        Vector<number, n> operator/(const number& scalar) const { return vectorScalarDiv<number, n>(row, scalar); }
+        Vector<number, n> operator/(const number& scalar) const {
+            auto res = *this;
+            res /= scalar;
+            return res;
+        }
 
         /**
          * @brief In-place vector multiplication by a scalar.
@@ -431,6 +443,34 @@ namespace mlinalg::structures {
         const number* data() const noexcept { return row.data(); }
 
         number* data() noexcept { return row.data(); }
+
+        /**
+         * @brief Apply a function to each element of the vector
+         *
+         * @tparam F Function type that takes a number and returns void
+         * @param f Function to apply to each element of the vector
+         * @return A reference to the same vector
+         */
+        template <typename F>
+        Vector<number, n>& apply(F f) {
+            vectorApply(row, f);
+            return *this;
+        }
+
+        /**
+         * @brief Apply a function to each element of the vector with another vector
+         *
+         * @tparam F Function type that takes two numbers and returns void
+         * @param other The other vector to apply the function with
+         * @param f Function to apply to each element of the vector
+         * @return A reference to the same vector
+         */
+        template <typename F>
+        Vector<number, n>& apply(const Vector<number, n>& other, F f) {
+            vectorApply(row, other.row, f);
+            return *this;
+        }
+
         explicit operator std::string() const { return vectorStringRepr(row); }
 
         friend std::ostream& operator<<(std::ostream& os, const Vector<number, n>& row) {
@@ -707,14 +747,18 @@ namespace mlinalg::structures {
          */
         template <int otherN>
         Vector<number, Dynamic> operator-(const Vector<number, otherN>& other) const {
-            return vectorSub<number, Dynamic>(row, other.row);
+            auto res = *this;
+            res -= other;
+            return res;
         }
 
         template <int n, int otherN>
         friend Vector<number, Dynamic> operator-(const Vector<number, otherN>& lhs, const Vector<number, n> rhs)
             requires(n == Dynamic && otherN != Dynamic)
         {
-            return vectorSub<number, Dynamic>(lhs.row, rhs.row);
+            auto res = lhs;
+            vectorSubI<number>(res.row, rhs.row);
+            return res;
         }
 
         /**
@@ -725,14 +769,18 @@ namespace mlinalg::structures {
          */
         template <int otherN>
         Vector<number, Dynamic> operator+(const Vector<number, otherN>& other) const {
-            return vectorAdd<number, Dynamic>(row, other.row);
+            auto res = *this;
+            res += other;
+            return res;
         }
 
         template <int n, int otherN>
         friend Vector<number, Dynamic> operator+(const Vector<number, otherN>& lhs, const Vector<number, n> rhs)
             requires(n == Dynamic && otherN != Dynamic)
         {
-            return vectorAdd<number, Dynamic>(lhs.row, rhs.row);
+            auto res = lhs;
+            vectorAddI<number>(res.row, rhs.row);
+            return res;
         }
 
         /**
@@ -773,7 +821,9 @@ namespace mlinalg::structures {
          * @return the vector resulting from the multiplication
          */
         Vector<number, Dynamic> operator*(const number& scalar) const {
-            return vectorScalarMult<number, Dynamic>(row, scalar);
+            auto res = *this;
+            res *= scalar;
+            return res;
         }
 
         /**
@@ -783,7 +833,9 @@ namespace mlinalg::structures {
          * @return  The vector resulting from the division
          */
         Vector<number, Dynamic> operator/(const number& scalar) const {
-            return vectorScalarDiv<number, Dynamic>(row, scalar);
+            auto res = *this;
+            res /= scalar;
+            return res;
         }
 
         /**
@@ -921,6 +973,33 @@ namespace mlinalg::structures {
 
         number* data() noexcept { return row.data(); }
 
+        /**
+         * @brief Apply a function to each element of the vector
+         *
+         * @tparam F Function type that takes a number and returns void
+         * @param f Function to apply to each element of the vector
+         * @return A reference to the same vector
+         */
+        template <typename F>
+        Vector<number, Dynamic>& apply(F f) {
+            vectorApply(row, f);
+            return *this;
+        }
+
+        /**
+         * @brief Apply a function to each element of the vector with another vector
+         *
+         * @tparam F Function type that takes two numbers and returns void
+         * @param other The other vector to apply the function with
+         * @param f Function to apply to each element of the vector
+         * @return A reference to the same vector
+         */
+        template <typename F, int nN>
+        Vector<number, Dynamic>& apply(const Vector<number, nN>& other, F f) {
+            vectorApply<F, decltype(row), decltype(other.row), true>(row, other.row, f);
+            return *this;
+        }
+
         explicit operator std::string() const { return vectorStringRepr(row); }
 
         friend std::ostream& operator<<(std::ostream& os, const Vector<number, Dynamic>& row) {
@@ -957,6 +1036,6 @@ namespace mlinalg::structures {
 
         size_t n;
         // VectorRowDynamicPtr<number> row{std::make_unique<VectorRowDynamic<number>>()};
-        VectorRowDynamic<number> row{std::make_unique<VectorRowDynamic<number>>()};
+        VectorRowDynamic<number> row{};
     };
 }  // namespace mlinalg::structures

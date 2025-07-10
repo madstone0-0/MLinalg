@@ -9,6 +9,7 @@
 #include "structures/Vector.hpp"
 
 using namespace Catch;
+using namespace mlinalg;
 using namespace mlinalg::structures;
 using namespace mlinalg::structures::helpers;
 
@@ -237,6 +238,41 @@ TEST_CASE("Vector", "[vector]") {
                 v3 /= 2;
                 REQUIRE(v3.at(0) == 0);
                 REQUIRE(v3.at(1) == 1);
+            }
+
+            SECTION("Application") {
+                SECTION("Unary apply (in‑place transformation)") {
+                    Vector<double, 3> v{1.0, 2.0, 3.0};
+                    Vector<double, 3> &ref = v.apply([](double &x) { x *= 2; });
+                    REQUIRE(&ref == &v);
+                    REQUIRE(fuzzyCompare(v[0], 2.0));
+                    REQUIRE(fuzzyCompare(v[1], 4.0));
+                    REQUIRE(fuzzyCompare(v[2], 6.0));
+                }
+
+                SECTION("Binary apply (combine two vectors)") {
+                    Vector<double, 3> a{1.0, 2.0, 3.0};
+                    Vector<double, 3> b{4.0, 5.0, 6.0};
+                    auto &r = a.apply(b, [](double &x, const double &y) { x += y; });
+                    REQUIRE(&r == &a);
+                    REQUIRE(fuzzyCompare(a[0], 5.0));
+                    REQUIRE(fuzzyCompare(a[1], 7.0));
+                    REQUIRE(fuzzyCompare(a[2], 9.0));
+                }
+
+                SECTION("Chaining unary and binary applies") {
+                    Vector<double, 3> a{1.0, 2.0, 3.0};
+                    Vector<double, 3> b{10.0, 20.0, 30.0};
+                    // First double every element, then add from b, then subtract 5
+                    a.apply([](double &x) { x *= 2; })
+                        .apply(b, [](double &x, const double &y) { x += y; })
+                        .apply([](double &x) { x -= 5; });
+
+                    // Expected: (([1,2,3]*2) + [10,20,30]) - 5 = [ (2+10)-5, (4+20)-5, (6+30)-5 ] = [7,19,31]
+                    REQUIRE(fuzzyCompare(a[0], 7.0));
+                    REQUIRE(fuzzyCompare(a[1], 19.0));
+                    REQUIRE(fuzzyCompare(a[2], 31.0));
+                }
             }
 
             SECTION("Dot product") {
@@ -544,6 +580,41 @@ TEST_CASE("Vector", "[vector]") {
                 v3 /= 2;
                 REQUIRE(v3.at(0) == 0);
                 REQUIRE(v3.at(1) == 1);
+            }
+
+            SECTION("Application") {
+                SECTION("Unary apply (in‑place transformation)") {
+                    Vector<double, 3> v{1.0, 2.0, 3.0};
+                    Vector<double, 3> &ref = v.apply([](double &x) { x *= 2; });
+                    REQUIRE(&ref == &v);
+                    REQUIRE(fuzzyCompare(v[0], 2.0));
+                    REQUIRE(fuzzyCompare(v[1], 4.0));
+                    REQUIRE(fuzzyCompare(v[2], 6.0));
+                }
+
+                SECTION("Binary apply (combine two vectors)") {
+                    Vector<double, 3> a{1.0, 2.0, 3.0};
+                    Vector<double, 3> b{4.0, 5.0, 6.0};
+                    auto &r = a.apply(b, [](double &x, const double &y) { x += y; });
+                    REQUIRE(&r == &a);
+                    REQUIRE(fuzzyCompare(a[0], 5.0));
+                    REQUIRE(fuzzyCompare(a[1], 7.0));
+                    REQUIRE(fuzzyCompare(a[2], 9.0));
+                }
+
+                SECTION("Chaining unary and binary applies") {
+                    Vector<double, 3> a{1.0, 2.0, 3.0};
+                    Vector<double, 3> b{10.0, 20.0, 30.0};
+                    // First double every element, then add from b, then subtract 5
+                    a.apply([](double &x) { x *= 2; })
+                        .apply(b, [](double &x, const double &y) { x += y; })
+                        .apply([](double &x) { x -= 5; });
+
+                    // Expected: (([1,2,3]*2) + [10,20,30]) - 5 = [ (2+10)-5, (4+20)-5, (6+30)-5 ] = [7,19,31]
+                    REQUIRE(fuzzyCompare(a[0], 7.0));
+                    REQUIRE(fuzzyCompare(a[1], 19.0));
+                    REQUIRE(fuzzyCompare(a[2], 31.0));
+                }
             }
 
             SECTION("Dot product") {
