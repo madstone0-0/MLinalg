@@ -8,7 +8,7 @@
 #include <stdexcept>
 #include <type_traits>
 
-#include "structures/VectorOps.hpp"
+#include "VectorOps.hpp"
 
 #ifdef __AVX__
 #include <immintrin.h>
