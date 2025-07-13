@@ -15,6 +15,7 @@
 
 #include "../Concepts.hpp"
 #include "../Helpers.hpp"
+#include "../Numeric.hpp"
 #include "Aliases.hpp"
 
 namespace mlinalg::structures {

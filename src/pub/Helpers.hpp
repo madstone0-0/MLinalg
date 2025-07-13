@@ -59,6 +59,8 @@ namespace mlinalg::structures::helpers {
     using std::vector;
     namespace rg = std::ranges;
 
+    template <int m, int n, typename Iftrue, typename Iffalse>
+    using IsDynamicT = std::conditional_t<m == Dynamic || n == Dynamic, Iftrue, Iffalse>;
     template <Number num>
     num rng(int min, int max, std::optional<size_t> seed = std::nullopt)
         requires(std::is_integral_v<num>)

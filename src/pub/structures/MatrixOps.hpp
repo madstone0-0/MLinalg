@@ -8,6 +8,8 @@
 #include <stdexcept>
 #include <type_traits>
 
+#include "structures/VectorOps.hpp"
+
 #ifdef __AVX__
 #include <immintrin.h>
 #endif
@@ -28,6 +30,7 @@ namespace rg = std::ranges;
 
 namespace mlinalg::structures {
     using namespace mlinalg::stacktrace;
+    using namespace helpers;
 
     template <Container T, Container U>
     void checkMatrixOperandRowSize(const T& matrix, const U& otherMatrix) {
@@ -66,8 +69,7 @@ namespace mlinalg::structures {
 
     template <Number number, int m, int n, Container T>
     auto matrixColsToVectorSet(const T& matrix)
-        -> std::conditional_t<((m == Dynamic || n == Dynamic)), vector<Vector<number, Dynamic>>,
-                              vector<Vector<number, m>>> {
+        -> IsDynamicT<m, n, vector<Vector<number, Dynamic>>, vector<Vector<number, m>>> {
         if constexpr ((m == Dynamic || n == Dynamic) || (m == 0 || n == 0)) {
             const size_t& nRows = matrix.size();
             const size_t& nCols = matrix[0].size();
@@ -119,79 +121,48 @@ namespace mlinalg::structures {
         return true;
     }
 
-    template <Number number, int m, int n, Container T>
-    Matrix<number, m, n> matrixScalarMult(const T& matrix, const number& scalar) {
-        const auto& nRows = matrix.size();
-        const auto& nCols = matrix.at(0).size();
-        Matrix<number, m, n> res(nRows, nCols);
-        auto asRowVectorSet{std::move(matrixRowsToVectorSet<number, m, n>(matrix))};
-        for (size_t i{}; i < nRows; i++) {
-            res.at(i) = asRowVectorSet.at(i) * scalar;
+    template <typename F, Container T>
+    void matrixApply(T& matrix, F f) {
+        for (auto& row : matrix) vectorApply(row, f);
+    }
+
+    template <typename F, Container T, Container U, bool checkSizes = false>
+    void matrixApply(T& matrix, const U& otherMatrix, F f) {
+        const auto m = matrix.size();
+        const auto n = matrix[0].size();
+        const auto otherM = otherMatrix.size();
+        const auto otherN = otherMatrix[0].size();
+        if constexpr (checkSizes) {
+            if (m != otherM || n != otherN) {
+                throw StackError<invalid_argument>("Matrices must be of the same dimensions");
+            }
         }
-        return res;
+        auto i = matrix.begin();
+        auto j = otherMatrix.begin();
+        for (; i != matrix.end(); ++i, ++j) vectorApply(*i, *j, f);
     }
 
     template <Number number, int m, int n, Container T>
     void matrixScalarMultI(T& matrix, const number& scalar) {
-        const auto& nRows = matrix.size();
-        const auto& nCols = matrix.at(0).size();
-        for (size_t i{}; i < nRows; i++)
-            for (size_t j{}; j < nCols; j++) matrix.at(i).at(j) = matrix.at(i).at(j) * scalar;
-    }
-
-    template <Number number, int m, int n, Container T>
-    Matrix<number, m, n> matrixScalarDiv(const T& matrix, const number& scalar) {
-        const auto& nRows = matrix.size();
-        const auto& nCols = matrix.at(0).size();
-        Matrix<number, m, n> res(nRows, nCols);
-        auto asRowVectorSet{std::move(matrixRowsToVectorSet<number, m, n>(matrix))};
-        for (size_t i{}; i < nRows; i++) {
-            res.at(i) = asRowVectorSet.at(i) / scalar;
-        }
-        return res;
+        matrixApply(matrix, [&](auto& x) { x *= scalar; });
     }
 
     template <Number number, int m, int n, Container T>
     void matrixScalarDivI(T& matrix, const number& scalar) {
         if (fuzzyCompare(scalar, number(0))) throw StackError<std::domain_error>("Division by zero");
-        const auto& nRows = matrix.size();
-        const auto& nCols = matrix.at(0).size();
-        for (size_t i{}; i < nRows; i++)
-            for (size_t j{}; j < nCols; j++) matrix.at(i).at(j) = matrix.at(i).at(j) / scalar;
-    }
-
-    template <Number number, int m, int n, Container T, Container U>
-    Matrix<number, m, n> matrixAdd(const T& matrix, const U& otherMatrix) {
-        checkMatrixOperandSize(matrix, otherMatrix);
-        const auto& nRows = matrix.size();
-        const auto& nCols = matrix.at(0).size();
-        Matrix<number, m, n> res(nRows, nCols);
-        for (size_t i{}; i < nRows; i++) res.at(i) = matrix.at(i) + otherMatrix.at(i);
-        return res;
+        matrixApply(matrix, [&](auto& x) { x /= scalar; });
     }
 
     template <Number number, int m, int n, Container T, Container U>
     void matrixAddI(T& matrix, const U& otherMatrix) {
         checkMatrixOperandSize(matrix, otherMatrix);
-        const auto& nRows = matrix.size();
-        for (size_t i{}; i < nRows; i++) matrix.at(i) = matrix.at(i) + otherMatrix.at(i);
-    }
-
-    template <Number number, int m, int n, Container T, Container U>
-    Matrix<number, m, n> matrixSub(const T& matrix, const U& otherMatrix) {
-        checkMatrixOperandSize(matrix, otherMatrix);
-        const auto& nRows = matrix.size();
-        const auto& nCols = matrix.at(0).size();
-        Matrix<number, m, n> res(nRows, nCols);
-        for (size_t i{}; i < nRows; i++) res.at(i) = matrix.at(i) - otherMatrix.at(i);
-        return res;
+        matrixApply(matrix, otherMatrix, [&](auto& x, const auto& y) { x += y; });
     }
 
     template <Number number, int m, int n, Container T, Container U>
     void matrixSubI(T& matrix, const U& otherMatrix) {
         checkMatrixOperandSize(matrix, otherMatrix);
-        const auto& nRows = matrix.size();
-        for (size_t i{}; i < nRows; i++) matrix.at(i) = matrix.at(i) - otherMatrix.at(i);
+        matrixApply(matrix, otherMatrix, [&](auto& x, const auto& y) { x -= y; });
     }
 
     template <Container T>
@@ -305,7 +276,7 @@ namespace mlinalg::structures {
      * @return The matrix resulting from the multiplication
      */
     template <Number number, int m, int n, int mOther, int nOther, Container T, Container U>
-    Matrix<number, m, nOther> multMatRowWise(const T& matrix, const U& otherMatrix) {
+    auto multMatRowWise(const T& matrix, const U& otherMatrix) {
         if (matrix[0].size() != static_cast<size_t>(otherMatrix.size()))
             throw StackError<invalid_argument>(
                 "The columns of the first matrix must be equal to the rows of the second matrix");
@@ -337,7 +308,7 @@ namespace mlinalg::structures {
 
 #if defined(__AVX__) && defined(__FMA__)
     template <Number number, int m, int n, int mOther, int nOther, Container T, Container U>
-    constexpr Matrix<float, m, nOther> multMatSIMD(const T& matrix, const U& otherMatrix)
+    constexpr auto multMatSIMD(const T& matrix, const U& otherMatrix)
         requires(is_same_v<number, float>)
     {
         if (matrix[0].size() != static_cast<size_t>(otherMatrix.size()))
@@ -390,7 +361,7 @@ namespace mlinalg::structures {
     }
 
     template <Number number, int m, int n, int mOther, int nOther, Container T, Container U>
-    constexpr Matrix<double, m, nOther> multMatSIMD(const T& matrix, const U& otherMatrix)
+    constexpr auto multMatSIMD(const T& matrix, const U& otherMatrix)
         requires(is_same_v<number, double>)
     {
         if (matrix[0].size() != static_cast<size_t>(otherMatrix.size()))
@@ -443,7 +414,9 @@ namespace mlinalg::structures {
 #endif
 
     template <Number number, int m, int n, int mOther, int nOther, Container T, Container U>
-    Matrix<number, m, nOther> MatrixMultiplication(const T& matrix, const U& otherMatrix) {
+    auto MatrixMultiplication(const T& matrix, const U& otherMatrix)
+        -> std::conditional_t<m == Dynamic || n == Dynamic || mOther == Dynamic || nOther == Dynamic,
+                              Matrix<number, Dynamic, Dynamic>, Matrix<number, m, nOther>> {
 #ifdef STRASSEN
         constexpr bool isDynamic = m == Dynamic || n == Dynamic || mOther == Dynamic || nOther == Dynamic;
         constexpr bool isNotSquare = m != n || (m != mOther && n != nOther) || mOther != nOther;
@@ -495,8 +468,7 @@ namespace mlinalg::structures {
 
     template <Number number, int m, int n, Container T>
     auto MatrixSubset(const T& matrix, const optional<int>& i, const optional<int> j)
-        -> std::conditional_t<m == Dynamic || n == Dynamic, Matrix<number, Dynamic, Dynamic>,
-                              Matrix<number, m - 1, n - 1>>;
+        -> IsDynamicT<m, n, Matrix<number, Dynamic, Dynamic>, Matrix<number, m - 1, n - 1>>;
 
     template <int i0, int i1, int j0, int j1, Number number, int m, int n, Container T>
     Matrix<number, (i1 - i0), (j1 - j0)> MatrixSlice(const T& matrix) {
@@ -777,7 +749,8 @@ namespace mlinalg::structures {
      * @return The augmented matrix of size mx(n + nN)
      */
     template <Number number, int m, int n, int nN, Container T, Container U>
-    Matrix<number, m, nN + n> MatrixAugmentMatrix(const T& matrix, const U& otherMatrix) {
+    auto MatrixAugmentMatrix(const T& matrix, const U& otherMatrix)
+        -> IsDynamicT<m, n, Matrix<number, Dynamic, Dynamic>, Matrix<number, m, n + nN>> {
         checkMatrixOperandRowSize(matrix, otherMatrix);
         constexpr auto isDynamic = m == Dynamic || n == Dynamic;
 
@@ -808,7 +781,8 @@ namespace mlinalg::structures {
      * @return The augmented matrix of size mx(n + 1)
      */
     template <Number number, int m, int n, Container MatrixContainer, Container VectorContainer>
-    Matrix<number, m, n + 1> MatrixAugmentVector(const MatrixContainer& matrix, const VectorContainer& vec) {
+    auto MatrixAugmentVector(const MatrixContainer& matrix, const VectorContainer& vec)
+        -> IsDynamicT<m, n, Matrix<number, Dynamic, Dynamic>, Matrix<number, m, n + 1>> {
         constexpr auto isDynamic = m == Dynamic || n == Dynamic;
 
         constexpr auto sizeP = isDynamic ? DynamicPair : SizePair{m, n + 1};
@@ -838,8 +812,7 @@ namespace mlinalg::structures {
      */
     template <Number number, int m, int n, Container T>
     auto MatrixSubset(const T& matrix, const optional<int>& i, const optional<int> j)
-        -> std::conditional_t<m == Dynamic || n == Dynamic, Matrix<number, Dynamic, Dynamic>,
-                              Matrix<number, m - 1, n - 1>> {
+        -> IsDynamicT<m, n, Matrix<number, Dynamic, Dynamic>, Matrix<number, m - 1, n - 1>> {
         const int& nRows = matrix.size();
         const int& nCols = matrix.at(0).size();
         if (nRows != nCols) throw StackError<runtime_error>("Matrix must be square to find a subset");
@@ -983,14 +956,14 @@ namespace mlinalg::structures {
             return cofactorCol<number, m, n>(matrix, val);
     }
 
-    template <Number number, int n, Container T>
+    template <Number number, Container T>
     number MatrixTrace(const T& matrix) {
         const auto nR = matrix.size();
         const auto nC = matrix.at(0).size();
         if (nR != nC) throw StackError<invalid_argument>("Matrix must be square to calculate trace");
         number sum{};
         for (size_t i{}; i < nR; i++) {
-            sum += matrix.at(i).at(i);
+            sum += matrix[i][i];
         }
         return sum;
     }
@@ -1052,14 +1025,14 @@ namespace mlinalg::structures {
      * @param matrix The matrix to calculate the norm of
      * @return The Frobenius norm of the matrix
      */
-    template <Number number, int m, int n, Container T>
+    template <Container T>
     double FrobenisNorm(const T& matrix) {
         const auto numRows = matrix.size();
         const auto numCols = matrix.at(0).size();
         double sum{};
         for (size_t i{}; i < numRows; i++)
             for (size_t j{}; j < numCols; j++) {
-                sum += matrix.at(i).at(j) * matrix.at(i).at(j);
+                sum += matrix[i][j] * matrix[i][j];
             }
         return std::sqrt(sum);
     }

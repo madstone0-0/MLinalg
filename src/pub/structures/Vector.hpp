@@ -165,6 +165,9 @@ namespace mlinalg::structures {
         template <typename D, Number num>
         friend class VectorBase;
 
+        template <typename D, Number num>
+        friend class MatrixBase;
+
         /**
          * @brief Swap the contents of two vectors
          *
@@ -338,6 +341,9 @@ namespace mlinalg::structures {
 
         template <typename D, Number num>
         friend class VectorBase;
+
+        template <typename D, Number num>
+        friend class MatrixBase;
 
         /**
          * @brief Swap the contents of two vectors

@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <ios>
 #include <iterator>
 #include <memory>
 #include <optional>
@@ -17,7 +18,8 @@
 #include "Matrix.hpp"
 #include "VectorOps.hpp"
 
-using std::vector, std::array, std::optional, std::unique_ptr, std::shared_ptr, mlinalg::structures::helpers::unwrap;
+using std::vector, std::array, std::optional, std::unique_ptr, std::shared_ptr, mlinalg::structures::helpers::unwrap,
+    std::optional;
 
 namespace mlinalg::structures {
 
@@ -43,6 +45,7 @@ namespace mlinalg::structures {
         using size_type = size_t;
         using ref = number&;
         using const_ref = const number&;
+        using iterator = VectorRowType<number>::iterator;
 
         // ======================
         // Indexing and Accessors
@@ -97,6 +100,10 @@ namespace mlinalg::structures {
          * @return An iterator to the end of the vector
          */
         constexpr auto end() const { return d().row.end(); }
+
+        constexpr auto begin() { return d().row.begin(); }
+
+        constexpr auto end() { return d().row.end(); }
 
         /**
          * @brief Const begin iterator for the vector
@@ -326,7 +333,8 @@ namespace mlinalg::structures {
          */
         template <typename OtherD, typename F>
         D& apply(const VectorBase<OtherD, number>& other, F f) {
-            vectorApply(d().row, static_cast<const OtherD&>(other).row, f);
+            const auto& otherRow = static_cast<const OtherD&>(other).row;
+            vectorApply<decltype(f), decltype(d().row), decltype(otherRow), true>(d().row, otherRow, f);
             return d();
         }
 

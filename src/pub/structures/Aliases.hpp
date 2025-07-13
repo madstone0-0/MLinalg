@@ -26,19 +26,22 @@ namespace mlinalg::structures {
     template <Number number, int n>
     class Vector;
 
+    template <Number number>
+    using VectorRowType = std::vector<number>;
+
     /**
      * @brief  Type alias for the backing array of a Vector
      */
     // template <Number number, int n>
     // using VectorRow = std::array<number, n>;
     template <Number number, int n>
-    using VectorRow = std::vector<number>;
+    using VectorRow = VectorRowType<number>;
 
     /**
      * @brief Type alias for the backing array of a dynamic Vector
      */
     template <Number number>
-    using VectorRowDynamic = std::vector<number>;
+    using VectorRowDynamic = VectorRowType<number>;
 
     /**
      * @brief Type alias for a unique pointer to a VectorRow
