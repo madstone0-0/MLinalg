@@ -2145,10 +2145,10 @@ TEST_CASE("Operations") {
                         // Frobenius norm preservation
                         double frob2 = A.frob();
                         frob2 *= frob2;
-                        double sumσ2 = 0.0;
+                        double sum_sig_2 = 0.0;
                         size_t m = std::min(Sigma.numRows(), Sigma.numCols());
-                        for (size_t i = 0; i < m; ++i) sumσ2 += Sigma(i, i) * Sigma(i, i);
-                        REQUIRE(fuzzyCompare(frob2, sumσ2));
+                        for (size_t i = 0; i < m; ++i) sum_sig_2 += Sigma(i, i) * Sigma(i, i);
+                        REQUIRE(fuzzyCompare(frob2, sum_sig_2));
                     }
 
                     SECTION("Numerical Stability") {
@@ -3243,10 +3243,10 @@ TEST_CASE("Operations") {
                         // Frobenius norm preservation
                         double frob2 = A.frob();
                         frob2 *= frob2;
-                        double sumσ2 = 0.0;
+                        double sum_sig_2 = 0.0;
                         size_t m = std::min(Sigma.numRows(), Sigma.numCols());
-                        for (size_t i = 0; i < m; ++i) sumσ2 += Sigma(i, i) * Sigma(i, i);
-                        REQUIRE(fuzzyCompare(frob2, sumσ2));
+                        for (size_t i = 0; i < m; ++i) sum_sig_2 += Sigma(i, i) * Sigma(i, i);
+                        REQUIRE(fuzzyCompare(frob2, sum_sig_2));
                     }
 
                     SECTION("Numerical Stability") {
