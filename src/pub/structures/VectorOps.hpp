@@ -27,12 +27,12 @@ namespace mlinalg::structures {
     class Matrix;
 
     template <Container T, Container U>
-    void checkOperandSize(const T& row, const U& otherRow) {
+    inline void checkOperandSize(const T& row, const U& otherRow) {
         if (row.size() != otherRow.size()) throw StackError<std::invalid_argument>("Vectors must be of the same size");
     }
 
     template <Container T, Container U>
-    bool vectorEqual(const T& row, const U& otherRow) {
+    inline bool vectorEqual(const T& row, const U& otherRow) {
         checkOperandSize(row, otherRow);
         auto n = row.size();
         for (size_t i{}; i < n; i++)
@@ -41,22 +41,22 @@ namespace mlinalg::structures {
     }
 
     template <Number number, Container T>
-    number& vectorAt(T& row, size_t i) {
+    inline number& vectorAt(T& row, size_t i) {
         return row.at(i);
     }
 
     template <Number number, Container T>
-    const number& vectorConstAt(const T& row, size_t i) {
+    inline const number& vectorConstAt(const T& row, size_t i) {
         return row.at(i);
     }
 
     template <typename F, Container T>
-    void vectorApply(T& row, F f) {
+    inline void vectorApply(T& row, F f) {
         for (auto& x : row) f(x);
     }
 
     template <typename F, Container T, Container U, bool checkSizes = false>
-    void vectorApply(T& row, const U& otherRow, F f) {
+    inline void vectorApply(T& row, const U& otherRow, F f) {
         const auto n = row.size();
         const auto otherN = otherRow.size();
         if constexpr (checkSizes) assert(n == otherN && "Vectors must be of the same size for vectorApply");
@@ -66,7 +66,7 @@ namespace mlinalg::structures {
     }
 
     template <Number number, int n, Container T>
-    Vector<number, n> vectorNeg(const T& row) {
+    inline Vector<number, n> vectorNeg(const T& row) {
         constexpr int vSize = (n != Dynamic) ? n : Dynamic;
         auto size = row.size();
         Vector<number, vSize> res(size);
@@ -75,36 +75,36 @@ namespace mlinalg::structures {
     }
 
     template <Number number, Container T>
-    void vectorNeg(T& row) {
+    inline void vectorNeg(T& row) {
         auto size = row.size();
         for (size_t i{}; i < size; i++) row[i] = -row[i];
     }
 
     template <Number number, Container T, Container U>
-    void vectorAddI(T& row, const U& otherRow) {
+    inline void vectorAddI(T& row, const U& otherRow) {
         checkOperandSize(row, otherRow);
         vectorApply(row, otherRow, [&](auto& x, const auto& y) { x += y; });
     }
 
     template <Number number, Container T, Container U>
-    void vectorSubI(T& row, const U& otherRow) {
+    inline void vectorSubI(T& row, const U& otherRow) {
         checkOperandSize(row, otherRow);
         vectorApply(row, otherRow, [&](auto& x, const auto& y) { x -= y; });
     }
 
     template <Number number, Container T>
-    void vectorScalarMultI(T& row, const number& scalar) {
+    inline void vectorScalarMultI(T& row, const number& scalar) {
         vectorApply(row, [&](auto& x) { x *= scalar; });
     }
 
     template <Number number, Container T>
-    void vectorScalarDivI(T& row, const number& scalar) {
+    inline void vectorScalarDivI(T& row, const number& scalar) {
         if (fuzzyCompare(scalar, number(0))) throw StackError<std::domain_error>("Division by zero");
         vectorApply(row, [&](auto& x) { x /= scalar; });
     }
 
     template <Number number, int n, int otherN>
-    number vectorVectorMult(const Vector<number, n>& vec, const Vector<number, otherN>& otherVec) {
+    inline number vectorVectorMult(const Vector<number, n>& vec, const Vector<number, otherN>& otherVec) {
         if (vec.size() != otherVec.size()) throw StackError<std::invalid_argument>("Vectors must be of the same size");
 
         number sum{0};
@@ -115,7 +115,7 @@ namespace mlinalg::structures {
     }
 
     template <Container T>
-    std::string vectorStringRepr(const T& row) {
+    inline std::string vectorStringRepr(const T& row) {
         const auto size = row.size();
         std::stringstream ss{};
 
@@ -130,7 +130,7 @@ namespace mlinalg::structures {
     }
 
     template <Container T>
-    std::ostream& vectorOptionalRepr(std::ostream& os, const T& row) {
+    inline std::ostream& vectorOptionalRepr(std::ostream& os, const T& row) {
         const auto& size = row.size();
 
         auto hasVal = [](auto rowVal) {
@@ -154,7 +154,7 @@ namespace mlinalg::structures {
     }
 
     template <Number number, int m, int n, Container T>
-    Matrix<number, m, n> vectorTranspose(const T& row) {
+    inline Matrix<number, m, n> vectorTranspose(const T& row) {
         constexpr auto sizeP = (n == Dynamic) ? SizePair{Dynamic, Dynamic} : SizePair{1, n};
         const auto size = row.size();
         Matrix<number, sizeP.first, sizeP.second> res(1, size);
@@ -163,32 +163,32 @@ namespace mlinalg::structures {
     }
 
     template <Number number, int n, int otherN>
-    double vectorDot(const Vector<number, n>& v, const Vector<number, otherN>& w) {
+    inline double vectorDot(const Vector<number, n>& v, const Vector<number, otherN>& w) {
         if (v.size() != w.size()) throw StackError<std::invalid_argument>("Vectors must be of the same size");
         return (v.T() * w)[0];
     }
 
     template <Number number, int n, int otherN>
-    double vectorDist(const Vector<number, n>& v, const Vector<number, otherN>& w) {
+    inline double vectorDist(const Vector<number, n>& v, const Vector<number, otherN>& w) {
         if (v.size() != w.size()) throw StackError<std::invalid_argument>("Vectors must be of the same size");
         auto diff = v - w;
         return std::sqrt(diff.dot(diff));
     }
 
     template <Number number, int n>
-    Vector<number, n> vectorNormalize(const Vector<number, n>& v) {
+    inline Vector<number, n> vectorNormalize(const Vector<number, n>& v) {
         auto len = v.length();
         return v / len;
     }
 
     template <Number number, int n>
-    void vectorNormalizeI(Vector<number, n>& v) {
+    inline void vectorNormalizeI(Vector<number, n>& v) {
         auto len = v.length();
         v /= len;
     }
 
     template <Number number, int n>
-    void vectorClear(Vector<number, n>& v) {
+    inline void vectorClear(Vector<number, n>& v) {
         for (size_t i{}; i < v.size(); i++) {
             v[i] = number{};
         }
@@ -205,7 +205,7 @@ namespace mlinalg::structures {
      * @return L1-Norm of the vector
      */
     template <Number number, Container T>
-    double L1Norm(const T& row) {
+    inline double L1Norm(const T& row) {
         double sum{};
         for (const auto& elem : row) {
             sum += std::abs(elem);
@@ -220,7 +220,7 @@ namespace mlinalg::structures {
      * @return Euclidean norm of the vector
      */
     template <Number number, int n>
-    double EuclideanNorm(const Vector<number, n>& vec) {
+    inline double EuclideanNorm(const Vector<number, n>& vec) {
         return std::sqrt(vec.dot(vec));
     }
 
@@ -235,7 +235,7 @@ namespace mlinalg::structures {
      * @return Weighted L2-Norm of the vector
      */
     template <Number number, Container T>
-    double WeightedL2Norm(const T& row, const T& otherRow) {
+    inline double WeightedL2Norm(const T& row, const T& otherRow) {
         if (otherRow.size() != row.size())
             throw StackError<std::invalid_argument>("Matrix and vector must have the same size");
         double sum{};
