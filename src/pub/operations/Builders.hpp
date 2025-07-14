@@ -3,8 +3,8 @@
 #include <stdexcept>
 
 #include "../Concepts.hpp"
+#include "../Helpers.hpp"
 #include "../structures/Matrix.hpp"
-#include "Helpers.hpp"
 
 namespace mlinalg {
     using namespace structures;
