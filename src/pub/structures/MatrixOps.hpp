@@ -22,7 +22,6 @@
 #include "../Helpers.hpp"
 #include "../Numeric.hpp"
 #include "Aliases.hpp"
-#include "MatrixView.hpp"
 #include "Vector.hpp"
 
 using std::pair, std::invalid_argument, std::string, std::is_same_v, std::runtime_error, std::get;
@@ -33,7 +32,7 @@ namespace mlinalg::structures {
     using namespace helpers;
 
     template <Container T, Container U>
-    void checkMatrixOperandRowSize(const T& matrix, const U& otherMatrix) {
+    inline void checkMatrixOperandRowSize(const T& matrix, const U& otherMatrix) {
         if (matrix.size() != otherMatrix.size())
             throw StackError<invalid_argument>("Matrices must be of the same dimensions");
     }
@@ -453,17 +452,6 @@ namespace mlinalg::structures {
         return multMatRowWise<number, m, n, mOther, nOther>(matrix, otherMatrix);
 #endif  // __AVX__
 #endif
-    }
-
-    template <Number number, int m, int n, size_t i, size_t j, Container T>
-    MatrixView<number, m, n> View(T& matrix, size_t rowOffset = 0, size_t colOffset = 0, size_t rowStride = 1,
-                                  size_t colStride = 1) {
-        const auto rows = matrix.size();
-        const auto cols = matrix.at(0).size();
-
-        if (i > rows || j > cols) throw StackError<std::out_of_range>("View dimensions exceed matrix size");
-        if (rowOffset >= rows || colOffset >= cols) throw StackError<std::out_of_range>("Offset out of range");
-        return MatrixView<number, m, n>{&matrix, rowOffset, colOffset, rowStride, colStride};
     }
 
     template <Number number, int m, int n, Container T>
