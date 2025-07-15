@@ -332,6 +332,30 @@ namespace mlinalg::structures {
          */
         [[nodiscard]] size_t size() const { return n; }
 
+        void pushBack(const number& v) {
+            row.push_back(v);
+            n = row.size();
+        }
+
+        void resize(size_t newSize) {
+            if (newSize < n) {
+                row.resize(newSize);
+            } else if (newSize > n) {
+                row.resize(newSize, number{});
+            }
+            n = newSize;
+        }
+
+        void reserve(size_t newSize) { return row.reserve(newSize); }
+
+        number remove(size_t idx) {
+            if (idx >= n) throw StackError<std::out_of_range>("Index out of range");
+            auto val = row[idx];
+            row.erase(row.begin() + idx);
+            --n;
+            return val;
+        }
+
        private:
         template <Number num, int mM, int nN>
         friend class Matrix;

@@ -6,6 +6,7 @@
 // FIX: Fix matrix-vector and vector-matrix multiplication order
 
 #pragma once
+#include "Aliases.hpp"
 #include "MatrixBase.hpp"
 
 namespace mlinalg::structures {
@@ -397,6 +398,60 @@ namespace mlinalg::structures {
          * @return The shape of the matrix
          */
         [[nodiscard]] Shape shape() const { return {numRows(), numCols()}; }
+
+        template <int mM>
+        void pushRow(const Row<number, mM>& v) {
+            if (v.size() != n) {
+                throw invalid_argument("Row size must match the number of columns in the matrix");
+            }
+
+            matrix.push_back(v);
+            m++;
+        }
+
+        template <int nN>
+        void pushCol(const Row<number, nN>& v) {
+            if (v.size() != m) {
+                throw invalid_argument("Column size must match the number of rows in the matrix");
+            }
+
+            for (size_t i{}; i < m; ++i) matrix[i].pushBack(v[i]);
+            n++;
+        }
+
+        void resize(size_t newM, size_t newN) {
+            matrix.resize(newM, Row<number, Dynamic>(newN));
+            for (size_t i{}; i < newM; ++i) {
+                matrix[i].resize(newN);
+            }
+            m = newM;
+            n = newN;
+        }
+
+        void reserve(size_t newM, size_t newN) {
+            matrix.reserve(newM);
+            for (size_t i{}; i < newM; ++i) {
+                matrix[i].reserve(newN);
+            }
+        }
+
+        Row<number, Dynamic> removeRow(size_t idx) {
+            if (idx >= m) throw StackError<std::out_of_range>("Index out of range");
+            Row<number, Dynamic> row = matrix[idx];
+            matrix.erase(matrix.begin() + idx);
+            --m;
+            return row;
+        }
+
+        Row<number, Dynamic> removeCol(size_t idx) {
+            if (idx >= n) throw StackError<std::out_of_range>("Index out of range");
+            Row<number, Dynamic> col(m);
+            for (size_t i{}; i < m; ++i) {
+                col[i] = matrix[i].remove(idx);
+            }
+            --n;
+            return col;
+        }
 
        private:
         template <Number num, int mM, int nN>
