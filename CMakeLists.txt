@@ -55,14 +55,27 @@ if(STRASSEN)
     add_definitions(-DSTRASSEN)
 endif()
 
+option(
+    BY_DEF
+    "Use algorithms derived from the mathetical defintion of operations"
+    OFF
+)
+if(BY_DEF)
+    add_definitions(-DBY_DEF)
+    message(
+        STATUS
+        "Using algorithms derived from the mathematical definition of operations"
+    )
+endif()
+
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_link_options(-rdynamic -Wl,--export-dynamic)
     add_compile_options(-Wcomma -ferror-limit=100)
 endif()
 add_compile_options(-Wall -Wextra -Wfloat-equal -Werror=return-type)
-# add_compile_options(-Werror=return-type)
-set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -fsanitize=address")
+# set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -fsanitize=address")
+set(CMAKE_CXX_FLAGS_DEBUG "-ggdb")
 
 set(CMAKE_CXX_FLAGS_RELEASE "-Os -fno-ident")
 set(CMAKE_CXX_FLAGS_PROFILE "-g -pg")

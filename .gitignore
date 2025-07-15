@@ -13,6 +13,7 @@ docs
 *.png
 compile_commands.json
 src/test/dummy.cpp
+src/test/dummy.py
 *.ipynb
 .idea
 .python-version
