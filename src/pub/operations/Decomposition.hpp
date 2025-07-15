@@ -42,29 +42,26 @@ namespace mlinalg {
             return pair{L, U};
         } else {
             const auto& a11 = A(0, 0);
-            const auto& A12 = A.template slice<0, 1, 1, n>({0, 1}, {1, numRows});
-            const auto& A21 = A.template slice<1, n, 0, 1>({1, numRows}, {0, 1});
-            const auto& A22 = A.template slice<1, n, 1, n>({1, numRows}, {1, numRows});
 
             L(0, 0) = 1;
             U(0, 0) = a11;
 
             // Calculate U12
-            for (int j = 1; j < numRows; ++j) {
+            for (int j{1}; j < numRows; ++j) {
                 U(0, j) = A(0, j);
             }
 
             // Calculate L21
-            for (int i = 1; i < numRows; ++i) {
+            for (int i{1}; i < numRows; ++i) {
                 L(i, 0) = (A(i, 0)) / (a11 + EPSILON);
                 // Set the corresponding U values to 0 for lower triangular portion
                 U(i, 0) = 0;
             }
 
             // Calculate the Schur complement: A22 - L21 * U12
-            auto S = A22;
-            for (int i = 1; i < numRows; ++i) {
-                for (int j = 1; j < numRows; ++j) {
+            auto S = A.template slice<1, n, 1, n>({1, numRows}, {1, numRows});
+            for (int i{1}; i < numRows; ++i) {
+                for (int j{1}; j < numRows; ++j) {
                     S(i - 1, j - 1) = (A(i, j)) - (L(i, 0)) * (U(0, j));
                 }
             }
@@ -108,7 +105,6 @@ namespace mlinalg {
         for (size_t i{}; i < nR; ++i) {
             const auto& abs = std::abs(U(i, i));
             if (fuzzyCompare(abs, number(0)) || abs < EPSILON) return true;
-            // if (std::abs(U(i, i)) < EPSILON_FIXED) return true;
         }
         return false;
     }
@@ -135,7 +131,7 @@ namespace mlinalg {
      * @return Complete set of m orthonormal vectors
      */
     template <Number number, int m>
-    vector<Vector<number, m>> extendToCompleteBasis(const vector<Vector<number, m>>& qs, size_t dim) {
+    auto extendToCompleteBasis(const vector<Vector<number, m>>& qs, size_t dim) {
         vector<Vector<number, m>> basis = qs;
         auto n = qs.size();
 
@@ -149,13 +145,13 @@ namespace mlinalg {
             // Try each standard basis vector until we find one that's not
             // in the span of existing vectors
             bool found = false;
-            for (size_t basisIdx = 0; basisIdx < dim && !found; ++basisIdx) {
+            for (size_t basisIdx{}; basisIdx < dim && !found; ++basisIdx) {
                 // Create e_basisIndex (standard basis vector)
-                candidate = Vector<number, m>(qs[0].size());
+                candidate.clear();
                 candidate[basisIdx] = number(1);
 
                 // Orthogonalize against all existing vectors using Gram-Schmidt
-                Vector<number, m> orth = candidate;
+                auto orth = candidate;
                 for (const auto& v : basis) {
                     number proj = orth.dot(v);
                     orth -= proj * v;
@@ -214,7 +210,7 @@ namespace mlinalg {
 
         const auto& v0 = asCols[0];
         const auto& norm0 = v0.length();
-        qs.push_back(v0 / norm0);
+        qs.emplace_back(v0 / norm0);
         if (R) {
             R->at(0, 0) = norm0;
         }
@@ -237,7 +233,7 @@ namespace mlinalg {
             if (R) {
                 R->at(i, i) = norm;
             }
-            qs.push_back(vi / norm);
+            qs.emplace_back(vi / norm);
         }
 
         if constexpr (type == QRType::Full) {
@@ -394,11 +390,14 @@ namespace mlinalg {
         auto V = I<number, n>(numCols);
 
         const size_t p{std::min(nR, nC)};
+        Vector<number, Dynamic> x(numRows);
+        auto QkL = I<number, m>(numRows);
+        auto QkR = I<number, n>(numCols);
         for (size_t k{}; k < p; k++) {
             // --------------------------------------------------------------------
             // Left house holder reduction: zero out below the diagonal in column k
             // --------------------------------------------------------------------
-            Vector<number, Dynamic> x(numRows - k);
+            x.resize(numRows - k);
             for (size_t i{k}; i < nR; i++) {
                 x[i - k] = B(i, k);
             }
@@ -409,42 +408,41 @@ namespace mlinalg {
                 auto normX = x.length();
                 number sign = (fuzzyCompare(x[0], number(0)) || x[0] > number(0)) ? number(1) : number(-1);
                 // Form the Householder vector
-                x[0] = x[0] + sign * normX;
-                auto v = x;
+                x[0] += sign * normX;
                 // Small Householder matrix of size (numRows-k)x(numRows-k)
-                auto H = houseHolder(v);
+                const auto& H = houseHolder(x);
 
                 // Generate identity of full size and replace the lower right block with the
                 // small Householder matrix
-                auto Qk = I<number, m>(numRows);
-                for (size_t i{k}; i < nR; i++)
-                    for (size_t j{k}; j < nR; j++) Qk(i, j) = H(i - k, j - k);
+                I(QkL);
+                for (size_t i{k}; i < nR; ++i)
+                    for (size_t j{k}; j < nR; ++j) QkL(i, j) = H(i - k, j - k);
 
-                B = Qk * B;
-                U = U * Qk;
+                B = QkL * B;
+                U = U * QkL;
             }
 
             // -----------------------------------------------------------------------
             // Right house holder reduction: zero out above the superdiagonal in row k
             // -----------------------------------------------------------------------
             if (static_cast<int>(k) < static_cast<int>(numCols - 1)) {
-                Vector<number, Dynamic> x(numCols - k - 1);
-                for (size_t j{k + 1}; j < numCols; j++) x[j - k - 1] = B(k, j);
+                x.resize(numCols - k - 1);
+                for (size_t j{k + 1}; j < numCols; ++j) x[j - k - 1] = B(k, j);
 
                 if (!isZeroVector(x)) {
                     auto normX = x.length();
                     number sign = (fuzzyCompare(x[0], number(0)) || x[0] > number(0)) ? number(1) : number(-1);
-                    x[0] = x[0] + sign * normX;
+                    x[0] += sign * normX;
                     auto v = x;
-                    auto H = houseHolder(v);  // size (numCols-k-1)x(numCols-k-1)
+                    const auto& H = houseHolder(v);  // size (numCols-k-1)x(numCols-k-1)
 
                     // Embed H_small into an identity matrix for the full column range
-                    auto Qk = I<number, n>(numCols);
+                    I(QkR);
                     for (size_t i{k + 1}; i < numCols; i++)
-                        for (size_t j{k + 1}; j < numCols; j++) Qk(i, j) = H(i - k - 1, j - k - 1);
+                        for (size_t j{k + 1}; j < numCols; j++) QkR(i, j) = H(i - k - 1, j - k - 1);
 
-                    B = B * Qk;
-                    V = V * Qk;
+                    B = B * QkR;
+                    V = V * QkR;
                 }
             }
         }
@@ -466,13 +464,14 @@ namespace mlinalg {
         auto R = A;                      // will become upper‑triangular
         auto Q = I<number, m>(numRows);  // accumulate left reflectors
 
-        auto Qk = I<number, m>(numRows);
         const size_t p = std::min(numRows, numCols);
-        for (size_t k = 0; k < p; ++k) {
+        auto Qk = I<number, m>(numRows);
+        Vector<number, Dynamic> x(numRows);
+        for (size_t k{}; k < p; ++k) {
             // ---------------------------------------------------
             // Left Householder step: zero out below-diagonal in col k
             // ---------------------------------------------------
-            Vector<number, Dynamic> x(numRows - k);
+            x.resize(numRows - k);
             for (size_t i = k; i < numRows; ++i) {
                 x[i - k] = R(i, k);
             }
@@ -482,8 +481,7 @@ namespace mlinalg {
                 number sign = (fuzzyCompare(x[0], number(0)) || x[0] > number(0)) ? number(1) : number(-1);
 
                 x[0] += sign * normX;
-                auto v = x;
-                auto H = houseHolder(v);  // small (numRows-k)×(numRows-k)
+                const auto& H = houseHolder(x);  // small (numRows-k)×(numRows-k)
 
                 // embed H into full-size identity Qk
                 I(Qk);
@@ -589,10 +587,10 @@ namespace mlinalg {
                 break;
             }
         }
-        if (!converged) logging::log(format("Converged after {} iterations", i), "schurCommon");
+        if (!converged) logging::log(format("Did not converge after {} iterations", i), "schurCommon");
 
         return pair{QProd, S};
-    }
+  }
 
     /**
      * @brief Compute the Schur decomposition of a square matrix A.

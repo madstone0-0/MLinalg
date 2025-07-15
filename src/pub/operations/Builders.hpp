@@ -43,7 +43,7 @@ namespace mlinalg {
     Matrix<number, m, m> I() {
         Matrix<number, m, m> identity{};
         for (size_t i{}; i < m; i++) {
-            identity.at(i).at(i) = 1;
+            identity(i, i) = 1;
         }
         return identity;
     }
@@ -132,8 +132,7 @@ namespace mlinalg {
     template <Number number, int m, int n>
     Matrix<number, m, n> matrixOnes() {
         Matrix<number, m, n> res{};
-        for (size_t i{}; i < static_cast<size_t>(m); i++)
-            for (size_t j{}; j < static_cast<size_t>(n); j++) res(i, j) = 1;
+        res.apply([](auto& x) { x = 1; });
         return res;
     }
 
@@ -150,8 +149,7 @@ namespace mlinalg {
     Matrix<number, m, n> matrixOnes(int nRows, int nCols) {
         if constexpr (m == Dynamic || n == Dynamic) {
             Matrix<number, m, n> res(nRows, nCols);
-            for (size_t i{}; i < static_cast<size_t>(nRows); i++)
-                for (size_t j{}; j < static_cast<size_t>(nCols); j++) res(i, j) = 1;
+            res.apply([](auto& x) { x = 1; });
             return res;
         } else {
             return matrixOnes<number, m, n>();
@@ -167,7 +165,7 @@ namespace mlinalg {
     template <Number number, int n>
     Vector<number, n> vectorOnes() {
         Vector<number, n> res{};
-        for (size_t i{}; i < static_cast<size_t>(n); i++) res[i] = 1;
+        res.apply([](auto& x) { x = 1; });
         return res;
     }
 
@@ -181,7 +179,7 @@ namespace mlinalg {
     Vector<number, n> vectorOnes(int size) {
         if constexpr (n == Dynamic) {
             Vector<number, n> res(size);
-            for (int i{}; i < size; i++) res[i] = 1;
+            res.apply([](auto& x) { x = 1; });
             return res;
         } else {
             return vectorOnes<number, n>();
@@ -197,12 +195,10 @@ namespace mlinalg {
      * @param seed The seed for the random number generator.
      * @return The random vector of the given size.
      */
-    template <Number num, int n>
-    Vector<num, n> vectorRandom(const int min = 0, const int max = 100, const Seed& seed = std::nullopt) {
-        Vector<num, n> vec{};
-        for (int i{}; i < n; i++) {
-            vec.at(i) = helpers::rng<num>(min, max, seed);
-        }
+    template <Number number, int n>
+    Vector<number, n> vectorRandom(const int min = 0, const int max = 100, const Seed& seed = std::nullopt) {
+        Vector<number, n> vec{};
+        vec.apply([&](auto& x) { x = helpers::rng<number>(min, max, seed); });
         return vec;
     }
 
@@ -221,9 +217,7 @@ namespace mlinalg {
                                    const Seed& seed = std::nullopt) {
         if constexpr (n == Dynamic) {
             Vector<number, n> vec(size);
-            for (int i{}; i < size; i++) {
-                vec.at(i) = helpers::rng<number>(min, max, seed);
-            }
+            vec.apply([&](auto& x) { x = helpers::rng<number>(min, max, seed); });
             return vec;
         } else {
             return vectorRandom<number, n>(min, max, seed);
@@ -240,12 +234,10 @@ namespace mlinalg {
      * @param seed The seed for the random number generator.
      * @return The random matrix of the given size.
      */
-    template <Number num, int m, int n>
-    Matrix<num, m, n> matrixRandom(int min = 0, int max = 100, Seed seed = std::nullopt) {
-        Matrix<num, m, n> res{};
-        for (int i{}; i < m; i++) {
-            for (int j{}; j < n; j++) res(i, j) = helpers::rng<num>(min, max, seed);
-        }
+    template <Number number, int m, int n>
+    Matrix<number, m, n> matrixRandom(int min = 0, int max = 100, Seed seed = std::nullopt) {
+        Matrix<number, m, n> res{};
+        res.apply([&](auto& x) { x = helpers::rng<number>(min, max, seed); });
         return res;
     }
 
@@ -266,9 +258,7 @@ namespace mlinalg {
                                       const Seed& seed = std::nullopt) {
         if constexpr (n == Dynamic || m == Dynamic) {
             Matrix<number, m, n> res(numRows, numCols);
-            for (int i{}; i < m; i++) {
-                for (int j{}; j < n; j++) res(i, j) = helpers::rng<number>(min, max, seed);
-            }
+            res.apply([&](auto& x) { x = helpers::rng<number>(min, max, seed); });
             return res;
         } else {
             return matrixRandom<number, m, n>(min, max, seed);

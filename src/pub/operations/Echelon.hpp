@@ -3,9 +3,9 @@
 #include <optional>
 #include <set>
 
+#include "../Numeric.hpp"
 #include "../structures/Aliases.hpp"
 #include "Aliases.hpp"
-#include "../Numeric.hpp"
 
 namespace mlinalg {
     using std::optional, std::nullopt;
@@ -42,7 +42,7 @@ namespace mlinalg {
                         continue;
                     }
                 }
-                pivots.at(pivRow) = system.at(pivRow, pivCol);
+                pivots.at(pivRow) = system(pivRow, pivCol);
                 pivRow++;
                 pivCol++;
             }
@@ -129,7 +129,7 @@ namespace mlinalg {
         const auto& nCols = system.numCols();
 
         for (size_t row = startRow; row < nRows; ++row) {
-            if (system.at(row).at(col) != 0) {
+            if (system(row, col) != 0) {
                 return row;
             }
         }
@@ -285,7 +285,7 @@ namespace mlinalg {
         const auto& nRows = system.numRows();
         const auto& nCols = system.numCols();
 
-        if (nRows == nCols && nRows > 5) return refRec(system);
+        if (nRows > 5) return refRec(system);
         if (nRows == nCols) return refSq(system);
         return refRec(system);
     }

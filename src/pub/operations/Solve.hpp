@@ -33,7 +33,7 @@ namespace mlinalg {
         number rightSum{row.back()};
 
         for (size_t i{}; i < rowSize - 1; i++) {
-            optional<number> var = solutions.at(i);
+            const auto& var = solutions.at(i);
             if (i != varPos) {
                 number res{};
                 if (var.has_value()) {
@@ -100,7 +100,7 @@ namespace mlinalg {
 
         const auto& [Q, R] = QR<QRType::Thin>(A, method);
         const auto& rhs = Q * b;
-        const auto x = solveUpperTriangular(R, rhs);
+        const auto& x = solveUpperTriangular(R, rhs);
         return x;
     }
 
@@ -226,7 +226,6 @@ namespace mlinalg {
         const auto [numRows, numCols] = sys.shape();
         ConditionalRowOptional<number, m, n> solutions(numCols - 1);
         LinearSystem<number, m, n> system{sys};
-        system = rearrangeSystem(system);
 
         auto reducedEchelon = rref(system);
 

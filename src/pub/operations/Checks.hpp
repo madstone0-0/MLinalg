@@ -110,7 +110,7 @@ namespace mlinalg {
             return true;
         }
 
-        bool operator()(const VectorTransposeVariant<number, m, n>& AT) {
+        bool operator()(const VectorTransposeVariant<number, m, n>& /*AT*/) {
             logging::D(std::format("Why are we here -> {}x{}", m, n), "OrthVisitor");
             return false;
         }

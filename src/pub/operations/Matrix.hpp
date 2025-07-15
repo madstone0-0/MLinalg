@@ -20,8 +20,10 @@ namespace mlinalg {
         if (fuzzyCompare(det, number(0))) return nullopt;
         const auto& [nRows, nCols] = system.shape();
         if (nRows == 2)
-            return (1. / det) * Matrix<number, m, m>{{system.at(1).at(1), -system.at(0).at(1)},
-                                                     {-system.at(1).at(0), system.at(0).at(0)}};
+            return (1. / det) * Matrix<number, m, m>{
+                                    {system(1, 1), -system(0, 1)},
+                                    {-system(1, 0), system(0, 0)},
+                                };
         else {
             auto identity = I<number, m>(nRows);
             auto augmented = system.augment(identity);

@@ -1,6 +1,6 @@
 #pragma once
-#include "Aliases.hpp"
 #include "../Numeric.hpp"
+#include "Aliases.hpp"
 
 namespace mlinalg {
     /**
@@ -37,11 +37,9 @@ namespace mlinalg {
         const auto& [nR, nC] = A.shape();
         const auto& minDim{std::min(nR, nC)};
         auto [U, Sigma, VT] = svd(A);
-        for (size_t i{}; i < minDim; ++i) {
-            const auto& sigma = Sigma(i, i);
-            if (fuzzyCompare(sigma, number(0))) continue;
-            Sigma(i, i) = 1 / sigma;
-        }
+        Sigma.apply([](auto& sigma) {
+            if (!fuzzyCompare(sigma, number(0))) sigma = 1 / sigma;
+        });
         const auto& SigmaPlus = helpers::extractMatrixFromTranspose(Sigma.T());
         const auto& UT = helpers::extractMatrixFromTranspose(U.T());
         const auto& V = helpers::extractMatrixFromTranspose(VT.T());
