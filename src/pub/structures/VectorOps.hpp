@@ -165,7 +165,15 @@ namespace mlinalg::structures {
     template <Number number, int n, int otherN>
     inline double vectorDot(const Vector<number, n>& v, const Vector<number, otherN>& w) {
         if (v.size() != w.size()) throw StackError<std::invalid_argument>("Vectors must be of the same size");
+#ifdef BY_DEF
+        // By the defintion of the dot product
+        // v . w = v^T * w
         return (v.T() * w)[0];
+#else
+        double res{};
+        for (size_t i{}; i < v.size(); ++i) res += v[i] * w[i];
+        return res;
+#endif  // BY_DEF
     }
 
     template <Number number, int n, int otherN>
