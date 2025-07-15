@@ -4,6 +4,7 @@
  */
 
 #pragma once
+#include <bitset>
 #include <iterator>
 #define BOOST_STACKTRACE_USE_ADDR2LINE
 #include <algorithm>
@@ -61,6 +62,11 @@ namespace mlinalg::structures::helpers {
 
     template <int m, int n, typename Iftrue, typename Iffalse>
     using IsDynamicT = std::conditional_t<m == Dynamic || n == Dynamic, Iftrue, Iffalse>;
+
+    template <int m, int n, int mOther, int nOther, typename Iftrue, typename Iffalse>
+    using IsDynamicTOther =
+        std::conditional_t<m == Dynamic || n == Dynamic || mOther == Dynamic || nOther == Dynamic, Iftrue, Iffalse>;
+
     template <Number num>
     num rng(int min, int max, std::optional<size_t> seed = std::nullopt)
         requires(std::is_integral_v<num>)
