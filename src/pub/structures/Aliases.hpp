@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "../Concepts.hpp"
+#include "Allocator.hpp"
 
 namespace mlinalg::structures {
     /**
@@ -27,7 +28,11 @@ namespace mlinalg::structures {
     class Vector;
 
     template <Number number>
-    using VectorRowType = std::vector<number>;
+    using DefaultAllocator = mlinalg::allocator::BootlegAllocator<number>;
+    // using DefaultAllocator = std::allocator<number>;
+
+    template <Number number>
+    using VectorRowType = std::vector<number, DefaultAllocator<number>>;
 
     /**
      * @brief  Type alias for the backing array of a Vector
