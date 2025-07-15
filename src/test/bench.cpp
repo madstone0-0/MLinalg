@@ -4,37 +4,10 @@
 #include <cmath>
 #include <random>
 
+#include "operations/Builders.hpp"
 #include "structures/Vector.hpp"
 
-double rng() {
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
-    static std::uniform_real_distribution<> dis(0, 1);
-    return dis(gen);
-}
-
 using namespace mlinalg;
-
-template <size_t m, size_t n>
-Matrix<double, m, n> genMatrix() {
-    Matrix<double, m, n> A;
-    for (size_t i{}; i < m; i++) {
-        for (size_t j{}; j < n; j++) {
-            A.at(i, j) = rng();
-        }
-    }
-    return A;
-}
-
-Matrix<double, Dynamic, Dynamic> genMatrix(size_t m, size_t n) {
-    Matrix<double, Dynamic, Dynamic> A{(int)m, (int)n};
-    for (size_t i{}; i < m; i++) {
-        for (size_t j{}; j < n; j++) {
-            A.at(i, j) = rng();
-        }
-    }
-    return A;
-}
 
 TEST_CASE("Benchmarks") {
     SECTION("Matrix") {
@@ -42,8 +15,8 @@ TEST_CASE("Benchmarks") {
             SECTION("Square") {
                 {
                     constexpr size_t m{100};
-                    auto A{genMatrix<m, m>()};
-                    auto B{genMatrix<m, m>()};
+                    auto A{matrixRandom<double, m, m>()};
+                    auto B{matrixRandom<double, m, m>()};
                     BENCHMARK("Beeg A * B (100x100)") {
                         // Biiig square matrix
                         return A * B;
@@ -52,43 +25,43 @@ TEST_CASE("Benchmarks") {
 
                 {
                     constexpr size_t m{127};
-                    auto A{genMatrix<m, m>()};
-                    auto B{genMatrix<m, m>()};
+                    auto A{matrixRandom<double, m, m>()};
+                    auto B{matrixRandom<double, m, m>()};
                     BENCHMARK("Beeg A * B (127x127)") { return A * B; };
                 }
 
                 {
                     constexpr size_t m{128};
-                    auto A{genMatrix<m, m>()};
-                    auto B{genMatrix<m, m>()};
+                    auto A{matrixRandom<double, m, m>()};
+                    auto B{matrixRandom<double, m, m>()};
                     BENCHMARK("Beeg A * B (128x128)") { return A * B; };
                 }
 
                 {
                     constexpr size_t m{255};
-                    auto A{genMatrix<m, m>()};
-                    auto B{genMatrix<m, m>()};
+                    auto A{matrixRandom<double, m, m>()};
+                    auto B{matrixRandom<double, m, m>()};
                     BENCHMARK("Beeg A * B (255x255)") { return A * B; };
                 }
 
                 {
                     constexpr size_t m{256};
-                    auto A{genMatrix<m, m>()};
-                    auto B{genMatrix<m, m>()};
+                    auto A{matrixRandom<double, m, m>()};
+                    auto B{matrixRandom<double, m, m>()};
                     BENCHMARK("Beeg A * B (256x256)") { return A * B; };
                 }
 
                 {
                     constexpr size_t m{511};
-                    auto A{genMatrix<m, m>()};
-                    auto B{genMatrix<m, m>()};
+                    auto A{matrixRandom<double, m, m>()};
+                    auto B{matrixRandom<double, m, m>()};
                     BENCHMARK("Beeg A * B (511x511)") { return A * B; };
                 }
 
                 {
                     constexpr size_t m{512};
-                    auto A{genMatrix<m, m>()};
-                    auto B{genMatrix<m, m>()};
+                    auto A{matrixRandom<double, m, m>()};
+                    auto B{matrixRandom<double, m, m>()};
                     BENCHMARK("Beeg A * B (512x512)") { return A * B; };
                 }
 
@@ -113,56 +86,56 @@ TEST_CASE("Benchmarks") {
                 {
                     constexpr size_t m{100};
                     constexpr size_t n{50};
-                    auto A{genMatrix<m, n>()};
-                    auto B{genMatrix<n, m>()};
+                    auto A{matrixRandom<double, m, n>()};
+                    auto B{matrixRandom<double, n, m>()};
                     BENCHMARK("Beeg A * B (100x50 x 50x100)") { return A * B; };
                 }
 
                 {
                     constexpr size_t m{127};
                     constexpr size_t n{100};
-                    auto A{genMatrix<m, n>()};
-                    auto B{genMatrix<n, m>()};
+                    auto A{matrixRandom<double, m, n>()};
+                    auto B{matrixRandom<double, n, m>()};
                     BENCHMARK("Beeg A * B (127x100 x 100x127)") { return A * B; };
                 }
 
                 {
                     constexpr size_t m{128};
                     constexpr size_t n{100};
-                    auto A{genMatrix<m, n>()};
-                    auto B{genMatrix<n, m>()};
+                    auto A{matrixRandom<double, m, n>()};
+                    auto B{matrixRandom<double, n, m>()};
                     BENCHMARK("Beeg A * B (128x100 x 100x128)") { return A * B; };
                 }
 
                 {
                     constexpr size_t m{255};
                     constexpr size_t n{128};
-                    auto A{genMatrix<m, n>()};
-                    auto B{genMatrix<n, m>()};
+                    auto A{matrixRandom<double, m, n>()};
+                    auto B{matrixRandom<double, n, m>()};
                     BENCHMARK("Beeg A * B (255x128 x 128x255)") { return A * B; };
                 }
 
                 {
                     constexpr size_t m{256};
                     constexpr size_t n{128};
-                    auto A{genMatrix<m, n>()};
-                    auto B{genMatrix<n, m>()};
+                    auto A{matrixRandom<double, m, n>()};
+                    auto B{matrixRandom<double, n, m>()};
                     BENCHMARK("Beeg A * B (256x128 x 128x256)") { return A * B; };
                 }
 
                 {
                     constexpr size_t m{511};
                     constexpr size_t n{256};
-                    auto A{genMatrix<m, n>()};
-                    auto B{genMatrix<n, m>()};
+                    auto A{matrixRandom<double, m, n>()};
+                    auto B{matrixRandom<double, n, m>()};
                     BENCHMARK("Beeg A * B (511x256 x 256x511)") { return A * B; };
                 }
 
                 {
                     constexpr size_t m{512};
                     constexpr size_t n{256};
-                    auto A{genMatrix<m, n>()};
-                    auto B{genMatrix<n, m>()};
+                    auto A{matrixRandom<double, m, n>()};
+                    auto B{matrixRandom<double, n, m>()};
                     BENCHMARK("Beeg A * B (512x256 x 256x512)") { return A * B; };
                 }
             }
@@ -172,8 +145,8 @@ TEST_CASE("Benchmarks") {
             SECTION("Square") {
                 {
                     constexpr size_t m{100};
-                    auto A{genMatrix(m, m)};
-                    auto B{genMatrix(m, m)};
+                    auto A{matrixRandom<double, Dynamic, Dynamic>(m, m, 0, 100)};
+                    auto B{matrixRandom<double, Dynamic, Dynamic>(m, m, 0, 100)};
                     BENCHMARK("Beeg A * B (100x100)") {
                         // Biiig square matrix
                         return A * B;
@@ -182,43 +155,43 @@ TEST_CASE("Benchmarks") {
 
                 {
                     constexpr size_t m{127};
-                    auto A{genMatrix(m, m)};
-                    auto B{genMatrix(m, m)};
+                    auto A{matrixRandom<double, Dynamic, Dynamic>(m, m, 0, 100)};
+                    auto B{matrixRandom<double, Dynamic, Dynamic>(m, m, 0, 100)};
                     BENCHMARK("Beeg A * B (127x127)") { return A * B; };
                 }
 
                 {
                     constexpr size_t m{128};
-                    auto A{genMatrix(m, m)};
-                    auto B{genMatrix(m, m)};
+                    auto A{matrixRandom<double, Dynamic, Dynamic>(m, m, 0, 100)};
+                    auto B{matrixRandom<double, Dynamic, Dynamic>(m, m, 0, 100)};
                     BENCHMARK("Beeg A * B (128x128)") { return A * B; };
                 }
 
                 {
                     constexpr size_t m{255};
-                    auto A{genMatrix(m, m)};
-                    auto B{genMatrix(m, m)};
+                    auto A{matrixRandom<double, Dynamic, Dynamic>(m, m, 0, 100)};
+                    auto B{matrixRandom<double, Dynamic, Dynamic>(m, m, 0, 100)};
                     BENCHMARK("Beeg A * B (255x255)") { return A * B; };
                 }
 
                 {
                     constexpr size_t m{256};
-                    auto A{genMatrix(m, m)};
-                    auto B{genMatrix(m, m)};
+                    auto A{matrixRandom<double, Dynamic, Dynamic>(m, m, 0, 100)};
+                    auto B{matrixRandom<double, Dynamic, Dynamic>(m, m, 0, 100)};
                     BENCHMARK("Beeg A * B (256x256)") { return A * B; };
                 }
 
                 {
                     constexpr size_t m{511};
-                    auto A{genMatrix(m, m)};
-                    auto B{genMatrix(m, m)};
+                    auto A{matrixRandom<double, Dynamic, Dynamic>(m, m, 0, 100)};
+                    auto B{matrixRandom<double, Dynamic, Dynamic>(m, m, 0, 100)};
                     BENCHMARK("Beeg A * B (511x511)") { return A * B; };
                 }
 
                 {
                     constexpr size_t m{512};
-                    auto A{genMatrix(m, m)};
-                    auto B{genMatrix(m, m)};
+                    auto A{matrixRandom<double, Dynamic, Dynamic>(m, m, 0, 100)};
+                    auto B{matrixRandom<double, Dynamic, Dynamic>(m, m, 0, 100)};
                     BENCHMARK("Beeg A * B (512x512)") { return A * B; };
                 }
 
@@ -243,56 +216,56 @@ TEST_CASE("Benchmarks") {
                 {
                     constexpr size_t m{100};
                     constexpr size_t n{50};
-                    auto A{genMatrix(m, n)};
-                    auto B{genMatrix(n, m)};
+                    auto A{matrixRandom<double, Dynamic, Dynamic>(m, n, 0, 100)};
+                    auto B{matrixRandom<double, Dynamic, Dynamic>(n, m, 0, 100)};
                     BENCHMARK("Beeg A * B (100x50 x 50x100)") { return A * B; };
                 }
 
                 {
                     constexpr size_t m{127};
                     constexpr size_t n{100};
-                    auto A{genMatrix(m, n)};
-                    auto B{genMatrix(n, m)};
+                    auto A{matrixRandom<double, Dynamic, Dynamic>(m, n, 0, 100)};
+                    auto B{matrixRandom<double, Dynamic, Dynamic>(n, m, 0, 100)};
                     BENCHMARK("Beeg A * B (127x100 x 100x127)") { return A * B; };
                 }
 
                 {
                     constexpr size_t m{128};
                     constexpr size_t n{100};
-                    auto A{genMatrix(m, n)};
-                    auto B{genMatrix(n, m)};
+                    auto A{matrixRandom<double, Dynamic, Dynamic>(m, n, 0, 100)};
+                    auto B{matrixRandom<double, Dynamic, Dynamic>(n, m, 0, 100)};
                     BENCHMARK("Beeg A * B (128x100 x 100x128)") { return A * B; };
                 }
 
                 {
                     constexpr size_t m{255};
                     constexpr size_t n{128};
-                    auto A{genMatrix(m, n)};
-                    auto B{genMatrix(n, m)};
+                    auto A{matrixRandom<double, Dynamic, Dynamic>(m, n, 0, 100)};
+                    auto B{matrixRandom<double, Dynamic, Dynamic>(n, m, 0, 100)};
                     BENCHMARK("Beeg A * B (255x128 x 128x255)") { return A * B; };
                 }
 
                 {
                     constexpr size_t m{256};
                     constexpr size_t n{128};
-                    auto A{genMatrix(m, n)};
-                    auto B{genMatrix(n, m)};
+                    auto A{matrixRandom<double, Dynamic, Dynamic>(m, n, 0, 100)};
+                    auto B{matrixRandom<double, Dynamic, Dynamic>(n, m, 0, 100)};
                     BENCHMARK("Beeg A * B (256x128 x 128x256)") { return A * B; };
                 }
 
                 {
                     constexpr size_t m{511};
                     constexpr size_t n{256};
-                    auto A{genMatrix(m, n)};
-                    auto B{genMatrix(n, m)};
+                    auto A{matrixRandom<double, Dynamic, Dynamic>(m, n, 0, 100)};
+                    auto B{matrixRandom<double, Dynamic, Dynamic>(n, m, 0, 100)};
                     BENCHMARK("Beeg A * B (511x256 x 256x511)") { return A * B; };
                 }
 
                 {
                     constexpr size_t m{512};
                     constexpr size_t n{256};
-                    auto A{genMatrix(m, n)};
-                    auto B{genMatrix(n, m)};
+                    auto A{matrixRandom<double, Dynamic, Dynamic>(m, n, 0, 100)};
+                    auto B{matrixRandom<double, Dynamic, Dynamic>(n, m, 0, 100)};
                     BENCHMARK("Beeg A * B (512x256 x 256x512)") { return A * B; };
                 }
             }

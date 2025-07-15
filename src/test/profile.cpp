@@ -3,6 +3,7 @@
 #include <iostream>
 #include <random>
 
+#include "operations/Decomposition.hpp"
 #include "structures/Vector.hpp"
 
 double rng() {
@@ -15,7 +16,7 @@ double rng() {
 using namespace mlinalg;
 
 template <size_t m, size_t n>
-Matrix<double, m, n> genMatrix() {
+constexpr Matrix<double, m, n> genMatrix() {
     Matrix<double, m, n> A;
     for (size_t i{}; i < m; i++) {
         for (size_t j{}; j < n; j++) {
@@ -46,6 +47,10 @@ int main() {
         auto A{genMatrix(m, m)};
         auto B{genMatrix(m, m)};
         A* B;
+    }
+    {
+        auto A{genMatrix<m / 16, m / 16>()};
+        const auto& [U, S, VT] = svd(A);
     }
     return 0;
 }
