@@ -323,7 +323,7 @@ namespace mlinalg::structures {
         constexpr auto resSizeP = isDynamic ? DynamicPair : SizePair{m, nOther};
 
         Matrix<float, resSizeP.first, resSizeP.second> res{nRows, nColsOther};
-        const int vecSize{8};  // AVX can handle 8 floats
+        const int vecSize{16};  // AVX can handle 8 floats, but we unroll 2 iterations
 
         for (size_t i{}; i < nRows; i++) {
             for (size_t k{}; k < nCols; k++) {
@@ -336,12 +336,17 @@ namespace mlinalg::structures {
                 // Only vectorize if there are at least 8 columns.
                 if (nColsOther >= vecSize) {
                     size_t j = 0;
-                    // Process in chunks of 8 floats
+                    // Process in chunks of 16 floats
                     for (; j + vecSize <= nColsOther; j += vecSize) {
-                        __m256 avxB = _mm256_loadu_ps(&kRow[j]);
-                        __m256 avxRes = _mm256_loadu_ps(&iRow[j]);
-                        avxRes = _mm256_fmadd_ps(avxA, avxB, avxRes);
-                        _mm256_storeu_ps(&iRow[j], avxRes);
+                        __m256 avxB1 = _mm256_loadu_ps(&kRow[j]);
+                        __m256 avxRes1 = _mm256_loadu_ps(&iRow[j]);
+                        avxRes1 = _mm256_fmadd_ps(avxA, avxB1, avxRes1);
+                        _mm256_storeu_ps(&iRow[j], avxRes1);
+
+                        __m256 avxB2 = _mm256_loadu_ps(&kRow[j + 8]);
+                        __m256 avxRes2 = _mm256_loadu_ps(&iRow[j + 8]);
+                        avxRes2 = _mm256_fmadd_ps(avxA, avxB2, avxRes2);
+                        _mm256_storeu_ps(&iRow[j + 8], avxRes2);
                     }
                     // Process remaining elements, if any, with scalar code.
                     for (; j < nColsOther; j++) {
@@ -376,7 +381,7 @@ namespace mlinalg::structures {
         constexpr auto resSizeP = isDynamic ? DynamicPair : SizePair{m, nOther};
 
         Matrix<double, resSizeP.first, resSizeP.second> res{(int)nRows, (int)nColsOther};
-        const int vecSize{4};  // AVX can handle 4 doubles
+        const int vecSize{8};  // AVX can handle 4 doubles, but we unroll 2 iterations
 
         for (size_t i{}; i < nRows; i++) {
             for (size_t k{}; k < nCols; k++) {
@@ -389,12 +394,21 @@ namespace mlinalg::structures {
                 // Only vectorize if there are at least 4 columns.
                 if (nColsOther >= vecSize) {
                     size_t j = 0;
-                    // Process in chunks of 4 doubles
+                    // Prefetch next cache lines
+                    _mm_prefetch(reinterpret_cast<const char*>(&kRow[j + 64]), _MM_HINT_T0);
+                    _mm_prefetch(reinterpret_cast<const char*>(&iRow[j + 64]), _MM_HINT_T0);
+
+                    // Process in chunks of 8 doubles
                     for (; j + vecSize <= nColsOther; j += vecSize) {
-                        __m256d avxB = _mm256_loadu_pd(&kRow[j]);
-                        __m256d avxRes = _mm256_loadu_pd(&iRow[j]);
-                        avxRes = _mm256_fmadd_pd(avxA, avxB, avxRes);
-                        _mm256_storeu_pd(&iRow[j], avxRes);
+                        __m256d avxB1 = _mm256_loadu_pd(&kRow[j]);
+                        __m256d avxRes1 = _mm256_loadu_pd(&iRow[j]);
+                        avxRes1 = _mm256_fmadd_pd(avxA, avxB1, avxRes1);
+                        _mm256_storeu_pd(&iRow[j], avxRes1);
+
+                        __m256d avxB2 = _mm256_loadu_pd(&kRow[j + 4]);
+                        __m256d avxRes2 = _mm256_loadu_pd(&iRow[j + 4]);
+                        avxRes1 = _mm256_fmadd_pd(avxA, avxB2, avxRes2);
+                        _mm256_storeu_pd(&iRow[j + 4], avxRes2);
                     }
                     // Process remaining elements, if any, with scalar code.
                     for (; j < nColsOther; j++) {
@@ -414,8 +428,7 @@ namespace mlinalg::structures {
 
     template <Number number, int m, int n, int mOther, int nOther, Container T, Container U>
     inline auto MatrixMultiplication(const T& matrix, const U& otherMatrix)
-        -> std::conditional_t<m == Dynamic || n == Dynamic || mOther == Dynamic || nOther == Dynamic,
-                              Matrix<number, Dynamic, Dynamic>, Matrix<number, m, nOther>> {
+        -> IsDynamicTOther<m, n, mOther, nOther, Matrix<number, Dynamic, Dynamic>, Matrix<number, m, nOther>> {
 #ifdef STRASSEN
         constexpr bool isDynamic = m == Dynamic || n == Dynamic || mOther == Dynamic || nOther == Dynamic;
         constexpr bool isNotSquare = m != n || (m != mOther && n != nOther) || mOther != nOther;
