@@ -38,7 +38,7 @@ namespace mlinalg::stacktrace {
        public:
         StackError(const std::string& msg, const boost::stacktrace::stacktrace& st = boost::stacktrace::stacktrace())
             : E(
-#ifdef DEBUG
+#if defined(STACKTRACE) || (defined(DEBUG) && defined(STACKTRACE))
                   makeMsg(msg, st)
 #else
                   msg
@@ -46,12 +46,14 @@ namespace mlinalg::stacktrace {
               ) {
         }
 
+#if defined(STACKTRACE) || (defined(DEBUG) && defined(STACKTRACE))
        private:
         std::string makeMsg(const std::string& msg, const boost::stacktrace::stacktrace& st) {
             std::ostringstream oss;
             oss << msg << "\n" << st;
             return oss.str();
         }
+#endif
     };
 }  // namespace mlinalg::stacktrace
 

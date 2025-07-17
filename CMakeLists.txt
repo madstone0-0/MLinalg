@@ -50,6 +50,23 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_definitions(-DDEBUG)
 endif()
 
+option(STACKTRACE "Enable stacktrace support" OFF)
+
+if(NOT DEFINED CACHE{STACKTRACE})
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(STACKTRACE ON CACHE BOOL "Enable stacktrace support" FORCE)
+    endif()
+endif()
+
+message(STATUS "STACKTRACE option is set to: ${STACKTRACE}")
+
+if(STACKTRACE)
+    message(STATUS "Stacktrace support enabled")
+    add_compile_definitions(STACKTRACE)
+else()
+    message(STATUS "Stacktrace support disabled")
+endif()
+
 option(STRASSEN "Enable Strassen algorithm" OFF)
 if(STRASSEN)
     add_definitions(-DSTRASSEN)
@@ -68,7 +85,7 @@ if(BY_DEF)
     )
 endif()
 
-option(EXAMPLES "Compile EXAMPLES" OFF)
+option(EXAMPLES "Compile usage examples" OFF)
 if(EXAMPLES)
     message(STATUS "Compiling examples")
     add_subdirectory(src/examples)
@@ -80,12 +97,15 @@ message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_link_options(-rdynamic -Wl,--export-dynamic)
     add_compile_options(-Wcomma -ferror-limit=100)
+    # set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -fsanitize=address")
+    set(CMAKE_CXX_FLAGS_DEBUG "-ggdb")
 endif()
-add_compile_options(-Wall -Wextra -Wfloat-equal -Werror=return-type)
-# set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -fsanitize=address")
-set(CMAKE_CXX_FLAGS_DEBUG "-ggdb")
 
-set(CMAKE_CXX_FLAGS_RELEASE "-Os -fno-ident")
+add_compile_options(-Wall -Wextra -Wfloat-equal -Werror=return-type)
+
+set(CMAKE_CXX_FLAGS_RELEASE
+    "-Os -fno-ident -fno-exceptions -fno-rtti -ffast-math -fomit-frame-pointer"
+)
 set(CMAKE_CXX_FLAGS_PROFILE "-g -pg")
 set(CMAKE_CXX_FLAGS_ASM "-S -fverbose-asm -masm=intel")
 

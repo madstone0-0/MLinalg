@@ -102,9 +102,8 @@ else
 fi
 
 # Determine if we should show the log (default is no).
-if [ $# -eq 0 ]; then
-	SHOW_LOG="no"
-else
+SHOW_LOG="no"
+if [ $# -gt 0 ] && { [ "$1" = "yes" ] || [ "$1" = "no" ]; }; then
 	SHOW_LOG="$1"
 	shift
 fi
