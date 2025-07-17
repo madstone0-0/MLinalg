@@ -7,7 +7,8 @@
 
 #include "VectorBase.hpp"
 
-using std::vector, std::array, std::optional, std::unique_ptr, std::shared_ptr, mlinalg::structures::helpers::unwrap;
+using std::vector, std::array, std::optional, std::unique_ptr, std::shared_ptr, mlinalg::structures::helpers::unwrap,
+    std::optional;
 
 namespace mlinalg::structures {
 

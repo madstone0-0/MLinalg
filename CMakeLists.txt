@@ -104,7 +104,7 @@ endif()
 add_compile_options(-Wall -Wextra -Wfloat-equal -Werror=return-type)
 
 set(CMAKE_CXX_FLAGS_RELEASE
-    "-Os -fno-ident -fno-exceptions -fno-rtti -ffast-math -fomit-frame-pointer"
+    "-Os -fno-ident -fno-rtti -ffast-math -fomit-frame-pointer"
 )
 set(CMAKE_CXX_FLAGS_PROFILE "-g -pg")
 set(CMAKE_CXX_FLAGS_ASM "-S -fverbose-asm -masm=intel")
@@ -127,7 +127,12 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     find_package(Boost CONFIG REQUIRED)
     if(Boost_FOUND)
         message(STATUS "Boost stacktrace found")
-        target_link_libraries(mlinalg INTERFACE boost_stacktrace_addr2line dl)
+        if(STACKTRACE)
+            target_link_libraries(
+                mlinalg
+                INTERFACE boost_stacktrace_addr2line dl
+            )
+        endif()
     else()
         message(WARNING "Boost stacktrace not found")
     endif()

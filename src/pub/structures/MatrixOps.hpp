@@ -24,7 +24,8 @@
 #include "Aliases.hpp"
 #include "Vector.hpp"
 
-using std::pair, std::invalid_argument, std::string, std::is_same_v, std::runtime_error, std::get;
+using std::pair, std::invalid_argument, std::string, std::is_same_v, std::runtime_error, std::get, std::optional,
+    std::array;
 namespace rg = std::ranges;
 
 namespace mlinalg::structures {

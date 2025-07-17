@@ -6,9 +6,12 @@
 #pragma once
 #include <bitset>
 #include <iterator>
-#define BOOST_STACKTRACE_USE_ADDR2LINE
-#include <algorithm>
+
+#ifdef STACKTRACE
 #include <boost/stacktrace.hpp>
+#define BOOST_STACKTRACE_USE_ADDR2LINE
+#endif  // STACKTRACE
+#include <algorithm>
 #include <concepts>
 #include <exception>
 #include <functional>
@@ -36,23 +39,18 @@ namespace mlinalg::stacktrace {
     template <Exception E = std::runtime_error>
     class StackError : public E {
        public:
+#if defined(STACKTRACE) || (defined(DEBUG) && defined(STACKTRACE))
         StackError(const std::string& msg, const boost::stacktrace::stacktrace& st = boost::stacktrace::stacktrace())
-            : E(
-#if defined(STACKTRACE) || (defined(DEBUG) && defined(STACKTRACE))
-                  makeMsg(msg, st)
-#else
-                  msg
-#endif
-              ) {
-        }
+            : E(makeMsg(msg, st)) {}
 
-#if defined(STACKTRACE) || (defined(DEBUG) && defined(STACKTRACE))
        private:
         std::string makeMsg(const std::string& msg, const boost::stacktrace::stacktrace& st) {
             std::ostringstream oss;
             oss << msg << "\n" << st;
             return oss.str();
         }
+#else
+        StackError(const std::string& msg) : E(msg) {}
 #endif
     };
 }  // namespace mlinalg::stacktrace
