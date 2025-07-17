@@ -1,106 +1,120 @@
 # MLinalg
 
-MLinalg is an educational project designed for learning and practicing numerical linear algebra using modern C++. This project is ideal for any one who wishes to gain hands-on experience with numerical methods and modern C++ techniques.
+MLinalg is a modern C++23 library for numerical linear algebra, designed to facilitate learning and experimentation with
+numerical linear algebra algorithms. It provides a comprehensive set of tools for matrix and vector operations, advanced decompositions, and robust numerical methods. The code is optimized for readability and clarity, instead of raw performance.
 
-## Overview
+---
 
-MLinalg serves as both a learning tool and a proof-of-concept for building numerical linear algebra libraries. It demonstrates:
-- **Self-Initiative & Learning:** A project built from scratch to understand and implement core linear algebra concepts.
-- **Technical Breadth:** Implementation of matrices and vectors (both static and dynamic), along with standard operations such as addition, subtraction, multiplication, transposition, and determinant calculation.
-- **Advanced Algorithms:** Includes efficient methods like Strassen's algorithm for matrix multiplication.
-- **Modern C++ Practices:** Uses C++23 features, templates, concepts, and compile-time optimizations to ensure type safety and performance.
-- **Robustness:** Incorporates fuzzy comparisons for floating point arithmetic to handle numerical precision issues, with extensive unit tests (using Catch2) to verify correctness.
+## Project Highlights
+
+- **Modern C++23:** Utilizes templates, concepts, and compile-time optimizations for type safety and performance.
+- **Advanced Algorithms:** Implements SVD, QR, LU, Schur decompositions, Strassen's multiplication, and more.
+- **Robust Design:** Fuzzy comparisons for floating point arithmetic, strong error handling, and comprehensive unit tests.
+- **Modular & Extensible:** Clean architecture for easy extension and integration into other projects.
+
+---
 
 ## Features
 
-- **Data Structures:**  
-  - Matrix and vector classes with support for both static and dynamic sizing.
-  - 2D and 3D vector implementations.
-  
-- **Basic Operations:**  
-  - Addition, subtraction, scalar multiplication, and division.
-  - Matrix multiplication (both matrix–matrix and matrix–vector).
-  - Transposition of matrices and vectors.
-  
-- **Advanced Operations:**  
-  - Determinant calculation.
-  - Matrix augmentation with other matrices or vectors.
-  - Efficient multiplication via Strassen's algorithm.
-  
-- **Numerical Robustness:**  
-  - Fuzzy comparisons for floating point operations to mitigate precision issues.
-  - Comprehensive test suite to ensure stability and correctness.
+- **Data Structures:**
+  - Matrix and vector classes (static/dynamic sizing), 2D/3D vector support.
+- **Basic Operations:**
+  - Addition, subtraction, scalar multiplication/division, matrix multiplication, transposition.
+- **Advanced Operations:**
+  - Determinant calculation, matrix augmentation, Strassen's algorithm.
+- **Matrix Decomposition & Linear Algebra Tools:**
+  - **SVD (Singular Value Decomposition)**
+  - **Eigenvalue/Eigenvector Computation**
+  - **QR Decomposition** (Gram-Schmidt & Householder)
+  - **LU Decomposition**
+  - **Schur Decomposition**
+  - **Exact & Least Squares Linear System Solving**
+  - **Moore-Penrose Pseudoinverse**
+  - **Nullspace Computation**
+  - **Customizable QR Methods**
+  - **Robust Error Handling**
+- **Numerical Robustness:**
+  - Fuzzy comparisons, comprehensive test suite.
+
+---
+
+## Example Usage
+
+Below is a minimal example. For more complete and practical usage, see the [`src/examples`](src/examples) directory.
+
+```cpp
+#include <MLinalg.hpp>
+using namespace mlinalg;
+
+// Create a matrix and vector
+Matrix<double, 3, 3> A = {/* ... */};
+Vector<double, 3> b = {/* ... */};
+
+// Solve Ax = b exactly (if possible)
+auto result = solveExact(A, b);
+
+// Compute SVD
+auto [U, Sigma, VT] = svd(A);
+```
+
+---
+
+## Why MLinalg?
+
+- **For Learners:** Understand how advanced linear algebra algorithms are implemented in modern C++.
+- **For Researchers:** Use as a foundation for further numerical experiments or algorithm development.
+
+---
 
 ## Project Structure
 
-- **CMakeLists.txt**  
-  CMake build configuration file.
+- **src/**: Source code (core algorithms, data structures, utilities)
+  - **test/**: Unit tests and usage examples (Catch2)
+  - **pub/structures/**: Matrix and vector implementations
+  - **pub/operations/**: Decompositions, solvers, pseudoinverse, etc.
+  - **examples/**: Complete usage examples and practical demonstrations
+- **docs/**: Documentation (generated in release builds)
 
-- **src/**  
-  Source code directory:
-  - **pub/structures/**:  
-    - `Matrix.hpp`: Implementation of the Matrix class and related functions.
-    - `Vector.hpp`: Implementation of the Vector class and related functions.
-  - **pub/Numeric.hpp**:  
-    Defines fuzzy comparisons and numerical constants.
-  - **Concepts.hpp**:  
-    Contains C++ concept definitions used in the project.
-  - **Helpers.hpp**:  
-    Contains utility functions to support the core implementations.
-
-- **test/**  
-  Unit tests (using Catch2) to verify the correctness of all implemented functions.
-  - `examples.cpp`: Contains examples of using the library.
+---
 
 ## Requirements
 
-- **CMake:** Version 3.20 or later.
-- **C++ Compiler:** A compiler that supports C++23 (e.g., GCC 11+, Clang 12+, or the latest MSVC).
+- **CMake:** Version 3.20+
+- **C++ Compiler:** C++23 support (GCC 11+, Clang 12+, MSVC latest)
 
-## Building the Project
+---
 
-To build the project, follow these steps:
+## Building & Installation
 
-1. Clone the repository:
 ```sh
 git clone https://github.com/madstone0-0/MLinalg.git
 cd MLinalg
-```
-
-2. Run `build.sh`
-
-### Debug build
-```sh
-./build.sh
-```
-
-### Release build
-```sh
-./build.sh release
-```
-
-## Usage
-
-Once the project is built, you can install an link the library to your project using the following commands:
-
-### Install
-#### Requirements
-- Ninja / Make
-```sh
+./build.sh        # Debug build
+./build.sh release # Release build
 ninja -C ./build-release install
 ```
 
-### Linking
+---
 
-The library can be linked using CMake's `find_package` command. Add the following lines to your `CMakeLists.txt` file:
+## Linking
+
+Add to your `CMakeLists.txt`:
 
 ```cmake
 find_package(mlinalg REQUIRED)
-
 add_executable(exe exe.cpp)
-
 target_link_libraries(exe PRIVATE mlinalg::mlinalg)
 ```
 
-The project includes test cases using Catch2 to verify the correctness of the implemented functions.
+---
 
+## Author & Contact
+
+GitHub: [madstone0-0](https://github.com/madstone0-0)
+Email: [mhquansah@gmail.com](mailto:mhquansah@gmail.com)
+
+---
+
+## License
+
+MIT License
