@@ -8,6 +8,7 @@
 #pragma once
 #include "Aliases.hpp"
 #include "MatrixBase.hpp"
+#include "structures/MatrixOps.hpp"
 
 namespace mlinalg::structures {
 
@@ -105,8 +106,9 @@ namespace mlinalg::structures {
          */
         template <int nOther>
         Vector<number, m> operator*(const Vector<number, nOther>& vec) const {
-            if (nOther != n) throw runtime_error("The columns of the matrix must be equal to the size of the vector");
-            return multMatByVec<number, m, n>(matrix, vec);
+            if constexpr (nOther != n)
+                throw runtime_error("The columns of the matrix must be equal to the size of the vector");
+            return MatrixVectorMultiplication<number, m, n, nOther>(matrix, vec.row);
         }
 
         template <int nOther>
@@ -324,7 +326,7 @@ namespace mlinalg::structures {
 
         template <int nOther>
         Vector<number, Dynamic> operator*(const Vector<number, nOther>& vec) const {
-            return multMatByVec<number, Dynamic, Dynamic, Dynamic>(matrix, vec);
+            return MatrixVectorMultiplication<number, Dynamic, Dynamic, Dynamic>(matrix, vec.row);
         }
 
         /**

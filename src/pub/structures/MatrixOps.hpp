@@ -257,6 +257,28 @@ namespace mlinalg::structures {
         return res;
     }
 
+    template <Number number, int m, int n, int mRes = m, Container T, Container U>
+    inline Vector<number, mRes> multMatByVec(const T& matrix, const U& vec) {
+        if (matrix.at(0).size() != vec.size())
+            throw StackError<invalid_argument>("The columns of the matrix must be equal to the size of the vector");
+
+        constexpr int vSize = (m == Dynamic || n == Dynamic) ? Dynamic : m;
+        const auto& nRows = matrix.size();
+
+        Vector<number, vSize> res(nRows);
+        const auto nR = matrix.size();
+        const auto nC = matrix[0].size();
+        for (size_t i{}; i < nRows; ++i) {
+            number sum{};
+            for (size_t j{}; j < nC; ++j) {
+                sum += matrix[i][j] * vec[j];
+            }
+            res[i] = sum;
+        }
+
+        return res;
+    }
+
     /**
      * @brief Matrix multiplication by a matrix by the definition of matrix multiplication
      *
@@ -327,6 +349,162 @@ namespace mlinalg::structures {
     }
 
 #if defined(__AVX__) && defined(__FMA__)
+    template <Number number, int m, int n, int nOther, int mRes = m, Container T, Container U>
+    inline Vector<number, mRes> multVecSIMD(const T& matrix, const U& vec)
+        requires(is_same_v<number, double>)
+    {
+        if (matrix.at(0).size() != vec.size())
+            throw StackError<invalid_argument>("The columns of the matrix must be equal to the size of the vector");
+
+        constexpr bool isDynamic = m == Dynamic || n == Dynamic || nOther == Dynamic;
+
+        constexpr int vSize = isDynamic ? Dynamic : m;
+        const auto& nRows = matrix.size();
+        const auto& nCols = matrix[0].size();
+        const auto& vCols = vec.size();
+        constexpr int vecSize = 4;            // AVX2 can handle 4 doubles
+        constexpr int unrollFactor = 4;       // Unroll by 4 for better instruction pipelining
+        constexpr int prefetchDistance = 64;  // Cache line size
+
+        Vector<number, vSize> res(nRows);
+
+        // Pre-load vector data into cache (temporal locality)
+        for (size_t k = 0; k < nCols; k += prefetchDistance / sizeof(double)) {
+            _mm_prefetch(reinterpret_cast<const char*>(&vec[k]), _MM_HINT_T0);
+        }
+
+        // Process rows in blocks for better cache utilization
+        constexpr size_t blockSize = 8;  // Process 8 rows at a time
+
+        for (size_t blockStart = 0; blockStart < nRows; blockStart += blockSize) {
+            size_t blockEnd = std::min(blockStart + blockSize, nRows);
+
+            // Prefetch next block of matrix rows
+            if (blockEnd < nRows) {
+                for (size_t i = blockEnd; i < std::min(blockEnd + blockSize, nRows); ++i) {
+                    _mm_prefetch(reinterpret_cast<const char*>(&matrix[i][0]), _MM_HINT_T1);
+                }
+            }
+
+            // Process current block
+            for (size_t i = blockStart; i < blockEnd; ++i) {
+                // Initialize multiple accumulators to reduce dependency chains
+                __m256d sum1 = _mm256_setzero_pd();
+                __m256d sum2 = _mm256_setzero_pd();
+                __m256d sum3 = _mm256_setzero_pd();
+                __m256d sum4 = _mm256_setzero_pd();
+
+                size_t j = 0;
+                const double* matrixRow = &matrix[i][0];
+                const double* vecData = &vec[0];
+
+                // Prefetch current row data
+                _mm_prefetch(reinterpret_cast<const char*>(matrixRow), _MM_HINT_T0);
+
+                // Main vectorized loop with unrolling
+                for (; j + unrollFactor * vecSize <= nCols; j += unrollFactor * vecSize) {
+                    // Prefetch ahead for both matrix and vector
+                    _mm_prefetch(reinterpret_cast<const char*>(&matrixRow[j + prefetchDistance]), _MM_HINT_T0);
+                    _mm_prefetch(reinterpret_cast<const char*>(&vecData[j + prefetchDistance]), _MM_HINT_T0);
+
+                    // Unrolled computation with separate accumulators
+                    __m256d a1 = _mm256_loadu_pd(&matrixRow[j]);
+                    __m256d v1 = _mm256_loadu_pd(&vecData[j]);
+                    sum1 = _mm256_fmadd_pd(a1, v1, sum1);  // FMA: a*v + sum
+
+                    __m256d a2 = _mm256_loadu_pd(&matrixRow[j + vecSize]);
+                    __m256d v2 = _mm256_loadu_pd(&vecData[j + vecSize]);
+                    sum2 = _mm256_fmadd_pd(a2, v2, sum2);
+
+                    __m256d a3 = _mm256_loadu_pd(&matrixRow[j + 2 * vecSize]);
+                    __m256d v3 = _mm256_loadu_pd(&vecData[j + 2 * vecSize]);
+                    sum3 = _mm256_fmadd_pd(a3, v3, sum3);
+
+                    __m256d a4 = _mm256_loadu_pd(&matrixRow[j + 3 * vecSize]);
+                    __m256d v4 = _mm256_loadu_pd(&vecData[j + 3 * vecSize]);
+                    sum4 = _mm256_fmadd_pd(a4, v4, sum4);
+                }
+
+                // Handle remaining full vectors
+                for (; j + vecSize <= nCols; j += vecSize) {
+                    __m256d a = _mm256_loadu_pd(&matrixRow[j]);
+                    __m256d v = _mm256_loadu_pd(&vecData[j]);
+                    sum1 = _mm256_fmadd_pd(a, v, sum1);
+                }
+
+                // Combine all accumulators
+                __m256d totalSum = _mm256_add_pd(_mm256_add_pd(sum1, sum2), _mm256_add_pd(sum3, sum4));
+
+                // Optimized horizontal sum using hadd
+                __m256d hsum = _mm256_hadd_pd(totalSum, totalSum);
+                __m128d sum128 = _mm_add_pd(_mm256_castpd256_pd128(hsum), _mm256_extractf128_pd(hsum, 1));
+                double result = _mm_cvtsd_f64(sum128);
+
+                // Handle remaining scalar elements
+                for (; j < nCols; ++j) {
+                    result += matrixRow[j] * vecData[j];
+                }
+
+                res[i] = result;
+            }
+        }
+
+        return res;
+    }
+
+    template <Number number, int m, int n, int nOther, int mRes = m, Container T, Container U>
+    inline Vector<number, mRes> multVecSIMD(const T& matrix, const U& vec)
+        requires(is_same_v<number, float>)
+    {
+        if (matrix.at(0).size() != vec.size())
+            throw StackError<invalid_argument>("The columns of the matrix must be equal to the size of the vector");
+
+        constexpr bool isDynamic = m == Dynamic || n == Dynamic || nOther == Dynamic;
+
+        constexpr int vSize = isDynamic ? Dynamic : m;
+        const auto& nRows = matrix.size();
+        const auto& nCols = matrix[0].size();
+        const auto& vCols = vec.size();
+        const int vecSize{8};  // AVX can handle 8 floats
+
+        Vector<number, vSize> res(nRows);
+        // For each row in the matrix
+        for (size_t i{}; i < nRows; ++i) {
+            __m256 sum = _mm256_setzero_ps();
+            size_t j{};
+            for (; j + vecSize <= nCols; j += vecSize) {
+                // Load the values into __m256d registers
+                // Load 8 matrix elements
+                __m256 avxA = _mm256_loadu_ps(&matrix[i][j]);
+
+                // Load 8 vector elements
+                __m256 avxB = _mm256_loadu_ps(&vec[j]);
+
+                // Multiply and Accumulate
+                __m256 prod = _mm256_mul_ps(avxA, avxB);
+                sum = _mm256_add_ps(sum, prod);
+            }
+
+            // Horizontal sum of the 8 values in sum register
+            __m128 sumHigh = _mm256_extractf128_ps(sum, 1);
+            __m128 sumLow = _mm256_castps256_ps128(sum);
+            __m128 sum128 = _mm_add_ps(sumHigh, sumLow);
+            __m128 sum64 = _mm_hadd_ps(sum128, sum128);
+            sum64 = _mm_hadd_ps(sum64, sum64);
+            float result = _mm_cvtss_f32(sum64);
+
+            // Handle remaining elements (if nCols is not multiple of 8)
+            for (; j < nCols; ++j) {
+                result += matrix[i][j] * vec[j];
+            }
+
+            // Place the result into the result vector
+            res[i] = result;
+        }
+
+        return res;
+    }
+
     template <Number number, int m, int n, int mOther, int nOther, Container T, Container U>
     constexpr auto multMatSIMD(const T& matrix, const U& otherMatrix)
         requires(is_same_v<number, float>)
@@ -357,6 +535,11 @@ namespace mlinalg::structures {
                 // Only vectorize if there are at least 8 columns.
                 if (nColsOther >= vecSize) {
                     size_t j = 0;
+
+                    // Prefetch next cache lines
+                    _mm_prefetch(reinterpret_cast<const char*>(&kRow[j + 64]), _MM_HINT_T0);
+                    _mm_prefetch(reinterpret_cast<const char*>(&iRow[j + 64]), _MM_HINT_T0);
+
                     // Process in chunks of 16 floats
                     for (; j + vecSize <= nColsOther; j += vecSize) {
                         __m256 avxB1 = _mm256_loadu_ps(&kRow[j]);
@@ -486,6 +669,21 @@ namespace mlinalg::structures {
         return multMatRowWise<number, m, n, mOther, nOther>(matrix, otherMatrix);
 #endif  // __AVX__
 #endif
+    }
+
+    template <Number number, int m, int n, int nOther, int mRes = m, Container T, Container U>
+    inline auto MatrixVectorMultiplication(const T& matrix, const U& vec) -> Vector<number, mRes> {
+#if defined(__AVX__) && defined(__FMA__)
+        if constexpr (is_same_v<number, double> || is_same_v<number, float>) {
+            return multVecSIMD<number, m, n, nOther, mRes>(matrix, vec);
+        } else {
+            if constexpr (n != nOther) throw StackError<invalid_argument>("Matrix and vector sizes do not match");
+            return multMatByVec<number, m, n, mRes>(matrix, vec);
+        }
+#else
+        if constexpr (n != nOther) throw StackError<invalid_argument>("Matrix and vector sizes do not match");
+        return multMatByVec<number, m, n, mRes>(matrix, vec);
+#endif  // __AVX__
     }
 
     template <Number number, int m, int n, Container T>
@@ -738,16 +936,16 @@ namespace mlinalg::structures {
         auto mutateMatrix = [&](auto& variant) {
             if constexpr (is_same_v<std::decay_t<decltype(variant)>, Matrix<number, sizeP.second, sizeP.first>>) {
                 for (size_t i{}; i < nRows; i++)
-                    for (size_t j{}; j < nCols; j++) variant.at(j).at(i) = matrix.at(i).at(j);
+                    for (size_t j{}; j < nCols; j++) variant[j][i] = matrix[i][j];
             }
         };
 
         auto mutateVector = [&](auto& variant) {
             if constexpr (is_same_v<std::decay_t<decltype(variant)>, Vector<number, vSize>>) {
                 if (nCols != 1)
-                    for (size_t i{}; i < nCols; ++i) variant.at(i) = matrix.at(0).at(i);
+                    for (size_t i{}; i < nCols; ++i) variant[i] = matrix[0][i];
                 else
-                    for (size_t i{}; i < nRows; ++i) variant.at(i) = matrix.at(i).at(0);
+                    for (size_t i{}; i < nRows; ++i) variant[i] = matrix[i][0];
             }
         };
 
