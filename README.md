@@ -30,7 +30,6 @@ numerical linear algebra algorithms. It provides a comprehensive set of tools fo
   - **Schur Decomposition**
   - **Exact & Least Squares Linear System Solving**
   - **Moore-Penrose Pseudoinverse**
-  - **Nullspace Computation**
   - **Customizable QR Methods**
   - **Robust Error Handling**
 - **Numerical Robustness:**
