@@ -104,7 +104,7 @@ endif()
 add_compile_options(-Wall -Wextra -Wfloat-equal -Werror=return-type)
 
 set(CMAKE_CXX_FLAGS_RELEASE
-    "-Os -fno-ident -fno-rtti -ffast-math -fomit-frame-pointer"
+    "-O2 -fno-ident -fno-rtti -fno-fast-math -fomit-frame-pointer"
 )
 set(CMAKE_CXX_FLAGS_PROFILE "-g -pg")
 set(CMAKE_CXX_FLAGS_ASM "-S -fverbose-asm -masm=intel")
