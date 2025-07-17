@@ -1,21 +1,10 @@
-/**
- * @file examples.cpp
- * @brief Demonstrates the functionalities and interface of the MLinalg library.
- *
- * This file provides various usage examples of the MLinalg linear algebra library.
- * It shows how to construct matrices and vectors, solve linear systems (including
- * both consistent and inconsistent cases), and perform operations such as addition,
- * multiplication, transposition, and computing row echelon forms.
- *
- */
-
 #include <format>
 #include <iostream>
+#include <print>
 
 #include "MLinalg.hpp"
-#include "operations/Solve.hpp"
 
-using std::cout;
+using namespace std;
 
 /*
  * @brief Solves and prints the solution of a linear system given as a coefficient matrix and right-hand side vector.
@@ -80,35 +69,11 @@ void printSol(const mlinalg::LinearSystem<number, m, n>& system) {
             const auto& leastSquaresSols = sols.leastSquaresSolutions();
             cout << "Least squares solutions: " << leastSquaresSols << '\n';
         }
-
-        // if (!sol.has_value()) {
-        //     cout << std::format("The system is inconsistent\n\n");
-        //     return;
-        // }
-        // for (const auto& val : sol.value()) {
-        //     if (val.has_value())
-        //         cout << val.value() << " ";
-        //     else
-        //         cout << "None ";
-        // }
-        // cout << "\n";
     } catch (const std::exception& e) {
         cout << e.what() << "\n";
     }
 }
 
-/**
- * @brief Main entry point demonstrating various MLinalg functionalities.
- *
- * This function creates several matrices, vectors, and linear systems to demonstrate:
- * - Construction of matrices and vectors.
- * - Solving linear systems (both consistent and inconsistent).
- * - Augmenting matrices with vectors.
- * - Matrix and scalar operations, such as multiplication, addition, and transposition.
- * - Calculation of row echelon forms (REF and RREF).
- *
- * @return int Exit code.
- */
 int main() {
     using namespace mlinalg;
 
@@ -284,6 +249,38 @@ int main() {
     // Demonstrate multiplication of a matrix with a vector.
     cout << std::format("\nMultiplication of a matrix with a vector:\nrefMat * e1 =\n");
     cout << refMat * e1 << "\n";
+
+    // LU Decomposition
+    auto luMat = Matrix<double, 3, 3>{{{2, -1, 0}, {-3, 1, -1}, {2, -3, 4}}};
+    auto [L, U] = LU(luMat);
+    println("\nLU Decomposition of luMat =\nL = \n{}U = \n{}", string(L), string(U));
+
+    // QR Decomposition (Gram-Schmidt)
+    auto qrMat = Matrix<double, 3, 2>{{{1, -4}, {2, 3}, {2, 2}}};
+    auto [Q_gs, R_gs] = QR<QRType::Thin>(qrMat, QRMethod::GramSchmidt);
+    println("\nQR Decomposition (Gram-Schmidt) of qrMat:\nQ =\n{}R =\n{}\n", string(Q_gs), string(R_gs));
+
+    // QR Decomposition (Householder)
+    auto [Q_hh, R_hh] = QR<QRType::Thin>(qrMat, QRMethod::Householder);
+    println("\nQR Decomposition (Householder) of qrMat:\nQ =\n{}R =\n{}\n", string(Q_hh), string(R_hh));
+
+    // Singular Value Decomposition (SVD)
+    auto svdMat = Matrix<double, 3, 2>{{{1, 1}, {1, 1}, {1, -1}}};
+    auto [U_svd, Sigma, V_svd] = svd(svdMat);
+    println("\nSVD of svdMat:\nU =\n{}Sigma =\n{}V^T =\n{}\n", string(U_svd), string(Sigma), string(V_svd));
+
+    // --- Advanced Operations ---
+
+    // Pseudoinverse
+    auto pinvMat = Matrix<double, 2, 3>{{{1, 2, 3}, {4, 5, 6}}};
+    auto pInv = pinv(pinvMat);
+    println("\nPseudoinverse of pinvMat:\n{}\n", string(pInv));
+
+    // Eigenvalues and Eigenvectors
+    auto eigenMat = Matrix<double, 2, 2>{{{4, 1}, {2, 3}}};
+    auto [eigenvalues, eigenvectors] = eigen(eigenMat);
+    println("\nEigenvalues and Eigenvectors of eigenMat:\nEigenvalues:\n{}\nEigenvectors:\n{}", eigenvalues,
+            eigenvectors);
 
     return 0;
 }

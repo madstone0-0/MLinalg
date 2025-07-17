@@ -323,6 +323,12 @@ namespace mlinalg::structures {
             return d();
         }
 
+        template <typename F>
+        const D& apply(F f) const {
+            vectorApply(d().row, f);
+            return d();
+        }
+
         /**
          * @brief Apply a function to each element of the vector with another vector
          *
@@ -333,6 +339,13 @@ namespace mlinalg::structures {
          */
         template <typename OtherD, typename F>
         D& apply(const VectorBase<OtherD, number>& other, F f) {
+            const auto& otherRow = static_cast<const OtherD&>(other).row;
+            vectorApply<decltype(f), decltype(d().row), decltype(otherRow), true>(d().row, otherRow, f);
+            return d();
+        }
+
+        template <typename OtherD, typename F>
+        const D& apply(const VectorBase<OtherD, number>& other, F f) const {
             const auto& otherRow = static_cast<const OtherD&>(other).row;
             vectorApply<decltype(f), decltype(d().row), decltype(otherRow), true>(d().row, otherRow, f);
             return d();

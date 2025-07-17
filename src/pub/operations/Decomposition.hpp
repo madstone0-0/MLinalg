@@ -590,7 +590,7 @@ namespace mlinalg {
         if (!converged) logging::log(format("Did not converge after {} iterations", i), "schurCommon");
 
         return pair{QProd, S};
-  }
+    }
 
     /**
      * @brief Compute the Schur decomposition of a square matrix A.
@@ -643,6 +643,11 @@ namespace mlinalg {
     auto eigenQR(const Matrix<number, n, n>& A, bool checkSingular = true, QRMethod method = QRMethod::Householder,
                  size_t iters = 10'000) {
         return eigenQR<QRType::Thin>(A, checkSingular, method, iters);
+    }
+
+    template <Number number, int n>
+    auto eigen(const Matrix<number, n, n>& A) {
+        return eigenQR<QRType::Thin>(A);
     }
 
     /**

@@ -125,8 +125,29 @@ namespace mlinalg::structures {
         for (auto& row : matrix) vectorApply(row, f);
     }
 
+    template <typename F, Container T>
+    inline void matrixApply(const T& matrix, F f) {
+        for (auto& row : matrix) vectorApply(row, f);
+    }
+
     template <typename F, Container T, Container U, bool checkSizes = false>
     inline void matrixApply(T& matrix, const U& otherMatrix, F f) {
+        const auto m = matrix.size();
+        const auto n = matrix[0].size();
+        const auto otherM = otherMatrix.size();
+        const auto otherN = otherMatrix[0].size();
+        if constexpr (checkSizes) {
+            if (m != otherM || n != otherN) {
+                throw StackError<invalid_argument>("Matrices must be of the same dimensions");
+            }
+        }
+        auto i = matrix.begin();
+        auto j = otherMatrix.begin();
+        for (; i != matrix.end(); ++i, ++j) vectorApply(*i, *j, f);
+    }
+
+    template <typename F, Container T, Container U, bool checkSizes = false>
+    inline void matrixApply(const T& matrix, const U& otherMatrix, F f) {
         const auto m = matrix.size();
         const auto n = matrix[0].size();
         const auto otherM = otherMatrix.size();

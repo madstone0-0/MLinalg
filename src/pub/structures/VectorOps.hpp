@@ -55,8 +55,23 @@ namespace mlinalg::structures {
         for (auto& x : row) f(x);
     }
 
+    template <typename F, Container T>
+    inline void vectorApply(const T& row, F f) {
+        for (auto& x : row) f(x);
+    }
+
     template <typename F, Container T, Container U, bool checkSizes = false>
     inline void vectorApply(T& row, const U& otherRow, F f) {
+        const auto n = row.size();
+        const auto otherN = otherRow.size();
+        if constexpr (checkSizes) assert(n == otherN && "Vectors must be of the same size for vectorApply");
+        auto i = row.begin();
+        auto j = otherRow.begin();
+        for (; i != row.end(); ++i, ++j) f(*i, *j);
+    }
+
+    template <typename F, Container T, Container U, bool checkSizes = false>
+    inline void vectorApply(const T& row, const U& otherRow, F f) {
         const auto n = row.size();
         const auto otherN = otherRow.size();
         if constexpr (checkSizes) assert(n == otherN && "Vectors must be of the same size for vectorApply");

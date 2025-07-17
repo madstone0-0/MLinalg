@@ -428,6 +428,12 @@ namespace mlinalg::structures {
             return d();
         }
 
+        template <typename F>
+        D& apply(F f) const {
+            matrixApply(d().matrix, f);
+            return d();
+        }
+
         /**
          * @brief Apply a function to each element of the matrix with another matrix
          *
@@ -438,6 +444,13 @@ namespace mlinalg::structures {
          */
         template <typename OtherD, typename F>
         D& apply(const MatrixBase<OtherD, number>& other, F f) {
+            const auto& otherMatrix = static_cast<const OtherD&>(other).matrix;
+            matrixApply<decltype(f), decltype(d().matrix), decltype(otherMatrix), true>(d().matrix, otherMatrix, f);
+            return d();
+        }
+
+        template <typename OtherD, typename F>
+        D& apply(const MatrixBase<OtherD, number>& other, F f) const {
             const auto& otherMatrix = static_cast<const OtherD&>(other).matrix;
             matrixApply<decltype(f), decltype(d().matrix), decltype(otherMatrix), true>(d().matrix, otherMatrix, f);
             return d();

@@ -28,8 +28,8 @@ if(HPP)
         mlinalg
         INTERFACE
             FILE_SET HEADERS
-            BASE_DIRS "${CMAKE_SOURCE_DIR}/src/pub"
-            FILES ${HPP}
+                BASE_DIRS "${CMAKE_SOURCE_DIR}/src/pub"
+                FILES ${HPP}
     )
 endif()
 

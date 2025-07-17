@@ -196,7 +196,7 @@ namespace mlinalg {
      * @return The random vector of the given size.
      */
     template <Number number, int n>
-    Vector<number, n> vectorRandom(const int min = 0, const int max = 100, const Seed& seed = std::nullopt) {
+    Vector<number, n> vectorRandom(const double min = 0, const double max = 100, const Seed& seed = std::nullopt) {
         Vector<number, n> vec{};
         vec.apply([&](auto& x) { x = helpers::rng<number>(min, max, seed); });
         return vec;
@@ -213,7 +213,7 @@ namespace mlinalg {
      * @return The random vector of the given size.
      */
     template <Number number, int n>
-    Vector<number, n> vectorRandom(const int size, const int min = 0, const int max = 100,
+    Vector<number, n> vectorRandom(const int size, const double min = 0, const double max = 100,
                                    const Seed& seed = std::nullopt) {
         if constexpr (n == Dynamic) {
             Vector<number, n> vec(size);

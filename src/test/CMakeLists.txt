@@ -37,8 +37,5 @@ if(
     target_link_libraries(dummy PRIVATE mlinalg::mlinalg)
 endif()
 
-add_executable(examples examples.cpp)
-target_link_libraries(examples PRIVATE mlinalg::mlinalg)
-
 add_executable(simple simple.cpp)
 target_link_libraries(simple PRIVATE mlinalg::mlinalg)
