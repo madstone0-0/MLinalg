@@ -8,7 +8,7 @@
 #pragma once
 #include "Aliases.hpp"
 #include "MatrixBase.hpp"
-#include "structures/MatrixOps.hpp"
+#include "MatrixOps.hpp"
 
 namespace mlinalg::structures {
 
