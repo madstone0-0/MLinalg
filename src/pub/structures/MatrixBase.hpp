@@ -429,7 +429,7 @@ namespace mlinalg::structures {
         }
 
         template <typename F>
-        D& apply(F f) const {
+        const D& apply(F f) const {
             matrixApply(d().matrix, f);
             return d();
         }
@@ -439,7 +439,7 @@ namespace mlinalg::structures {
          *
          * @tparam F Function type that takes two numbers and returns void
          * @param other The other matrix to apply the function with
-         * @param f Function to apply to each element of the matrix
+         * @param f Function to apply to each element of the matrices
          * @return A reference to the same matrix
          */
         template <typename OtherD, typename F>
@@ -450,7 +450,48 @@ namespace mlinalg::structures {
         }
 
         template <typename OtherD, typename F>
-        D& apply(const MatrixBase<OtherD, number>& other, F f) const {
+        const D& apply(const MatrixBase<OtherD, number>& other, F f) const {
+            const auto& otherMatrix = static_cast<const OtherD&>(other).matrix;
+            matrixApply<decltype(f), decltype(d().matrix), decltype(otherMatrix), true>(d().matrix, otherMatrix, f);
+            return d();
+        }
+
+        /**
+         * @brief Apply a function to each row of the matrix
+         *
+         * @tparam F Function type that takes a row and returns void
+         * @param f Function to apply to each row of the matrix
+         * @return A reference to the same matrix
+         */
+        template <typename F>
+        D& applyRow(F f) {
+            matrixRowApply(d().matrix, f);
+            return d();
+        }
+
+        template <typename F>
+        const D& applyRow(F f) const {
+            matrixRowApply(d().matrix, f);
+            return d();
+        }
+
+        /**
+         * @brief Apply a function to each row of the matrix with each row of another matrix
+         *
+         * @tparam F Function type that takes rows numbers and returns void
+         * @param other The other matrix to apply the function with
+         * @param f Function to apply to each row of the matrices
+         * @return A reference to the same matrix
+         */
+        template <typename OtherD, typename F>
+        D& applyRow(const MatrixBase<OtherD, number>& other, F f) {
+            const auto& otherMatrix = static_cast<const OtherD&>(other).matrix;
+            matrixApply<decltype(f), decltype(d().matrix), decltype(otherMatrix), true>(d().matrix, otherMatrix, f);
+            return d();
+        }
+
+        template <typename OtherD, typename F>
+        const D& applyRow(const MatrixBase<OtherD, number>& other, F f) const {
             const auto& otherMatrix = static_cast<const OtherD&>(other).matrix;
             matrixApply<decltype(f), decltype(d().matrix), decltype(otherMatrix), true>(d().matrix, otherMatrix, f);
             return d();
