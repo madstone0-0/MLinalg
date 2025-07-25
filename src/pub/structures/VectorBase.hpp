@@ -363,7 +363,10 @@ namespace mlinalg::structures {
          *
          * @return A reference to the same vector
          */
-        D& normalizeI() { return vectorNormalizeI(d()); }
+        D& normalizeI() {
+            vectorNormalizeI(d());
+            return d();
+        }
 
         // ======================
         // Norms and Distances
