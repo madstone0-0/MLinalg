@@ -207,12 +207,14 @@ namespace mlinalg::structures {
     template <Number number, int n>
     inline Vector<number, n> vectorNormalize(const Vector<number, n>& v) {
         auto len = v.length();
+        if (fuzzyCompare(len, number(0))) return v;
         return v / len;
     }
 
     template <Number number, int n>
     inline void vectorNormalizeI(Vector<number, n>& v) {
         auto len = v.length();
+        if (fuzzyCompare(len, number(0))) return;
         v /= len;
     }
 
