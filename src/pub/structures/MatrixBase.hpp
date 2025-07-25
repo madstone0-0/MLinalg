@@ -48,7 +48,7 @@ namespace mlinalg::structures {
        protected:
         // CRTP helpers
         D& d() { return static_cast<D&>(*this); }
-        const D& d() const { return static_cast<const D&>(*this); }
+        constexpr const D& d() const { return static_cast<const D&>(*this); }
 
         // Protected constructor - only derived classes can construct
         MatrixBase() = default;
@@ -134,7 +134,7 @@ namespace mlinalg::structures {
          * @param j The index of the column
          * @return The element at the ith row and jth column
          */
-        number& operator()(size_t i, size_t j) const { return d().matrix[i][j]; }
+        constexpr number& operator()(size_t i, size_t j) const { return d().matrix[i][j]; }
 
         // ============
         // Iteration

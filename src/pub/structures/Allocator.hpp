@@ -27,14 +27,14 @@ namespace mlinalg::allocator {
         template <typename U>
         BootlegAllocator(const BootlegAllocator<U>&) noexcept {}
 
-        T* allocate(size_type n) {
+        constexpr T* allocate(size_type n) {
             if (n == 0) return nullptr;
 
             // Aligned memory allocation for T
             return static_cast<T*>(std::aligned_alloc(alignof(T), n * sizeof(T)));
         }
 
-        void deallocate(T* ptr, size_type n) noexcept {
+        constexpr void deallocate(T* ptr, size_type n) noexcept {
             if (!ptr) return;
 
             std::free(ptr);

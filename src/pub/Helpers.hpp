@@ -186,6 +186,12 @@ namespace mlinalg::structures::helpers {
         return dyna;
     }
 
+    template <Number num, int n>
+    Vector<num, Dynamic> toDynamic(const Vector<num, n> vector) {
+        const auto& dyna = Vector<num, Dynamic>{vector};
+        return dyna;
+    }
+
     template <Number to, Number from, int m, int n>
     Matrix<to, m, n> cast(const Matrix<from, m, n>& A) {
         if constexpr (!std::is_convertible_v<from, to>) {

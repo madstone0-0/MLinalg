@@ -2,6 +2,7 @@
 #include <format>
 #include <utility>
 
+#include "../Helpers.hpp"
 #include "../Logging.hpp"
 #include "../Numeric.hpp"
 #include "Aliases.hpp"
@@ -120,28 +121,37 @@ namespace mlinalg {
     template <QRType type, Number number, int m, int n>
     using QRPair = pair<QType<type, number, m, n>, RType<type, number, m, n>>;
 
+    enum class QRMethod : uint8_t {
+        GramSchmidt,
+        Householder,
+    };
+
+    template <QRType type, Number number, int m, int n>
+    QRPair<type, number, m, n> QR(const Matrix<number, m, n>& A, QRMethod method = QRMethod::GramSchmidt);
+
     /**
      * @brief Extend a set of orthonormal vectors to form a complete orthonormal basis.
      *
      * Given k orthonormal vectors in R^m (where k < m), this function finds
      * additional (m-k) orthonormal vectors to complete the basis for R^m.
      *
-     * @param orthonormalVectors The existing orthonormal vectors (k vectors in R^m)
-     * @param dimension The target dimension m
+     * @param qs The existing orthonormal vectors (k vectors in R^m)
+     * @param dim The target dimension m
      * @return Complete set of m orthonormal vectors
      */
     template <Number number, int m>
     auto extendToCompleteBasis(const vector<Vector<number, m>>& qs, size_t dim) {
-        vector<Vector<number, m>> basis = qs;
+        auto basis = qs;
+        basis.reserve(dim);
         auto n = qs.size();
 
         if (n == 0)
             throw StackError<std::invalid_argument>{"At least one vector is required to extend to a complete basis"};
 
-        for (size_t i = n; i < dim; ++i) {
-            // Standard basis vector e_i
-            Vector<number, m> candidate(dim);
+        Vector<number, m> candidate(dim);
+        Vector<number, m> orth(dim);
 
+        for (size_t i{n}; i < dim; ++i) {
             // Try each standard basis vector until we find one that's not
             // in the span of existing vectors
             bool found = false;
@@ -151,7 +161,7 @@ namespace mlinalg {
                 candidate[basisIdx] = number(1);
 
                 // Orthogonalize against all existing vectors using Gram-Schmidt
-                auto orth = candidate;
+                orth = candidate;
                 for (const auto& v : basis) {
                     number proj = orth.dot(v);
                     orth -= proj * v;
@@ -161,7 +171,7 @@ namespace mlinalg {
                 number norm = orth.length();
                 if (!fuzzyCompare(norm, number(0))) {
                     // Normalize and add to basis
-                    basis.emplace_back(orth / norm);
+                    basis.emplace_back(std::move(orth.normalizeI()));
                     found = true;
                 }
             }
@@ -173,6 +183,28 @@ namespace mlinalg {
         }
 
         return basis;
+    }
+
+    template <Number number, int m>
+    auto extendToCompleteBasis(const vector<Vector<number, m>>& qs) {
+        if (qs.size() == 0)
+            throw StackError<std::invalid_argument>{"At least one vector is required to extend to a complete basis"};
+
+        if (qs.size() >= qs[0].size()) return qs;
+        auto vSize = qs[0].size();
+        auto needed = qs[0].size() - qs.size();
+        auto as = qs;
+        as.reserve(needed);
+        for (size_t i{}; i < needed; ++i) as.emplace_back(vectorRandom<number, m>(vSize, number(0), number(1)));
+        const auto& A = fromColVectorSet<number, m, m>(as);
+
+        auto [Q, _] = QR<QRType::Thin>(A, QRMethod::Householder);
+        auto QCols = Q.colToVectorSet();
+        decltype(as) res;
+        res.reserve(vSize);
+        for (const auto& x : QCols) res.emplace_back(x);
+
+        return res;
     }
 
     /**
@@ -520,11 +552,6 @@ namespace mlinalg {
         }
     }
 
-    enum class QRMethod : uint8_t {
-        GramSchmidt,
-        Householder,
-    };
-
     /**
      * @brief Computes the QR decomposition of a matrix A using the specified method.
      *
@@ -533,7 +560,7 @@ namespace mlinalg {
      * @return A pair containing the orthogonal matrix Q and the upper triangular matrix R.
      */
     template <QRType type, Number number, int m, int n>
-    QRPair<type, number, m, n> QR(const Matrix<number, m, n>& A, QRMethod method = QRMethod::GramSchmidt) {
+    QRPair<type, number, m, n> QR(const Matrix<number, m, n>& A, QRMethod method) {
         switch (method) {
             case QRMethod::GramSchmidt:
                 return gsQR<type>(A);
@@ -750,18 +777,20 @@ namespace mlinalg {
                     foundOrthCols++;
                 }
             }
-            vector<Vector<number, m>> qs;
+            auto qs = us;
             // If the number of orthonormal columns found is less than the maximum dimension,
             // for example as a result of a zero singular value, generate the remaning columns
             // to complete the orthonormal basis.
+            // if (foundOrthCols < nR) {
+            //     qs = extendToCompleteBasis<number, m>(us, nR);
+            // }
             if (foundOrthCols < nR) {
-                qs = extendToCompleteBasis(us, nR);
-            } else
-                qs = us;
+                qs = extendToCompleteBasis(qs, nR);
+            }
 
             U = helpers::fromColVectorSet<number, m, m>(qs);
         } catch (const std::exception& e) {
-            logging::E(format("Error constructiong U -> {}", e.what()), "svdEigen");
+            logging::E(format("Error constructing U -> {}", e.what()), "svdEigen");
             throw e;
         }
 
