@@ -1,6 +1,7 @@
 #include <print>
 
 #include "MLinalg.hpp"
+#include "Numeric.hpp"
 #include "operations/Builders.hpp"
 #include "structures/Aliases.hpp"
 
@@ -10,46 +11,43 @@ using namespace mlinalg::structures;
 
 // Helper functions not found in MLinalg
 namespace {
-    inline auto mean(const MD<double>& X, bool axis = false) {
+    double mean(const VD<double>& v) {
+        double res{};
+        v.apply([&](auto x) { res += x; });
+        return res / (double)v.size();
+    }
+
+    VD<double> mean(const MD<double>& X, bool axis = true) {
         auto [nR, nC] = X.shape();
-        if (!axis) {
-            VD<double> res(nR);
-            for (size_t i{}; i < nR; i++) {
-                const auto& row{X[i]};
-                double sum{};
-                row.apply([&sum](const auto& x) { sum += x; });
-                res[i] = sum / (double)nC;
-            }
-            return res;
-        } else {
+        if (axis) {
             VD<double> res(nC);
             auto XasColSet = X.colToVectorSet();
             for (size_t i{}; i < nC; i++) {
                 const auto& col{XasColSet[i]};
-                double sum = {};
-                col.apply([&sum](const auto& x) { sum += x; });
-                res[i] = sum / (double)nR;
+                res[i] = mean(col);
             }
+            return res;
+        } else {
+            VD<double> res(nR);
+            X.applyRow([&](const auto& row) { res.pushBack(mean(row)); });
             return res;
         }
     }
 
-    inline auto std(const MD<double>& X, bool axis = false) {
+    double var(const VD<double>& v) {
+        double res{};
+        const auto& m = mean(v);
+        v.apply([&](const auto& x) {
+            auto val = x - m;
+            res += val * val;
+        });
+        return res / ((double)v.size() - 1);
+    }
+
+    VD<double> var(const MD<double>& X, bool axis = true) {
         auto [nR, nC] = X.shape();
         auto m = mean(X, axis);
-        if (!axis) {
-            VD<double> res(nR);
-            for (size_t i{}; i < nR; i++) {
-                const auto& row{X[i]};
-                auto ones{vectorOnes<double, Dynamic>(nC)};
-                auto xMean = row - ones * m[i];
-                xMean.apply([](auto& x) { x *= x; });
-                double sum{};
-                xMean.apply([&sum](const auto& x) { sum += x; });
-                res[i] = sqrt(sum / (double)(nC - 1));
-            }
-            return res;
-        } else {
+        if (axis) {
             VD<double> res(nC);
             auto XasColSet = X.colToVectorSet();
             for (size_t i{}; i < nC; i++) {
@@ -59,22 +57,48 @@ namespace {
                 xMean.apply([](auto& x) { x *= x; });
                 double sum{};
                 xMean.apply([&sum](const auto& x) { sum += x; });
-                res[i] = sqrt(sum / (double)(nR - 1));
+                res[i] = sum / (double)(nR);
             }
+            return res;
+        } else {
+            VD<double> res(nR);
+            size_t i{};
+            X.applyRow([&](auto row) {
+                auto ones{vectorOnes<double, Dynamic>(nC)};
+                auto xMean = row - ones * m[i];
+                xMean.apply([](auto& x) { x *= x; });
+                double sum{};
+                xMean.apply([&sum](const auto& x) { sum += x; });
+                res.pushBack(sum / (double)(nC));
+                i++;
+            });
             return res;
         }
     }
 
-    auto normalize(const MD<double>& X) {
+    VD<double> std(const MD<double>& X, bool axis = true) {
+        auto std = var(X, axis);
+        std.apply([&](auto& x) { x = sqrt(x); });
+        return std;
+    }
+
+    MD<double> normalize(const MD<double>& X, bool axis = true) {
         auto [nR, nC] = X.shape();
         auto res{X};
-        auto m = mean(res);
-        auto s = std(res);
+        auto m = mean(res, axis);
+        auto s = std(res, axis);
 
-        for (size_t i{}; i < res.numRows(); i++)
-            for (size_t j{}; j < res.numCols(); j++) {
-                res(i, j) = (res(i, j) - m[i]) / s[i];
-            }
+        if (axis) {
+            for (size_t j{}; j < nC; ++j)
+                for (size_t i{}; i < nR; ++i) {
+                    res(i, j) = (res(i, j) - m[j]) / (fuzzyCompare(s[j], 0.0) ? 1e-15 : s[j]);
+                }
+        } else {
+            for (size_t i{}; i < nR; ++i)
+                for (size_t j{}; j < nC; ++j) {
+                    res(i, j) = (res(i, j) - m[i]) / (fuzzyCompare(s[i], 0.0) ? 1e-15 : s[j]);
+                }
+        }
 
         return res;
     }
@@ -100,7 +124,7 @@ namespace {
     auto calculateMSE(const VD<double>& y_true, const VD<double>& y_pred) {
         auto diff = y_true - y_pred;
         double mse = diff.dot(diff);
-        return mse / y_true.size();
+        return mse / (double)y_true.size();
     }
 }  // namespace
 
@@ -230,7 +254,7 @@ int main() {
 
     // Training parameters
     size_t iterations{100'000};
-    double learningRate{0.05};
+    double learningRate{0.1};
 
     println("Training Linear Regression Model...");
     println("Learning rate: {}, Iterations: {}", learningRate, iterations);
