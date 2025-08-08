@@ -17,9 +17,9 @@
 #include "Aliases.hpp"
 #include "Matrix.hpp"
 #include "VectorOps.hpp"
+#include "VectorView.hpp"
 
-using std::vector, std::array, std::optional, std::unique_ptr, std::shared_ptr, mlinalg::structures::helpers::unwrap,
-    std::optional;
+using std::vector, std::array, std::optional, std::unique_ptr, std::shared_ptr, std::optional;
 
 namespace mlinalg::structures {
 
@@ -46,6 +46,7 @@ namespace mlinalg::structures {
         using ref = number&;
         using const_ref = const number&;
         using iterator = VectorRowType<number>::iterator;
+        using Base = VectorBase<D, number>;
 
         // ======================
         // Indexing and Accessors
@@ -173,8 +174,8 @@ namespace mlinalg::structures {
          * @return the vector resulting from the subtraction
          */
         template <typename OtherD>
-        D operator-(const VectorBase<OtherD, number>& other) const {
-            auto res = d();
+        friend auto operator-(const Base& vec, const VectorBase<OtherD, number>& other) {
+            auto res = vec.d();
             res -= other;
             return static_cast<D&>(res);
         }
@@ -184,7 +185,7 @@ namespace mlinalg::structures {
          *
          * @return the negeated vector
          */
-        D& operator-() {
+        auto& operator-() {
             vectorNeg<number>(d().row);
             return d();
         }
@@ -208,8 +209,8 @@ namespace mlinalg::structures {
          * @return the vector resulting from the addition
          */
         template <typename OtherD>
-        D operator+(const VectorBase<OtherD, number>& other) const {
-            auto res = d();
+        friend auto operator+(const Base& vec, const VectorBase<OtherD, number>& other) {
+            auto res = vec.d();
             res += other;
             return static_cast<D&>(res);
         }
@@ -232,8 +233,8 @@ namespace mlinalg::structures {
          * @param scalar A scalar of the same type as the vector
          * @return  The vector resulting from the division
          */
-        D operator/(const number& scalar) const {
-            auto res = d();
+        friend auto operator/(const Base& vec, const number& scalar) {
+            auto res = vec.d();
             res /= scalar;
             return static_cast<D&>(res);
         }
@@ -266,8 +267,8 @@ namespace mlinalg::structures {
          * @param vec Another vector of the same size as the vector
          * @return  A 1x1 vector containing the dot product of the two vectors
          */
-        template <typename OtherD, Number num>
-        friend auto operator*(const VectorBase<D, num>& vec, const VectorBase<OtherD, num>& other) {
+        template <typename OtherD>
+        friend auto operator*(const VectorBase<D, number>& vec, const VectorBase<OtherD, number>& other) {
             return vectorVectorMult(vec.d(), static_cast<const OtherD&>(other));
         }
 
@@ -277,8 +278,7 @@ namespace mlinalg::structures {
          * @param scalar A scalar of the same type as the vector
          * @return the vector resulting from the multiplication
          */
-        template <Number num>
-        friend D operator*(const VectorBase<D, num>& vec, const num& scalar) {
+        friend D operator*(const VectorBase<D, number>& vec, const number& scalar) {
             auto res = vec.d();
             res *= scalar;
             return static_cast<const D&>(res);
@@ -443,6 +443,12 @@ namespace mlinalg::structures {
         // ======================
         // Miscellaneous Operations
         // ======================
+
+        template <long startT = 0, long endT = -1, long strideT = 1, int newSize = 0>
+        auto view(long start = 0, long end = -1, long stride = 1) {
+            return View<number, D::vn>(d().row, start, end, stride);
+        }
+
         /**
          * @brief Clear the vector, i.e. set all elements to zero
          */

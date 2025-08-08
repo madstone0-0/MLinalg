@@ -6,6 +6,8 @@
 // FIX: Fix matrix-vector and vector-matrix multiplication order
 
 #pragma once
+#include <functional>
+
 #include "Aliases.hpp"
 #include "MatrixBase.hpp"
 #include "MatrixOps.hpp"
@@ -22,6 +24,10 @@ namespace mlinalg::structures {
     class Matrix : public MatrixBase<Matrix<number, m, n>, number> {
        public:
         using Base = Matrix<number, m, n>;
+        using Backing = TDArray<number, m, n>;
+        using iterator = Backing::iterator;
+        using value_type = Backing::value_type;
+        using size_type = Backing::size_type;
 
         static constexpr int rows = m;
         static constexpr int cols = n;
@@ -49,7 +55,9 @@ namespace mlinalg::structures {
         constexpr Matrix(const std::initializer_list<std::initializer_list<number>>& rows) {
             static_assert(m > 0, "Number of rows cannot be 0");
             static_assert(n > 0, "Number of colmns cannot be 0");
-            for (int i{}; i < m; i++) matrix.at(i) = Row<number, n>{*(rows.begin() + i)};
+            for (int i{}; i < m; i++) {
+                matrix.at(i) = Row<number, n>{*(rows.begin() + i)};
+            }
         }
 
         /**
@@ -153,6 +161,13 @@ namespace mlinalg::structures {
         // Miscellaneous Operations
         // ========================
 
+        template <OffsetPair rowOffset = {0, m}, OffsetPair colOffset = {0, -1}, StridePair stride = {1, 1},
+                  int nM = (rowOffset.end - rowOffset.start + stride.row - 1) / stride.row,
+                  int nN = (colOffset.end - colOffset.start + stride.col - 1) / stride.col>
+        auto view(OffsetPair /*rowOffsetArg*/ = {}, OffsetPair /*colOffsetArg*/ = {}, StridePair /*strideArg*/ = {}) {
+            return View<number, m, n, nM, nN, colOffset, stride.col>(matrix, rowOffset, colOffset, stride);
+        }
+
         /**
          * @brief Number of rows in the matrix
          *
@@ -160,6 +175,7 @@ namespace mlinalg::structures {
          */
         [[nodiscard]] constexpr size_t numRows() const { return static_cast<size_t>(m); }
 
+        [[nodiscard]] constexpr size_t size() const { return static_cast<size_t>(m); }
         /**
          * @brief Number of columns in the matrix
          *
@@ -206,7 +222,9 @@ namespace mlinalg::structures {
         /**
          * @brief Backing array for the matrix
          */
-        TDArray<number, m, n> matrix{};
+        TDArray<number, m, n> matrix{m};
+
+        Columns<number, m, n, Base> columns{*this};
     };
 
 }  // namespace mlinalg::structures
@@ -222,6 +240,10 @@ namespace mlinalg::structures {
     class Matrix<number, Dynamic, Dynamic> : public MatrixBase<Matrix<number, Dynamic, Dynamic>, number> {
        public:
         using Base = Matrix<number, Dynamic, Dynamic>;
+        using Backing = TDArrayDynamic<number>;
+        using iterator = Backing::iterator;
+        using value_type = Backing::value_type;
+        using size_type = Backing::size_type;
 
         static constexpr int rows = Dynamic;
         static constexpr int cols = Dynamic;
@@ -387,6 +409,8 @@ namespace mlinalg::structures {
          */
         [[nodiscard]] size_t numRows() const { return m; }
 
+        [[nodiscard]] size_t size() const { return m; }
+
         /**
          * @brief Number of columns in the matrix
          *
@@ -468,6 +492,8 @@ namespace mlinalg::structures {
         size_t m;
         size_t n;
         TDArrayDynamic<number> matrix;
+
+        Columns<number, Dynamic, Dynamic, Base> columns{*this};
     };
 
 }  // namespace mlinalg::structures

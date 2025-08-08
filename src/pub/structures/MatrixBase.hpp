@@ -38,7 +38,7 @@ namespace mlinalg::structures {
     };
 
     /**
-     * @brief Matrix class for representing MxN matrices
+     * @brief Base CTRP class for Matrix operations
      *
      * @param m Number of rows
      * @param n Number of columns
@@ -135,6 +135,10 @@ namespace mlinalg::structures {
          * @return The element at the ith row and jth column
          */
         constexpr number& operator()(size_t i, size_t j) const { return d().matrix[i][j]; }
+
+        constexpr auto col(size_t j) const { return d().columns[j]; }
+
+        constexpr auto col(size_t j) { return d().columns[j]; }
 
         // ============
         // Iteration
@@ -574,9 +578,11 @@ namespace mlinalg::structures {
          * @param colStride The stride between columns
          * @return A MatrixView object of the matrix
          */
-        template <size_t i, size_t j>
-        auto view(size_t rowOffset = 0, size_t colOffset = 0, size_t rowStride = 1, size_t colStride = 1) {
-            return View<number, D::rows, D::cols, i, j>(d().matrix, rowOffset, colOffset, rowStride, colStride);
+        template <OffsetPair rowOffsetT = {}, OffsetPair colOffsetT = {}, StridePair strideT = {1, 1}, int nM = 0,
+                  int nN = 0>
+        auto view(OffsetPair rowOffset = {.start = 0, .end = -1}, OffsetPair colOffset = {.start = 0, .end = -1},
+                  StridePair stride = {.row = 1, .col = 1}) {
+            return View<number, D::rows, D::cols>(d().matrix, rowOffset, colOffset, stride);
         }
 
         /**

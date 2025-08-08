@@ -7,8 +7,7 @@
 
 #include "VectorBase.hpp"
 
-using std::vector, std::array, std::optional, std::unique_ptr, std::shared_ptr, mlinalg::structures::helpers::unwrap,
-    std::optional;
+using std::vector, std::array, std::optional, std::unique_ptr, std::shared_ptr, std::optional;
 
 namespace mlinalg::structures {
 
@@ -21,6 +20,7 @@ namespace mlinalg::structures {
     class Vector : public VectorBase<Vector<number, n>, number> {
        public:
         using Base = VectorBase<Vector<number, n>, number>;
+        static constexpr auto vn = n;
 
         // ===========================
         // Constructors and Destructor
@@ -149,6 +149,11 @@ namespace mlinalg::structures {
         // Miscellaneous Operations
         // ======================
 
+        template <long start = 0, long end = n, long stride = 1, int newSize = (end - start + stride - 1) / stride>
+        auto view(long /*offsetArg*/ = 0, long /*endArg*/ = 0, long /*strideArg*/ = 1) {
+            return View<number, n, newSize>(row, start, end, stride);
+        }
+
         /**
          * @brief Size of the vector, i.e the number of elements in the vector
          *
@@ -199,6 +204,7 @@ namespace mlinalg::structures {
     class Vector<number, Dynamic> : public VectorBase<Vector<number, Dynamic>, number> {
        public:
         using Base = VectorBase<Vector<number, Dynamic>, number>;
+        static constexpr auto vn = Dynamic;
 
         // ===========================
         // Constructors and Destructor
