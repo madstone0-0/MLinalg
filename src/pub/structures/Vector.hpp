@@ -109,9 +109,9 @@ namespace mlinalg::structures {
         template <int m>
         Vector<number, n> operator*(const Matrix<number, m, n>& mat) const {
             Vector<number, n> res;
-            auto asCols{std::move(mat.colToVectorSet())};
+            auto asCols{mat.colToVectorSet()};
             for (int i{}; i < n; i++) {
-                res.at(i) = *this * asCols.at(i);
+                res.at(i) = *this * asCols[i];  // FIX: Fix vectorVectorMult to take VectorBase instead of Vector
             }
             return res;
         }
@@ -127,9 +127,8 @@ namespace mlinalg::structures {
             requires(n != 1)
         {
             Matrix<number, n, n> res;
-            auto asCols{std::move(mat.colToVectorSet())};
             for (int i{}; i < n; i++) {
-                res.at(i) = *this * asCols.at(i).at(0);
+                res.at(i) = *this * mat.col(i).at(0);
             }
             return res;
         }
@@ -159,7 +158,7 @@ namespace mlinalg::structures {
          *
          * @return the size of the vector
          */
-        [[nodiscard]] size_t size() const { return static_cast<size_t>(n); }
+        size_t size() const override { return static_cast<size_t>(n); }
 
        private:
         template <Number num, int mM, int nN>
@@ -337,11 +336,16 @@ namespace mlinalg::structures {
          *
          * @return the size of the vector
          */
-        [[nodiscard]] size_t size() const { return n; }
+        [[nodiscard]] size_t size() const override { return n; }
 
-        void pushBack(const number& v) {
-            row.push_back(v);
+        void pushBack(const number& v) { row.push_back(v); }
+
+        template <Number... Numbers>
+            requires(sizeof...(Numbers) > 0 && (std::is_convertible_v<Numbers, number> && ...))
+        auto emplaceBack(Numbers&&... args) {
+            auto res = row.emplace_back(std::forward<Numbers>(args)...);
             n = row.size();
+            return res;
         }
 
         void resize(size_t newSize) {

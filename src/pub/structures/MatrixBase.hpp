@@ -501,6 +501,8 @@ namespace mlinalg::structures {
             return d();
         }
 
+        // TODO:: Add applyCol functions
+
         // ======================
         // Norms and Determinant
         // ======================
@@ -553,7 +555,7 @@ namespace mlinalg::structures {
          *
          * @return A vector of column vectors
          */
-        auto colToVectorSet() const { return matrixColsToVectorSet<number, D::rows, D::cols>(d().matrix); }
+        auto colToVectorSet() const { return matrixColsToVectorSet<number, D::rows, D::cols>(d()); }
 
         /**
          * @brief Convert the rows of the matrix to a vector of row vectors

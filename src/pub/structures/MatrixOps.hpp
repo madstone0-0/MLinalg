@@ -98,6 +98,16 @@ namespace mlinalg::structures {
     }
 
     template <Number number, int m, int n, Container T>
+    inline auto matrixColsToVectorSet(Matrix<number, m, n> matrix) {
+        vector<Vector<number, m>> res;
+        res.reserve(n);
+        for (size_t i{}; i < n; i++) {
+            res.emplace_back(std::move(matrix.col(i).toVector()));
+        }
+        return res;
+    }
+
+    template <Number number, int m, int n, Container T>
     inline vector<Vector<number, n>> matrixRowsToVectorSet(const T& matrix) {
         constexpr int vSize = (m == Dynamic || n == Dynamic) ? Dynamic : n;
         const auto& nRows = matrix.size();

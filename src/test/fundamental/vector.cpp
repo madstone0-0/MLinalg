@@ -245,7 +245,7 @@ TEST_CASE("Vector", "[vector]") {
             SECTION("Application") {
                 SECTION("Unary apply (in‑place transformation)") {
                     Vector<double, 3> v{1.0, 2.0, 3.0};
-                    Vector<double, 3> &ref = v.apply([](double &x) { x *= 2; });
+                    auto &ref = v.apply([](double &x) { x *= 2; });
                     REQUIRE(&ref == &v);
                     REQUIRE(fuzzyCompare(v[0], 2.0));
                     REQUIRE(fuzzyCompare(v[1], 4.0));

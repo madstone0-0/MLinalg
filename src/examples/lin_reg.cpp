@@ -21,15 +21,11 @@ namespace {
         auto [nR, nC] = X.shape();
         if (axis) {
             VD<double> res(nC);
-            auto XasColSet = X.colToVectorSet();
-            for (size_t i{}; i < nC; i++) {
-                const auto& col{XasColSet[i]};
-                res[i] = mean(col);
-            }
+            for (size_t i{}; i < nC; ++i) res.emplaceBack(mean(X.col(i).toVector()));
             return res;
         } else {
             VD<double> res(nR);
-            X.applyRow([&](const auto& row) { res.pushBack(mean(row)); });
+            X.applyRow([&](const auto& row) { res.emplaceBack(mean(row)); });
             return res;
         }
     }
@@ -49,11 +45,9 @@ namespace {
         auto m = mean(X, axis);
         if (axis) {
             VD<double> res(nC);
-            auto XasColSet = X.colToVectorSet();
             for (size_t i{}; i < nC; i++) {
-                const auto& col{XasColSet[i]};
                 auto ones{vectorOnes<double, Dynamic>(nR)};
-                auto xMean = col - ones * m[i];
+                auto xMean = X.col(i) - ones * m[i];
                 xMean.apply([](auto& x) { x *= x; });
                 double sum{};
                 xMean.apply([&sum](const auto& x) { sum += x; });
@@ -69,7 +63,7 @@ namespace {
                 xMean.apply([](auto& x) { x *= x; });
                 double sum{};
                 xMean.apply([&sum](const auto& x) { sum += x; });
-                res.pushBack(sum / (double)(nC));
+                res.emplaceBack(sum / (double)(nC));
                 i++;
             });
             return res;

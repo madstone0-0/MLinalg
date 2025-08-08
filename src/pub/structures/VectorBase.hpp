@@ -38,7 +38,7 @@ namespace mlinalg::structures {
 
         // Protected constructor - only derived classes can construct
         VectorBase() = default;
-        ~VectorBase() = default;
+        virtual ~VectorBase() = default;
 
        public:
         using value_type = number;
@@ -443,6 +443,8 @@ namespace mlinalg::structures {
         // ======================
         // Miscellaneous Operations
         // ======================
+
+        [[nodiscard]] virtual size_t size() const { return static_cast<size_t>(d().row.size()); }
 
         template <long startT = 0, long endT = -1, long strideT = 1, int newSize = 0>
         auto view(long start = 0, long end = -1, long stride = 1) {

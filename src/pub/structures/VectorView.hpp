@@ -126,7 +126,7 @@ namespace mlinalg::structures {
          *
          * @return The size of the vector view, which is the number of elements in the view.
          */
-        [[nodiscard]] size_t size() const { return static_cast<size_t>(row.size()); }
+        [[nodiscard]] size_t size() const override { return static_cast<size_t>(row.size()); }
 
         friend class Vector<number, n>;
 
@@ -244,7 +244,7 @@ namespace mlinalg::structures {
         // Miscellaneous Operations
         // ======================
 
-        [[nodiscard]] size_t size() const { return row.size(); }
+        [[nodiscard]] size_t size() const override { return row.size(); }
 
         auto toVector() const {
             Vector<number, m> res(size());

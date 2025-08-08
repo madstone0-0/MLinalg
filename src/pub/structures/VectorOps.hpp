@@ -20,6 +20,10 @@
 
 namespace mlinalg::structures {
     using namespace mlinalg::stacktrace;
+
+    template <typename D, Number number>
+    class VectorBase;
+
     template <Number number, int n>
     class Vector;
 
@@ -124,8 +128,8 @@ namespace mlinalg::structures {
         vectorApply(row, [&](auto& x) { x /= scalar; });
     }
 
-    template <Number number, int n, int otherN>
-    inline number vectorVectorMult(const Vector<number, n>& vec, const Vector<number, otherN>& otherVec) {
+    template <Number number, typename D, typename OtherD>
+    inline number vectorVectorMult(const VectorBase<D, number>& vec, const VectorBase<OtherD, number>& otherVec) {
         if (vec.size() != otherVec.size()) throw StackError<std::invalid_argument>("Vectors must be of the same size");
 
         number sum{0};
@@ -183,8 +187,8 @@ namespace mlinalg::structures {
         return res;
     }
 
-    template <Number number, int n, int otherN>
-    inline double vectorDot(const Vector<number, n>& v, const Vector<number, otherN>& w) {
+    template <Number number, typename D, typename OtherD>
+    inline double vectorDot(const VectorBase<D, number>& v, const VectorBase<OtherD, number>& w) {
         if (v.size() != w.size()) throw StackError<std::invalid_argument>("Vectors must be of the same size");
 #ifdef BY_DEF
         // By the defintion of the dot product
@@ -250,9 +254,9 @@ namespace mlinalg::structures {
      * @param vec Vector to compute the norm of
      * @return Euclidean norm of the vector
      */
-    template <Number number, int n>
-    inline double EuclideanNorm(const Vector<number, n>& vec) {
-        return std::sqrt(vec.dot(vec));
+    template <Number number, typename D>
+    inline double EuclideanNorm(const VectorBase<D, number>& row) {
+        return std::sqrt(vectorDot(row, row));
     }
 
     // ================

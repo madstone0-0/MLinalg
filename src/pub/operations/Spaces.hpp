@@ -36,11 +36,10 @@ namespace mlinalg {
                 j++;
             }
         }
-        auto cols = std::move(A.colToVectorSet());
         vector<Vector<number, m>> res{};
         res.reserve(nC);
         // Find the corresponding columns in the original matrix
-        for (const auto idx : pivotPos) res.emplace_back(cols.at(idx));
+        for (const auto idx : pivotPos) res.emplace_back(A.col(idx).toVector());
 
         return res;
     }

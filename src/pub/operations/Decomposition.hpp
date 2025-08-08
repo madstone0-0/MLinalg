@@ -199,12 +199,7 @@ namespace mlinalg {
         const auto& A = fromColVectorSet<number, m, m>(as);
 
         auto [Q, _] = QR<QRType::Thin>(A, QRMethod::Householder);
-        auto QCols = Q.colToVectorSet();
-        decltype(as) res;
-        res.reserve(vSize);
-        for (const auto& x : QCols) res.emplace_back(x);
-
-        return res;
+        return Q.colToVectorSet();
     }
 
     /**
@@ -235,12 +230,11 @@ namespace mlinalg {
     template <QRType type, Number number, int m, int n>
     vector<Vector<number, m>> GSOrth(const Matrix<number, m, n>& A, RType<type, number, m, n>* R = nullptr) {
         const auto& [nRows, nCols] = A.shape();
-        const auto& asCols = A.colToVectorSet();
 
         vector<Vector<number, m>> qs;
         qs.reserve(nCols);
 
-        const auto& v0 = asCols[0];
+        const auto& v0 = A.col(0);
         const auto& norm0 = v0.length();
         qs.emplace_back(v0 / norm0);
         if (R) {
@@ -248,7 +242,7 @@ namespace mlinalg {
         }
 
         for (size_t i{1}; i < nCols; ++i) {
-            auto vi = asCols[i];
+            auto vi = A.col(i).toVector();
 
             for (size_t j{}; j < i; ++j) {
                 number rji = vi.dot(qs[j]);
