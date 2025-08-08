@@ -231,6 +231,11 @@ namespace mlinalg::structures {
         if (rowOffset.end < 0) rowOffset.end = rows;
         if (colOffset.end < 0) colOffset.end = cols;
 
+        if (rowOffset.start < 0 || rowOffset.end > rows)
+            throw mlinalg::stacktrace::StackError<std::out_of_range>{"Row offset out of range"};
+        if (colOffset.start < 0 || colOffset.end > cols)
+            throw mlinalg::stacktrace::StackError<std::out_of_range>{"Column offset out of range"};
+
         if (stride.row == 0 || stride.col == 0)
             throw mlinalg::stacktrace::StackError<std::invalid_argument>("Stride cannot be zero");
         return MatrixView<number, m, n, nM, nN, colOffsetT, colStrideT>{matrix, rowOffset, colOffset, stride};

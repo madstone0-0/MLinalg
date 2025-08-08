@@ -516,7 +516,7 @@ TEST_CASE("Matrix", "[matrix]") {
 
             SECTION("Iteration") {
                 auto m = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
-                const auto *it = m.begin();
+                auto it = m.cbegin();
                 REQUIRE(*it == Vector<int, 2>{1, 2});
                 REQUIRE(it != m.end());
                 REQUIRE(*(++it) == Vector<int, 2>{3, 4});
@@ -772,13 +772,13 @@ TEST_CASE("Matrix", "[matrix]") {
                     {25, 26, 27, 28, 29, 30},  //
                     {31, 32, 33, 34, 35, 36},  //
                 };
-                auto V1 = A.view<2, 2>();
+                auto V1 = A.view<{0, 2}, {0, 2}>();
                 REQUIRE(V1(0, 0) == 1);
                 REQUIRE(V1(0, 1) == 2);
                 REQUIRE(V1(1, 0) == 7);
                 REQUIRE(V1(1, 1) == 8);
 
-                auto V2 = A.view<3, 2>();
+                auto V2 = A.view<{0, 3}, {0, 2}>();
                 REQUIRE(V2(0, 0) == 1);
                 REQUIRE(V2(0, 1) == 2);
                 REQUIRE(V2(1, 0) == 7);
@@ -786,7 +786,7 @@ TEST_CASE("Matrix", "[matrix]") {
                 REQUIRE(V2(2, 0) == 13);
                 REQUIRE(V2(2, 1) == 14);
 
-                auto V3 = A.view<3, 3>(0, 3);
+                auto V3 = A.view<{0, 3}, {3, A.cols}>();
                 REQUIRE(V3(0, 0) == 4);
                 REQUIRE(V3(0, 1) == 5);
                 REQUIRE(V3(0, 2) == 6);
@@ -797,8 +797,8 @@ TEST_CASE("Matrix", "[matrix]") {
                 REQUIRE(V3(2, 1) == 17);
                 REQUIRE(V3(2, 2) == 18);
 
-                REQUIRE_THROWS(A.view<7, 7>());
-                REQUIRE_THROWS(A.view<6, 6>(7, 7));
+                REQUIRE_THROWS(A.view<{0, 7}, {0, 7}>());
+                REQUIRE_THROWS(A.view<{7, 7}, {7, 7}>());
             }
         }
 
