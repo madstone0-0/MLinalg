@@ -289,15 +289,4 @@ namespace mlinalg::structures::helpers {
         return (std::stringstream{} << A).str();
     }
 
-    template <Container T>
-    auto unwrap(T&& c) {
-        return [](auto&& x) -> decltype(auto) {
-            if constexpr (std::is_pointer_v<std::decay_t<decltype(x)>>) {
-                return *x;
-            } else {
-                return x;
-            }
-        }(std::forward<T>(c));
-    }
-
 }  // namespace mlinalg::structures::helpers

@@ -19,9 +19,27 @@ concept Number = requires {
     std::is_convertible_v<T, std::string>;
 };
 
+template <typename type_t, class orig_t>
+struct unwrap_impl {
+    using type = orig_t;
+};
+
+template <typename type_t, class V>
+struct unwrap_impl<std::reference_wrapper<type_t>, V> {
+    using type = type_t;
+};
+
+template <class T>
+struct unwrap {
+    using type = typename unwrap_impl<std::decay_t<T>, T>::type;
+};
+
+template <typename type_t>
+using unwrap_t = typename unwrap<type_t>::type;
+
 template <typename T, typename = void>
 struct ContainerTraits {
-    using CleanT = std::remove_cvref_t<T>;
+    using CleanT = unwrap_t<std::remove_cvref_t<T>>;
     using value_type = typename CleanT::value_type;
     using size_type = typename CleanT::size_type;
     using iterator = typename CleanT::iterator;

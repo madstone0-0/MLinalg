@@ -6,6 +6,7 @@
 #pragma once
 #include <array>
 #include <cstddef>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <type_traits>
@@ -109,7 +110,9 @@ namespace mlinalg::structures {
     using SizeTPair = std::pair<size_t, size_t>;
 
     template <Number number, int m, int n>
-    using VectorVariant = std::conditional_t<n != 1, Vector<number, n>, Vector<number, m>>;
+    using VectorVariant = std::conditional_t < n != 1,
+          Vector<number, n>, Vector < number, m >>
+        ;
 
     /**
      * @brief Type alias for a variant of a Vector and a Matrix
@@ -136,7 +139,7 @@ namespace mlinalg::structures {
     using RowDynamic = Vector<number, -1>;
 
     template <Number number, int m, int n>
-    using TDArray = std::array<Row<number, n>, m>;
+    using TDArray = std::vector<Row<number, n>>;
 
     template <Number number>
     using TDArrayDynamic = std::vector<RowDynamic<number>>;
