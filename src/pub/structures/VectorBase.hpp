@@ -306,7 +306,7 @@ namespace mlinalg::structures {
          * @return the dot product of the two vectors
          */
         template <typename OtherD>
-        [[nodiscard]] double dot(const VectorBase<OtherD, number>& other) const {
+        [[nodiscard]] number dot(const VectorBase<OtherD, number>& other) const {
             return vectorDot(d(), static_cast<const OtherD&>(other));
         }
 
@@ -377,14 +377,14 @@ namespace mlinalg::structures {
          *
          * @return the length of the vector
          */
-        [[nodiscard]] double length() const { return EuclideanNorm(d()); }
+        [[nodiscard]] number length() const { return EuclideanNorm(d()); }
 
         /**
          * @brief Find the l2 norm of the vector
          *
          * @return the l2 norm of the vector
          */
-        [[nodiscard]] double l2() const { return length(); }
+        [[nodiscard]] number l2() const { return length(); }
 
         /**
          * @brief Find the euclidean norm of the vector
@@ -397,7 +397,7 @@ namespace mlinalg::structures {
          *
          * @return the euclidean norm of the vector
          */
-        [[nodiscard]] double euclid() const { return length(); }
+        [[nodiscard]] number euclid() const { return length(); }
 
         /**
          * @brief Find the L1 norm of the vector
@@ -410,7 +410,7 @@ namespace mlinalg::structures {
          *
          * @return the L1 norm of the vector
          */
-        [[nodiscard]] double l1() const { return L1Norm<number>(d().row); }
+        [[nodiscard]] number l1() const { return L1Norm<number>(d().row); }
 
         /**
          * @brief Find the weighted L2 norm of the vector
@@ -425,7 +425,7 @@ namespace mlinalg::structures {
          * @return the weighted L2 norm of the vector
          */
         template <typename OtherD>
-        double weightedL2(const VectorBase<OtherD, number>& other) const {
+        number weightedL2(const VectorBase<OtherD, number>& other) const {
             return WeightedL2Norm<number>(d().row, static_cast<const OtherD&>(other).row);
         }
 
@@ -436,7 +436,7 @@ namespace mlinalg::structures {
          * @return the distance between the two vectors
          */
         template <typename OtherD>
-        [[nodiscard]] double dist(const VectorBase<OtherD, number>& other) const {
+        [[nodiscard]] number dist(const VectorBase<OtherD, number>& other) const {
             return vectorDist(d(), static_cast<const OtherD&>(other));
         }
 

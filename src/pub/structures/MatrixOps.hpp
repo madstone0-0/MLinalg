@@ -1263,9 +1263,9 @@ namespace mlinalg::structures {
      * @return The L1 norm of the matrix
      */
     template <Number number, int m, int n>
-    inline double L1Norm(const Matrix<number, m, n>& matrix) {
+    inline number L1Norm(const Matrix<number, m, n>& matrix) {
         auto asCols{std::move(matrix.colToVectorSet())};
-        double max{-1};
+        number max{std::numeric_limits<number>::lowest()};
         for (const auto& col : asCols) {
             auto l1Norm = col.l1();
             if (l1Norm > max) max = l1Norm;
@@ -1280,9 +1280,9 @@ namespace mlinalg::structures {
      * @return The L-inf norm of the matrix
      */
     template <Number number, int m, int n>
-    inline double LInfNorm(const Matrix<number, m, n>& matrix) {
+    inline number LInfNorm(const Matrix<number, m, n>& matrix) {
         auto asRows{std::move(matrix.rowToVectorSet())};
-        double max{-1};
+        number max{std::numeric_limits<number>::lowest()};
         for (const auto& row : asRows) {
             auto l1Norm = row.l1();
             if (l1Norm > max) max = l1Norm;
@@ -1300,11 +1300,11 @@ namespace mlinalg::structures {
      * @param matrix The matrix to calculate the norm of
      * @return The Frobenius norm of the matrix
      */
-    template <Container T>
-    inline double FrobenisNorm(const T& matrix) {
+    template <Number number, Container T>
+    inline number FrobenisNorm(const T& matrix) {
         const auto numRows = matrix.size();
         const auto numCols = matrix.at(0).size();
-        double sum{};
+        number sum{};
         for (size_t i{}; i < numRows; i++)
             for (size_t j{}; j < numCols; j++) {
                 sum += matrix[i][j] * matrix[i][j];

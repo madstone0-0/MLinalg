@@ -188,21 +188,21 @@ namespace mlinalg::structures {
     }
 
     template <Number number, typename D, typename OtherD>
-    inline double vectorDot(const VectorBase<D, number>& v, const VectorBase<OtherD, number>& w) {
+    inline number vectorDot(const VectorBase<D, number>& v, const VectorBase<OtherD, number>& w) {
         if (v.size() != w.size()) throw StackError<std::invalid_argument>("Vectors must be of the same size");
 #ifdef BY_DEF
         // By the defintion of the dot product
         // v . w = v^T * w
         return (v.T() * w)[0];
 #else
-        double res{};
+        number res{};
         for (size_t i{}; i < v.size(); ++i) res += v[i] * w[i];
         return res;
 #endif  // BY_DEF
     }
 
     template <Number number, int n, int otherN>
-    inline double vectorDist(const Vector<number, n>& v, const Vector<number, otherN>& w) {
+    inline number vectorDist(const Vector<number, n>& v, const Vector<number, otherN>& w) {
         if (v.size() != w.size()) throw StackError<std::invalid_argument>("Vectors must be of the same size");
         auto diff = v - w;
         return std::sqrt(diff.dot(diff));
@@ -240,8 +240,8 @@ namespace mlinalg::structures {
      * @return L1-Norm of the vector
      */
     template <Number number, Container T>
-    inline double L1Norm(const T& row) {
-        double sum{};
+    inline number L1Norm(const T& row) {
+        number sum{};
         for (const auto& elem : row) {
             sum += std::abs(elem);
         }
@@ -255,7 +255,7 @@ namespace mlinalg::structures {
      * @return Euclidean norm of the vector
      */
     template <Number number, typename D>
-    inline double EuclideanNorm(const VectorBase<D, number>& row) {
+    inline number EuclideanNorm(const VectorBase<D, number>& row) {
         return std::sqrt(vectorDot(row, row));
     }
 
@@ -270,10 +270,10 @@ namespace mlinalg::structures {
      * @return Weighted L2-Norm of the vector
      */
     template <Number number, Container T>
-    inline double WeightedL2Norm(const T& row, const T& otherRow) {
+    inline number WeightedL2Norm(const T& row, const T& otherRow) {
         if (otherRow.size() != row.size())
             throw StackError<std::invalid_argument>("Matrix and vector must have the same size");
-        double sum{};
+        number sum{};
         for (size_t i{}; i < otherRow.size(); i++) {
             const auto& val = otherRow[i] * (row[i] * row[i]);
             sum += std::abs(val);

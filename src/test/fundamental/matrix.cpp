@@ -396,19 +396,19 @@ TEST_CASE("Matrix", "[matrix]") {
 
             SECTION("Norms") {
                 SECTION("Frobenius Norm") {
-                    auto m1 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
+                    auto m1 = Matrix<double, 2, 2>{{1, 2}, {3, 4}};
                     auto norm = m1.frob();
                     REQUIRE(norm == Approx(5.477225575051661));
                 }
 
                 SECTION("L1 Norm") {
-                    auto m1 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
+                    auto m1 = Matrix<double, 2, 2>{{1, 2}, {3, 4}};
                     auto norm = m1.l1();
                     REQUIRE(norm == Approx(6));
                 }
 
                 SECTION("L-Infinity Norm") {
-                    auto m1 = Matrix<int, 2, 2>{{1, 2}, {3, 4}};
+                    auto m1 = Matrix<double, 2, 2>{{1, 2}, {3, 4}};
                     auto norm = m1.lInf();
                     REQUIRE(norm == Approx(7));
                 }
@@ -977,19 +977,19 @@ TEST_CASE("Matrix", "[matrix]") {
 
             SECTION("Norms") {
                 SECTION("Frobenius Norm") {
-                    auto m1 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
+                    auto m1 = Matrix<double, Dynamic, Dynamic>{{1, 2}, {3, 4}};
                     auto norm = m1.frob();
                     REQUIRE(norm == Approx(5.477225575051661));
                 }
 
                 SECTION("L1 Norm") {
-                    auto m1 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
+                    auto m1 = Matrix<double, Dynamic, Dynamic>{{1, 2}, {3, 4}};
                     auto norm = m1.l1();
                     REQUIRE(norm == Approx(6));
                 }
 
                 SECTION("L-Infinity Norm") {
-                    auto m1 = Matrix<int, Dynamic, Dynamic>{{1, 2}, {3, 4}};
+                    auto m1 = Matrix<double, Dynamic, Dynamic>{{1, 2}, {3, 4}};
                     auto norm = m1.lInf();
                     REQUIRE(norm == Approx(7));
                 }

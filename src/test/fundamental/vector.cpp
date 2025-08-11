@@ -278,46 +278,46 @@ TEST_CASE("Vector", "[vector]") {
             }
 
             SECTION("Dot product") {
-                auto v1 = Vector<int, 2>{1, 2};
-                auto v2 = Vector<int, 2>{3, 4};
+                auto v1 = Vector<double, 2>{1, 2};
+                auto v2 = Vector<double, 2>{3, 4};
                 auto dot = v1.dot(v2);
                 REQUIRE(dot == Approx(11));
 
-                auto u1 = Vector<int, 1>{1};
-                auto u2 = Vector<int, 1>{2};
+                auto u1 = Vector<double, 1>{1};
+                auto u2 = Vector<double, 1>{2};
                 auto dot2 = u1.dot(u2);
                 REQUIRE(dot2 == Approx(2));
             }
 
             SECTION("Distance") {
-                auto v1 = Vector<int, 2>{1, 2};
-                auto v2 = Vector<int, 2>{3, 4};
+                auto v1 = Vector<double, 2>{1, 2};
+                auto v2 = Vector<double, 2>{3, 4};
                 auto dist = v1.dist(v2);
                 REQUIRE(dist == Approx(2.8284271247461903));
             }
 
             SECTION("Length") {
-                auto v = Vector<int, 2>{1, 2};
+                auto v = Vector<double, 2>{1, 2};
                 auto len = v.length();
                 REQUIRE(len == Approx(2.23606797749979));
             }
 
             SECTION("Norms") {
                 SECTION("L1 Norm") {
-                    auto v = Vector<int, 2>{1, 2};
+                    auto v = Vector<double, 2>{1, 2};
                     auto norm = v.l1();
                     REQUIRE(norm == Approx(3));
                 }
 
                 SECTION("L2 Norm") {
-                    auto v = Vector<int, 2>{1, 2};
+                    auto v = Vector<double, 2>{1, 2};
                     auto norm = v.euclid();
                     REQUIRE(norm == Approx(2.23606797749979));
                 }
 
                 SECTION("Weighted L2 Norm") {
-                    auto v = Vector<int, 2>{1, 2};
-                    auto w = Vector<int, 2>{3, 4};
+                    auto v = Vector<double, 2>{1, 2};
+                    auto w = Vector<double, 2>{3, 4};
                     auto norm = v.weightedL2(w);
                     REQUIRE(norm == Approx(4.3588989435));
                 }
@@ -582,46 +582,46 @@ TEST_CASE("Vector", "[vector]") {
             }
 
             SECTION("Dot product") {
-                auto v1 = Vector<int, Dynamic>{1, 2};
-                auto v2 = Vector<int, Dynamic>{3, 4};
+                auto v1 = Vector<double, Dynamic>{1, 2};
+                auto v2 = Vector<double, Dynamic>{3, 4};
                 auto dot = v1.dot(v2);
                 REQUIRE(dot == Approx(11));
 
-                auto u1 = Vector<int, Dynamic>{1};
-                auto u2 = Vector<int, Dynamic>{2};
+                auto u1 = Vector<double, Dynamic>{1};
+                auto u2 = Vector<double, Dynamic>{2};
                 auto dot2 = u1.dot(u2);
                 REQUIRE(dot2 == Approx(2));
             }
 
             SECTION("Distance") {
-                auto v1 = Vector<int, Dynamic>{1, 2};
-                auto v2 = Vector<int, Dynamic>{3, 4};
+                auto v1 = Vector<double, Dynamic>{1, 2};
+                auto v2 = Vector<double, Dynamic>{3, 4};
                 auto dist = v1.dist(v2);
                 REQUIRE(dist == Approx(2.8284271247461903));
             }
 
             SECTION("Length") {
-                auto v = Vector<int, Dynamic>{1, 2};
+                auto v = Vector<double, Dynamic>{1, 2};
                 auto len = v.length();
                 REQUIRE(len == Approx(2.23606797749979));
             }
 
             SECTION("Norms") {
                 SECTION("L1 Norm") {
-                    auto v = Vector<int, Dynamic>{1, 2};
+                    auto v = Vector<double, Dynamic>{1, 2};
                     auto norm = v.l1();
                     REQUIRE(norm == Approx(3));
                 }
 
                 SECTION("L2 Norm") {
-                    auto v = Vector<int, Dynamic>{1, 2};
+                    auto v = Vector<double, Dynamic>{1, 2};
                     auto norm = v.euclid();
                     REQUIRE(norm == Approx(2.23606797749979));
                 }
 
                 SECTION("Weighted L2 Norm") {
-                    auto v = Vector<int, Dynamic>{1, 2};
-                    auto w = Vector<int, Dynamic>{3, 4};
+                    auto v = Vector<double, Dynamic>{1, 2};
+                    auto w = Vector<double, Dynamic>{3, 4};
                     auto norm = v.weightedL2(w);
                     REQUIRE(norm == Approx(4.3588989435));
                 }
@@ -772,8 +772,8 @@ TEST_CASE("Vector", "[vector]") {
             }
 
             SECTION("Distance") {
-                auto v1 = Vector<int, Dynamic>{1, 2};
-                auto v2 = Vector<int, 2>{3, 4};
+                auto v1 = Vector<double, Dynamic>{1, 2};
+                auto v2 = Vector<double, 2>{3, 4};
                 auto dist = v1.dist(v2);
                 REQUIRE(dist == Approx(2.8284271247461903));
             }

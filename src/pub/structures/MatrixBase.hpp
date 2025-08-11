@@ -518,7 +518,7 @@ namespace mlinalg::structures {
          *
          * @return The Frobenius norm of the matrix
          */
-        double frob() { return FrobenisNorm(d().matrix); }
+        double frob() { return FrobenisNorm<number>(d().matrix); }
 
         /**
          * @brief Calculate the L1 norm of the matrix
