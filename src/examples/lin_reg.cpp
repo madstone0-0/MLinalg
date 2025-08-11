@@ -1,4 +1,7 @@
+#include <algorithm>
+#include <numeric>
 #include <print>
+#include <random>
 
 #include "MLinalg.hpp"
 #include "Numeric.hpp"
@@ -8,12 +11,13 @@
 using namespace std;
 using namespace mlinalg;
 using namespace mlinalg::structures;
+namespace rg = std::ranges;
 
 // Helper functions not found in MLinalg
 namespace {
     double mean(const VD<double>& v) {
         double res{};
-        v.apply([&](auto x) { res += x; });
+        v.apply([&](const auto x) { res += x; });
         return res / (double)v.size();
     }
 
@@ -21,7 +25,11 @@ namespace {
         auto [nR, nC] = X.shape();
         if (axis) {
             VD<double> res(nC);
-            for (size_t i{}; i < nC; ++i) res.emplaceBack(mean(X.col(i).toVector()));
+            for (size_t i{}; i < nC; ++i) {
+                auto col = X.col(i).toVector();
+                auto m = mean(col);
+                res.emplaceBack(m);
+            }
             return res;
         } else {
             VD<double> res(nR);
@@ -120,6 +128,93 @@ namespace {
         double mse = diff.dot(diff);
         return mse / (double)y_true.size();
     }
+
+    struct TrainTestSplit {
+        MD<double> XTrain, XTest;
+        VD<double> yTrain, yTest;
+        vector<size_t> trainIdx, testIdx;
+    };
+
+    TrainTestSplit trainTestSplit(const MD<double>& X, const VD<double>& y, double testSize = 0.2,
+                                  Seed seed = Seed{42}) {
+        if (X.numRows() != y.size()) throw std::invalid_argument{"X and y must have the ssame number of samples"};
+
+        if (testSize <= 0.0 || testSize >= 1.0) throw std::invalid_argument{"testSize must be between 0.0 and 1.0"};
+
+        size_t samples = y.size();
+        auto testSample = static_cast<size_t>(samples * testSize);
+        size_t trainSample = samples - testSample;
+
+        vector<size_t> idx(samples);
+        rg::iota(idx, 0);
+
+        mt19937 gen(seed.value());
+        rg::shuffle(idx, gen);
+
+        vector<size_t> trainIdx{idx.begin(), idx.begin() + trainSample};
+        vector<size_t> testIdx{idx.begin() + trainSample, idx.end()};
+
+        MD<double> XTrain(trainSample, X.numCols());
+        MD<double> XTest(testSample, X.numCols());
+        VD<double> yTrain(trainSample);
+        VD<double> yTest(testSample);
+
+        for (size_t i{}; i < trainSample; ++i) {
+            auto idx{trainIdx[i]};
+            XTrain[i] = X[idx];
+            yTrain[i] = y[idx];
+        }
+
+        for (size_t i{}; i < testSample; ++i) {
+            auto idx{testIdx[i]};
+            XTest[i] = X[idx];
+            yTest[i] = y[idx];
+        }
+
+        return {.XTrain = XTrain,
+                .XTest = std::move(XTest),
+                .yTrain = std::move(yTrain),
+                .yTest = std::move(yTest),
+                .trainIdx = std::move(trainIdx),
+                .testIdx = std::move(testIdx)};
+    }
+
+    struct StandardScaler {
+        void fit(const MD<double>& X) {
+            means_.resize(X.numCols());
+            stds_.resize(X.numCols());
+            means_ = mean(X, true);
+            stds_ = std(X, true);
+            fitted_ = true;
+        }
+
+        MD<double> transform(const MD<double>& X) {
+            if (!fitted_) throw runtime_error{"Scaler must be fitted before transform"};
+            auto [nR, nC] = X.shape();
+            auto res{X};
+
+            for (size_t j{}; j < nC; ++j)
+                for (size_t i{}; i < nR; ++i) {
+                    res(i, j) = (res(i, j) - means_[j]) / (fuzzyCompare(stds_[j], 0.0) ? 1e-15 : stds_[j]);
+                }
+
+            return res;
+        }
+
+        MD<double> fitTransform(const MD<double>& X) {
+            fit(X);
+            return transform(X);
+        }
+
+        [[nodiscard]] auto means() const { return means_; }
+        [[nodiscard]] auto stds() const { return stds_; }
+
+       private:
+        bool fitted_{};
+        VD<double> means_{0};
+        VD<double> stds_{0};
+    };
+
 }  // namespace
 
 int main() {
@@ -180,9 +275,11 @@ int main() {
     // Separate the target variable (median_house_value) from the features
     auto y = X.removeCol(8);
     println("Dataset shape: {} rows, {} features", X.numRows(), X.numCols());
+    const auto& [XTrain, XTest, yTrain, yTest, trainIdx, testIdx] = trainTestSplit(X, y);
 
     // Normalize the features
-    auto XNorm = normalize(X);
+    StandardScaler scale{};
+    auto XNorm = scale.fitTransform(XTrain);
     println("Normalized features:\n{}", string(XNorm));
 
     // Linear Regression
@@ -246,45 +343,61 @@ int main() {
         Seed seed;  // Seed for reproducibility
     };
 
-    // Training parameters
-    size_t iterations{100'000};
-    double learningRate{0.1};
+    try {
+        // Training params
+        size_t iterations{100'000};
+        double learningRate{0.05};
 
-    println("Training Linear Regression Model...");
-    println("Learning rate: {}, Iterations: {}", learningRate, iterations);
+        println("Training Linear Regression Model...");
+        println("Learning rate: {}, Iterations: {}", learningRate, iterations);
+        LinearRegression linReg{learningRate, seed};
+        linReg.train(XNorm, yTrain, iterations, true);
 
-    LinearRegression linReg{learningRate, seed};
-    linReg.train(XNorm, y, iterations, true);
+        println("Model parameters (theta):\n{}", linReg.theta);
+        println("\n");
 
-    println("Model parameters (theta):\n{}", linReg.theta);
-    println("\n");
+        // Make predictions on the test data
+        VD<double> preds{linReg.predict(XNorm)};
 
-    // Make predictions on the training data
-    VD<double> preds(y.size());
-    for (size_t i{}; i < y.size(); i++) {
-        preds[i] = linReg.predict(XNorm[i].T())[0];
-    }
+        // Train performance
+        double r2 = r2_score(yTrain, preds);
+        double mse = calculateMSE(yTrain, preds);
+        double rmse = sqrt(mse);
 
-    // Calculate evaluation metrics
-    double r2 = r2_score(y, preds);
-    double mse = calculateMSE(y, preds);
-    double rmse = sqrt(mse);
+        println("=== Train Performance ===");
+        println("R-squared (R²): {:.4f}", r2);
+        println("Mean Squared Error (MSE): {:.4f}", mse);
+        println("Root Mean Squared Error (RMSE): {:.4f}", rmse);
+        println("\n");
 
-    println("=== Model Performance ===");
-    println("R-squared (R²): {:.4f}", r2);
-    println("Mean Squared Error (MSE): {:.4f}", mse);
-    println("Root Mean Squared Error (RMSE): {:.4f}", rmse);
-    println("\n");
+        // Make predictions on the test data
+        const auto& XTestNorm = scale.transform(XTest);
+        VD<double> predsTest(linReg.predict(XTestNorm));
 
-    // Prediction vs Actual
-    println("=== Predictions vs Actual (First 10 samples) ===");
-    println("Predicted\t\tActual\t\t\tError");
-    println("--------\t\t------\t\t\t-----");
-    for (size_t i{}; i < min(10UL, y.size()); i++) {
-        double pred = preds[i];
-        double actual = y[i];
-        double error = abs(pred - actual);
-        println("{:.0f}\t\t\t{:.0f}\t\t\t{:.0f}", pred, actual, error);
+        // Test performance
+        double r2T = r2_score(yTest, predsTest);
+        double mseT = calculateMSE(yTest, predsTest);
+        double rmseT = sqrt(mseT);
+
+        println("=== Test Performance ===");
+        println("R-squared (R²): {:.4f}", r2T);
+        println("Mean Squared Error (MSE): {:.4f}", mseT);
+        println("Root Mean Squared Error (RMSE): {:.4f}", rmseT);
+        println("\n");
+
+        // Prediction vs Actual
+        println("=== Test Predictions vs Actual (First 10 samples) ===");
+        println("Predicted\t\tActual\t\t\tError");
+        println("--------\t\t------\t\t\t-----");
+        for (size_t i{}; i < min(10UL, yTest.size()); i++) {
+            double pred = predsTest[i];
+            double actual = yTest[i];
+            double error = abs(pred - actual);
+            println("{:.0f}\t\t\t{:.0f}\t\t\t{:.0f}", pred, actual, error);
+        }
+    } catch (const std::exception& e) {
+        println("Error during training or evaluation: {}", e.what());
+        return 1;
     }
 
     return 0;
