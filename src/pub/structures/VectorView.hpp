@@ -163,13 +163,14 @@ namespace mlinalg::structures {
        public:
         using MatrixType = T;
         using MatrixRef = MatrixType&;
+        using MatrixPtr = MatrixType*;
         using difference_type = std::ptrdiff_t;
         using value_type = number;
         using size_type = size_t;
         static constexpr auto vn = m;
 
-        ColumnView(MatrixRef matrix, size_type colIdx) : row{matrix, colIdx} {
-            if (colIdx < 0 || colIdx >= matrix.numCols()) {
+        ColumnView(MatrixPtr matrix, size_type colIdx) : row{matrix, colIdx} {
+            if (colIdx < 0 || colIdx >= matrix->numCols()) {
                 throw mlinalg::stacktrace::StackError<std::out_of_range>("Column index out of range");
             }
         }
@@ -187,17 +188,17 @@ namespace mlinalg::structures {
             using pointer = value_type*;
             using reference = value_type&;
 
-            Iterator(MatrixRef A, size_type colIdx, size_type idx, size_type end)
+            Iterator(MatrixPtr A, size_type colIdx, size_type idx, size_type end)
                 : A{A}, colIdx{colIdx}, idx{idx}, end{end} {}
 
             reference operator*() const {
                 if (idx >= end) throw std::out_of_range{"Iterator out of range"};
-                return A(idx, colIdx);
+                return A->operator()(idx, colIdx);
             }
 
             pointer operator->() {
                 if (idx >= end) throw std::out_of_range{"Iterator out of range"};
-                return &A(idx, colIdx);
+                return &A->operator()(idx, colIdx);
             }
 
             Iterator& operator++() {
@@ -232,7 +233,7 @@ namespace mlinalg::structures {
             friend bool operator!=(const Iterator& a, const Iterator& b) { return !(a == b); };
 
            private:
-            MatrixRef A;
+            MatrixPtr A;
             size_type end{};
             size_type idx{};
             size_type colIdx{};
@@ -260,29 +261,29 @@ namespace mlinalg::structures {
             using size_type = size_t;
             using iterator = Iterator;
 
-            MatrixRef matrix;
+            MatrixPtr matrix;
             size_type idx{};
 
             // ======================
             // Indexing and Accessors
             // ======================
-            value_type& operator[](size_type i) { return matrix[i][idx]; }
+            value_type& operator[](size_type i) { return matrix->operator[](i)[idx]; }
 
-            value_type& operator[](size_type i) const { return matrix[i][idx]; }
+            value_type& operator[](size_type i) const { return matrix->operator[](i)[idx]; }
 
-            value_type& at(size_t i) { return matrix.at(i).at(idx); }
+            value_type& at(size_t i) { return matrix->at(i).at(idx); }
 
-            value_type& at(size_t i) const { return matrix.at(i).at(idx); }
+            value_type& at(size_t i) const { return matrix->at(i).at(idx); }
 
-            auto begin() { return Iterator(matrix, idx, 0, matrix.size()); }
+            auto begin() { return Iterator(matrix, idx, 0, matrix->size()); }
 
-            auto end() { return Iterator(matrix, idx, matrix.size(), matrix.size()); }
+            auto end() { return Iterator(matrix, idx, matrix->size(), matrix->size()); }
 
-            auto begin() const { return Iterator(matrix, idx, 0, matrix.size()); }
+            auto begin() const { return Iterator(matrix, idx, 0, matrix->size()); }
 
-            auto end() const { return Iterator(matrix, idx, matrix.size(), matrix.size()); }
+            auto end() const { return Iterator(matrix, idx, matrix->size(), matrix->size()); }
 
-            [[nodiscard]] size_t size() const { return static_cast<size_t>(matrix.size()); }
+            [[nodiscard]] size_t size() const { return static_cast<size_t>(matrix->size()); }
         };
 
         Backing row;

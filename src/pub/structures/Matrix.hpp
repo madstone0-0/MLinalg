@@ -25,9 +25,10 @@ namespace mlinalg::structures {
        public:
         using Base = Matrix<number, m, n>;
         using Backing = TDArray<number, m, n>;
-        using iterator = Backing::iterator;
-        using value_type = Backing::value_type;
-        using size_type = Backing::size_type;
+        using iterator = typename Backing::iterator;
+        using value_type = typename Backing::value_type;
+        using size_type = typename Backing::size_type;
+        using MatrixColumns = Columns<number, m, n, Base>;
 
         static constexpr int rows = m;
         static constexpr int cols = n;
@@ -43,7 +44,7 @@ namespace mlinalg::structures {
 
         // Constructor to keep consistency with the Dynamic Matrix specialization to allow them to be used
         // interchangeably
-        Matrix(int nRows, int nCols) {}  // NOLINT
+        Matrix(size_t nRows, size_t nCols) {}  // NOLINT
 
 #pragma GCC diagnostic pop
 
@@ -224,7 +225,7 @@ namespace mlinalg::structures {
          */
         TDArray<number, m, n> matrix{m};
 
-        Columns<number, m, n, Base> columns{*this};
+        MatrixColumns columns{this};
     };
 
 }  // namespace mlinalg::structures
@@ -241,9 +242,10 @@ namespace mlinalg::structures {
        public:
         using Base = Matrix<number, Dynamic, Dynamic>;
         using Backing = TDArrayDynamic<number>;
-        using iterator = Backing::iterator;
-        using value_type = Backing::value_type;
-        using size_type = Backing::size_type;
+        using iterator = typename Backing::iterator;
+        using value_type = typename Backing::value_type;
+        using size_type = typename Backing::size_type;
+        using MatrixColumns = Columns<number, Dynamic, Dynamic, Base>;
 
         static constexpr int rows = Dynamic;
         static constexpr int cols = Dynamic;
@@ -252,7 +254,7 @@ namespace mlinalg::structures {
         // Constructors and Destructor
         // ===========================
 
-        Matrix(int m, int n) : m(m), n(n) {
+        Matrix(size_t m, size_t n) : m(m), n(n) {
             if (m <= 0) throw invalid_argument("Matrix must have at least one row");
             if (n <= 0) throw invalid_argument("Matrix must have at least one column");
             matrix.reserve(m);
@@ -260,7 +262,7 @@ namespace mlinalg::structures {
         }
 
         Matrix(const std::initializer_list<std::initializer_list<number>>& rows)
-            : m{rows.size()}, n{rows.begin()->size()} {
+            : m{rows.size()}, n{rows.begin()->size()}, columns{this} {
             if (m <= 0) throw invalid_argument("Matrix must have at least one row");
             if (n <= 0) throw invalid_argument("Matrix must have at least one column");
 
@@ -277,7 +279,7 @@ namespace mlinalg::structures {
         template <int m, int n>
         explicit Matrix(const Matrix<number, m, n>& other)
             requires(m != -1 && n != -1)
-            : m{m}, n{n} {
+            : m{m}, n{n}, columns{this} {
             matrix.reserve(m);
             for (size_t i{}; i < other.numRows(); ++i) {
                 matrix.emplace_back(other.at(i));
@@ -289,14 +291,17 @@ namespace mlinalg::structures {
          *
          * @param other Matrix to copy
          */
-        Matrix(const Matrix& other) = default;
+        Matrix(const Matrix& other) : m{other.m}, n{other.n}, matrix{other.matrix}, columns{this} {
+            if (m <= 0) throw invalid_argument("Matrix must have at least one row");
+            if (n <= 0) throw invalid_argument("Matrix must have at least one column");
+        }
 
         /**
          * @brief Move construct a new Matrix object
          *
          * @param other  Matrix to move
          */
-        Matrix(Matrix&& other) noexcept : m{other.m}, n{other.n}, matrix{std::move(other.matrix)} {
+        Matrix(Matrix&& other) noexcept : m{other.m}, n{other.n}, matrix{std::move(other.matrix)}, columns{this} {
             other.m = 0;
             other.n = 0;
         }
@@ -312,6 +317,7 @@ namespace mlinalg::structures {
             matrix = other.matrix;
             n = other.n;
             m = other.m;
+            columns = MatrixColumns{this};
             return *this;
         }
 
@@ -327,6 +333,7 @@ namespace mlinalg::structures {
             n = other.n;
             other.m = 0;
             other.n = 0;
+            columns = MatrixColumns{this};
             return *this;
         }
 
@@ -493,7 +500,7 @@ namespace mlinalg::structures {
         size_t n;
         TDArrayDynamic<number> matrix;
 
-        Columns<number, Dynamic, Dynamic, Base> columns{*this};
+        MatrixColumns columns{this};
     };
 
 }  // namespace mlinalg::structures

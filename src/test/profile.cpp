@@ -27,7 +27,7 @@ constexpr Matrix<double, m, n> genMatrix() {
 }
 
 Matrix<double, Dynamic, Dynamic> genMatrix(size_t m, size_t n) {
-    Matrix<double, Dynamic, Dynamic> A{(int)m, (int)n};
+    Matrix<double, Dynamic, Dynamic> A{m, n};
     for (size_t i{}; i < m; i++) {
         for (size_t j{}; j < n; j++) {
             A(i, j) = rng();

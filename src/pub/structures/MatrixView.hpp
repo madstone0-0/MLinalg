@@ -47,14 +47,17 @@ namespace mlinalg::structures {
         using value_type = number;
         using size_type = size_t;
 
-        Columns(MatrixRef matrix) : matrix{matrix} {}
+        Columns(MatrixPtr matrix) : matrix{matrix} {}
+        Columns(const Columns& other) = default;
+        Columns& operator=(const Columns& other) = default;
+        ~Columns() = default;
 
         auto operator[](size_t j) { return ColumnView<number, m, n, MatrixType>{matrix, j}; }
 
         auto operator[](size_t j) const { return ColumnView<number, m, n, MatrixType>{matrix, j}; }
 
        private:
-        MatrixRef matrix;
+        MatrixPtr matrix;
     };
 
     /**
@@ -211,7 +214,7 @@ namespace mlinalg::structures {
 
        protected:
         View viewArray;
-        Columns<number, m, n, Base> columns{*this};  // Columns of the matrix view
+        Columns<number, m, n, Base> columns{this};  // Columns of the matrix view
         container::StrideContainer<ViewRef> matrix;
         OffsetPair rowOffset{.start = 0, .end = -1};  // Start and end row index respectively
         OffsetPair colOffset{.start = 0, .end = -1};  // Start and end column index respectively

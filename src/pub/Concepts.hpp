@@ -37,22 +37,44 @@ struct unwrap {
 template <typename type_t>
 using unwrap_t = typename unwrap<type_t>::type;
 
-template <typename T, typename = void>
-struct ContainerTraits {
-    using CleanT = unwrap_t<std::remove_cvref_t<T>>;
-    using value_type = typename CleanT::value_type;
-    using size_type = typename CleanT::size_type;
-    using iterator = typename CleanT::iterator;
+/**
+ * @brief A utility to clean up types by removing cv-qualifiers and references.
+ *
+ * @tparam T The type to clean
+ */
+template <typename T>
+struct Clean {
+    using type = unwrap_t<std::remove_cv_t<std::remove_reference_t<T>>>;
 };
 
+/**
+ * @brief A utility to clean up types by removing cv-qualifiers and references.
+ *
+ * @tparam T The type to clean
+ */
 template <typename T>
-struct ContainerTraits<
-    T, std::enable_if_t<
-           std::is_same_v<std::remove_cvref_t<T>, std::unique_ptr<typename std::remove_cvref_t<T>::element_type>>>> {
-    using ElementType = typename std::remove_cvref_t<T>::element_type;
-    using value_type = typename ElementType::value_type;
-    using size_type = typename ElementType::size_type;
-    using iterator = typename ElementType::iterator;
+using CleanT = typename Clean<T>::type;
+
+/**
+ * @brief Empty default trait to prevent errors when a type is not fully specialized, i.e
+ * when it's foward declared
+ */
+template <typename, typename = void>
+struct ContainerTraits {};
+
+/**
+ * @brief Traits for container types that have value_type, size_type, and iterator types.
+ *
+ * @tparam T The container type
+ */
+template <typename T>
+struct ContainerTraits<T, std::void_t<typename CleanT<T>::value_type,  //
+                                      typename CleanT<T>::size_type,   //
+                                      typename CleanT<T>::iterator>    //
+                       > {
+    using value_type = typename CleanT<T>::value_type;
+    using size_type = typename CleanT<T>::size_type;
+    using iterator = typename CleanT<T>::iterator;
 };
 
 /**

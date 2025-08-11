@@ -378,9 +378,9 @@ namespace mlinalg::structures {
             throw StackError<invalid_argument>(
                 "The columns of the first matrix must be equal to the rows of the second matrix");
 
-        const int nRows = matrix.size();
-        const int nCols = matrix[0].size();
-        const int nColsOther = otherMatrix[0].size();
+        const size_t nRows = matrix.size();
+        const size_t nCols = matrix[0].size();
+        const size_t nColsOther = otherMatrix[0].size();
 
         constexpr bool isDynamic = m == Dynamic || n == Dynamic || mOther == Dynamic || nOther == Dynamic;
 
@@ -389,12 +389,12 @@ namespace mlinalg::structures {
         constexpr int blockSize = 64 / sizeof(number);
         Matrix<number, resSizeP.first, resSizeP.second> res{nRows, nColsOther};
 
-        for (int i{}; i < nRows; i++)
-            for (int j{}; j < nCols; j++) {
+        for (size_t i{}; i < nRows; i++)
+            for (size_t j{}; j < nCols; j++) {
                 const number temp = matrix[i][j];
-                for (int k{}; k < nColsOther; k += blockSize) {
-                    const int kEnd = std::min(k + blockSize, nColsOther);
-                    for (int kk{k}; kk < kEnd; kk++) {
+                for (size_t k{}; k < nColsOther; k += blockSize) {
+                    const size_t kEnd = std::min(k + blockSize, nColsOther);
+                    for (size_t kk{k}; kk < kEnd; kk++) {
                         res(i, kk) += temp * otherMatrix[j][kk];
                     }
                 }
@@ -639,7 +639,7 @@ namespace mlinalg::structures {
 
         constexpr auto resSizeP = isDynamic ? DynamicPair : SizePair{m, nOther};
 
-        Matrix<double, resSizeP.first, resSizeP.second> res{(int)nRows, (int)nColsOther};
+        Matrix<double, resSizeP.first, resSizeP.second> res{nRows, nColsOther};
         const int vecSize{8};  // AVX can handle 4 doubles, but we unroll 2 iterations
 
         for (size_t i{}; i < nRows; i++) {
