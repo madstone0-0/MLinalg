@@ -44,7 +44,7 @@ namespace mlinalg::structures {
 
         // Constructor to keep consistency with the Dynamic Matrix specialization to allow them to be used
         // interchangeably
-        Matrix(size_t nRows, size_t nCols) {}  // NOLINT
+        Matrix(size_t nRows, size_t nCols) : columns{this} {}  // NOLINT
 
 #pragma GCC diagnostic pop
 
@@ -53,7 +53,7 @@ namespace mlinalg::structures {
          *
          * @param rows  Initializer list of row vectors
          */
-        constexpr Matrix(const std::initializer_list<std::initializer_list<number>>& rows) {
+        constexpr Matrix(const std::initializer_list<std::initializer_list<number>>& rows) : columns{this} {
             static_assert(m > 0, "Number of rows cannot be 0");
             static_assert(n > 0, "Number of colmns cannot be 0");
             for (int i{}; i < m; i++) {
@@ -66,14 +66,14 @@ namespace mlinalg::structures {
          *
          * @param other Matrix to copy
          */
-        Matrix(const Matrix& other) = default;
+        Matrix(const Matrix& other) : matrix{other.matrix}, columns{this} {}
 
         /**
          * @brief Move construct a new Matrix object
          *
          * @param other  Matrix to move
          */
-        Matrix(Matrix&& other) noexcept : matrix{std::move(other.matrix)} {}
+        Matrix(Matrix&& other) noexcept : matrix{std::move(other.matrix)}, columns{this} {}
 
         /**
          * @brief Copy assignment operator
@@ -84,6 +84,7 @@ namespace mlinalg::structures {
         Matrix& operator=(const Matrix& other) {
             if (this == &other) return *this;
             matrix = other.matrix;
+            columns = MatrixColumns{this};
             return *this;
         }
 
@@ -95,6 +96,7 @@ namespace mlinalg::structures {
          */
         Matrix& operator=(Matrix&& other) noexcept {
             matrix = std::move(other.matrix);
+            columns = MatrixColumns{this};
             return *this;
         }
 
