@@ -128,7 +128,8 @@ namespace mlinalg::structures {
         {
             Matrix<number, n, n> res;
             for (int i{}; i < n; i++) {
-                res.at(i) = *this * mat.col(i).at(0);
+                res[i] = *this;
+                res[i] *= mat.col(i)[0];
             }
             return res;
         }
@@ -302,13 +303,14 @@ namespace mlinalg::structures {
             if (numRows == 1) {
                 Matrix<number, Dynamic, Dynamic> resMat(this->n, this->n);
                 for (size_t i{}; i < n; i++) {
-                    resMat.at(i) = *this * asCols.at(i).at(0);
+                    resMat[i] = *this;
+                    resMat[i] *= mat.col(i)[0];
                 }
                 return resMat;
             } else {
                 Vector<number, Dynamic> resVec(this->n);
                 for (size_t i{}; i < n; i++) {
-                    resVec.at(i) = *this * asCols.at(i);
+                    resVec[i] = *this * mat.col(i);
                 }
                 return resVec;
             }

@@ -366,8 +366,9 @@ namespace mlinalg {
         const auto size = v.size();
         const auto& vT = v.T();
         auto P{I<number, n>(size)};
+
         // P = I - 2/v^T v * (v v^T)
-        P = P - (2 / (vT * v).at(0)) * (v * vT);
+        P -= helpers::extractMatrixFromTranspose((2 / (vT * v)[0]) * (v * vT));
         return P;
     }
 
