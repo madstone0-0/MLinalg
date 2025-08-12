@@ -1,56 +1,43 @@
 #include <MLinalg.hpp>
 #include <cmath>
 #include <iostream>
+#include <print>
 #include <random>
 
 #include "operations/Decomposition.hpp"
-#include "structures/Vector.hpp"
-
-double rng() {
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
-    static std::uniform_real_distribution<> dis(0, 1);
-    return dis(gen);
-}
+#include "structures/Aliases.hpp"
 
 using namespace mlinalg;
 
-template <size_t m, size_t n>
-constexpr Matrix<double, m, n> genMatrix() {
-    Matrix<double, m, n> A;
-    for (size_t i{}; i < m; i++) {
-        for (size_t j{}; j < n; j++) {
-            A(i, j) = rng();
-        }
-    }
-    return A;
-}
-
-Matrix<double, Dynamic, Dynamic> genMatrix(size_t m, size_t n) {
-    Matrix<double, Dynamic, Dynamic> A{m, n};
-    for (size_t i{}; i < m; i++) {
-        for (size_t j{}; j < n; j++) {
-            A(i, j) = rng();
-        }
-    }
-    return A;
+template <Number number, int m, int n>
+void roundMatrix(Matrix<number, m, n>& A) {
+    A.apply([](auto& x) { x = std::round(x); });
 }
 
 int main() {
     constexpr size_t m{512};
+    using num = double;
+    // {
+    //     auto A{matrixRandom<num, m, m>()};
+    //     auto B{matrixRandom<num, m, m>()};
+    //     A* B;
+    // }
+    // {
+    //     auto A{matrixRandom<num, Dynamic, Dynamic>(m, m)};
+    //     auto B{matrixRandom<num, Dynamic, Dynamic>(m, m)};
+    //     A* B;
+    // }
     {
-        auto A{genMatrix<m, m>()};
-        auto B{genMatrix<m, m>()};
-        A* B;
-    }
-    {
-        auto A{genMatrix(m, m)};
-        auto B{genMatrix(m, m)};
-        A* B;
-    }
-    {
-        auto A{genMatrix<m / 16, m / 16>()};
+        constexpr auto r = m / 16;
+        auto A{matrixRandom<num, r, r>()};
         const auto& [U, S, VT] = svd(A);
+        auto SVD = U * S * VT;
+        std::println("A == U*S*VT -> {}", A == SVD);
+        if constexpr (r <= 30) {
+            roundMatrix(A);
+            roundMatrix(SVD);
+            std::println("A ->\n{}\nU*S*VT ->\n{}", string(A), string(SVD));
+        }
     }
     return 0;
 }
