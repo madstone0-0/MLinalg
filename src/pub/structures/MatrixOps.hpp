@@ -666,7 +666,7 @@ namespace mlinalg::structures {
 
                         __m256d avxB2 = _mm256_loadu_pd(&kRow[j + 4]);
                         __m256d avxRes2 = _mm256_loadu_pd(&iRow[j + 4]);
-                        avxRes1 = _mm256_fmadd_pd(avxA, avxB2, avxRes2);
+                        avxRes2 = _mm256_fmadd_pd(avxA, avxB2, avxRes2);
                         _mm256_storeu_pd(&iRow[j + 4], avxRes2);
                     }
                     // Process remaining elements, if any, with scalar code.
