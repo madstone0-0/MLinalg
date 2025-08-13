@@ -35,21 +35,18 @@ namespace mlinalg {
     }
 
     /**
-     * @brief Find the diagonal of a square matrix.
+     * @brief Find the diagonal of a matrix.
      *
      * @param matrix The matrix to find the diagonal of.
      * @return The diagonal of the matrix.
      */
-    template <Number number, int n>
-    vector<number> diag(const Matrix<number, n, n>& matrix) {
+    template <Number number, int m, int n>
+    Vector<number, m> diag(const Matrix<number, m, n>& matrix) {
         const auto [nR, nC] = matrix.shape();
-        if (nR != nC) throw StackError("Matrix must be square to find a diagonal");
 
-        vector<number> res;
-        res.reserve(nR);
-        for (size_t i{}; i < nR; i++) {
-            res.push_back(matrix(i, i));
-        }
+        Vector<number, m> res(nR);
+        for (size_t i{}; i < nR; i++) res[i] = matrix(i, i);
+
         return res;
     }
 }  // namespace mlinalg

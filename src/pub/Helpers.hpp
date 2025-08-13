@@ -266,8 +266,8 @@ namespace mlinalg::structures::helpers {
         return res;
     }
 
-    template <typename T>
-    void applySortPermutation(vector<T>& vec, const vector<size_t>& permutation) {
+    template <Container T>
+    void applySortPermutation(T& vec, const vector<size_t>& permutation) {
         vector<bool> done(vec.size());
         for (size_t i{}; i < vec.size(); i++) {
             if (done[i]) continue;

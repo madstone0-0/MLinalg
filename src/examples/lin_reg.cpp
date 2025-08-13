@@ -1,218 +1,74 @@
 #include <algorithm>
 #include <cmath>
 #include <mlinalg/MLinalg.hpp>
-#include <numeric>
 #include <print>
-#include <random>
+
+#include "utils.hpp"
 
 using namespace std;
 using namespace mlinalg;
 using namespace mlinalg::structures;
-namespace rg = std::ranges;
 
-// Helper functions not found in MLinalg
-namespace {
-    double mean(const VD<double>& v) {
-        double res{};
-        v.apply([&](const auto x) { res += x; });
-        return res / (double)v.size();
+// Linear Regression
+struct LinearRegression {
+    LinearRegression() = default;
+    explicit LinearRegression(double alpha, Seed seed = Seed{42}) : alpha{alpha}, seed{seed} {}
+
+    [[nodiscard]] auto predict(const Matrix<double, Dynamic, Dynamic>& X) const {
+        // Check if bias term is already included
+        if (X.numCols() != theta.size()) {
+            auto Xb = matrixOnes<double, Dynamic, Dynamic>(X.numRows(), 1);
+            Xb = Xb.augment(X);
+            return Xb * theta;
+        }
+        return X * theta;
     }
 
-    VD<double> mean(const MD<double>& X, bool axis = true) {
-        auto [nR, nC] = X.shape();
-        if (axis) {
-            VD<double> res(nC);
-            for (size_t i{}; i < nC; ++i) {
-                auto col = X.col(i).toVector();
-                auto m = mean(col);
-                res.emplaceBack(m);
+    void train(const Matrix<double, Dynamic, Dynamic>& X, const Vector<double, Dynamic>& y, size_t iterations,
+               bool verbose = false) {
+        const auto [nR, nC] = X.shape();
+
+        // Add bias term (column of ones)
+        auto Xb = matrixOnes<double, Dynamic, Dynamic>(nR, 1);
+        Xb = Xb.augment(X);
+
+        // Initialize theta with smaller random values for better convergence
+        theta = vectorRandom<double, Dynamic>(Xb.numCols(), -0.1, 0.1, seed);
+        auto m = (double)y.size();
+
+        // Track cost history for monitoring convergence
+        vector<double> costHistory;
+        costHistory.reserve(iterations);
+
+        for (size_t i{}; i < iterations; ++i) {
+            auto predictions = predict(Xb);
+            auto error = predictions - y;
+
+            // Calculate cost (MSE)
+            double cost = utils::calculateMSE(y, predictions);
+            costHistory.emplace_back(cost);
+
+            // Gradient descent update
+            auto gradients = (1.0 / m) * ((helpers::extractMatrixFromTranspose(Xb.T())) * error);
+            theta -= alpha * gradients;
+
+            // Print progress every 5000 iterations
+            if (verbose && i % 5000 == 0) {
+                println("Iteration {}, Cost: {:.4f}", i, cost);
             }
-            return res;
-        } else {
-            VD<double> res(nR);
-            X.applyRow([&](const auto& row) { res.emplaceBack(mean(row)); });
-            return res;
+        }
+
+        if (verbose) {
+            println("Training completed after {} iterations", iterations);
+            println("Final cost: {:.4f}", costHistory.back());
+            println("Cost reduction: {:.4f}", costHistory[0] - costHistory.back());
         }
     }
 
-    double var(const VD<double>& v) {
-        double res{};
-        const auto& m = mean(v);
-        v.apply([&](const auto& x) {
-            auto val = x - m;
-            res += val * val;
-        });
-        return res / ((double)v.size() - 1);
-    }
-
-    VD<double> var(const MD<double>& X, bool axis = true) {
-        auto [nR, nC] = X.shape();
-        auto m = mean(X, axis);
-        if (axis) {
-            VD<double> res(nC);
-            for (size_t i{}; i < nC; i++) {
-                auto ones{vectorOnes<double, Dynamic>(nR)};
-                auto xMean = X.col(i) - ones * m[i];
-                xMean.apply([](auto& x) { x *= x; });
-                double sum{};
-                xMean.apply([&sum](const auto& x) { sum += x; });
-                res[i] = sum / (double)(nR);
-            }
-            return res;
-        } else {
-            VD<double> res(nR);
-            size_t i{};
-            X.applyRow([&](auto row) {
-                auto ones{vectorOnes<double, Dynamic>(nC)};
-                auto xMean = row - ones * m[i];
-                xMean.apply([](auto& x) { x *= x; });
-                double sum{};
-                xMean.apply([&sum](const auto& x) { sum += x; });
-                res.emplaceBack(sum / (double)(nC));
-                i++;
-            });
-            return res;
-        }
-    }
-
-    VD<double> std(const MD<double>& X, bool axis = true) {
-        auto std = var(X, axis);
-        std.apply([&](auto& x) { x = std::sqrt(x); });
-        return std;
-    }
-
-    MD<double> normalize(const MD<double>& X, bool axis = true) {
-        auto [nR, nC] = X.shape();
-        auto res{X};
-        auto m = mean(res, axis);
-        auto s = std(res, axis);
-
-        if (axis) {
-            for (size_t j{}; j < nC; ++j)
-                for (size_t i{}; i < nR; ++i) {
-                    res(i, j) = (res(i, j) - m[j]) / (fuzzyCompare(s[j], 0.0) ? 1e-15 : s[j]);
-                }
-        } else {
-            for (size_t i{}; i < nR; ++i)
-                for (size_t j{}; j < nC; ++j) {
-                    res(i, j) = (res(i, j) - m[i]) / (fuzzyCompare(s[i], 0.0) ? 1e-15 : s[j]);
-                }
-        }
-
-        return res;
-    }
-
-    // Calculate R-squared for model evaluation
-    auto r2_score(const VD<double>& y, const VD<double>& yp) {
-        double ss_tot{};
-
-        // Calculate mean of y_true
-        double yM{};
-        y.apply([&yM](auto& val) { yM += val; });
-        yM /= y.size();
-
-        auto diff = y - yp;
-        double ss_res = diff.dot(diff);
-        diff = y - yM * vectorOnes<double, Dynamic>(y.size());
-        ss_tot = diff.dot(diff);
-
-        return 1.0 - (ss_res / ss_tot);
-    }
-
-    // Calculate Mean Squared Error
-    auto calculateMSE(const VD<double>& y_true, const VD<double>& y_pred) {
-        auto diff = y_true - y_pred;
-        double mse = diff.dot(diff);
-        return mse / (double)y_true.size();
-    }
-
-    struct TrainTestSplit {
-        MD<double> XTrain, XTest;
-        VD<double> yTrain, yTest;
-        vector<size_t> trainIdx, testIdx;
-    };
-
-    TrainTestSplit trainTestSplit(const MD<double>& X, const VD<double>& y, double testSize = 0.2,
-                                  Seed seed = Seed{42}) {
-        if (X.numRows() != y.size()) throw std::invalid_argument{"X and y must have the ssame number of samples"};
-
-        if (testSize <= 0.0 || testSize >= 1.0) throw std::invalid_argument{"testSize must be between 0.0 and 1.0"};
-
-        size_t samples = y.size();
-        auto testSample = static_cast<size_t>(samples * testSize);
-        size_t trainSample = samples - testSample;
-
-        vector<size_t> idx(samples);
-        rg::iota(idx, 0);
-
-        mt19937 gen(seed.value());
-        rg::shuffle(idx, gen);
-
-        vector<size_t> trainIdx{idx.begin(), idx.begin() + trainSample};
-        vector<size_t> testIdx{idx.begin() + trainSample, idx.end()};
-
-        MD<double> XTrain(trainSample, X.numCols());
-        MD<double> XTest(testSample, X.numCols());
-        VD<double> yTrain(trainSample);
-        VD<double> yTest(testSample);
-
-        for (size_t i{}; i < trainSample; ++i) {
-            auto idx{trainIdx[i]};
-            XTrain[i] = X[idx];
-            yTrain[i] = y[idx];
-        }
-
-        for (size_t i{}; i < testSample; ++i) {
-            auto idx{testIdx[i]};
-            XTest[i] = X[idx];
-            yTest[i] = y[idx];
-        }
-
-        return {.XTrain = XTrain,
-                .XTest = std::move(XTest),
-                .yTrain = std::move(yTrain),
-                .yTest = std::move(yTest),
-                .trainIdx = std::move(trainIdx),
-                .testIdx = std::move(testIdx)};
-    }
-
-    struct StandardScaler {
-        void fit(const MD<double>& X) {
-            means_.resize(X.numCols());
-            stds_.resize(X.numCols());
-            means_ = mean(X, true);
-            stds_ = std(X, true);
-            fitted_ = true;
-        }
-
-        MD<double> transform(const MD<double>& X) {
-            if (!fitted_) throw runtime_error{"Scaler must be fitted before transform"};
-            auto [nR, nC] = X.shape();
-            auto res{X};
-
-            for (size_t j{}; j < nC; ++j)
-                for (size_t i{}; i < nR; ++i) {
-                    res(i, j) = (res(i, j) - means_[j]) / (fuzzyCompare(stds_[j], 0.0) ? 1e-15 : stds_[j]);
-                }
-
-            return res;
-        }
-
-        MD<double> fitTransform(const MD<double>& X) {
-            fit(X);
-            return transform(X);
-        }
-
-        [[nodiscard]] auto means() const { return means_; }
-        [[nodiscard]] auto stds() const { return stds_; }
-
-       private:
-        bool fitted_{};
-        VD<double> means_{0};
-        VD<double> stds_{0};
-    };
-
-}  // namespace
+    double alpha{0.01};
+    VD<double> theta{0};
+    Seed seed;  // Seed for reproducibility
+};
 
 int main() {
     Seed seed{42};  // Set a seed for reproducibility
@@ -272,73 +128,12 @@ int main() {
     // Separate the target variable (median_house_value) from the features
     auto y = X.removeCol(8);
     println("Dataset shape: {} rows, {} features", X.numRows(), X.numCols());
-    const auto& [XTrain, XTest, yTrain, yTest, trainIdx, testIdx] = trainTestSplit(X, y);
+    const auto& [XTrain, XTest, yTrain, yTest, trainIdx, testIdx] = utils::trainTestSplit(X, y);
 
     // Normalize the features
-    StandardScaler scale{};
+    utils::StandardScaler scale{};
     auto XNorm = scale.fitTransform(XTrain);
     println("Normalized features:\n{}", string(XNorm));
-
-    // Linear Regression
-    struct LinearRegression {
-        LinearRegression() = default;
-        explicit LinearRegression(double alpha, Seed seed = Seed{42}) : alpha{alpha}, seed{seed} {}
-
-        [[nodiscard]] auto predict(const Matrix<double, Dynamic, Dynamic>& X) const {
-            // Check if bias term is already included
-            if (X.numCols() != theta.size()) {
-                auto Xb = matrixOnes<double, Dynamic, Dynamic>(X.numRows(), 1);
-                Xb = Xb.augment(X);
-                return Xb * theta;
-            }
-            return X * theta;
-        }
-
-        void train(const Matrix<double, Dynamic, Dynamic>& X, const Vector<double, Dynamic>& y, size_t iterations,
-                   bool verbose = false) {
-            const auto [nR, nC] = X.shape();
-
-            // Add bias term (column of ones)
-            auto Xb = matrixOnes<double, Dynamic, Dynamic>(nR, 1);
-            Xb = Xb.augment(X);
-
-            // Initialize theta with smaller random values for better convergence
-            theta = vectorRandom<double, Dynamic>(Xb.numCols(), -0.1, 0.1, seed);
-            auto m = (double)y.size();
-
-            // Track cost history for monitoring convergence
-            vector<double> costHistory;
-            costHistory.reserve(iterations);
-
-            for (size_t i{}; i < iterations; ++i) {
-                auto predictions = predict(Xb);
-                auto error = predictions - y;
-
-                // Calculate cost (MSE)
-                double cost = calculateMSE(y, predictions);
-                costHistory.emplace_back(cost);
-
-                // Gradient descent update
-                auto gradients = (1.0 / m) * ((helpers::extractMatrixFromTranspose(Xb.T())) * error);
-                theta -= alpha * gradients;
-
-                // Print progress every 5000 iterations
-                if (verbose && i % 5000 == 0) {
-                    println("Iteration {}, Cost: {:.4f}", i, cost);
-                }
-            }
-
-            if (verbose) {
-                println("Training completed after {} iterations", iterations);
-                println("Final cost: {:.4f}", costHistory.back());
-                println("Cost reduction: {:.4f}", costHistory[0] - costHistory.back());
-            }
-        }
-
-        double alpha{0.01};
-        VD<double> theta{0};
-        Seed seed;  // Seed for reproducibility
-    };
 
     try {
         // Training params
@@ -357,8 +152,8 @@ int main() {
         VD<double> preds{linReg.predict(XNorm)};
 
         // Train performance
-        double r2 = r2_score(yTrain, preds);
-        double mse = calculateMSE(yTrain, preds);
+        double r2 = utils::r2_score(yTrain, preds);
+        double mse = utils::calculateMSE(yTrain, preds);
         double rmse = std::sqrt(mse);
 
         println("=== Train Performance ===");
@@ -372,8 +167,8 @@ int main() {
         VD<double> predsTest(linReg.predict(XTestNorm));
 
         // Test performance
-        double r2T = r2_score(yTest, predsTest);
-        double mseT = calculateMSE(yTest, predsTest);
+        double r2T = utils::r2_score(yTest, predsTest);
+        double mseT = utils::calculateMSE(yTest, predsTest);
         double rmseT = std::sqrt(mseT);
 
         println("=== Test Performance ===");

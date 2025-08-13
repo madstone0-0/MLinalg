@@ -54,7 +54,7 @@ namespace mlinalg {
      * @return  The identity matrix of the system.
      */
     template <Number number, int m>
-    Matrix<number, m, m> I(int nRows) {
+    Matrix<number, m, m> I(size_t nRows) {
         if constexpr (m == -1) {
             Matrix<number, m, m> identity(nRows, nRows);
             for (int i{}; i < nRows; i++) {
@@ -88,7 +88,7 @@ namespace mlinalg {
      * @return  The zero matrix of the given size.
      */
     template <Number number, int m, int n>
-    Matrix<number, m, n> matrixZeros(int nRows, int nCols) {
+    Matrix<number, m, n> matrixZeros(size_t nRows, size_t nCols) {
         if constexpr (m == Dynamic || n == Dynamic) {
             return Matrix<number, m, n>(nRows, nCols);
         } else {
@@ -114,7 +114,7 @@ namespace mlinalg {
      * @param size
      */
     template <Number number, int n>
-    Vector<number, n> vectorZeros(int size) {
+    Vector<number, n> vectorZeros(size_t size) {
         if constexpr (n == Dynamic) {
             return Vector<number, n>(size);
         } else {
@@ -146,7 +146,7 @@ namespace mlinalg {
      * @return The matrix of ones of the given size.
      */
     template <Number number, int m, int n>
-    Matrix<number, m, n> matrixOnes(int nRows, int nCols) {
+    Matrix<number, m, n> matrixOnes(size_t nRows, size_t nCols) {
         if constexpr (m == Dynamic || n == Dynamic) {
             Matrix<number, m, n> res(nRows, nCols);
             res.apply([](auto& x) { x = 1; });
@@ -176,7 +176,7 @@ namespace mlinalg {
      * @param size The size of the vector.
      */
     template <Number number, int n>
-    Vector<number, n> vectorOnes(int size) {
+    Vector<number, n> vectorOnes(size_t size) {
         if constexpr (n == Dynamic) {
             Vector<number, n> res(size);
             res.apply([](auto& x) { x = 1; });
