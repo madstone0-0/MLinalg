@@ -416,7 +416,6 @@ namespace mlinalg::structures {
         constexpr int vSize = isDynamic ? Dynamic : m;
         const auto& nRows = matrix.size();
         const auto& nCols = matrix[0].size();
-        const auto& vCols = vec.size();
         constexpr int vecSize = 4;            // AVX2 can handle 4 doubles
         constexpr int unrollFactor = 4;       // Unroll by 4 for better instruction pipelining
         constexpr int prefetchDistance = 64;  // Cache line size
@@ -976,7 +975,7 @@ namespace mlinalg::structures {
     inline TransposeVariant<number, m, n> TransposeMatrix(const T& matrix) {
         constexpr auto isDynamic = m == Dynamic || n == Dynamic;
 
-        constexpr auto vSize = []() -> auto {
+        constexpr auto vSize = [&]() -> auto {
             if constexpr (isDynamic) return Dynamic;
             if constexpr (n != 1)
                 return n;

@@ -93,6 +93,13 @@ else()
     message(STATUS "Skipping examples")
 endif()
 
+option(TESTS "Compile tests" ON)
+if(TESTS)
+    message(STATUS "Compiling tests")
+else()
+    message(STATUS "Skipping tests")
+endif()
+
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_link_options(-rdynamic -Wl,--export-dynamic)
@@ -115,7 +122,12 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 #################
 # Catch2        #
 #################
-find_package(Catch2 3 REQUIRED)
+if(TESTS)
+    find_package(Catch2 3 REQUIRED)
+
+    enable_testing()
+    add_subdirectory(src/test)
+endif()
 
 add_subdirectory(src)
 

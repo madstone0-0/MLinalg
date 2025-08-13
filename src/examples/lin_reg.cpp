@@ -1,12 +1,9 @@
 #include <algorithm>
+#include <cmath>
+#include <mlinalg/MLinalg.hpp>
 #include <numeric>
 #include <print>
 #include <random>
-
-#include "MLinalg.hpp"
-#include "Numeric.hpp"
-#include "operations/Builders.hpp"
-#include "structures/Aliases.hpp"
 
 using namespace std;
 using namespace mlinalg;
@@ -80,7 +77,7 @@ namespace {
 
     VD<double> std(const MD<double>& X, bool axis = true) {
         auto std = var(X, axis);
-        std.apply([&](auto& x) { x = sqrt(x); });
+        std.apply([&](auto& x) { x = std::sqrt(x); });
         return std;
     }
 
@@ -362,7 +359,7 @@ int main() {
         // Train performance
         double r2 = r2_score(yTrain, preds);
         double mse = calculateMSE(yTrain, preds);
-        double rmse = sqrt(mse);
+        double rmse = std::sqrt(mse);
 
         println("=== Train Performance ===");
         println("R-squared (R²): {:.4f}", r2);
@@ -377,7 +374,7 @@ int main() {
         // Test performance
         double r2T = r2_score(yTest, predsTest);
         double mseT = calculateMSE(yTest, predsTest);
-        double rmseT = sqrt(mseT);
+        double rmseT = std::sqrt(mseT);
 
         println("=== Test Performance ===");
         println("R-squared (R²): {:.4f}", r2T);

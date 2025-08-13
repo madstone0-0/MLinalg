@@ -228,8 +228,8 @@ namespace mlinalg::structures {
                      OffsetPair colOffset = {.start = 0, .end = -1},  //
                      StridePair stride = {.row = 1, .col = 1}         //
     ) {
-        const auto rows = matrix.size();
-        const auto cols = matrix.at(0).size();
+        const long rows = matrix.size();
+        const long cols = matrix.at(0).size();
 
         if (rowOffset.end < 0) rowOffset.end = rows;
         if (colOffset.end < 0) colOffset.end = cols;
