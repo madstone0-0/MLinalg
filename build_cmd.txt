@@ -1,1 +1,1 @@
-./build.sh debug yes -DSTACKTRACE=OFF -DEXAMPLES=ON
+./build.sh debug yes -DSTACKTRACE=OFF -DEXAMPLES=ON -DTESTS=ON
