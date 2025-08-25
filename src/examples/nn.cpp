@@ -237,8 +237,8 @@ int main() {
         println("Dataset shape: {} rows, {} features", X.numRows(), X.numCols());
         const auto& [XTrain, XVal, yTrain, yVal, trainIdx, valIdx] = utils::trainTestSplit(X, y);
 
-        size_t iterations{10'000};
-        double learningRate{0.001};
+        size_t iterations{5'000};
+        double learningRate{0.1};
         array<size_t, 4> layerSizes{X.numCols(), 12, 10, 3};
         println("Training Neural Network...");
         println("Learning rate: {}, Iterations: {}, Layer sizes: {}", learningRate, iterations, layerSizes);
