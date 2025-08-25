@@ -256,6 +256,8 @@ namespace mlinalg::structures {
         // Constructors and Destructor
         // ===========================
 
+        Matrix() = default;
+
         Matrix(size_t m, size_t n) : m(m), n(n) {
             if (m <= 0) throw invalid_argument("Matrix must have at least one row");
             if (n <= 0) throw invalid_argument("Matrix must have at least one column");
@@ -446,29 +448,31 @@ namespace mlinalg::structures {
 
         template <int nN>
         void pushCol(const Row<number, nN>& v) {
-            if (v.size() != m) {
-                throw invalid_argument("Column size must match the number of rows in the matrix");
+            // If the matrix is empty it should resize around the new column
+            if (m == 0) {
+                this->resize(v.size(), ++n);
+                for (size_t i{}; i < m; ++i) matrix[i][0] = v[i];
+            } else {
+                if (v.size() != m) {
+                    throw invalid_argument("Column size must match the number of rows in the matrix");
+                }
+                this->resize(m, n + 1);
+                for (size_t i{}; i < m; ++i) matrix[i].pushBack(v[i]);
+                n++;
             }
-
-            for (size_t i{}; i < m; ++i) matrix[i].pushBack(v[i]);
-            n++;
         }
 
         void resize(size_t newM, size_t newN) {
-            matrix.resize(newM, Row<number, Dynamic>(newN));
-            for (size_t i{}; i < newM; ++i) {
-                matrix[i].resize(newN);
-            }
+            if (newM != m) matrix.resize(newM, Row<number, Dynamic>(newN));
+            if (newN != n)
+                for (size_t i{}; i < newM; ++i) {
+                    matrix[i].resize(newN);
+                }
             m = newM;
             n = newN;
         }
 
-        void reserve(size_t newM, size_t newN) {
-            matrix.reserve(newM);
-            for (size_t i{}; i < newM; ++i) {
-                matrix[i].reserve(newN);
-            }
-        }
+        void reserve(size_t m) { matrix.reserve(m); }
 
         Row<number, Dynamic> removeRow(size_t idx) {
             if (idx >= m) throw StackError<std::out_of_range>("Index out of range");

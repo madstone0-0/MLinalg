@@ -210,7 +210,7 @@ namespace mlinalg::structures {
         // Constructors and Destructor
         // ===========================
 
-        Vector() = delete;
+        Vector() = default;
         explicit Vector(size_t size) : n{size}, row(size) {}
 
         Vector(const std::initializer_list<number>& list) : n{list.size()}, row{list} {}
@@ -340,7 +340,10 @@ namespace mlinalg::structures {
          */
         [[nodiscard]] size_t size() const override { return n; }
 
-        void pushBack(const number& v) { row.push_back(v); }
+        void pushBack(const number& v) {
+            row.push_back(v);
+            n = row.size();
+        }
 
         template <Number... Numbers>
             requires(sizeof...(Numbers) > 0 && (std::is_convertible_v<Numbers, number> && ...))

@@ -110,6 +110,7 @@ target_link_libraries(exe PRIVATE mlinalg::mlinalg)
 ## Author & Contact
 
 GitHub: [madstone0-0](https://github.com/madstone0-0)
+
 Email: [mhquansah@gmail.com](mailto:mhquansah@gmail.com)
 
 ---

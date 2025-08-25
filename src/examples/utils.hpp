@@ -1,11 +1,161 @@
 #pragma once
 #include <mlinalg/MLinalg.hpp>
+#include <mlinalg/structures/Aliases.hpp>
+#include <optional>
+#include <string>
+
+#include "third_party/csv.h"
 
 // Utility functions not found in MLinalg
 namespace utils {
     using namespace std;
     using namespace mlinalg;
     namespace rg = std::ranges;
+
+    /* Taken from Hands On Machine Learning with C++, Kolodiazhnyi, 2020, Section 1.2.2 */
+
+    using DefaultRowType = tuple<double, double, double, double, double, double>;
+    using DefaultHeaderType = tuple<string, string, string, string, string, string>;
+
+    template <size_t... Idx, typename T, typename R>
+    bool readRowHelp(index_sequence<Idx...> /*idx*/, T& row, R& r) {
+        return r.read_row(get<Idx>(row)...);
+    }
+
+    template <typename T>
+    void processElement(const T& element, vector<double>& data, vector<string>& catCols) {
+        if constexpr (std::is_same_v<T, double>) {
+            data.push_back(element);
+        } else if constexpr (std::is_same_v<T, string>) {
+            catCols.push_back(element);
+        }
+    }
+
+    // Unpack all elements of the tuple and process each one.
+    template <size_t... Idx, typename T>
+    void fillValues(index_sequence<Idx...> /*unused*/, T& row, vector<double>& data, vector<std::string>& catCols) {
+        (processElement(get<Idx>(row), data, catCols), ...);
+    }
+
+    template <size_t nCols, bool hasHeader = true, typename Header = DefaultHeaderType, typename Row = DefaultRowType,
+              typename T, typename Quant, typename Cat>
+    optional<Header> readCSV(const string& path, T& row, Quant& values, Cat& catCols) {
+        try {
+            io::CSVReader<nCols> reader(path);
+            Header header;
+            if constexpr (hasHeader) {
+                // Skip header
+                readRowHelp(make_index_sequence<tuple_size<Header>::value>{}, header, reader);
+
+                // array<string, nCols> header;
+                // for (size_t i{}; i < nCols; i++) header.at(i) = "C" + to_string(i);
+                // apply([&reader](auto&&... args) { reader.read_header(io::ignore_missing_column, args...); }, header);
+            }
+
+            bool done = false;
+            while (!done) {
+                done = !readRowHelp(make_index_sequence<tuple_size<Row>::value>{}, row, reader);
+                if (!done) {
+                    fillValues(make_index_sequence<nCols>{}, row, values, catCols);
+                }
+            }
+
+            if (hasHeader)
+                return header;
+            else
+                return nullopt;
+        } catch (const io::error::no_digit& err) {
+            cerr << err.what() << '\n';
+        }
+        return nullopt;
+    }
+    /* Taken from Hands On Machine Learning with C++, Kolodiazhnyi, 2020, Section 1.2.2 */
+
+    using Labels = unordered_map<string, size_t>;
+
+    inline pair<Labels, VD<double>> labelEncode(const vector<std::string>& labels) {
+        using namespace std;
+        Labels labelMap{};
+        double i{};
+        for (const auto& label : labels) {
+            if (labelMap.contains(label)) continue;
+            labelMap.insert({label, i++});
+        }
+        VD<double> encodedLabels{};
+        encodedLabels.reserve(labels.size());
+        for (const auto& label : labels) {
+            encodedLabels.pushBack(labelMap[label]);
+        }
+        return {labelMap, encodedLabels};
+    }
+
+    struct Dataset {
+        MD<double> values;
+        map<string, Labels> labelMap;
+    };
+
+    template <size_t QuantCols, size_t CatCols, typename Header = DefaultHeaderType, typename Quant, typename Cat>
+    inline Dataset fillDatasetMatrix(const Quant& quant, const Cat& cat) {
+        constexpr auto TotalCols = QuantCols + CatCols;
+        const auto totalSize = quant.size() + cat.size();
+        const auto totalRows = totalSize / TotalCols;
+        Dataset res{};
+        // res.values.reserve(totalRows, TotalCols);
+
+        optional<MD<double>> allEncodedLabelsOpt{nullopt};
+        if constexpr (CatCols > 0) {
+            vector<vector<string>> catRows{};
+            for (size_t i{}; i < cat.size(); i += CatCols) {
+                catRows.emplace_back(cat.begin() + i, cat.begin() + (i + CatCols));
+            }
+
+            const auto catCols{catRows[0].size()};
+            MD<double> allEncodedLabels(catRows.size(), catCols);
+
+            for (size_t i{}; i < catCols; i++) {
+                vector<string> labels{};
+                labels.reserve(catCols);
+                for (size_t j{}; j < catRows.size(); j++) {
+                    labels.push_back(catRows.at(j).at(i));
+                }
+                const auto& [labelMap, encodedLabels] = labelEncode(labels);
+                res.labelMap[format("cat_{}", i + 1)] = labelMap;
+                for (size_t j{}; j < catRows.size(); j++) {
+                    allEncodedLabels(j, i) = encodedLabels[j];
+                }
+            }
+            allEncodedLabelsOpt = allEncodedLabels;
+        }
+
+        MD<double> quantVals(quant.size() / QuantCols, QuantCols);
+        for (size_t i{}; i < quantVals.numRows(); i++) {
+            quantVals[i] = VD<double>(quant.begin() + (i * QuantCols), quant.begin() + ((i + 1) * QuantCols));
+        }
+
+        if (allEncodedLabelsOpt.has_value()) {
+            res.values = allEncodedLabelsOpt.value().augment(quantVals);
+        } else {
+            res.values = quantVals;
+        }
+        return res;
+    }
+
+    inline VD<double> max(const VD<double>& v) {
+        double max{-1};
+        v.apply([&](const auto& x) { max = std::max(max, x); });
+        VD<double> res(v.size());
+        res.apply([&](auto& x) { x = max; });
+        return res;
+    }
+
+    inline MD<double> max(const MD<double>& A) {
+        const auto [nR, nC] = A.shape();
+        double max{-1};
+        A.apply([&](const auto& x) { max = std::max(max, x); });
+        MD<double> res(nR, nC);
+        res.apply([&](auto& x) { x = max; });
+        return res;
+    }
 
     inline double mean(const VD<double>& v) {
         double res{};
@@ -39,6 +189,25 @@ namespace utils {
             res += val * val;
         });
         return res / ((double)v.size() - 1);
+    }
+
+    inline double sum(const VD<double>& v) {
+        double res{};
+        v.apply([&](const auto& x) { res += x; });
+        return res;
+    }
+
+    inline VD<double> sum(const MD<double>& X, bool axis = true) {
+        auto [nR, nC] = X.shape();
+        if (axis) {
+            VD<double> res(nC);
+            for (size_t i{}; i < nC; ++i) res[i] = sum(X.col(i).toVector());
+            return res;
+        } else {
+            VD<double> res(nR);
+            for (size_t i{}; i < nR; ++i) res[i] = sum(X[i]);
+            return res;
+        }
     }
 
     inline VD<double> var(const MD<double>& X, bool axis = true) {
@@ -121,18 +290,18 @@ namespace utils {
         return mse / (double)y_true.size();
     }
 
+    using Indices = vector<size_t>;
+
+    template <typename Features, typename Target>
     struct TrainTestSplit {
-        MD<double> XTrain, XTest;
-        VD<double> yTrain, yTest;
-        vector<size_t> trainIdx, testIdx;
+        Features XTrain, XTest;
+        Target yTrain, yTest;
+        Indices trainIdx, testIdx;
     };
 
-    inline TrainTestSplit trainTestSplit(const MD<double>& X, const VD<double>& y, double testSize = 0.2,
-                                         Seed seed = Seed{42}) {
-        if (X.numRows() != y.size()) throw std::invalid_argument{"X and y must have the ssame number of samples"};
-
-        if (testSize <= 0.0 || testSize >= 1.0) throw std::invalid_argument{"testSize must be between 0.0 and 1.0"};
-
+    template <typename Features, typename Target>
+    tuple<size_t, size_t, Indices, Indices> shuffleIndices(const Features& X, const Target& y, double testSize,
+                                                           Seed seed) {
         size_t samples = y.size();
         auto testSample = static_cast<size_t>(samples * testSize);
         size_t trainSample = samples - testSample;
@@ -143,13 +312,56 @@ namespace utils {
         mt19937 gen(seed.value());
         rg::shuffle(idx, gen);
 
-        vector<size_t> trainIdx{idx.begin(), idx.begin() + trainSample};
-        vector<size_t> testIdx{idx.begin() + trainSample, idx.end()};
+        Indices trainIdx{idx.begin(), idx.begin() + trainSample};
+        Indices testIdx{idx.begin() + trainSample, idx.end()};
+        return {trainSample, testSample, trainIdx, testIdx};
+    }
+
+    inline auto trainTestSplit(const MD<double>& X, const VD<double>& y, double testSize = 0.2, Seed seed = Seed{42})
+        -> TrainTestSplit<MD<double>, VD<double>> {
+        if (X.numRows() != y.size()) throw std::invalid_argument{"X and y must have the same number of samples"};
+
+        if (testSize <= 0.0 || testSize >= 1.0) throw std::invalid_argument{"testSize must be between 0.0 and 1.0"};
+
+        auto [trainSample, testSample, trainIdx, testIdx] = shuffleIndices(X, y, testSize, seed);
 
         MD<double> XTrain(trainSample, X.numCols());
         MD<double> XTest(testSample, X.numCols());
         VD<double> yTrain(trainSample);
         VD<double> yTest(testSample);
+
+        for (size_t i{}; i < trainSample; ++i) {
+            auto idx{trainIdx[i]};
+            XTrain[i] = X[idx];
+            yTrain[i] = y[idx];
+        }
+
+        for (size_t i{}; i < testSample; ++i) {
+            auto idx{testIdx[i]};
+            XTest[i] = X[idx];
+            yTest[i] = y[idx];
+        }
+
+        return {.XTrain = std::move(XTrain),
+                .XTest = std::move(XTest),
+                .yTrain = std::move(yTrain),
+                .yTest = std::move(yTest),
+                .trainIdx = std::move(trainIdx),
+                .testIdx = std::move(testIdx)};
+    }
+
+    inline auto trainTestSplit(const MD<double>& X, const MD<double>& y, double testSize = 0.2, Seed seed = Seed{42})
+        -> TrainTestSplit<MD<double>, MD<double>> {
+        if (X.numRows() != y.size()) throw std::invalid_argument{"X and y must have the same number of samples"};
+
+        if (testSize <= 0.0 || testSize >= 1.0) throw std::invalid_argument{"testSize must be between 0.0 and 1.0"};
+
+        auto [trainSample, testSample, trainIdx, testIdx] = shuffleIndices(X, y, testSize, seed);
+
+        MD<double> XTrain(trainSample, X.numCols());
+        MD<double> XTest(testSample, X.numCols());
+        MD<double> yTrain(trainSample, y.numCols());
+        MD<double> yTest(testSample, y.numCols());
 
         for (size_t i{}; i < trainSample; ++i) {
             auto idx{trainIdx[i]};
@@ -274,5 +486,19 @@ namespace utils {
         }
 
         return res;
+    }
+
+    // Taken from https://stackoverflow.com/a/37094024
+    template <size_t, class T>
+    using T_ = T;
+
+    template <class T, size_t... Is>
+    auto gen(std::index_sequence<Is...>) {
+        return std::tuple<T_<Is, T>...>{};
+    }
+
+    template <class T, size_t N>
+    auto gen() {
+        return gen<T>(std::make_index_sequence<N>{});
     }
 }  // namespace utils

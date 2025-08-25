@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../Concepts.hpp"
 #include "../structures/Matrix.hpp"
 
 namespace mlinalg {
