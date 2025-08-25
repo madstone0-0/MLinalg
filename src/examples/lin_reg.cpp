@@ -25,7 +25,7 @@ struct LinearRegression {
     }
 
     void train(const Matrix<double, Dynamic, Dynamic>& X, const Vector<double, Dynamic>& y, size_t iterations,
-               bool verbose = false) {
+               bool verbose = false, float tol = 1e-7) {
         const auto [nR, nC] = X.shape();
 
         // Add bias term (column of ones)
@@ -56,6 +56,14 @@ struct LinearRegression {
             if (verbose && i % 5000 == 0) {
                 println("Iteration {}, Cost: {:.4f}", i, cost);
             }
+
+            // Early stop
+            if (i > 0 && std::abs(costHistory[i] - costHistory[i - 1]) < tol) {
+                if (verbose) {
+                    println("Early stopping at iteration {} due to minimal cost change.", i);
+                }
+                break;
+            }
         }
 
         if (verbose) {
@@ -72,68 +80,45 @@ struct LinearRegression {
 
 int main() {
     Seed seed{42};  // Set a seed for reproducibility
-    // First 50 rows of the California housing dataset
-    MD<double> X{
-        {-122.23, 37.88, 41.0, 880.0, 129.0, 322.0, 126.0, 8.3252, 452600.0, 0.0},
-        {-122.22, 37.86, 21.0, 7099.0, 1106.0, 2401.0, 1138.0, 8.3014, 358500.0, 0.0},
-        {-122.24, 37.85, 52.0, 1467.0, 190.0, 496.0, 177.0, 7.2574, 352100.0, 0.0},
-        {-122.25, 37.85, 52.0, 1274.0, 235.0, 558.0, 219.0, 5.6431, 341300.0, 0.0},
-        {-122.25, 37.85, 52.0, 1627.0, 280.0, 565.0, 259.0, 3.8462, 342200.0, 0.0},
-        {-122.25, 37.85, 52.0, 919.0, 213.0, 413.0, 193.0, 4.0368, 269700.0, 0.0},
-        {-122.25, 37.84, 52.0, 2535.0, 489.0, 1094.0, 514.0, 3.6591, 299200.0, 0.0},
-        {-122.25, 37.84, 52.0, 3104.0, 687.0, 1157.0, 647.0, 3.12, 241400.0, 0.0},
-        {-122.26, 37.84, 42.0, 2555.0, 665.0, 1206.0, 595.0, 2.0804, 226700.0, 0.0},
-        {-122.25, 37.84, 52.0, 3549.0, 707.0, 1551.0, 714.0, 3.6912, 261100.0, 0.0},
-        {-122.26, 37.85, 52.0, 2202.0, 434.0, 910.0, 402.0, 3.2031, 281500.0, 0.0},
-        {-122.26, 37.85, 52.0, 3503.0, 752.0, 1504.0, 734.0, 3.2705, 241800.0, 0.0},
-        {-122.26, 37.85, 52.0, 2491.0, 474.0, 1098.0, 468.0, 3.075, 213500.0, 0.0},
-        {-122.26, 37.84, 52.0, 696.0, 191.0, 345.0, 174.0, 2.6736, 191300.0, 0.0},
-        {-122.26, 37.85, 52.0, 2643.0, 626.0, 1212.0, 620.0, 1.9167, 159200.0, 0.0},
-        {-122.26, 37.85, 50.0, 1120.0, 283.0, 697.0, 264.0, 2.125, 140000.0, 0.0},
-        {-122.27, 37.85, 52.0, 1966.0, 347.0, 793.0, 331.0, 2.775, 152500.0, 0.0},
-        {-122.27, 37.85, 52.0, 1228.0, 293.0, 648.0, 303.0, 2.1202, 155500.0, 0.0},
-        {-122.26, 37.84, 50.0, 2239.0, 455.0, 990.0, 419.0, 1.9911, 158700.0, 0.0},
-        {-122.27, 37.84, 52.0, 1503.0, 298.0, 690.0, 275.0, 2.6033, 162900.0, 0.0},
-        {-122.27, 37.85, 40.0, 751.0, 184.0, 409.0, 166.0, 1.3578, 147500.0, 0.0},
-        {-122.27, 37.85, 42.0, 1639.0, 367.0, 929.0, 366.0, 1.7135, 159800.0, 0.0},
-        {-122.27, 37.84, 52.0, 2436.0, 541.0, 1015.0, 478.0, 1.725, 113900.0, 0.0},
-        {-122.27, 37.84, 52.0, 1688.0, 337.0, 853.0, 325.0, 2.1806, 99700.0, 0.0},
-        {-122.27, 37.84, 52.0, 2224.0, 437.0, 1006.0, 422.0, 2.6, 132600.0, 0.0},
-        {-122.28, 37.85, 41.0, 535.0, 123.0, 317.0, 119.0, 2.4038, 107500.0, 0.0},
-        {-122.28, 37.85, 49.0, 1130.0, 244.0, 607.0, 239.0, 2.4597, 93800.0, 0.0},
-        {-122.28, 37.85, 52.0, 1898.0, 421.0, 1102.0, 397.0, 1.808, 105500.0, 0.0},
-        {-122.28, 37.84, 50.0, 2082.0, 492.0, 1131.0, 473.0, 1.6424, 108900.0, 0.0},
-        {-122.28, 37.84, 52.0, 729.0, 160.0, 395.0, 155.0, 1.6875, 132000.0, 0.0},
-        {-122.28, 37.84, 49.0, 1916.0, 447.0, 863.0, 378.0, 1.9274, 122300.0, 0.0},
-        {-122.28, 37.84, 52.0, 2153.0, 481.0, 1168.0, 441.0, 1.9615, 115200.0, 0.0},
-        {-122.27, 37.84, 48.0, 1922.0, 409.0, 1026.0, 335.0, 1.7969, 110400.0, 0.0},
-        {-122.27, 37.83, 49.0, 1655.0, 366.0, 754.0, 329.0, 1.375, 104900.0, 0.0},
-        {-122.27, 37.83, 51.0, 2665.0, 574.0, 1258.0, 536.0, 2.7303, 109700.0, 0.0},
-        {-122.27, 37.83, 49.0, 1215.0, 282.0, 570.0, 264.0, 1.4861, 97200.0, 0.0},
-        {-122.27, 37.83, 48.0, 1798.0, 432.0, 987.0, 374.0, 1.0972, 104500.0, 0.0},
-        {-122.28, 37.83, 52.0, 1511.0, 390.0, 901.0, 403.0, 1.4103, 103900.0, 0.0},
-        {-122.26, 37.83, 52.0, 1470.0, 330.0, 689.0, 309.0, 3.48, 191400.0, 0.0},
-        {-122.26, 37.83, 52.0, 2432.0, 715.0, 1377.0, 696.0, 2.5898, 176000.0, 0.0},
-        {-122.26, 37.83, 52.0, 1665.0, 419.0, 946.0, 395.0, 2.0978, 155400.0, 0.0},
-        {-122.26, 37.83, 51.0, 936.0, 311.0, 517.0, 249.0, 1.2852, 150000.0, 0.0},
-        {-122.26, 37.84, 49.0, 713.0, 202.0, 462.0, 189.0, 1.025, 118800.0, 0.0},
-        {-122.26, 37.84, 52.0, 950.0, 202.0, 467.0, 198.0, 3.9643, 188800.0, 0.0},
-        {-122.26, 37.83, 52.0, 1443.0, 311.0, 660.0, 292.0, 3.0125, 184400.0, 0.0},
-        {-122.26, 37.83, 52.0, 1656.0, 420.0, 718.0, 382.0, 2.6768, 182300.0, 0.0},
-        {-122.26, 37.83, 50.0, 1125.0, 322.0, 616.0, 304.0, 2.026, 142500.0, 0.0},
-        {-122.27, 37.82, 43.0, 1007.0, 312.0, 558.0, 253.0, 1.7348, 137500.0, 0.0},
-        {-122.26, 37.82, 40.0, 624.0, 195.0, 423.0, 160.0, 0.9506, 187500.0, 0.0},
-    };
 
+    using HousingRowType = tuple<double, double, double, double, double, double, double, double, string, double>;
+    using HousingHeaderType = tuple<  //
+        string,                       // Longitude
+        string,                       // Latitude
+        string,                       // Housing Median Age
+        string,                       // Total Rooms
+        string,                       // Total Bedrooms
+        string,                       // Population
+        string,                       // Households
+        string,                       // Median Income
+        string,                       // Ocean Proximity
+        string                        // Median House Value
+        >;
+    vector<string> catCols{};
+    vector<double> values{};
+    HousingRowType row;
+
+    utils::Dataset dataset;
+    try {
+        auto headersOpt = utils::readCSV<10, true, HousingHeaderType, HousingRowType>(
+            "./src/examples/datasets/housing.csv", row, values, catCols);
+        dataset = utils::fillDatasetMatrix<9, 1>(values, catCols);
+    } catch (const std::exception& e) {
+        println("Error reading CSV file: {}", e.what());
+        return 1;
+    }
+
+    auto& X = dataset.values;
     // Separate the target variable (median_house_value) from the features
-    auto y = X.removeCol(8);
+    auto y = X.removeCol(X.numCols() - 1);
     println("Dataset shape: {} rows, {} features", X.numRows(), X.numCols());
     const auto& [XTrain, XTest, yTrain, yTest, trainIdx, testIdx] = utils::trainTestSplit(X, y);
 
     // Normalize the features
     utils::StandardScaler scale{};
     auto XNorm = scale.fitTransform(XTrain);
-    println("Normalized features:\n{}", string(XNorm));
+    println("Normalized features:\n{}", string(XNorm.view({.start = 0, .end = std::min((int)XNorm.numRows(), 4)},
+                                                          {.start = 0, .end = std::min((int)XNorm.numCols(), 4)})));
 
     try {
         // Training params
@@ -145,10 +130,10 @@ int main() {
         LinearRegression linReg{learningRate, seed};
         linReg.train(XNorm, yTrain, iterations, true);
 
-        println("Model parameters (theta):\n{}", linReg.theta);
+        println("First 3 Model parameters (theta):\n{}", string(linReg.theta.view(0, 3)));
         println("\n");
 
-        // Make predictions on the test data
+        // Make predictions on the train data
         VD<double> preds{linReg.predict(XNorm)};
 
         // Train performance
