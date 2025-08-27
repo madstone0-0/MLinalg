@@ -1,6 +1,5 @@
 #pragma once
 
-#include <functional>
 #include <iterator>
 #include <type_traits>
 
@@ -14,11 +13,11 @@ namespace mlinalg::structures {
     template <typename D, Number number>
     class VectorBase;
 
-    template <Number number, int n>
+    template <Number number, Dim n>
     using VectorViewBaseType = helpers::IsDynamicT<n, n, VectorRowDynamic<number>, VectorRow<number, n>>;
 
     /**
-     * @brief Base CTRP class for VectorView operations
+     * @brief Base CRTP class for VectorView operations
      *
      * @tparam D The derived class type, used for CRTP
      * @tparam number The type of the number in the vector, which can be any numeric type
@@ -78,7 +77,7 @@ namespace mlinalg::structures {
      * @brief A memory view of a vector, allowing for efficient access to a subset of the vector
      *
      * It supports all the operations of a vector, but does not own the data. As such each
-     * out-of-place operation (like addition, subtraction, multiplication) will return a new vector
+     * out-of-place operation (like addition, subtraction, multiplication, and division) will return a new vector
      * that is a copy of the original vector with the operation applied, however, in-place operations
      * (like +=, -=, *=, /=) will modify the original vector.
      *
@@ -92,16 +91,17 @@ namespace mlinalg::structures {
      * @param stride The stride for the view, defaults to 1, which means to access every element in the range
      * @return A VectorView object that provides a view of the vector data
      */
-    template <Number number, int n, int newSize = n>
+    template <Number number, Dim n, Dim newSize = n>
     class VectorView : public VectorViewBase<VectorView<number, n, newSize>, number> {
         using VectorRef = VectorViewBaseType<number, n>&;
         using Base = VectorView<number, n, newSize>;
 
        public:
         using difference_type = std::ptrdiff_t;
-        constexpr static auto vn = newSize;
+        constexpr static auto elements = newSize;
 
-        VectorView(VectorRef v, difference_type start = 0, difference_type end = -1, difference_type stride = 1)
+        explicit VectorView(VectorRef v, difference_type start = 0, difference_type end = -1,
+                            difference_type stride = 1)
             : row{v, start, end, stride}, s{start}, e{end}, stride{stride} {}
 
         // ======================
@@ -158,7 +158,7 @@ namespace mlinalg::structures {
      * @param colIdx The index of the column to view
      * @return A ColumnView object that provides a view of the column data
      */
-    template <Number number, int m, int n, Container T>
+    template <Number number, Dim m, Dim n, Container T>
     class ColumnView : public VectorViewBase<ColumnView<number, m, n, T>, number> {
        public:
         using MatrixType = T;
@@ -167,7 +167,7 @@ namespace mlinalg::structures {
         using difference_type = std::ptrdiff_t;
         using value_type = number;
         using size_type = size_t;
-        static constexpr auto vn = m;
+        static constexpr auto elements = m;
 
         ColumnView(MatrixPtr matrix, size_type colIdx) : row{matrix, colIdx} {
             if (colIdx < 0 || colIdx >= matrix->numCols()) {
@@ -256,6 +256,11 @@ namespace mlinalg::structures {
         }
 
        private:
+        /**
+         * @class Backing
+         * @brief A helper struct that provides access to the elements of a column in a matrix.
+         *
+         */
         struct Backing {
             using value_type = number;
             using size_type = size_t;
@@ -294,7 +299,7 @@ namespace mlinalg::structures {
         friend class VectorViewBase<ColumnView<number, m, n, T>, number>;
     };
 
-    template <Number number, int n, int newSize = n, Container T>
+    template <Number number, Dim n, Dim newSize = n, Container T>
     inline auto View(T& v, long start = 0, long end = -1, long stride = 1) {
         const auto size = v.size();
 

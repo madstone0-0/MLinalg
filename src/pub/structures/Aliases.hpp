@@ -4,11 +4,8 @@
  */
 
 #pragma once
-#include <array>
 #include <boost/container/small_vector.hpp>
 #include <cstddef>
-#include <functional>
-#include <memory>
 #include <optional>
 #include <type_traits>
 #include <utility>
@@ -17,16 +14,20 @@
 
 #include "../Concepts.hpp"
 #include "Allocator.hpp"
+#include "Container.hpp"
 
 namespace mlinalg::structures {
+    using Dim = int;
+    using SizeType = size_t;
+
     /**
      * @brief Dynamic size constant
      */
-    static constexpr int Dynamic{-1};
+    static constexpr Dim Dynamic{-1};
     // =============================
     // Vector Aliases
     // =============================
-    template <Number number, int n>
+    template <Number number, Dim n>
     class Vector;
 
     template <Number number>
@@ -36,33 +37,34 @@ namespace mlinalg::structures {
     template <Number number>
     using VectorRowType = std::vector<number, DefaultAllocator<number>>;
 
+    template <Number number, SizeType n>
+    // using SmallVectorType = boost::container::small_vector<number, n, DefaultAllocator<number>>;
+    using SmallVectorType = container::StaticContainer<number, n>;
+
+    /**
+     * @brief Threshold for small vector optimization
+     *
+     * If the size of the vector is less than this threshold, it will be stored inline on the stack
+     *
+     * @tparam T The type of the elements in the vector
+     */
+    template <typename T>
+    constexpr std::size_t inlineThreshold = (256 + sizeof(T) - 1) / sizeof(T);
+
     /**
      * @brief  Type alias for the backing array of a Vector
      *
      * Supports small vector optimization for vectors with size less than 256 bytes.
      */
-    template <Number number, int n>
-        requires(n >= 0)
-    using VectorRow = std::conditional_t<n >= ((256 + sizeof(number) - 1) / sizeof(number)), VectorRowType<number>,
-                                         boost::container::small_vector<number, n, DefaultAllocator<number>>>;
+    template <Number number, SizeType n>
+    using VectorRow =
+        std::conditional_t<n >= inlineThreshold<number>, VectorRowType<number>, SmallVectorType<number, n>>;
 
     /**
      * @brief Type alias for the backing array of a dynamic Vector
      */
     template <Number number>
     using VectorRowDynamic = VectorRowType<number>;
-
-    /**
-     * @brief Type alias for a unique pointer to a VectorRow
-     */
-    template <Number number, int n>
-    using VectorRowPtr = std::unique_ptr<VectorRow<number, n>>;
-
-    /**
-     * @brief Type alias for a unique pointer to a dynamic VectorRow
-     */
-    template <Number number>
-    using VectorRowDynamicPtr = std::unique_ptr<VectorRowDynamic<number>>;
 
     /**
      * @brief Type alias for a 2D Vector
@@ -83,13 +85,13 @@ namespace mlinalg::structures {
     using VD = Vector<number, Dynamic>;
 
     // Convenience vector aliases
-    template <int n>
+    template <Dim n>
     using Vf = Vector<float, n>;
-    template <int n>
+    template <Dim n>
     using Vd = Vector<double, n>;
-    template <int n>
+    template <Dim n>
     using Vi = Vector<int, n>;
-    template <int n>
+    template <Dim n>
     using Vui = Vector<unsigned int, n>;
 
     using V2f = V2<float>;
@@ -105,14 +107,16 @@ namespace mlinalg::structures {
     // =============================
     // Matrix Aliases
     // =============================
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     class Matrix;
 
-    using SizePair = std::pair<int, int>;
+    using SizePair = std::pair<Dim, Dim>;
 
-    using SizeTPair = std::pair<size_t, size_t>;
+    using SizeTPair = std::pair<SizeType, SizeType>;
 
-    template <Number number, int m, int n>
+    constexpr SizePair DynamicPair{Dynamic, Dynamic};
+
+    template <Number number, Dim m, Dim n>
     using VectorVariant = std::conditional_t<n != 1, Vector<number, n>, Vector<number, m>>;
 
     /**
@@ -121,31 +125,29 @@ namespace mlinalg::structures {
      * This is used to represent the result of a matrix or vector transposition. As the transpose of a vector is a 1xM
      * matrix and the transpose of a matrix is an NxM matrix, this variant is used to represent either of these
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     using TransposeVariant = std::variant<VectorVariant<number, m, n>, Matrix<number, n, m>>;
 
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     using VectorTransposeVariant = std::variant_alternative_t<0, TransposeVariant<number, m, n>>;
 
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     using MatrixTransposeVariant = std::variant_alternative_t<1, TransposeVariant<number, m, n>>;
 
     /**
      * @brief Type alias for a Vector as a row in a Matrix
      */
-    template <Number number, int n>
+    template <Number number, Dim n>
     using Row = Vector<number, n>;
 
     template <Number number>
-    using RowDynamic = Vector<number, -1>;
+    using RowDynamic = Vector<number, Dynamic>;
 
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     using TDArray = std::vector<Row<number, n>>;
 
     template <Number number>
     using TDArrayDynamic = std::vector<RowDynamic<number>>;
-
-    constexpr SizePair DynamicPair{Dynamic, Dynamic};
 
     /**
      * @brief Type alias for a 2x2 Matrix
@@ -166,13 +168,13 @@ namespace mlinalg::structures {
     using MD = Matrix<number, Dynamic, Dynamic>;
 
     // Convenience matrix aliases
-    template <int m, int n>
+    template <Dim m, Dim n>
     using Mf = Matrix<float, m, n>;
-    template <int m, int n>
+    template <Dim m, Dim n>
     using Md = Matrix<double, m, n>;
-    template <int m, int n>
+    template <Dim m, Dim n>
     using Mi = Matrix<int, m, n>;
-    template <int m, int n>
+    template <Dim m, Dim n>
     using Mui = Matrix<unsigned int, m, n>;
 
     using M2x2f = M2x2<float>;
@@ -192,25 +194,26 @@ namespace mlinalg::structures {
     /**
      * @brief Row of optional numbers type alias.
      */
-    template <Number number, int m>
-    using RowOptional = std::conditional_t<m == -1, RowDynamic<std::optional<number>>, Row<std::optional<number>, m>>;
+    template <Number number, Dim m>
+    using RowOptional =
+        std::conditional_t<m == Dynamic, RowDynamic<std::optional<number>>, Row<std::optional<number>, m>>;
 
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     using ConditionalOptionalRowOptional =
         std::conditional_t<m == Dynamic || n == Dynamic, std::optional<RowOptional<number, Dynamic>>,
                            std::optional<RowOptional<number, n - 1>>>;
 
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     using ConditionalRow =
         std::conditional_t<m == Dynamic || n == Dynamic, Vector<number, Dynamic>, Vector<number, n - 1>>;
 
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     using ConditionalRowOptional =
         std::conditional_t<m == Dynamic || n == Dynamic, RowOptional<number, Dynamic>, RowOptional<number, n - 1>>;
 
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     using ConditionalRowOptionalN =
         std::conditional_t<m == Dynamic || n == Dynamic, RowOptional<number, Dynamic>, RowOptional<number, n>>;
 
-    using Seed = std::optional<size_t>;
+    using Seed = std::optional<SizeType>;
 }  // namespace mlinalg::structures
