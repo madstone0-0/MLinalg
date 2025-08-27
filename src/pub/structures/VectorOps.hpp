@@ -17,6 +17,7 @@
 #include "../Helpers.hpp"
 #include "../Numeric.hpp"
 #include "Aliases.hpp"
+#include "structures/MatrixOps.hpp"
 
 namespace mlinalg::structures {
     using namespace mlinalg::stacktrace;
@@ -46,11 +47,17 @@ namespace mlinalg::structures {
 
     template <Number number, Container T>
     inline number& vectorAt(T& row, size_t i) {
+        if (i >= row.size() || i < 0) {
+            throw StackError<std::out_of_range>("index out of range");
+        }
         return row.at(i);
     }
 
     template <Number number, Container T>
     inline const number& vectorConstAt(const T& row, size_t i) {
+        if (i >= row.size() || i < 0) {
+            throw StackError<std::out_of_range>("index out of range");
+        }
         return row.at(i);
     }
 
