@@ -5,6 +5,7 @@
 
 #pragma once
 #include <array>
+#include <boost/container/small_vector.hpp>
 #include <cstddef>
 #include <functional>
 #include <memory>
@@ -37,11 +38,13 @@ namespace mlinalg::structures {
 
     /**
      * @brief  Type alias for the backing array of a Vector
+     *
+     * Supports small vector optimization for vectors with size less than 256 bytes.
      */
-    // template <Number number, int n>
-    // using VectorRow = std::array<number, n>;
     template <Number number, int n>
-    using VectorRow = VectorRowType<number>;
+        requires(n >= 0)
+    using VectorRow = std::conditional_t<n >= ((256 + sizeof(number) - 1) / sizeof(number)), VectorRowType<number>,
+                                         boost::container::small_vector<number, n, DefaultAllocator<number>>>;
 
     /**
      * @brief Type alias for the backing array of a dynamic Vector
@@ -110,9 +113,7 @@ namespace mlinalg::structures {
     using SizeTPair = std::pair<size_t, size_t>;
 
     template <Number number, int m, int n>
-    using VectorVariant = std::conditional_t < n != 1,
-          Vector<number, n>, Vector < number, m >>
-        ;
+    using VectorVariant = std::conditional_t<n != 1, Vector<number, n>, Vector<number, m>>;
 
     /**
      * @brief Type alias for a variant of a Vector and a Matrix
