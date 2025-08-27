@@ -1,21 +1,14 @@
 #pragma once
 
-#include <algorithm>
 #include <array>
-#include <cmath>
-#include <ios>
-#include <iterator>
 #include <memory>
 #include <optional>
 #include <ostream>
-#include <stdexcept>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "../Concepts.hpp"
 #include "Aliases.hpp"
-#include "Matrix.hpp"
 #include "VectorOps.hpp"
 #include "VectorView.hpp"
 
@@ -24,7 +17,7 @@ using std::vector, std::array, std::optional, std::unique_ptr, std::shared_ptr, 
 namespace mlinalg::structures {
 
     /**
-     * @brief Base CTRP class for Vector operations
+     * @brief Base CRTP class for Vector operations
      *
      * @tparam D Derived class type, used for CRTP
      * @tparam number The type of the elements in the vector (e.g., float
@@ -82,7 +75,7 @@ namespace mlinalg::structures {
          * @param i  the index of the element to access
          * @return The ith element
          */
-        constexpr number& operator[](size_t i) const { return const_cast<number&>(d().row[i]); }
+        constexpr const number& operator[](size_t i) const { return const_cast<number&>(d().row[i]); }
 
         // ============
         // Iteration
@@ -284,17 +277,6 @@ namespace mlinalg::structures {
             return static_cast<const D&>(res);
         }
 
-        /**
-         * @brief Vector multiplication by a vector
-         *
-         * @param vec Another vector of the same size as the vector
-         * @return  A 1x1 vector containing the dot product of the two vectors
-         */
-        template <typename OtherD>
-        auto operator*(const VectorBase<OtherD, number>& other) const {
-            return vectorVectorMult(d(), static_cast<const OtherD&>(other));
-        }
-
         // ======================
         // Vector Operations
         // ======================
@@ -446,9 +428,9 @@ namespace mlinalg::structures {
 
         [[nodiscard]] virtual size_t size() const { return static_cast<size_t>(d().row.size()); }
 
-        template <long startT = 0, long endT = -1, long strideT = 1, int newSize = 0>
+        template <long startT = 0, long endT = -1, long strideT = 1, Dim newSize = 0>
         auto view(long start = 0, long end = -1, long stride = 1) {
-            return View<number, D::vn>(d().row, start, end, stride);
+            return View<number, D::elements>(d().row, start, end, stride);
         }
 
         /**

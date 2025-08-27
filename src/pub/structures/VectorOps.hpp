@@ -8,16 +8,13 @@
 #include <cassert>
 #include <cmath>
 #include <cstdlib>
-#include <iomanip>
 #include <sstream>
 #include <stdexcept>
 #include <string>
 
 #include "../Concepts.hpp"
-#include "../Helpers.hpp"
 #include "../Numeric.hpp"
 #include "Aliases.hpp"
-#include "structures/MatrixOps.hpp"
 
 namespace mlinalg::structures {
     using namespace mlinalg::stacktrace;
@@ -25,10 +22,10 @@ namespace mlinalg::structures {
     template <typename D, Number number>
     class VectorBase;
 
-    template <Number number, int n>
+    template <Number number, Dim n>
     class Vector;
 
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     class Matrix;
 
     template <Container T, Container U>
@@ -63,12 +60,12 @@ namespace mlinalg::structures {
 
     template <typename F, Container T>
     inline void vectorApply(T& row, F f) {
-        for (auto& x : row) f(x);
+        for (size_t i{}; i < row.size(); i++) f(row[i]);
     }
 
     template <typename F, Container T>
     inline void vectorApply(const T& row, F f) {
-        for (auto& x : row) f(x);
+        for (size_t i{}; i < row.size(); i++) f(row[i]);
     }
 
     template <typename F, Container T, Container U, bool checkSizes = false>
@@ -79,9 +76,7 @@ namespace mlinalg::structures {
             if (n != otherN)
                 throw StackError<std::invalid_argument>("Vectors must be of the same size for vectorApply");
         }
-        auto i = row.begin();
-        auto j = otherRow.begin();
-        for (; i != row.end(); ++i, ++j) f(*i, *j);
+        for (size_t i{}; i < n; i++) f(row[i], otherRow[i]);
     }
 
     template <typename F, Container T, Container U, bool checkSizes = false>
@@ -92,14 +87,12 @@ namespace mlinalg::structures {
             if (n != otherN)
                 throw StackError<std::invalid_argument>("Vectors must be of the same size for vectorApply");
         }
-        auto i = row.begin();
-        auto j = otherRow.begin();
-        for (; i != row.end(); ++i, ++j) f(*i, *j);
+        for (size_t i{}; i < n; i++) f(row[i], otherRow[i]);
     }
 
-    template <Number number, int n, Container T>
+    template <Number number, Dim n, Container T>
     inline Vector<number, n> vectorNeg(const T& row) {
-        constexpr int vSize = (n != Dynamic) ? n : Dynamic;
+        constexpr auto vSize = (n != Dynamic) ? n : Dynamic;
         auto size = row.size();
         Vector<number, vSize> res(size);
         for (size_t i{}; i < size; i++) res[i] = -row[i];
@@ -185,7 +178,7 @@ namespace mlinalg::structures {
         return os;
     }
 
-    template <Number number, int m, int n, Container T>
+    template <Number number, Dim m, Dim n, Container T>
     inline Matrix<number, m, n> vectorTranspose(const T& row) {
         constexpr auto sizeP = (n == Dynamic) ? SizePair{Dynamic, Dynamic} : SizePair{1, n};
         const auto size = row.size();
@@ -208,28 +201,28 @@ namespace mlinalg::structures {
 #endif  // BY_DEF
     }
 
-    template <Number number, int n, int otherN>
+    template <Number number, Dim n, Dim otherN>
     inline number vectorDist(const Vector<number, n>& v, const Vector<number, otherN>& w) {
         if (v.size() != w.size()) throw StackError<std::invalid_argument>("Vectors must be of the same size");
-        auto diff = v - w;
+        const auto& diff = v - w;
         return std::sqrt(diff.dot(diff));
     }
 
-    template <Number number, int n>
+    template <Number number, Dim n>
     inline Vector<number, n> vectorNormalize(const Vector<number, n>& v) {
         auto len = v.length();
         if (fuzzyCompare(len, number(0))) return v;
         return v / len;
     }
 
-    template <Number number, int n>
+    template <Number number, Dim n>
     inline void vectorNormalizeI(Vector<number, n>& v) {
         auto len = v.length();
         if (fuzzyCompare(len, number(0))) return;
         v /= len;
     }
 
-    template <Number number, int n>
+    template <Number number, Dim n>
     inline void vectorClear(Vector<number, n>& v) {
         for (size_t i{}; i < v.size(); i++) {
             v[i] = number{};
@@ -249,8 +242,8 @@ namespace mlinalg::structures {
     template <Number number, Container T>
     inline number L1Norm(const T& row) {
         number sum{};
-        for (const auto& elem : row) {
-            sum += std::abs(elem);
+        for (size_t i{}; i < row.size(); i++) {
+            sum += std::abs(row[i]);
         }
         return sum;
     }

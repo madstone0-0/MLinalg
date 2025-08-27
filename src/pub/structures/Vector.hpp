@@ -14,13 +14,13 @@ namespace mlinalg::structures {
     /**
      * @brief Vector class for represeting both row and column vectors in n-dimensional space
      *
-     * @param n The number of elements in the vector
+     * @tparam n The number of elements in the vector
      */
     template <Number number, int n>
     class Vector : public VectorBase<Vector<number, n>, number> {
        public:
         using Base = VectorBase<Vector<number, n>, number>;
-        static constexpr auto vn = n;
+        static constexpr auto elements = n;
 
         // ===========================
         // Constructors and Destructor
@@ -111,7 +111,7 @@ namespace mlinalg::structures {
             Vector<number, n> res;
             auto asCols{mat.colToVectorSet()};
             for (int i{}; i < n; i++) {
-                res.at(i) = *this * asCols[i];  // FIX: Fix vectorVectorMult to take VectorBase instead of Vector
+                res.at(i) = *this * asCols[i];
             }
             return res;
         }
@@ -159,37 +159,22 @@ namespace mlinalg::structures {
          *
          * @return the size of the vector
          */
-        size_t size() const override { return static_cast<size_t>(n); }
+        [[nodiscard]] size_t size() const override { return static_cast<size_t>(n); }
 
        private:
         template <Number num, int mM, int nN>
         friend class Matrix;
 
-        template <Number num, int nN>
-        friend class Vector;
-
-        template <typename D, Number num>
-        friend class VectorBase;
-
         template <typename D, Number num>
         friend class MatrixBase;
 
-        /**
-         * @brief Swap the contents of two vectors
-         *
-         * @param first
-         * @param second
-         */
-        friend void swap(Vector& first, Vector& second) noexcept {
-            using std::swap;
-            swap(first.row, second.row);
-        }
+        template <typename D, Number num>
+        friend class VectorBase;
 
         void checkDimensions() {
             if constexpr (n <= 0) throw std::invalid_argument("Vector size must be greater than 0");
         }
 
-        // VectorRowPtr<number, n> row{new array<number, n>{}};
         VectorRow<number, n> row{VectorRow<number, n>(n, number{})};
     };
 
@@ -204,7 +189,7 @@ namespace mlinalg::structures {
     class Vector<number, Dynamic> : public VectorBase<Vector<number, Dynamic>, number> {
        public:
         using Base = VectorBase<Vector<number, Dynamic>, number>;
-        static constexpr auto vn = Dynamic;
+        static constexpr auto elements = Dynamic;
 
         // ===========================
         // Constructors and Destructor
@@ -218,8 +203,13 @@ namespace mlinalg::structures {
         template <typename Iterator>
         Vector(Iterator begin, Iterator end) : n(std::distance(begin, end)), row{begin, end} {}
 
+        /**
+         * @brief Copy construct a dynamic Vector from a static vector
+         *
+         * @param other Static vector to copy
+         */
         template <int nN>
-        Vector(const Vector<number, nN>& other)
+        explicit Vector(const Vector<number, nN>& other)
             requires(nN != Dynamic)
             : n{nN}, row(nN) {
             for (int i{}; i < nN; i++) {
@@ -261,7 +251,8 @@ namespace mlinalg::structures {
         Vector& operator=(const Matrix<number, Dynamic, Dynamic>& other) {
             const auto& nRows{other.numRows()};
             const auto& nCols{other.numCols()};
-            if (nRows != 1) throw std::invalid_argument("Matrix must have 1 row to be converted to a vector");
+            if (nRows != 1)
+                throw StackError<std::invalid_argument>("Matrix must have 1 row to be converted to a vector");
             for (int i{}; i < nCols; i++) row.at(i) = other.at(0).at(i);
             return *this;
         }
@@ -294,7 +285,8 @@ namespace mlinalg::structures {
             const auto& numRows = mat.numRows();
             const auto numCols = mat.numCols();
             if (numCols != this->n)
-                throw std::invalid_argument("Matrix must have the same number of columns as the vector size");
+                throw StackError<std::invalid_argument>(
+                    "Matrix must have the same number of columns as the vector size");
 
             auto asCols{std::move(mat.colToVectorSet())};
             // If the matrix has only one row it is equivalent to a transposed vector
@@ -340,11 +332,22 @@ namespace mlinalg::structures {
          */
         [[nodiscard]] size_t size() const override { return n; }
 
+        /**
+         * @brief Add an element to the end of the vector
+         *
+         * @param v The element to add
+         */
         void pushBack(const number& v) {
             row.push_back(v);
             n = row.size();
         }
 
+        /**
+         * @brief Emplace an element to the end of the vector
+         *
+         * @param args The arguments to construct the element
+         * @return A reference to the newly added element
+         */
         template <Number... Numbers>
             requires(sizeof...(Numbers) > 0 && (std::is_convertible_v<Numbers, number> && ...))
         auto emplaceBack(Numbers&&... args) {
@@ -353,6 +356,11 @@ namespace mlinalg::structures {
             return res;
         }
 
+        /**
+         * @brief Resize the vector to a new size
+         *
+         * @param newSize The new size of the vector
+         */
         void resize(size_t newSize) {
             if (newSize < n) {
                 row.resize(newSize);
@@ -362,8 +370,19 @@ namespace mlinalg::structures {
             n = newSize;
         }
 
+        /**
+         * @brief Reserve space for a new size in the vector
+         *
+         * @param newSize The new size to reserve space for
+         */
         void reserve(size_t newSize) { return row.reserve(newSize); }
 
+        /**
+         * @brief Remove the element at the given index from the vector
+         *
+         * @param idx The index of the element to remove
+         * @return The removed element
+         */
         number remove(size_t idx) {
             if (idx >= n) throw StackError<std::out_of_range>("Index out of range");
             auto val = row[idx];
@@ -376,25 +395,11 @@ namespace mlinalg::structures {
         template <Number num, int mM, int nN>
         friend class Matrix;
 
-        template <Number num, int nN>
-        friend class Vector;
-
-        template <typename D, Number num>
-        friend class VectorBase;
-
         template <typename D, Number num>
         friend class MatrixBase;
 
-        /**
-         * @brief Swap the contents of two vectors
-         *
-         * @param first
-         * @param second
-         */
-        friend void swap(Vector& first, Vector& second) noexcept {
-            using std::swap;
-            swap(first.row, second.row);
-        }
+        template <typename D, Number num>
+        friend class VectorBase;
 
         size_t n;
         VectorRowDynamic<number> row{};

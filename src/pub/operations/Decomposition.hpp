@@ -721,7 +721,7 @@ namespace mlinalg {
         // logging::log(format("SVD ATA: {}", ATA), "svdEigen");
 
         vector<Vector<number, n>> v;
-        VD<number> l(nR);
+        Vector<number, ATA.rows> l(nR);
         try {
             auto [lam, val] = eigenQR(ATA, false);
             l = std::move(lam);
