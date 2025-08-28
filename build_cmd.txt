@@ -1,1 +1,1 @@
-build_cmake debug yes -DSTACKTRACE=OFF -DEXAMPLES=ON -DTESTS=ON
+build_cmake release yes -DSTACKTRACE=OFF -DEXAMPLES=ON -DTESTS=ON
