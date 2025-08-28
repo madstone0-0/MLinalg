@@ -857,16 +857,26 @@ TEST_CASE("Vector", "[vector]") {
                 auto large_value = std::numeric_limits<int>::max();
                 auto v1 = Vector<int, 2>{large_value, large_value};
                 auto v2 = v1 * 2;
-                REQUIRE(v2.at(0) == large_value * 2);
-                REQUIRE(v2.at(1) == large_value * 2);
+
+                // Compute expected result in a wider type, then cast explicitly
+                long long temp = static_cast<long long>(large_value) * 2;
+                int expected = static_cast<int>(temp);  // wraps like two's complement
+
+                REQUIRE(v2.at(0) == expected);
+                REQUIRE(v2.at(1) == expected);
             }
 
             SECTION("Small number operations") {
                 auto small_value = std::numeric_limits<int>::min();
                 auto v1 = Vector<int, 2>{small_value, small_value};
                 auto v2 = v1 * 2;
-                REQUIRE(v2.at(0) == small_value * 2);
-                REQUIRE(v2.at(1) == small_value * 2);
+
+                // Same explicit cast for wrapping
+                long long temp = static_cast<long long>(small_value) * 2;
+                int expected = static_cast<int>(temp);
+
+                REQUIRE(v2.at(0) == expected);
+                REQUIRE(v2.at(1) == expected);
             }
 
             SECTION("Floating point precision for length and distance") {

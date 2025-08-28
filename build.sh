@@ -76,7 +76,7 @@ build_release() {
 	local show_log="$1"
 	local release_dir="${OUT_DIR}-release"
 	shift
-	build_with_cmake "$release_dir" "Release" "g++" "$show_log" "$@"
+	build_with_cmake "$release_dir" "Release" "clang++" "$show_log" "$@"
 }
 
 build_profile() {
