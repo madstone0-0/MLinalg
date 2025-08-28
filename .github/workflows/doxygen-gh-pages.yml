@@ -36,6 +36,10 @@ jobs:
           htmloutput: './docs/html'
           ghpagesbranch: 'master'
           ghpagesdir: './docs/html'
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './docs/html'
 
   # Deployment job
   deploy:
