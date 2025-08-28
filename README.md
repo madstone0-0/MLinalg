@@ -107,6 +107,12 @@ target_link_libraries(exe PRIVATE mlinalg::mlinalg)
 
 ---
 
+## Documentation
+
+Documentation is generate during release build but documentation for the current release can be found [here](https://madstone0-0.github.io/MLinalg/)
+
+--- 
+
 ## Author & Contact
 
 GitHub: [madstone0-0](https://github.com/madstone0-0)
