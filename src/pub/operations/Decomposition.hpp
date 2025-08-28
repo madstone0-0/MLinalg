@@ -1,3 +1,8 @@
+/**
+ * @file Decomposition.hpp
+ * @brief Header file for matrix decomposition algorithms.
+ */
+
 #pragma once
 #include <format>
 #include <utility>
@@ -28,11 +33,11 @@ namespace mlinalg {
         return pair{L, U};
     }
 
-    template <Number number, int n>
+    template <Number number, Dim n>
     auto LU(const Matrix<number, n, n>& A) {
         const auto [nR, nC] = A.shape();
         if (nR != nC) throw StackError<std::invalid_argument>{"Matrix A must be square"};
-        const int numRows = nR;
+        const Dim numRows = nR;
         auto L = matrixZeros<number, n, n>(numRows, numRows);
         auto U = A;
 
@@ -96,7 +101,7 @@ namespace mlinalg {
      * @param A
      * @return
      */
-    template <Number number, int n>
+    template <Number number, Dim n>
     bool isSingular(const Matrix<number, n, n>& A) {
         const auto [nR, nC] = A.shape();
         if (nR != nC) throw StackError<std::invalid_argument>{"Matrix A must be square"};
@@ -112,13 +117,13 @@ namespace mlinalg {
 
     enum class QRType : uint8_t { Full, Thin };
 
-    template <QRType type, Number number, int m, int n>
+    template <QRType type, Number number, Dim m, Dim n>
     using QType = std::conditional_t<type == QRType::Full, Matrix<number, m, m>, Matrix<number, m, std::min(m, n)>>;
 
-    template <QRType type, Number number, int m, int n>
+    template <QRType type, Number number, Dim m, Dim n>
     using RType = std::conditional_t<type == QRType::Full, Matrix<number, m, n>, Matrix<number, std::min(m, n), n>>;
 
-    template <QRType type, Number number, int m, int n>
+    template <QRType type, Number number, Dim m, Dim n>
     using QRPair = pair<QType<type, number, m, n>, RType<type, number, m, n>>;
 
     enum class QRMethod : uint8_t {
@@ -126,7 +131,7 @@ namespace mlinalg {
         Householder,
     };
 
-    template <QRType type, Number number, int m, int n>
+    template <QRType type, Number number, Dim m, Dim n>
     QRPair<type, number, m, n> QR(const Matrix<number, m, n>& A, QRMethod method = QRMethod::GramSchmidt);
 
     /**
@@ -139,7 +144,7 @@ namespace mlinalg {
      * @param dim The target dimension m
      * @return Complete set of m orthonormal vectors
      */
-    template <Number number, int m>
+    template <Number number, Dim m>
     auto extendToCompleteBasis(const vector<Vector<number, m>>& qs, size_t dim) {
         auto basis = qs;
         basis.reserve(dim);
@@ -185,7 +190,7 @@ namespace mlinalg {
         return basis;
     }
 
-    template <Number number, int m>
+    template <Number number, Dim m>
     auto extendToCompleteBasis(const vector<Vector<number, m>>& qs) {
         if (qs.size() == 0)
             throw StackError<std::invalid_argument>{"At least one vector is required to extend to a complete basis"};
@@ -227,7 +232,7 @@ namespace mlinalg {
      * @param R Optional output matrix to store the upper triangular matrix from the Gram-Schmidt process.
      * @return A vector of orthonormal vectors that form the basis for the column space of A.
      */
-    template <QRType type, Number number, int m, int n>
+    template <QRType type, Number number, Dim m, Dim n>
     vector<Vector<number, m>> GSOrth(const Matrix<number, m, n>& A, RType<type, number, m, n>* R = nullptr) {
         const auto& [nRows, nCols] = A.shape();
 
@@ -315,7 +320,7 @@ namespace mlinalg {
      * @param A The square matrix to decompose.
      * @return A pair containing the orthogonal matrix Q and the upper triangular matrix R.
      */
-    template <QRType type, Number number, int m, int n>
+    template <QRType type, Number number, Dim m, Dim n>
     QRPair<type, number, m, n> gsQR(const Matrix<number, m, n>& A) {
         const auto [nR, nC] = A.shape();
 
@@ -359,7 +364,7 @@ namespace mlinalg {
      * @param v The vector to find the Householder matrix for.
      * @return The Householder matrix.
      */
-    template <Number number, int n>
+    template <Number number, Dim n>
     Matrix<number, n, n> houseHolder(const Vector<number, n>& v) {
         if (isZeroVector(v))
             throw StackError<std::logic_error>{"Vector v cannot be the zero vector"};  // v cannot be the zero vector
@@ -406,7 +411,7 @@ namespace mlinalg {
      *         - \f$Q\in\mathbb{R}^{m\times m}\f$: the orthogonal matrix from accumulated reflections,
      *         - \f$R\in\mathbb{R}^{m\times n}\f$: the resulting upper‑triangular (or upper‑Hessenberg) matrix.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     auto houseHolderRed(const LinearSystem<number, m, n>& system) {
         const auto [numRows, numCols] = system.shape();
         const size_t nR = numRows;
@@ -485,7 +490,7 @@ namespace mlinalg {
      * @param A
      * @return
      */
-    template <QRType type, Number number, int m, int n>
+    template <QRType type, Number number, Dim m, Dim n>
     QRPair<type, number, m, n> houseHolderQR(const Matrix<number, m, n>& A) {
         const auto [numRows, numCols] = A.shape();
         auto R = A;                      // will become upper‑triangular
@@ -554,7 +559,7 @@ namespace mlinalg {
      * @param method  The method to use for QR decomposition (default is Gram-Schmidt).
      * @return A pair containing the orthogonal matrix Q and the upper triangular matrix R.
      */
-    template <QRType type, Number number, int m, int n>
+    template <QRType type, Number number, Dim m, Dim n>
     QRPair<type, number, m, n> QR(const Matrix<number, m, n>& A, QRMethod method) {
         switch (method) {
             case QRMethod::GramSchmidt:
@@ -578,12 +583,12 @@ namespace mlinalg {
      * @param iters The maximum number of iterations to perform for convergence (default is 10,000).
      * @return A pair containing the orthogonal matrix Q and the Schur matrix S.
      */
-    template <QRType type, Number number, int n>
+    template <QRType type, Number number, Dim n>
     auto schurCommon(const Matrix<number, n, n>& A, bool checkSingular = true, QRMethod method = QRMethod::Householder,
                      size_t iters = 10'000) {
         const auto [nR, nC] = A.shape();
-        const int numRows = nR;
-        const int numCols = nC;
+        const Dim numRows = nR;
+        const Dim numCols = nC;
         if (numRows != numCols) throw StackError<std::invalid_argument>{"Matrix A must be square"};
         if (checkSingular)
             if (isSingular(A)) throw StackError<std::invalid_argument>{"Matrix A is singular"};
@@ -626,7 +631,7 @@ namespace mlinalg {
      *         - \f$S\in\mathbb{R}^{n\times n}\f$: the Schur matrix (upper triangular),
      *         - \f$Q^T\in\mathbb{R}^{n\times n}\f$: the transpose of the orthogonal matrix Q.
      */
-    template <QRType type, Number number, int n>
+    template <QRType type, Number number, Dim n>
     auto schur(const Matrix<number, n, n>& A, bool checkSingular = true, QRMethod method = QRMethod::Householder,
                size_t iters = 10'000) {
         const auto& [Q, S] = schurCommon<type>(A, checkSingular, method, iters);
@@ -649,10 +654,9 @@ namespace mlinalg {
      *         - A vector of eigenvalues,
      *         - A vector of eigenvectors (as column vectors).
      */
-    template <QRType type, Number number, int n>
+    template <QRType type, Number number, Dim n>
     auto eigenQR(const Matrix<number, n, n>& A, bool checkSingular = true, QRMethod method = QRMethod::Householder,
                  size_t iters = 10'000) {
-        const auto [nR, nC] = A.shape();
         const auto& [Q, S] = schurCommon<type>(A, checkSingular, method, iters);
 
         const auto& values = diag(S);
@@ -661,13 +665,13 @@ namespace mlinalg {
         return pair{values, vectors};
     }
 
-    template <Number number, int n>
+    template <Number number, Dim n>
     auto eigenQR(const Matrix<number, n, n>& A, bool checkSingular = true, QRMethod method = QRMethod::Householder,
                  size_t iters = 10'000) {
         return eigenQR<QRType::Thin>(A, checkSingular, method, iters);
     }
 
-    template <Number number, int n>
+    template <Number number, Dim n>
     auto eigen(const Matrix<number, n, n>& A) {
         return eigenQR<QRType::Thin>(A);
     }
@@ -713,7 +717,7 @@ namespace mlinalg {
      *         - \f$\Sigma\in\mathbb{R}^{r\times r}\f$: the diagonal matrix of singular values,
      *         - \f$V\in\mathbb{R}^{n\times r}\f$: the right singular vectors.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     auto svdEigen(const LinearSystem<number, m, n>& A) {
         // Find the eigen values and eigenvectors of A*A^T
         const auto [nR, nC] = A.shape();
@@ -834,7 +838,7 @@ namespace mlinalg {
      *         - \f$\Sigma\in\mathbb{R}^{r\times r}\f$: the diagonal matrix of singular values,
      *         - \f$V\in\mathbb{R}^{n\times r}\f$: the right singular vectors.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     auto svd(const LinearSystem<number, m, n>& system) {
         return svdEigen(system);
     }

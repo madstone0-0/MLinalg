@@ -9,7 +9,7 @@
 
 using namespace mlinalg;
 
-template <Number number, int m, int n>
+template <Number number, Dim m, Dim n>
 void roundMatrix(Matrix<number, m, n>& A) {
     A.apply([](auto& x) { x = std::round(x); });
 }

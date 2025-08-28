@@ -34,12 +34,14 @@ namespace mlinalg::structures::helpers {
     using std::vector;
     namespace rg = std::ranges;
 
-    template <int m, int n, typename Iftrue, typename Iffalse>
-    using IsDynamicT = std::conditional_t<m == Dynamic || n == Dynamic, Iftrue, Iffalse>;
+    template <Dim m, Dim n, typename Iftrue, typename Iffalse>
+    using IsDynamicT = typename std::conditional_t<m == Dynamic || n == Dynamic, std::type_identity<Iftrue>,
+                                                   std::type_identity<Iffalse>>::type;
 
-    template <int m, int n, int mOther, int nOther, typename Iftrue, typename Iffalse>
+    template <Dim m, Dim n, Dim mOther, Dim nOther, typename Iftrue, typename Iffalse>
     using IsDynamicTOther =
-        std::conditional_t<m == Dynamic || n == Dynamic || mOther == Dynamic || nOther == Dynamic, Iftrue, Iffalse>;
+        typename std::conditional_t<m == Dynamic || n == Dynamic || mOther == Dynamic || nOther == Dynamic,
+                                    std::type_identity<Iftrue>, std::type_identity<Iffalse>>::type;
 
     template <Number num>
     num rng(int min, int max, std::optional<size_t> seed = std::nullopt)
@@ -65,7 +67,7 @@ namespace mlinalg::structures::helpers {
      * @param vecSet Vector of column vectors
      * @return  Matrix<number, m, n>
      */
-    template <Number num, int m, int n>
+    template <Number num, Dim m, Dim n>
     Matrix<num, m, n> fromColVectorSet(const vector<Vector<num, m>>& vecSet) {
         if constexpr (m == Dynamic || n == Dynamic) {
             const size_t& nRows{vecSet[0].size()};
@@ -96,7 +98,7 @@ namespace mlinalg::structures::helpers {
      * @param vecSet  Vector of row vectors
      * @return  Matrix<number, m, n>
      */
-    template <Number num, int m, int n>
+    template <Number num, Dim m, Dim n>
     Matrix<num, m, n> fromRowVectorSet(const vector<Vector<num, n>>& vecSet) {
         if constexpr (m == Dynamic || n == Dynamic) {
             auto nR = vecSet.size();
@@ -121,7 +123,7 @@ namespace mlinalg::structures::helpers {
      * @param T  TransposeVariant
      * @return Matrix<number, n, m>
      */
-    template <Number num, int m, int n>
+    template <Number num, Dim m, Dim n>
     auto extractMatrixFromTranspose(const TransposeVariant<num, m, n> T) -> MatrixTransposeVariant<num, m, n> {
         return std::get<MatrixTransposeVariant<num, m, n>>(T);
     }
@@ -132,7 +134,7 @@ namespace mlinalg::structures::helpers {
      * @param T TransposeVariant
      * @return Vector<number, m>
      */
-    template <Number num, int m, int n>
+    template <Number num, Dim m, Dim n>
     auto extractVectorFromTranspose(const TransposeVariant<num, m, n> T) -> VectorTransposeVariant<num, m, n> {
         return std::get<VectorTransposeVariant<num, m, n>>(T);
     }
@@ -143,7 +145,7 @@ namespace mlinalg::structures::helpers {
      * @param T the transpose variant to check
      * @return true if it contains a VectorTransposeVariant, false otherwise
      */
-    template <Number num, int m, int n>
+    template <Number num, Dim m, Dim n>
     bool containsVectorVariant(const TransposeVariant<num, m, n>& T) {
         return std::holds_alternative<VectorTransposeVariant<num, m, n>>(T);
     }
@@ -154,19 +156,19 @@ namespace mlinalg::structures::helpers {
      * @param matrix Compile time matrix
      * @return Matrix<number, Dynamic, Dynamic>
      */
-    template <Number num, int m, int n>
+    template <Number num, Dim m, Dim n>
     Matrix<num, Dynamic, Dynamic> toDynamic(const Matrix<num, m, n> matrix) {
         const auto& dyna = Matrix<num, Dynamic, Dynamic>{matrix};
         return dyna;
     }
 
-    template <Number num, int n>
+    template <Number num, Dim n>
     Vector<num, Dynamic> toDynamic(const Vector<num, n> vector) {
         const auto& dyna = Vector<num, Dynamic>{vector};
         return dyna;
     }
 
-    template <Number to, Number from, int m, int n>
+    template <Number to, Number from, Dim m, Dim n>
     Matrix<to, m, n> cast(const Matrix<from, m, n>& A) {
         if constexpr (!std::is_convertible_v<from, to>) {
             throw StackError<std::invalid_argument>{"Cannot convert to type"};
@@ -189,7 +191,7 @@ namespace mlinalg::structures::helpers {
         return v;
     }
 
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     void copyVectorIntoMatrixCol(Matrix<number, m, n>& A, const Vector<number, m>& v, size_t j) {
         const auto& [nR, nC] = A.shape();
         if (j >= nC) throw StackError<std::out_of_range>{"Column index out of range"};
@@ -197,7 +199,7 @@ namespace mlinalg::structures::helpers {
         for (size_t i{}; i < nR; ++i) A(i, j) = v[i];
     }
 
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     void copyVectorIntoMatrixRow(Matrix<number, m, n>& A, const Vector<number, n>& v, size_t i) {
         const auto& [nR, nC] = A.shape();
         if (i >= nR) throw StackError<std::out_of_range>{"Row index out of range"};
@@ -205,7 +207,7 @@ namespace mlinalg::structures::helpers {
         for (size_t j{}; j < nC; ++j) A(i, j) = v[j];
     }
 
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     Matrix<number, std::max(m, n), std::max(m, n)> padMatrixToSquare(const Matrix<number, m, n>& A,
                                                                      number a = number(0)) {
         if constexpr (m == n) return A;
@@ -257,7 +259,7 @@ namespace mlinalg::structures::helpers {
         }
     }
 
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     std::string formatMatrix(const Matrix<number, m, n>& A) {
         const auto& [nR, nC] = A.shape();
         return (std::stringstream{} << A).str();

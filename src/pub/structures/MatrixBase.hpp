@@ -1,3 +1,8 @@
+/**
+ * @file MatrixBase.hpp
+ * @brief Base CRTP class for Matrix operations
+ */
+
 #pragma once
 
 #include <algorithm>
@@ -38,7 +43,7 @@ namespace mlinalg::structures {
     };
 
     /**
-     * @brief Base CTRP class for Matrix operations
+     * @brief Base CRTP class for Matrix operations
      *
      * @param m Number of rows
      * @param n Number of columns
@@ -70,7 +75,7 @@ namespace mlinalg::structures {
          * @param i The index of the row to access
          * @return A reference to the ith row
          */
-        auto& at(size_t i) { return matrixRowAt(d().matrix, i); }
+        constexpr auto& at(size_t i) { return matrixRowAt(d().matrix, i); }
 
         /**
          * @brief Const access the ith row of the matrix
@@ -78,7 +83,7 @@ namespace mlinalg::structures {
          * @param i The index of the row to access
          * @return A const reference to the ith row
          */
-        auto at(size_t i) const { return matrixRowAtConst(d().matrix, i); }
+        constexpr const auto& at(size_t i) const { return matrixRowAtConst(d().matrix, i); }
 
         /**
          * @brief Access the ith row of the matrix
@@ -86,7 +91,7 @@ namespace mlinalg::structures {
          * @param i The index of the row to access
          * @return A reference to the ith row
          */
-        auto& operator[](size_t i) { return d().matrix[i]; }
+        constexpr auto& operator[](size_t i) { return d().matrix[i]; }
 
         /**
          * @brief Const access the ith row of the matrix
@@ -94,7 +99,7 @@ namespace mlinalg::structures {
          * @param i The index of the row to access
          * @return The ith row
          */
-        auto operator[](size_t i) const { return d().matrix[i]; }
+        constexpr const auto& operator[](size_t i) const { return d().matrix[i]; }
 
         /**
          * @brief Access the element at the ith row and jth column
@@ -103,7 +108,7 @@ namespace mlinalg::structures {
          * @param j The index of the column
          * @return A reference to the element at the ith row and jth column
          */
-        number& at(size_t i, size_t j) { return matrixAt<number>(d().matrix, i, j); }
+        constexpr number& at(size_t i, size_t j) { return matrixAt<number>(d().matrix, i, j); }
 
         /**
          * @brief Const cccess the element at the ith row and jth column
@@ -112,7 +117,7 @@ namespace mlinalg::structures {
          * @param j The index of the column
          * @return A const reference to the element at the ith row and jth column
          */
-        number at(size_t i, size_t j) const { return matrixAtConst<number>(d().matrix, i, j); }
+        constexpr const number& at(size_t i, size_t j) const { return matrixAtConst<number>(d().matrix, i, j); }
 
         /**
          * @brief Access the element at the ith row and jth column
@@ -121,7 +126,7 @@ namespace mlinalg::structures {
          * @param j The index of the column
          * @return A reference to the element at the ith row and jth column
          */
-        number& operator()(size_t i, size_t j) { return d().matrix[i][j]; }
+        constexpr number& operator()(size_t i, size_t j) { return d().matrix[i][j]; }
 
         /**
          * @brief Const access the element at the ith row and jth column
@@ -134,7 +139,7 @@ namespace mlinalg::structures {
          * @param j The index of the column
          * @return The element at the ith row and jth column
          */
-        constexpr number& operator()(size_t i, size_t j) const { return d().matrix[i][j]; }
+        constexpr const number& operator()(size_t i, size_t j) const { return d().matrix[i][j]; }
 
         constexpr auto col(size_t j) const { return d().columns[j]; }
 
@@ -253,7 +258,7 @@ namespace mlinalg::structures {
          * @param scalar A scalar of the same type as the matrix
          * @return A reference to the current matrix
          */
-        auto operator/=(const number& scalar) {
+        auto& operator/=(const number& scalar) {
             matrixScalarDivI<number, D::rows, D::cols>(d().matrix, scalar);
             return d();
         }
@@ -326,15 +331,15 @@ namespace mlinalg::structures {
          * @param other The matrix to subtract
          * @return The matrix resulting from the subtraction
          */
-        template <int m, int n>
+        template <Dim m, Dim n>
         friend auto operator-(const MatrixBase& lhs, const TransposeVariant<number, m, n>& rhs) {
-            if (std::holds_alternative<Matrix<number, m, n>>(rhs)) {
+            if (std::holds_alternative<MatrixTransposeVariant<number, m, n>>(rhs)) {
                 auto res = lhs.d();
-                auto other = get<Matrix<number, m, n>>(rhs);
+                auto other = get<MatrixTransposeVariant<number, m, n>>(rhs);
                 matrixSubI<number, Dynamic, Dynamic>(res.matrix, other.matrix);
                 return res;
             }
-            throw std::logic_error("Cannot subtract a vector from a matrix");
+            throw StackError<std::logic_error>("Cannot subtract a vector from a matrix");
         }
 
         friend auto operator*(const number& scalar, const MatrixBase& rhs) { return rhs * scalar; }
@@ -368,7 +373,7 @@ namespace mlinalg::structures {
          * @param other The vector to augment with
          * @return The augmented matrix of size mx(n + 1)
          */
-        template <int n>
+        template <Dim n>
         auto augment(const Vector<number, n>& other) const {
             if constexpr (D::rows != Dynamic || D::cols != Dynamic)
                 return MatrixAugmentVector<number, D::rows, D::cols>(d().matrix, other.row);
@@ -406,7 +411,7 @@ namespace mlinalg::structures {
          *
          * @param i Row index to remove
          * @param j Column index to remove
-         * @return The subsetted matrix of size (m - 1)x(n - 1)
+         * @return A subset of the matrix matrix of size (m - 1)x(n - 1)
          */
         auto subset(optional<int> i, optional<int> j) const {
             return MatrixSubset<number, D::rows, D::cols>(d().matrix, i, j);
@@ -518,7 +523,7 @@ namespace mlinalg::structures {
          *
          * @return The Frobenius norm of the matrix
          */
-        double frob() { return FrobenisNorm<number>(d().matrix); }
+        number frob() { return FrobenisNorm<number>(d().matrix); }
 
         /**
          * @brief Calculate the L1 norm of the matrix
@@ -531,7 +536,7 @@ namespace mlinalg::structures {
          *
          * @return The L1 norm of the matrix
          */
-        double l1() { return L1Norm<number, D::rows, D::cols>(d()); }
+        number l1() { return L1Norm<number, D::rows, D::cols>(d()); }
 
         /**
          * @brief Calculate the L-inf norm of the matrix
@@ -544,7 +549,7 @@ namespace mlinalg::structures {
          *
          * @return The L-inf norm of the matrix
          */
-        double lInf() { return LInfNorm<number, D::rows, D::cols>(d()); }
+        number lInf() { return LInfNorm<number, D::rows, D::cols>(d()); }
 
         // ======================
         // Miscellaneous Operations
@@ -580,8 +585,8 @@ namespace mlinalg::structures {
          * @param colStride The stride between columns
          * @return A MatrixView object of the matrix
          */
-        template <OffsetPair rowOffsetT = {}, OffsetPair colOffsetT = {}, StridePair strideT = {1, 1}, int nM = 0,
-                  int nN = 0>
+        template <OffsetPair rowOffsetT = {}, OffsetPair colOffsetT = {}, StridePair strideT = {1, 1}, Dim nM = 0,
+                  Dim nN = 0>
         auto view(OffsetPair rowOffset = {.start = 0, .end = -1}, OffsetPair colOffset = {.start = 0, .end = -1},
                   StridePair stride = {.row = 1, .col = 1}) {
             return View<number, D::rows, D::cols>(d().matrix, rowOffset, colOffset, stride);
@@ -601,7 +606,7 @@ namespace mlinalg::structures {
         auto* data() noexcept { return d().matrix.data(); }
     };
 
-    template <int n, int m, Number number>
+    template <Dim n, Dim m, Number number>
     std::ostream& operator<<(std::ostream& os, const TransposeVariant<number, n, m>& system) {
         if (std::holds_alternative<VectorTransposeVariant<number, n, m>>(system)) {
             os << get<VectorTransposeVariant<number, n, m>>(system);
@@ -611,7 +616,7 @@ namespace mlinalg::structures {
         return os;
     }
 
-    template <Number number, int m, int n, int nOther>
+    template <Number number, Dim m, Dim n, Dim nOther>
     TransposeVariant<number, nOther, m> operator*(TransposeVariant<number, m, n> lhs, Matrix<number, n, nOther> rhs) {
         if (std::holds_alternative<VectorTransposeVariant<number, n, m>>(lhs)) {
             auto vec = get<VectorTransposeVariant<number, n, m>>(lhs);
@@ -622,7 +627,7 @@ namespace mlinalg::structures {
         }
     }
 
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     TransposeVariant<number, n, n> operator*(TransposeVariant<number, m, n> lhs, Matrix<number, m, n> rhs)
         requires(m != n)
     {
@@ -636,7 +641,7 @@ namespace mlinalg::structures {
         }
     }
 
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     TransposeVariant<number, m, n> operator*(const number& lhs, const TransposeVariant<number, m, n>& rhs) {
         if (std::holds_alternative<Vector<number, m>>(rhs)) {
             auto vec = get<Vector<number, m>>(rhs);

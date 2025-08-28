@@ -1,3 +1,8 @@
+/**
+ * @file VectorBase.hpp
+ * @brief Base CRTP class for Vector operations
+ */
+
 #pragma once
 
 #include <array>

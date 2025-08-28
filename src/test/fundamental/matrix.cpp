@@ -1445,7 +1445,7 @@ TEST_CASE("Matrix", "[matrix]") {
                 using namespace std::chrono;
 
                 SECTION("Matrix Addition Performance") {
-                    constexpr int N = 1000;  // Large matrix size
+                    constexpr Dim N = 1000;  // Large matrix size
                     Matrix<int, N, N> m1;
                     Matrix<int, N, N> m2;
 
@@ -1469,7 +1469,7 @@ TEST_CASE("Matrix", "[matrix]") {
                 }
 
                 SECTION("Matrix Multiplication Performance") {
-                    const int N = 100;  // Matrix multiplication is more expensive, smaller N
+                    const Dim N = 100;  // Matrix multiplication is more expensive, smaller N
                     Matrix<long long, N, N> m1{};
                     Matrix<long long, N, N> m2{};
 
@@ -1493,7 +1493,7 @@ TEST_CASE("Matrix", "[matrix]") {
                 }
 
                 SECTION("Matrix Scalar Multiplication Performance") {
-                    const int N = 1000;  // Scalar multiplication is simple, test larger matrices
+                    const Dim N = 1000;  // Scalar multiplication is simple, test larger matrices
                     Matrix<int, N, N> m1;
 
                     // Initialize matrix with large data
@@ -1591,7 +1591,7 @@ TEST_CASE("Matrix", "[matrix]") {
                 using namespace std::chrono;
 
                 SECTION("Matrix Addition Performance") {
-                    const int N = 1000;  // Large matrix size
+                    const Dim N = 1000;  // Large matrix size
                     Matrix<int, N, N> m1;
                     Matrix<int, N, N> m2;
 
@@ -1615,7 +1615,7 @@ TEST_CASE("Matrix", "[matrix]") {
                 }
 
                 // SECTION("Matrix Multiplication Performance") {
-                //     const int N = 100;  // Matrix multiplication is more expensive, smaller N
+                //     const Dim N = 100;  // Matrix multiplication is more expensive, smaller N
                 //     Matrix<long long, N, N> m1{};
                 //     Matrix<long long, N, N> m2{};
                 //
@@ -1639,7 +1639,7 @@ TEST_CASE("Matrix", "[matrix]") {
                 // }
 
                 SECTION("Matrix Scalar Multiplication Performance") {
-                    const int N = 1000;  // Scalar multiplication is simple, test larger matrices
+                    const Dim N = 1000;  // Scalar multiplication is simple, test larger matrices
                     Matrix<int, Dynamic, Dynamic> m1(N, N);
 
                     // Initialize matrix with large data

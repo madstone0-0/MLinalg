@@ -1,3 +1,8 @@
+/**
+ * @file Matrix.hpp
+ * @brief  Header file for matrix operations
+ */
+
 #pragma once
 #include <optional>
 
@@ -14,7 +19,7 @@ namespace mlinalg {
      * @param system The linear system to find the inverse of.
      * @return The inverse of the system if it exists, nullopt otherwise.
      */
-    template <Number number, int m>
+    template <Number number, Dim m>
     optional<Matrix<number, m, m>> inverse(const LinearSystem<number, m, m>& system) {
         auto det = system.det();
         if (fuzzyCompare(det, number(0))) return nullopt;
@@ -40,7 +45,7 @@ namespace mlinalg {
      * @param matrix The matrix to find the diagonal of.
      * @return The diagonal of the matrix.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     Vector<number, m> diag(const Matrix<number, m, n>& matrix) {
         const auto [nR, nC] = matrix.shape();
 

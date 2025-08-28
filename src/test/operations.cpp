@@ -952,9 +952,9 @@ TEST_CASE("Operations") {
 
                 vector<int> nums;
                 nums.reserve(10);
-                for (int i{}; i < 10; ++i) nums.emplace_back(i);
+                for (int i{}; (size_t)i < 10; ++i) nums.emplace_back(i);
                 auto diag3 = diagonal<Dynamic, int>(nums.begin(), nums.end());
-                for (int i{}; i < diag3.numRows(); ++i) REQUIRE(diag3(i, i) == i);
+                for (int i{}; (size_t)i < diag3.numRows(); ++i) REQUIRE(diag3(i, i) == i);
             }
 
             SECTION("Diag") {

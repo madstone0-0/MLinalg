@@ -16,7 +16,7 @@ namespace mlinalg::structures {
      *
      * @tparam n The number of elements in the vector
      */
-    template <Number number, int n>
+    template <Number number, Dim n>
     class Vector : public VectorBase<Vector<number, n>, number> {
        public:
         using Base = VectorBase<Vector<number, n>, number>;
@@ -106,7 +106,7 @@ namespace mlinalg::structures {
          * @param mat A matrix of size MxN
          * @return The vector resulting from the multiplication
          */
-        template <int m>
+        template <Dim m>
         Vector<number, n> operator*(const Matrix<number, m, n>& mat) const {
             Vector<number, n> res;
             auto asCols{mat.colToVectorSet()};
@@ -149,7 +149,7 @@ namespace mlinalg::structures {
         // Miscellaneous Operations
         // ======================
 
-        template <long start = 0, long end = n, long stride = 1, int newSize = (end - start + stride - 1) / stride>
+        template <long start = 0, long end = n, long stride = 1, Dim newSize = (end - start + stride - 1) / stride>
         auto view(long /*offsetArg*/ = 0, long /*endArg*/ = 0, long /*strideArg*/ = 1) {
             return View<number, n, newSize>(row, start, end, stride);
         }
@@ -162,7 +162,7 @@ namespace mlinalg::structures {
         [[nodiscard]] size_t size() const override { return static_cast<size_t>(n); }
 
        private:
-        template <Number num, int mM, int nN>
+        template <Number num, Dim mM, Dim nN>
         friend class Matrix;
 
         template <typename D, Number num>
@@ -208,7 +208,7 @@ namespace mlinalg::structures {
          *
          * @param other Static vector to copy
          */
-        template <int nN>
+        template <Dim nN>
         explicit Vector(const Vector<number, nN>& other)
             requires(nN != Dynamic)
             : n{nN}, row(nN) {
@@ -392,7 +392,7 @@ namespace mlinalg::structures {
         }
 
        private:
-        template <Number num, int mM, int nN>
+        template <Number num, Dim mM, Dim nN>
         friend class Matrix;
 
         template <typename D, Number num>

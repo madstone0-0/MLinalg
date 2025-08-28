@@ -2,7 +2,7 @@
 #include <iostream>
 #include <print>
 
-#include "MLinalg.hpp"
+#include "../pub/MLinalg.hpp"
 
 using namespace std;
 
@@ -19,7 +19,7 @@ using namespace std;
  * @param A The coefficient matrix.
  * @param b The right-hand side vector.
  */
-template <Number number, int m, int n>
+template <Number number, mlinalg::Dim m, mlinalg::Dim n>
 void printSol(const mlinalg::Matrix<number, m, n>& A, const mlinalg::Vector<number, m>& b) {
     using namespace mlinalg;
     try {
@@ -52,7 +52,7 @@ void printSol(const mlinalg::Matrix<number, m, n>& A, const mlinalg::Vector<numb
  * @tparam n Number of columns.
  * @param system The linear system.
  */
-template <Number number, int m, int n>
+template <Number number, mlinalg::Dim m, mlinalg::Dim n>
 void printSol(const mlinalg::LinearSystem<number, m, n>& system) {
     using namespace mlinalg;
     try {

@@ -1,3 +1,8 @@
+/**
+ * @file VectorView.hpp
+ * @brief Header file for VectorView and ColumnView classes
+ */
+
 #pragma once
 
 #include <iterator>
@@ -301,7 +306,6 @@ namespace mlinalg::structures {
 
     template <Number number, Dim n, Dim newSize = n, Container T>
     inline auto View(T& v, long start = 0, long end = -1, long stride = 1) {
-        const auto size = v.size();
 
         if (start >= end || start < 0) throw mlinalg::stacktrace::StackError<std::out_of_range>("Offset out of range");
         if (stride == 0) throw mlinalg::stacktrace::StackError<std::invalid_argument>("Stride cannot be zero");

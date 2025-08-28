@@ -18,10 +18,10 @@ namespace mlinalg::structures {
     template <typename D, Number number>
     class MatrixBase;
 
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     class Matrix;
 
-    template <Number number, int n, int newSize>
+    template <Number number, Dim n, Dim newSize>
     using ViewArray = std::vector<VectorView<number, n, newSize>>;
 
     struct OffsetPair {
@@ -34,9 +34,14 @@ namespace mlinalg::structures {
         long col;
     };
 
-    template <Number number, int m, int n, Container T>
+    /**
+     * @brief A container providing access to the columns of a matrix
+     *
+     *  Each column accessed through this container is a ColumnView, which provides
+     *  efficient access to the elements of the column without copying the data.
+     */
+    template <Number number, Dim m, Dim n, Container T>
     class Columns {
-        // using MatrixType = Matrix<number, m, n>;
         using MatrixType = T;
         using MatrixRef = MatrixType&;
         using Base = Columns<number, m, n, T>;
@@ -47,7 +52,10 @@ namespace mlinalg::structures {
         using value_type = number;
         using size_type = size_t;
 
-        Columns(MatrixPtr matrix) : matrix{matrix} {}
+        explicit Columns(MatrixPtr matrix) : matrix{matrix} {}
+
+        Columns(Columns&&) = default;
+        Columns& operator=(Columns&&) = default;
         Columns(const Columns& other) = default;
         Columns& operator=(const Columns& other) = default;
         ~Columns() = default;
@@ -64,7 +72,7 @@ namespace mlinalg::structures {
      * @brief A memory view of a matrix, allowing for efficient access to a subset of the matrix
      *
      * It supports all the operations of a matrix, but does not own the data. As such each
-     * out-of-place operation (like addition, subtraction, multiplication) will return a new matrix
+     * out-of-place operation (like addition, subtraction, multiplication, division) will return a new matrix
      * that is a copy of the original matrix with the operation applied, however, in-place operations
      * (like +=, -=, *=, /=) will modify the original matrix.
      *
@@ -87,11 +95,11 @@ namespace mlinalg::structures {
      * @param stride The stride for the rows and columns in the view, used to determine how to access the elements
      * @return A MatrixView object that provides a view of the matrix data
      */
-    template <Number number, int m, int n, int nM = m, int nN = n, OffsetPair colOffsetT = {0, n}, long colStrideT = 1>
+    template <Number number, Dim m, Dim n, Dim nM = m, Dim nN = n, OffsetPair colOffsetT = {0, n}, long colStrideT = 1>
     struct MatrixView : public MatrixBase<MatrixView<number, m, n, nM, nN, colOffsetT, colStrideT>, number> {
         using View = ViewArray<number, n, nN>;
         using ViewRef = View&;
-        using MatrixType = helpers::IsDynamicT<m, n, TDArrayDynamic<number>, TDArray<number, m, n>>;
+        using MatrixType = helpers::IsDynamicT<m, n, MatrixArrayDynamic<number>, MatrixArray<number, m, n>>;
         using MatrixRef = MatrixType&;
         using Base = MatrixView<number, m, n, nM, nN, colOffsetT, colStrideT>;
         using iterator = View::iterator;
@@ -221,7 +229,7 @@ namespace mlinalg::structures {
         StridePair stride{.row = 1, .col = 1};        // Row and column stride respectively
     };
 
-    template <Number number, int m, int n, int nM = m, int nN = n, OffsetPair colOffsetT = {0, n}, long colStrideT = 1,
+    template <Number number, Dim m, Dim n, Dim nM = m, Dim nN = n, OffsetPair colOffsetT = {0, n}, long colStrideT = 1,
               Container T>
     inline auto View(T& matrix,                                       //
                      OffsetPair rowOffset = {.start = 0, .end = -1},  //

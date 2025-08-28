@@ -1,8 +1,8 @@
 #include <algorithm>
 #include <cmath>
-#include <mlinalg/MLinalg.hpp>
 #include <print>
 
+#include "../pub/MLinalg.hpp"
 #include "utils.hpp"
 
 using namespace std;

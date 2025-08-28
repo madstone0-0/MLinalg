@@ -1,3 +1,8 @@
+/**
+ * @file Solve.hpp
+ * @brief Header file for solving linear systems of equations.
+ */
+
 #pragma once
 
 #include <cstdint>
@@ -26,7 +31,7 @@ namespace mlinalg {
      * @param solutions The already found values of other variables in the row.
      * @return The solution to the equation if it exists, nullopt otherwise.
      */
-    template <Number number, int n>
+    template <Number number, Dim n>
     optional<number> solveEquation(const Row<number, n>& row, size_t varPos,
                                    const ConditionalRowOptional<number, n, n>& solutions) {
         const auto rowSize = row.size();
@@ -64,11 +69,11 @@ namespace mlinalg {
      * @param b  The right-hand side vector of the system.
      * @return The solution vector x to the system.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     Vector<number, m> solveUpperTriangular(const Matrix<number, m, n>& sys, const Vector<number, n>& b) {
         const auto& A = sys;
         const auto [numRows, numCols] = A.shape();
-        const int nR = numRows;
+        const Dim nR = numRows;
         if (!isUpperTriangular(A))
             throw StackError<std::invalid_argument>("Matrix A must be upper triangular for this solve");
 
@@ -92,7 +97,7 @@ namespace mlinalg {
      * @param method The method to use for QR decomposition (default is Gram-Schmidt).
      * @return The solution vector x to the system.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     Vector<number, m> solveQR(const Matrix<number, m, n>& A, const Vector<number, n>& b, QRMethod method) {
         const auto [nR, nC] = A.shape();
         const auto bSize = b.size();
@@ -104,7 +109,7 @@ namespace mlinalg {
         return x;
     }
 
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     auto nulspace(const Matrix<number, m, n>& A) {
         const auto [nR, nC] = A.shape();
         const auto& zero{vectorZeros<number, m>((int)nR)};
@@ -128,7 +133,7 @@ namespace mlinalg {
      * @param b The right-hand side vector of the linear system.
      * @return The solution vector x to the system.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     auto solveLeastSquares(const Matrix<number, m, n>& A, const Vector<number, m>& b) {
         const auto& AInv = pinv(A);
         return AInv * b;
@@ -149,7 +154,7 @@ namespace mlinalg {
      * @param sys The linear system to solve, represented as an augmented matrix.
      * @return The solution vector x to the system.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     auto solveLeastSquares(const LinearSystem<number, m, n>& sys) {
         const auto& A = sys.template slice<0, m, 0, n - 1>();
         const auto& b = sys.template slice<0, m, n - 1, n>();
@@ -157,7 +162,7 @@ namespace mlinalg {
         return solveLeastSquares(A, bT);
     }
 
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     auto solveLeastSquares(const LinearSystem<number, m, n>& sys)
         requires(m == Dynamic || n == Dynamic)
     {
@@ -180,7 +185,7 @@ namespace mlinalg {
      *
      * @param sols The solutions to the system, which can be either exact or least squares.
      */
-    template <SolveMode mode, Number number, int m, int n>
+    template <SolveMode mode, Number number, Dim m, Dim n>
     struct SolveResult {
        public:
         using ExactSolutions = ConditionalOptionalRowOptional<number, m, n>;
@@ -221,7 +226,7 @@ namespace mlinalg {
      * @param sys
      * @return
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     auto solveExact(const LinearSystem<number, m, n>& sys) -> ConditionalOptionalRowOptional<number, m, n> {
         const auto [numRows, numCols] = sys.shape();
         ConditionalRowOptional<number, m, n> solutions(numCols - 1);
@@ -263,7 +268,7 @@ namespace mlinalg {
      * @param system The linear system to find the solutions of.
      * @return The solutions to the system if they exist, nullopt otherwise.
      */
-    template <SolveMode mode = SolveMode::EXACT, Number number, int m, int n>
+    template <SolveMode mode = SolveMode::EXACT, Number number, Dim m, Dim n>
     auto findSolutions(const LinearSystem<number, m, n>& sys) -> SolveResult<mode, number, m, n> {
         const auto [numRows, numCols] = sys.shape();
         using SolveResult = SolveResult<mode, number, m, n>;
@@ -311,7 +316,7 @@ namespace mlinalg {
      * @param b The vector of the equation
      * @return The solutions x to the equation
      */
-    template <SolveMode mode = SolveMode::EXACT, Number number, int m, int n>
+    template <SolveMode mode = SolveMode::EXACT, Number number, Dim m, Dim n>
     auto findSolutions(const Matrix<number, m, n>& A, const Vector<number, m>& b)
         -> SolveResult<mode, number, m, n + 1> {
         const auto& [nR, nC] = A.shape();
@@ -349,7 +354,7 @@ namespace mlinalg {
         return SolveResult(sols);
     }
 
-    template <SolveMode mode = SolveMode::EXACT, Number number, int m, int n>
+    template <SolveMode mode = SolveMode::EXACT, Number number, Dim m, Dim n>
     auto findSolutions(const Matrix<number, m, n>& A, const Vector<number, m>& b) -> SolveResult<mode, number, m, n>
         requires(m == Dynamic || n == Dynamic)
     {

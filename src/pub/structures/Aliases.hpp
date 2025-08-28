@@ -1,10 +1,9 @@
 /**
  * @file Aliases.hpp
- * @brief Header file for type aliases
+ * @brief Header file for structure type aliases
  */
 
 #pragma once
-#include <boost/container/small_vector.hpp>
 #include <cstddef>
 #include <optional>
 #include <type_traits>
@@ -12,13 +11,12 @@
 #include <variant>
 #include <vector>
 
+#include "../Aliases.hpp"
 #include "../Concepts.hpp"
 #include "Allocator.hpp"
 #include "Container.hpp"
 
 namespace mlinalg::structures {
-    using Dim = int;
-    using SizeType = size_t;
 
     /**
      * @brief Dynamic size constant
@@ -37,8 +35,7 @@ namespace mlinalg::structures {
     template <Number number>
     using VectorRowType = std::vector<number, DefaultAllocator<number>>;
 
-    template <Number number, SizeType n>
-    // using SmallVectorType = boost::container::small_vector<number, n, DefaultAllocator<number>>;
+    template <Number number, Dim n>
     using SmallVectorType = container::StaticContainer<number, n>;
 
     /**
@@ -56,7 +53,7 @@ namespace mlinalg::structures {
      *
      * Supports small vector optimization for vectors with size less than 256 bytes.
      */
-    template <Number number, SizeType n>
+    template <Number number, Dim n>
     using VectorRow =
         std::conditional_t<n >= inlineThreshold<number>, VectorRowType<number>, SmallVectorType<number, n>>;
 
@@ -143,11 +140,18 @@ namespace mlinalg::structures {
     template <Number number>
     using RowDynamic = Vector<number, Dynamic>;
 
+    // TODO: Work out small matrix optimization
     template <Number number, Dim m, Dim n>
-    using TDArray = std::vector<Row<number, n>>;
+    using SmallMatrixType = container::StaticContainer<container::StaticContainer<number, n>, m>;
+
+    template <Number number, Dim m, Dim n>
+    using MatrixArrayType = std::vector<Row<number, n>>;
+
+    template <Number number, Dim m, Dim n>
+    using MatrixArray = MatrixArrayType<number, m, n>;
 
     template <Number number>
-    using TDArrayDynamic = std::vector<RowDynamic<number>>;
+    using MatrixArrayDynamic = std::vector<RowDynamic<number>>;
 
     /**
      * @brief Type alias for a 2x2 Matrix

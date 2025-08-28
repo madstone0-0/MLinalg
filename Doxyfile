@@ -965,7 +965,8 @@ WARN_LOGFILE           =
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = /home/mads/projects/C++/mlinalg/src
+INPUT                  = src \
+                         README.md
 
 # This tag can be used to specify the character encoding of the source files
 # that Doxygen parses. Internally Doxygen uses the UTF-8 encoding. Doxygen uses
@@ -1070,14 +1071,14 @@ RECURSIVE              = YES
 # Note that relative paths are relative to the directory from which Doxygen is
 # run.
 
-EXCLUDE                =
+EXCLUDE                = 
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded
 # from the input.
 # The default value is: NO.
 
-EXCLUDE_SYMLINKS       = NO
+EXCLUDE_SYMLINKS       = YES
 
 # If the value of the INPUT tag contains directories, you can use the
 # EXCLUDE_PATTERNS tag to specify one or more wildcard patterns to exclude
@@ -1086,7 +1087,8 @@ EXCLUDE_SYMLINKS       = NO
 # Note that the wildcards are matched against the file with absolute path, so to
 # exclude all test directories for example use the pattern */test/*
 
-EXCLUDE_PATTERNS       =
+EXCLUDE_PATTERNS       = */src/examples/* \
+                         */src/test/*    \
 
 # The EXCLUDE_SYMBOLS tag can be used to specify one or more symbol names
 # (namespaces, classes, functions, etc.) that should be excluded from the
@@ -1181,7 +1183,7 @@ FILTER_SOURCE_PATTERNS =
 # (index.html). This can be useful if you have a project on for instance GitHub
 # and want to reuse the introduction page also for the Doxygen output.
 
-USE_MDFILE_AS_MAINPAGE =
+USE_MDFILE_AS_MAINPAGE = README.md
 
 # The Fortran standard specifies that for fixed formatted Fortran code all
 # characters from position 72 are to be considered as comment. A common
@@ -2038,7 +2040,7 @@ LATEX_OUTPUT           = latex
 # the output language.
 # This tag requires that the tag GENERATE_LATEX is set to YES.
 
-LATEX_CMD_NAME         =
+LATEX_CMD_NAME         = xelatex
 
 # The MAKEINDEX_CMD_NAME tag can be used to specify the command name to generate
 # index for LaTeX.
