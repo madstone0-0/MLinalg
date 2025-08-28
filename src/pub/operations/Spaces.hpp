@@ -1,3 +1,8 @@
+/**
+ * @file Spaces.hpp
+ * @brief Operations related to vector spaces, such as column space, row space, and rank.
+ */
+
 #pragma once
 
 #include "../Concepts.hpp"
@@ -14,7 +19,7 @@ namespace mlinalg {
      * @param A The matrix to compute the column space of.
      * @return The column space of the matrix.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     auto colspace(const Matrix<number, m, n>& A) {
         const auto [nR, nC] = A.shape();
         auto reduced = A;
@@ -51,7 +56,7 @@ namespace mlinalg {
      * @param A
      * @return
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     size_t colrank(const Matrix<number, m, n>& A) {
         const auto& cspace{colspace(A)};
         return cspace.size();
@@ -63,7 +68,7 @@ namespace mlinalg {
      * @param A The matrix to compute the row space of.
      * @return The row space of the matrix.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     auto rowspace(const Matrix<number, m, n>& A) {
         const auto [nR, nC] = A.shape();
         auto reduced = A;
@@ -102,7 +107,7 @@ namespace mlinalg {
      * @param A The matrix to compute the rank of.
      * @return The rank of the matrix.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     size_t rowrank(const Matrix<number, m, n>& A) {
         const auto& rspace{rowspace(A)};
         return rspace.size();
@@ -117,7 +122,7 @@ namespace mlinalg {
      * @param sys The linear system to check.
      * @return true if the system is underdetermined, false otherwise.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     bool isSystemUnderdetermined(const LinearSystem<number, m, n>& sys) {
         // Compute row rank of the system.
         size_t rank{rowrank(sys)};

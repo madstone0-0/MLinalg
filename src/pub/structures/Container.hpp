@@ -1,6 +1,12 @@
+/**
+ * @file Container.hpp
+ * @brief Header file for container structures
+ */
+
 #pragma once
 #include <cassert>
 
+#include "../Aliases.hpp"
 #include "../Concepts.hpp"
 #include "../Stacktrace.hpp"
 
@@ -15,7 +21,7 @@ namespace mlinalg::structures::container {
      * @param count The number of elements in the container, must be equal to N
      * @param value The value to initialize the elements with
      */
-    template <typename T, int N>
+    template <typename T, Dim N>
     struct StaticContainer {
         using value_type = T;
         using iterator = T*;
@@ -164,8 +170,8 @@ namespace mlinalg::structures::container {
             : container{container}, s{start}, e{end}, stride{stride} {
             if (end == -1) e = container.size();
             if (e <= s) throw std::out_of_range{"End index must be greater than start index"};
-            if (e > container.size()) e = container.size();
-            if (s < 0 || s >= container.size()) throw std::out_of_range{"Start index out of range"};
+            if ((size_type)e > container.size()) e = container.size();
+            if (s < 0 || (size_type)s >= container.size()) throw std::out_of_range{"Start index out of range"};
         }
 
         value_type& operator[](size_type i) { return container[s + (i * stride)]; }

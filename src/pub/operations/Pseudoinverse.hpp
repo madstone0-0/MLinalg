@@ -1,3 +1,8 @@
+/**
+ * @file Pseudoinverse.hpp
+ * @brief Header file for pseudoinverse operations
+ */
+
 #pragma once
 #include "../Numeric.hpp"
 #include "Aliases.hpp"
@@ -32,10 +37,8 @@ namespace mlinalg {
      *         - \f$\Sigma^{+}\in\mathbb{R}^{r \times r}\f$: the diagonal matrix of reciprocal singular values,
      *         - \f$U^T\in\mathbb{R}^{r\times m}\f$: the transpose of the left singular vectors.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     auto moorePenrosePinv(const Matrix<number, m, n>& A) {
-        const auto& [nR, nC] = A.shape();
-        const auto& minDim{std::min(nR, nC)};
         auto [U, Sigma, VT] = svd(A);
         Sigma.apply([](auto& sigma) {
             if (!fuzzyCompare(sigma, number(0))) sigma = 1 / sigma;
@@ -52,7 +55,7 @@ namespace mlinalg {
      * @param A the matrix to calculate the pseudoinverse of.
      @ return The pseudoinverse of the matrix.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     auto pinv(const Matrix<number, m, n>& A) {
         const auto& [V, SigmaPlus, UT] = moorePenrosePinv(A);
         return V * SigmaPlus * UT;

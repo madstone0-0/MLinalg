@@ -3,8 +3,6 @@
  * @brief Header file for the Matrix class
  */
 
-// FIX: Fix matrix-vector and vector-matrix multiplication order
-
 #pragma once
 #include <functional>
 
@@ -17,14 +15,14 @@ namespace mlinalg::structures {
     /**
      * @brief Matrix class for representing MxN matrices
      *
-     * @param m Number of rows
-     * @param n Number of columns
+     * @tparam m Number of rows
+     * @tparam n Number of columns
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     class Matrix : public MatrixBase<Matrix<number, m, n>, number> {
        public:
         using Base = Matrix<number, m, n>;
-        using Backing = TDArray<number, m, n>;
+        using Backing = MatrixArray<number, m, n>;
         using iterator = typename Backing::iterator;
         using value_type = typename Backing::value_type;
         using size_type = typename Backing::size_type;
@@ -115,14 +113,14 @@ namespace mlinalg::structures {
          * @param vec The vector to multiply by
          * @return The vector resulting from the multiplication of size m
          */
-        template <int nOther>
+        template <Dim nOther>
         Vector<number, m> operator*(const Vector<number, nOther>& vec) const {
             if constexpr (nOther != n)
                 throw runtime_error("The columns of the matrix must be equal to the size of the vector");
             return MatrixVectorMultiplication<number, m, n, nOther>(matrix, vec.row);
         }
 
-        template <int nOther>
+        template <Dim nOther>
         Vector<number, Dynamic> operator*(const Vector<number, nOther>& vec) const
             requires(nOther == Dynamic)
         {
@@ -137,7 +135,7 @@ namespace mlinalg::structures {
          * @param other The transposed matrix to multiply by
          * @return The matrix resulting from the multiplication
          */
-        template <int nOther>
+        template <Dim nOther>
         Matrix<number, m, nOther> operator*(const TransposeVariant<number, n, nOther>& other) const {
             return MatrixMultiplication<number, m, n, n, nOther>(matrix,
                                                                  helpers::extractMatrixFromTranspose(other).matrix);
@@ -165,8 +163,8 @@ namespace mlinalg::structures {
         // ========================
 
         template <OffsetPair rowOffset = {0, m}, OffsetPair colOffset = {0, -1}, StridePair stride = {1, 1},
-                  int nM = (rowOffset.end - rowOffset.start + stride.row - 1) / stride.row,
-                  int nN = (colOffset.end - colOffset.start + stride.col - 1) / stride.col>
+                  Dim nM = (rowOffset.end - rowOffset.start + stride.row - 1) / stride.row,
+                  Dim nN = (colOffset.end - colOffset.start + stride.col - 1) / stride.col>
         auto view(OffsetPair /*rowOffsetArg*/ = {}, OffsetPair /*colOffsetArg*/ = {}, StridePair /*strideArg*/ = {}) {
             return View<number, m, n, nM, nN, colOffset, stride.col>(matrix, rowOffset, colOffset, stride);
         }
@@ -194,28 +192,11 @@ namespace mlinalg::structures {
         [[nodiscard]] constexpr Shape shape() const { return {numRows(), numCols()}; }
 
        private:
-        template <Number num, int mM, int nN>
-        friend class Matrix;
-
-        template <Number num, int nN>
+        template <Number num, Dim nN>
         friend class Vector;
 
         template <typename D, Number num>
         friend class MatrixBase;
-
-        template <Number num, int mM, int nN, int nOther, Container T, Container U>
-        friend Matrix<number, m, nOther> strassen(const T& A, const U& B);
-
-        /**
-         * @brief Swap the contents of two matrices for copy swap idiom
-         *
-         * @param first  The first matrix
-         * @param second  The second matrix
-         */
-        friend void swap(Matrix& first, Matrix& second) noexcept {
-            using std::swap;
-            swap(first.matrix, second.matrix);
-        }
 
         void checkDimensions() {
             if constexpr (n <= 0) throw invalid_argument("Matrix n must be greater than zero");
@@ -225,7 +206,7 @@ namespace mlinalg::structures {
         /**
          * @brief Backing array for the matrix
          */
-        TDArray<number, m, n> matrix{m};
+        MatrixArray<number, m, n> matrix{m};
 
         MatrixColumns columns{this};
     };
@@ -243,7 +224,7 @@ namespace mlinalg::structures {
     class Matrix<number, Dynamic, Dynamic> : public MatrixBase<Matrix<number, Dynamic, Dynamic>, number> {
        public:
         using Base = Matrix<number, Dynamic, Dynamic>;
-        using Backing = TDArrayDynamic<number>;
+        using Backing = MatrixArrayDynamic<number>;
         using iterator = typename Backing::iterator;
         using value_type = typename Backing::value_type;
         using size_type = typename Backing::size_type;
@@ -280,7 +261,7 @@ namespace mlinalg::structures {
             }
         }
 
-        template <int m, int n>
+        template <Dim m, Dim n>
         explicit Matrix(const Matrix<number, m, n>& other)
             requires(m != -1 && n != -1)
             : m{m}, n{n}, columns{this} {
@@ -357,7 +338,7 @@ namespace mlinalg::structures {
          * @return The vector resulting from the multiplication of size m
          */
 
-        template <int nOther>
+        template <Dim nOther>
         Vector<number, Dynamic> operator*(const Vector<number, nOther>& vec) const {
             return MatrixVectorMultiplication<number, Dynamic, Dynamic, Dynamic>(matrix, vec.row);
         }
@@ -368,12 +349,12 @@ namespace mlinalg::structures {
          * @param other The transposed matrix to multiply by
          * @return The matrix resulting from the multiplication
          */
-        template <int otherM, int otherN>
+        template <Dim otherM, Dim otherN>
         Matrix<number, Dynamic, Dynamic> operator*(const TransposeVariant<number, otherM, Dynamic>& other) const {
             return MatrixMultiplication<number, Dynamic, Dynamic, Dynamic>(helpers::extractMatrixFromTranspose(other));
         }
 
-        template <int m, int n, int otherM, int otherN>
+        template <Dim m, Dim n, Dim otherM, int otherN>
         friend Matrix<number, Dynamic, Dynamic> operator*(const TransposeVariant<number, otherM, otherN>& lhs,
                                                           const Matrix<number, m, n> rhs)
             requires((n == Dynamic && m == Dynamic) && (otherN != Dynamic && otherM != Dynamic))
@@ -436,7 +417,7 @@ namespace mlinalg::structures {
          */
         [[nodiscard]] Shape shape() const { return {numRows(), numCols()}; }
 
-        template <int mM>
+        template <Dim mM>
         void pushRow(const Row<number, mM>& v) {
             if (v.size() != n) {
                 throw invalid_argument("Row size must match the number of columns in the matrix");
@@ -446,7 +427,7 @@ namespace mlinalg::structures {
             m++;
         }
 
-        template <int nN>
+        template <Dim nN>
         void pushCol(const Row<number, nN>& v) {
             // If the matrix is empty it should resize around the new column
             if (m == 0) {
@@ -493,10 +474,7 @@ namespace mlinalg::structures {
         }
 
        private:
-        template <Number num, int mM, int nN>
-        friend class Matrix;
-
-        template <Number num, int nN>
+        template <Number num, Dim nN>
         friend class Vector;
 
         template <typename D, Number num>
@@ -504,7 +482,7 @@ namespace mlinalg::structures {
 
         size_t m;
         size_t n;
-        TDArrayDynamic<number> matrix;
+        MatrixArrayDynamic<number> matrix;
 
         MatrixColumns columns{this};
     };

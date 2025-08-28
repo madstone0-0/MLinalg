@@ -1,3 +1,8 @@
+/**
+ * @file Allocator.hpp
+ * @brief Header file for a custom memory allocators
+ */
+
 #pragma once
 
 #include <bitset>
@@ -25,7 +30,7 @@ namespace mlinalg::allocator {
         BootlegAllocator() = default;
 
         template <typename U>
-        BootlegAllocator(const BootlegAllocator<U>&) noexcept {}
+        explicit BootlegAllocator(const BootlegAllocator<U>&) noexcept {}
 
         constexpr T* allocate(size_type n) {
             if (n == 0) return nullptr;
@@ -34,8 +39,8 @@ namespace mlinalg::allocator {
             return static_cast<T*>(std::aligned_alloc(alignof(T), n * sizeof(T)));
         }
 
-        constexpr void deallocate(T* ptr, size_type n) noexcept {
-            if (!ptr) return;
+        constexpr void deallocate(T* ptr, size_type /*n*/) noexcept {
+            if (ptr == nullptr) return;
 
             std::free(ptr);
         }

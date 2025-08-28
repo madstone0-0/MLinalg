@@ -1,3 +1,8 @@
+/**
+ * @file Builders.hpp
+ * @brief Common builders for matrices and vectors
+ */
+
 #pragma once
 
 #include <stdexcept>
@@ -9,7 +14,7 @@
 namespace mlinalg {
     using namespace structures;
 
-    template <Number num, int n>
+    template <Number num, Dim n>
     Vector<num, n> extractSolutionVector(const Vector<optional<num>, n>& solutions) {
         if (rg::any_of(solutions, [](const auto& val) { return !val.has_value(); })) {
             throw StackError("Cannot extract solution vector from incomplete solutions");
@@ -23,7 +28,7 @@ namespace mlinalg {
         return res;
     }
 
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     void I(Matrix<number, m, n>& A)
         requires(m == n)
     {
@@ -39,7 +44,7 @@ namespace mlinalg {
      * @brief Find the identity matrix of a square linear system
      * @return  The identity matrix of the system.
      */
-    template <Number number, int m>
+    template <Number number, Dim m>
     Matrix<number, m, m> I() {
         Matrix<number, m, m> identity{};
         for (size_t i{}; i < m; i++) {
@@ -53,11 +58,11 @@ namespace mlinalg {
      *
      * @return  The identity matrix of the system.
      */
-    template <Number number, int m>
+    template <Number number, Dim m>
     Matrix<number, m, m> I(size_t nRows) {
-        if constexpr (m == -1) {
+        if constexpr (m == Dynamic) {
             Matrix<number, m, m> identity(nRows, nRows);
-            for (int i{}; i < nRows; i++) {
+            for (size_t i{}; i < nRows; i++) {
                 identity.at(i, i) = 1;
             }
             return identity;
@@ -73,7 +78,7 @@ namespace mlinalg {
      * @tparam n The number of columns in the matrix.
      * @return  The zero matrix of the given size.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     Matrix<number, m, n> matrixZeros() {
         return Matrix<number, m, n>{};
     }
@@ -87,7 +92,7 @@ namespace mlinalg {
      * @param nCols The number of columns in the matrix.
      * @return  The zero matrix of the given size.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     Matrix<number, m, n> matrixZeros(size_t nRows, size_t nCols) {
         if constexpr (m == Dynamic || n == Dynamic) {
             return Matrix<number, m, n>(nRows, nCols);
@@ -102,7 +107,7 @@ namespace mlinalg {
      * @tparam n The size of the vector.
      * @return The zero vector of the given size.
      */
-    template <Number number, int n>
+    template <Number number, Dim n>
     Vector<number, n> vectorZeros() {
         return Vector<number, n>{};
     }
@@ -113,7 +118,7 @@ namespace mlinalg {
      * @tparam n The size of the vector.
      * @param size
      */
-    template <Number number, int n>
+    template <Number number, Dim n>
     Vector<number, n> vectorZeros(size_t size) {
         if constexpr (n == Dynamic) {
             return Vector<number, n>(size);
@@ -129,7 +134,7 @@ namespace mlinalg {
      * @tparam n The number of columns in the matrix.
      * @return The matrix of ones of the given size.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     Matrix<number, m, n> matrixOnes() {
         Matrix<number, m, n> res{};
         res.apply([](auto& x) { x = 1; });
@@ -145,7 +150,7 @@ namespace mlinalg {
      * @param nCols The number of columns in the matrix.
      * @return The matrix of ones of the given size.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     Matrix<number, m, n> matrixOnes(size_t nRows, size_t nCols) {
         if constexpr (m == Dynamic || n == Dynamic) {
             Matrix<number, m, n> res(nRows, nCols);
@@ -162,7 +167,7 @@ namespace mlinalg {
      * @tparam n The size of the vector.
      * @return The vector of ones of the given size.
      */
-    template <Number number, int n>
+    template <Number number, Dim n>
     Vector<number, n> vectorOnes() {
         Vector<number, n> res{};
         res.apply([](auto& x) { x = 1; });
@@ -175,7 +180,7 @@ namespace mlinalg {
      * @tparam n The size of the vector.
      * @param size The size of the vector.
      */
-    template <Number number, int n>
+    template <Number number, Dim n>
     Vector<number, n> vectorOnes(size_t size) {
         if constexpr (n == Dynamic) {
             Vector<number, n> res(size);
@@ -195,7 +200,7 @@ namespace mlinalg {
      * @param seed The seed for the random number generator.
      * @return The random vector of the given size.
      */
-    template <Number number, int n>
+    template <Number number, Dim n>
     Vector<number, n> vectorRandom(const number min = 0, const number max = 100, const Seed& seed = std::nullopt) {
         Vector<number, n> vec{};
         vec.apply([&](auto& x) { x = helpers::rng<number>(min, max, seed); });
@@ -212,7 +217,7 @@ namespace mlinalg {
      * @param size The size of the vector.
      * @return The random vector of the given size.
      */
-    template <Number number, int n>
+    template <Number number, Dim n>
     Vector<number, n> vectorRandom(const size_t size, const number min = 0, const number max = 100,
                                    const Seed& seed = std::nullopt) {
         if constexpr (n == Dynamic) {
@@ -234,7 +239,7 @@ namespace mlinalg {
      * @param seed The seed for the random number generator.
      * @return The random matrix of the given size.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     Matrix<number, m, n> matrixRandom(const number min = 0, const number max = 100, Seed seed = std::nullopt) {
         Matrix<number, m, n> res{};
         res.apply([&](auto& x) { x = helpers::rng<number>(min, max, seed); });
@@ -253,7 +258,7 @@ namespace mlinalg {
      * @param seed The seed for the random number generator.
      * @return The random matrix of the given size.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     Matrix<number, m, n> matrixRandom(const size_t numRows, const size_t numCols, const number min = 0,
                                       const number max = 100, const Seed& seed = std::nullopt) {
         if constexpr (n == Dynamic || m == Dynamic) {
@@ -271,7 +276,7 @@ namespace mlinalg {
      * @param a The value to fill the diagonal with.
      * @return A diagonal matrix with the given value on the diagonal.
      */
-    template <int n, Number number>
+    template <Dim n, Number number>
     Matrix<number, n, n> diagonal(number a) {
         Matrix<number, n, n> res{n, n};
         size_t i{};
@@ -290,7 +295,7 @@ namespace mlinalg {
      * @param size The size of the diagonal matrix
      * @return A diagonal matrix of size (size) with the given value on the diagonal
      */
-    template <int n, Number number>
+    template <Dim n, Number number>
     Matrix<number, n, n> diagonal(number a, size_t size)
         requires(n == Dynamic)
     {
@@ -309,7 +314,7 @@ namespace mlinalg {
      * @param entries The entries to fill the diagonal with.
      * @return A diagonal matrix with the given entries on the diagonal.
      */
-    template <int n, Number number>
+    template <Dim n, Number number>
     Matrix<number, n, n> diagonal(const std::initializer_list<number>& entries) {
         Matrix<number, n, n> res{n, n};
         size_t i{};
@@ -328,7 +333,7 @@ namespace mlinalg {
      * @param entries The entries to fill the diagonal with.
      * @return A diagonal matrix with the given entries on the diagonal.
      */
-    template <int n, Number number>
+    template <Dim n, Number number>
     Matrix<number, n, n> diagonal(const std::initializer_list<number>& entries, size_t size)
         requires(n == Dynamic)
     {
@@ -350,7 +355,7 @@ namespace mlinalg {
      * @param end  The ending iterator for the entries.
      * @return A diagonal matrix with the given entries on the diagonal.
      */
-    template <int n, Number number, typename Itr>
+    template <Dim n, Number number, typename Itr>
     Matrix<number, n, n> diagonal(Itr begin, Itr end) {
         auto dist = std::distance(begin, end);
 
@@ -380,7 +385,7 @@ namespace mlinalg {
      * @param entries The entries to fill the diagonal with.
      * @return A diagonal matrix with the given entries on the diagonal.
      */
-    template <int n, Number number>
+    template <Dim n, Number number>
     Matrix<number, n, n> diagonal(const array<number, n>& entries) {
         Matrix<number, n, n> res{n, n};
         for (size_t i{}; i < static_cast<size_t>(n); i++) {

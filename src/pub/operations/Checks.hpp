@@ -1,3 +1,8 @@
+/**
+ * @file Checks.hpp
+ * @brief Header file for checking properties of matrices and linear systems.
+ */
+
 #pragma once
 
 #include <boost/type_index.hpp>
@@ -23,7 +28,7 @@ namespace mlinalg {
      * @param pivots The pivots of the system.
      * @return true if the system is in echelon form, false otherwise.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     bool isInEchelonForm(const LinearSystem<number, m, n>& system, const RowOptional<number, m>& pivots) {
         const size_t& nRows = system.numRows();
 
@@ -39,7 +44,7 @@ namespace mlinalg {
      * @param system The linear system to check.
      * @return true if the system is inconsistent, false otherwise.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     bool isInconsistent(const LinearSystem<number, m, n>& system) {
         const auto& nCols = system.numCols();
 
@@ -62,7 +67,7 @@ namespace mlinalg {
      * @param pivots The pivots of the system.
      * @return true if the system is in reduced echelon form, false otherwise.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     bool isInReducedEchelonForm(const LinearSystem<number, m, n>& system, const RowOptional<number, m>& pivots) {
         for (int i{1}; i < static_cast<int>(pivots.size()); i++) {
             if (!pivots.at(i).has_value()) continue;
@@ -81,14 +86,14 @@ namespace mlinalg {
      * @param A the matrix to check
      * @return true if the matrix is Hermitian, false otherwise.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     bool isHermitian(const Matrix<number, m, n>& A) {
         const auto& [nR, nC] = A.shape();
         if (nR != nC) throw StackError<std::invalid_argument>{"Matrix must be square"};
         return A == helpers::extractMatrixFromTranspose(A.T());
     }
 
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     struct OrthVisitor {
         const Matrix<number, m, n>& A;
 
@@ -96,14 +101,13 @@ namespace mlinalg {
         bool operator()(const VectorTransposeVariant<number, m, n>& AT)
             requires((n == 1 || m == 1) || (n == Dynamic || m == Dynamic))
         {
-            const auto& [nR, nC] = A.shape();
             const auto ATA = AT.T() * A;
             const auto& Id = I<number, n>(1);
 
             auto minus = ATA - Id;
-            const auto& [nR2, nC2] = minus.shape();
-            for (size_t i{}; i < nR2; i++) {
-                for (size_t j{}; j < nC2; j++) {
+            const auto& [nR, nC] = minus.shape();
+            for (size_t i{}; i < nR; i++) {
+                for (size_t j{}; j < nC; j++) {
                     if (!fuzzyCompare(abs(minus(i, j)), number(0))) return false;
                 }
             }
@@ -141,7 +145,7 @@ namespace mlinalg {
      * @param A the matrix to check
      * @return true if the matrix is orthogonal, false otherwise.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     bool isOrthogonal(const Matrix<number, m, n>& A) {
         OrthVisitor<number, m, n> v{A};
         return std::visit(v, A.T());
@@ -153,7 +157,7 @@ namespace mlinalg {
      * @param v The vector to check.
      * @return true if the vector is a zero vector, false otherwise.
      */
-    template <Number number, int n>
+    template <Number number, Dim n>
     constexpr bool isZeroVector(const Vector<number, n>& v) {
         for (const auto& i : v) {
             if (!fuzzyCompare(i, number(0))) return false;
@@ -167,7 +171,7 @@ namespace mlinalg {
      * @param A The matrix to check.
      * @return true if the matrix is upper triangular, false otherwise.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     bool isUpperTriangular(const Matrix<number, m, n>& A) {
         const auto [nRows, nCols] = A.shape();
 

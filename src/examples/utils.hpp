@@ -1,9 +1,9 @@
 #pragma once
-#include <mlinalg/MLinalg.hpp>
-#include <mlinalg/structures/Aliases.hpp>
+
 #include <optional>
 #include <string>
 
+#include "../pub/MLinalg.hpp"
 #include "third_party/csv.h"
 
 // Utility functions not found in MLinalg

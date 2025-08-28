@@ -1,3 +1,8 @@
+/**
+ * @file Echelon.hpp
+ * @brief Header file for echelon form operations on linear systems.
+ */
+
 #pragma once
 #include <map>
 #include <optional>
@@ -16,7 +21,7 @@ namespace mlinalg {
      * @param system The linear system to get the pivots from.
      * @return The pivots of the system, if they exist.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     RowOptional<number, m> getPivots(const LinearSystem<number, m, n>& system, bool partial = true) {
         const size_t& nRows = system.numRows();
         const size_t& nCols = system.numCols();
@@ -69,7 +74,7 @@ namespace mlinalg {
      * @return The pivot locations if they exist, where the the value is the column position and the index of the value
      * is the row position
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     RowOptional<size_t, m> getPivotLocations(const LinearSystem<number, m, n>& system, bool partial = true) {
         const size_t& nRows = system.numRows();
         const size_t& nCols = system.numCols();
@@ -123,7 +128,7 @@ namespace mlinalg {
      * @param col The column to search for the pivot in.
      * @return The pivot row if it exists, nullopt otherwise.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     optional<size_t> getPivotRow(const LinearSystem<number, m, n>& system, size_t startRow, size_t col) {
         const auto& nRows = system.numRows();
         const auto& nCols = system.numCols();
@@ -142,7 +147,7 @@ namespace mlinalg {
      * @param system The linear system to rearrange.
      * @return The rearranged linear system.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     LinearSystem<number, m, n> rearrangeSystem(const LinearSystem<number, m, n>& system) {
         auto getZeroCount = [](const Row<number, n>& row) {
             const auto& size = row.size();
@@ -186,7 +191,7 @@ namespace mlinalg {
      * @param system The linear system to find the reduced row echelon form of.
      * @return The reduced row echelon form of the system.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     LinearSystem<number, m, n> refSq(const LinearSystem<number, m, n>& sys) {
         LinearSystem<number, m, n> system{sys};
         const size_t& nCols = system.numCols();
@@ -231,7 +236,7 @@ namespace mlinalg {
      * @param system The linear system to find the row echelon form of.
      * @return The row echelon form of the system.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     LinearSystem<number, m, n> refRec(const LinearSystem<number, m, n>& sys) {
         LinearSystem<number, m, n> system{sys};
 
@@ -280,7 +285,7 @@ namespace mlinalg {
      * @param system The linear system to find the row echelon form of.
      * @return The row echelon form of the system.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     LinearSystem<number, m, n> ref(const LinearSystem<number, m, n>& system) {
         const auto& nRows = system.numRows();
         const auto& nCols = system.numCols();
@@ -297,11 +302,11 @@ namespace mlinalg {
      * @param identity Whether to convert the system to identity form.
      * @return The reduced row echelon form of the system.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     LinearSystem<number, m, n> rrefRec(const LinearSystem<number, m, n>& sys, bool identity = true) {
         LinearSystem<number, m, n> system{sys};
 
-        int nRows = static_cast<int>(system.numRows());
+        Dim nRows = static_cast<int>(system.numRows());
 
         auto pivots = getPivots(system);
         if (!isInEchelonForm(system, pivots)) {
@@ -341,7 +346,7 @@ namespace mlinalg {
      * @param identity Whether to convert the system to identity form.
      * @return The reduced row echelon form of the system.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     LinearSystem<number, m, n> rrefSq(const LinearSystem<number, m, n>& sys, bool identity = true) {
         LinearSystem<number, m, n> system{sys};
 
@@ -373,7 +378,7 @@ namespace mlinalg {
      * @param identity Whether to convert the system to identity form.
      * @return The reduced row echelon form of the system.
      */
-    template <Number number, int m, int n>
+    template <Number number, Dim m, Dim n>
     LinearSystem<number, m, n> rref(const LinearSystem<number, m, n>& system, bool identity = true) {
         const auto& nRows = system.numRows();
         const auto& nCols = system.numCols();
