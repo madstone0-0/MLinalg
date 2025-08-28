@@ -22,11 +22,11 @@ TEST_CASE("Operations") {
         {0, 0, 0, 0},
     }};
 
-    LinearSystem<double, 3, 3> A1{{
+    LinearSystem<double, 3, 3> A1{
         {1, 2, 3},
         {0, 0, 2},
         {0, 0, 0},
-    }};
+    };
     Vector<double, 3> b1{4, 3, 0};
     // Expected Gauss-Jordan Elimination
     // - Row2 -> 1/2*row2 = {0, 0, 1, 3/2}.
@@ -40,12 +40,12 @@ TEST_CASE("Operations") {
         {0, 0, 0, 1, 9, 4},
         {0, 0, 0, 0, 0, 0},
     };
-    LinearSystem<double, 4, 5> A2{{
+    LinearSystem<double, 4, 5> A2{
         {1, -3, 0, -1, 0},
         {0, 1, 0, 0, -4},
         {0, 0, 0, 1, 9},
         {0, 0, 0, 0, 0},
-    }};
+    };
     Vector<double, 4> b2{-2, 1, 4, 0};
     // Expected Gauss-Jordan Elimination:
     // - Row1 → Row1 + 3*Row2 → {1, 0, 0, -1, -12, 1}
@@ -59,10 +59,10 @@ TEST_CASE("Operations") {
         {1, 3, 4, 7},
         {3, 9, 7, 6},
     };
-    LinearSystem<double, 2, 3> A3{{
+    LinearSystem<double, 2, 3> A3{
         {1, 3, 4},
         {3, 9, 7},
-    }};
+    };
     Vector<double, 2> b3{7, 6};
     // Expected Gaussian Elimination for system3:
     //  - Row1 remains: {1, 3, 4, 7}.
@@ -77,11 +77,11 @@ TEST_CASE("Operations") {
         {0, 0, 1, -2, -3},
         {-1, 7, -4, 2, 7},
     };
-    LinearSystem<double, 3, 4> A4{{
+    LinearSystem<double, 3, 4> A4{
         {1, -7, 0, 6},
         {0, 0, 1, -2},
         {-1, 7, -4, 2},
-    }};
+    };
     Vector<double, 3> b4{5, -3, 7};
     // Expected Gaussian Elimination for system4:
     //  - Row1 remains: {1, -7, 0, 6, 5}.
@@ -96,12 +96,12 @@ TEST_CASE("Operations") {
         {0, 0, 0, 1, 9, 4},
         {0, 0, 0, 0, 0, 10},
     };
-    LinearSystem<double, 4, 5> A5{{
+    LinearSystem<double, 4, 5> A5{
         {1, -3, 0, -1, 0},
         {0, 1, 0, 0, -4},
         {0, 0, 0, 1, 9},
         {0, 0, 0, 0, 0},
-    }};
+    };
     Vector<double, 4> b5{-2, 1, 4, 10};
     // This system is already in echelon form (with the last row indicating inconsistency).
     // Expected Gauss-Jordan Elimination:
@@ -110,25 +110,25 @@ TEST_CASE("Operations") {
     // - Row4 remains: {0, 0, 0, 0, 0, 10} (inconsistent)
 
     // SquareSystem: A 2x2 square system.
-    LinearSystem<double, 2, 2> squareSystem({
+    LinearSystem<double, 2, 2> squareSystem{
         {3, 1},
         {1, 2},
-    });
+    };
     // Expected Gaussian Elimination for squareSystem:
     //  - Row1 remains: {3, 1}.
     //  - Row2 -> row2 - (1/3)*row1 = {0, 5/3}.
 
     // System6: A 3x4 system that requires elimination.
-    LinearSystem<double, 3, 4> system6{{
+    LinearSystem<double, 3, 4> system6{
         {2, 4, -2, 2},
         {1, 2, 0, 4},
         {3, 6, -4, 8},
-    }};
-    LinearSystem<double, 3, 3> A6{{
+    };
+    LinearSystem<double, 3, 3> A6{
         {2, 4, -2},
         {1, 2, 0},
         {3, 6, -4},
-    }};
+    };
     Vector<double, 3> b6{2, 4, 8};
     // Expected Gaussian Elimination for system6:
     //  - Row1 remains: {2, 4, -2, 2}.
@@ -141,16 +141,16 @@ TEST_CASE("Operations") {
     // - Row3 remains: {0, 0, 0, 8} (inconsistent)
     // System7: A 3x5 system with dependent rows.
 
-    LinearSystem<double, 3, 5> system7{{
+    LinearSystem<double, 3, 5> system7{
         {1, 2, -1, 3, 5},
         {2, 4, 0, 6, 10},
         {3, 6, 1, 9, 15},
-    }};
-    LinearSystem<double, 3, 4> A7{{
+    };
+    LinearSystem<double, 3, 4> A7{
         {1, 2, -1, 3},
         {2, 4, 0, 6},
         {3, 6, 1, 9},
-    }};
+    };
     Vector<double, 3> b7{5, 10, 15};
     // Expected Gaussian Elimination for system7:
     //  - Row1 remains: {1, 2, -1, 3, 5}.
@@ -161,16 +161,16 @@ TEST_CASE("Operations") {
     // - Row1 → Row1 + Row2 → {1, 2, 0, 3, 5}
 
     // System8: A 3x4 inconsistent system (last row indicates inconsistency).
-    LinearSystem<double, 3, 4> system8{{
+    LinearSystem<double, 3, 4> system8{
         {1, 2, -1, 3},
         {0, 1, 2, 4},
         {0, 0, 0, 7},
-    }};
-    LinearSystem<double, 3, 3> A8{{
+    };
+    LinearSystem<double, 3, 3> A8{
         {1, 2, -1},
         {0, 1, 2},
         {0, 0, 0},
-    }};
+    };
     Vector<double, 3> b8{3, 4, 7};
     // This system is already in echelon form (with the third row being a zero–coefficient row with a nonzero constant).
     // Expected Gauss-Jordan Elimination:
@@ -178,31 +178,31 @@ TEST_CASE("Operations") {
     // - Row3 remains: {0, 0, 0, 7} (inconsistent)
 
     // System9: A 3x3 square system already in echelon form.
-    LinearSystem<double, 3, 3> system9{{
+    LinearSystem<double, 3, 3> system9{
         {2, -1, 3},
         {0, 4, 5},
         {0, 0, 6},
-    }};
-    LinearSystem<double, 3, 2> A9{{
+    };
+    LinearSystem<double, 3, 2> A9{
         {2, -1},
         {0, 4},
         {0, 0},
-    }};
+    };
     Vector<double, 3> b9{3, 5, 6};
 
     // System10: A 4x3 system with one redundant row.
-    LinearSystem<double, 4, 3> system10{{
+    LinearSystem<double, 4, 3> system10{
         {1, 2, 3},
         {2, 4, 6},
         {0, 1, 1},
         {3, 7, 8},
-    }};
-    LinearSystem<double, 4, 2> A10{{
+    };
+    LinearSystem<double, 4, 2> A10{
         {1, 2},
         {2, 4},
         {0, 1},
         {3, 7},
-    }};
+    };
     Vector<double, 4> b10{3, 6, 1, 8};
     // Expected Gaussian Elimination for system10:
     //  - Row1 remains: {1, 2, 3}.
@@ -216,20 +216,23 @@ TEST_CASE("Operations") {
     // - Inconsistency detected in Row4: {0, 0, -2}
 
     // System11: A trivial 1x3 system.
-    LinearSystem<double, 1, 3> system11{{
+    LinearSystem<double, 1, 3> system11{
         {5, -3, 2},
-    }};
-    LinearSystem<double, 1, 2> A11{{{5, -3}}};
+    };
+    LinearSystem<double, 1, 2> A11{{5, -3}};
     Vector<double, 1> b11{2};
     // Already in echelon form.
     // Already in RREF (no elimination possible)
 
     // System12: A 2x3 system that needs one elimination step.
-    LinearSystem<double, 2, 3> system12{{
+    LinearSystem<double, 2, 3> system12{
         {4, 8, 12},
         {2, 5, 7},
-    }};
-    LinearSystem<double, 2, 2> A12{{{4, 8}, {2, 5}}};
+    };
+    LinearSystem<double, 2, 2> A12{
+        {4, 8},
+        {2, 5},
+    };
     Vector<double, 2> b12{12, 7};
     // Expected Gaussian Elimination for system12:
     //  - Row1 remains: {4, 8, 12}.

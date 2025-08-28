@@ -561,16 +561,16 @@ namespace mlinalg::structures {
             throw StackError<invalid_argument>(
                 "The columns of the first matrix must be equal to the rows of the second matrix");
 
-        const Dim nRows = matrix.size();
-        const Dim nCols = matrix[0].size();
-        const Dim nColsOther = otherMatrix[0].size();
+        const size_t nRows = matrix.size();
+        const size_t nCols = matrix[0].size();
+        const size_t nColsOther = otherMatrix[0].size();
 
         constexpr bool isDynamic = m == Dynamic || n == Dynamic || mOther == Dynamic || nOther == Dynamic;
 
         constexpr auto resSizeP = isDynamic ? DynamicPair : SizePair{m, nOther};
 
         Matrix<float, resSizeP.first, resSizeP.second> res{nRows, nColsOther};
-        const int vecSize{16};  // AVX can handle 8 floats, but we unroll 2 iterations
+        const size_t vecSize{8};
 
         for (size_t i{}; i < nRows; i++) {
             for (size_t k{}; k < nCols; k++) {
@@ -583,22 +583,19 @@ namespace mlinalg::structures {
                 // Only vectorize if there are at least 8 columns.
                 if (nColsOther >= vecSize) {
                     size_t j = 0;
+                    const size_t prefetchDistance = std::min(j + 64ZU, nColsOther);
 
                     // Prefetch next cache lines
-                    _mm_prefetch(reinterpret_cast<const char*>(&kRow[j + 64]), _MM_HINT_T0);
-                    _mm_prefetch(reinterpret_cast<const char*>(&iRow[j + 64]), _MM_HINT_T0);
+                    _mm_prefetch(reinterpret_cast<const char*>(&kRow[prefetchDistance]), _MM_HINT_T0);
+                    _mm_prefetch(reinterpret_cast<const char*>(&iRow[prefetchDistance]), _MM_HINT_T0);
 
-                    // Process in chunks of 16 floats
+#pragma GCC unroll 2
+                    // Process in chunks of 8 floats, with unrolling
                     for (; j + vecSize <= nColsOther; j += vecSize) {
                         __m256 avxB1 = _mm256_loadu_ps(&kRow[j]);
                         __m256 avxRes1 = _mm256_loadu_ps(&iRow[j]);
                         avxRes1 = _mm256_fmadd_ps(avxA, avxB1, avxRes1);
                         _mm256_storeu_ps(&iRow[j], avxRes1);
-
-                        __m256 avxB2 = _mm256_loadu_ps(&kRow[j + 8]);
-                        __m256 avxRes2 = _mm256_loadu_ps(&iRow[j + 8]);
-                        avxRes2 = _mm256_fmadd_ps(avxA, avxB2, avxRes2);
-                        _mm256_storeu_ps(&iRow[j + 8], avxRes2);
                     }
                     // Process remaining elements, if any, with scalar code.
                     for (; j < nColsOther; j++) {
@@ -620,6 +617,8 @@ namespace mlinalg::structures {
     constexpr auto multMatSIMD(const T& matrix, const U& otherMatrix)
         requires(is_same_v<number, double>)
     {
+        constexpr bool isDynamic = m == Dynamic || n == Dynamic || mOther == Dynamic || nOther == Dynamic;
+
         if (matrix[0].size() != static_cast<size_t>(otherMatrix.size()))
             throw StackError<invalid_argument>(
                 "The columns of the first matrix must be equal to the rows of the second matrix");
@@ -628,12 +627,10 @@ namespace mlinalg::structures {
         const size_t nCols = matrix[0].size();
         const size_t nColsOther = otherMatrix[0].size();
 
-        constexpr bool isDynamic = m == Dynamic || n == Dynamic || mOther == Dynamic || nOther == Dynamic;
-
         constexpr auto resSizeP = isDynamic ? DynamicPair : SizePair{m, nOther};
 
         Matrix<double, resSizeP.first, resSizeP.second> res{nRows, nColsOther};
-        const int vecSize{8};  // AVX can handle 4 doubles, but we unroll 2 iterations
+        const int vecSize{4};
 
         for (size_t i{}; i < nRows; i++) {
             for (size_t k{}; k < nCols; k++) {
@@ -646,21 +643,19 @@ namespace mlinalg::structures {
                 // Only vectorize if there are at least 4 columns.
                 if (nColsOther >= vecSize) {
                     size_t j = 0;
-                    // Prefetch next cache lines
-                    _mm_prefetch(reinterpret_cast<const char*>(&kRow[j + 64]), _MM_HINT_T0);
-                    _mm_prefetch(reinterpret_cast<const char*>(&iRow[j + 64]), _MM_HINT_T0);
+                    const size_t prefetchDistance = std::min(j + 64ZU, nColsOther);
 
-                    // Process in chunks of 8 doubles
+                    // Prefetch next cache lines
+                    _mm_prefetch(reinterpret_cast<const char*>(&kRow[prefetchDistance]), _MM_HINT_T0);
+                    _mm_prefetch(reinterpret_cast<const char*>(&iRow[prefetchDistance]), _MM_HINT_T0);
+
+                    // Process in chunks of 4 doubles, with unrolling
+#pragma GCC unroll 2
                     for (; j + vecSize <= nColsOther; j += vecSize) {
                         __m256d avxB1 = _mm256_loadu_pd(&kRow[j]);
                         __m256d avxRes1 = _mm256_loadu_pd(&iRow[j]);
                         avxRes1 = _mm256_fmadd_pd(avxA, avxB1, avxRes1);
                         _mm256_storeu_pd(&iRow[j], avxRes1);
-
-                        __m256d avxB2 = _mm256_loadu_pd(&kRow[j + 4]);
-                        __m256d avxRes2 = _mm256_loadu_pd(&iRow[j + 4]);
-                        avxRes2 = _mm256_fmadd_pd(avxA, avxB2, avxRes2);
-                        _mm256_storeu_pd(&iRow[j + 4], avxRes2);
                     }
                     // Process remaining elements, if any, with scalar code.
                     for (; j < nColsOther; j++) {

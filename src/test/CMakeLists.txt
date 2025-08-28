@@ -14,8 +14,23 @@ if(NOT CMAKE_BUILD_TYPE STREQUAL "Asm")
     )
     catch_discover_tests(operations)
 
-    add_executable(bench bench.cpp)
-    target_link_libraries(bench PRIVATE Catch2::Catch2WithMain mlinalg::mlinalg)
+    add_executable(
+        bench_matrix
+        ${CMAKE_CURRENT_SOURCE_DIR}/benchmarks/matrix.cpp
+    )
+    target_link_libraries(
+        bench_matrix
+        PRIVATE Catch2::Catch2WithMain mlinalg::mlinalg
+    )
+
+    add_executable(
+        bench_vector
+        ${CMAKE_CURRENT_SOURCE_DIR}/benchmarks/vector.cpp
+    )
+    target_link_libraries(
+        bench_vector
+        PRIVATE Catch2::Catch2WithMain mlinalg::mlinalg
+    )
 
     add_subdirectory(fundamental)
 endif()
