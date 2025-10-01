@@ -4,6 +4,7 @@
  */
 
 #pragma once
+#include <algorithm>
 #include <functional>
 
 #include "Aliases.hpp"
@@ -80,8 +81,7 @@ namespace mlinalg::structures {
          * @return A reference to the current matrix
          */
         Matrix& operator=(const Matrix& other) {
-            if (this == &other) return *this;
-            matrix = other.matrix;
+            std::copy(other.matrix.begin(), other.matrix.end(), matrix.begin());
             columns = MatrixColumns{this};
             return *this;
         }
@@ -298,10 +298,10 @@ namespace mlinalg::structures {
          * @return A reference to the current matrix
          */
         Matrix& operator=(const Matrix& other) {
-            if (this == &other) return *this;
-            matrix = other.matrix;
             n = other.n;
             m = other.m;
+            matrix.resize(m);
+            std::copy(other.matrix.begin(), other.matrix.end(), matrix.begin());
             columns = MatrixColumns{this};
             return *this;
         }

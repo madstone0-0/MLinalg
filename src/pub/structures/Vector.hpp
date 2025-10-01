@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <algorithm>
+
 #include "VectorBase.hpp"
 
 using std::vector, std::array, std::optional, std::unique_ptr, std::shared_ptr, std::optional;
@@ -69,8 +71,7 @@ namespace mlinalg::structures {
          * @param other Vector to copy
          */
         Vector& operator=(const Vector& other) {
-            if (this == &other) return *this;
-            row = VectorRow<number, n>{other.row};
+            std::copy(other.row.begin(), other.row.end(), row.begin());
             return *this;
         }
 
@@ -237,9 +238,9 @@ namespace mlinalg::structures {
          * @param other Vector to copy
          */
         Vector& operator=(const Vector<number, Dynamic>& other) {
-            if (this == &other) return *this;
-            row = VectorRowDynamic<number>{other.row};
             n = other.n;
+            row.resize(n);
+            std::copy(other.row.begin(), other.row.end(), row.begin());
             return *this;
         }
 
