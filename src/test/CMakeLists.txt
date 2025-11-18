@@ -38,7 +38,7 @@ endif()
 # If dummy translation unit exists then compile it
 if(
     EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/dummy.cpp
-    AND CMAKE_BUILD_TYPE STREQUAL "Debug"
+    # AND CMAKE_BUILD_TYPE STREQUAL "Debug"
 )
     add_executable(dummy dummy.cpp)
     target_link_libraries(dummy PRIVATE mlinalg::mlinalg)
