@@ -566,9 +566,8 @@ namespace mlinalg {
                 return gsQR<type>(A);
             case QRMethod::Householder:
                 return houseHolderQR<type>(A);
-            default:
-                throw StackError<std::invalid_argument>{"Unknown QR method"};
         }
+        throw StackError<std::invalid_argument>{"Unknown QR method"};
     }
 
     /**
