@@ -480,8 +480,8 @@ namespace mlinalg::structures {
         template <typename D, Number num>
         friend class MatrixBase;
 
-        size_t m;
-        size_t n;
+        size_t m{};
+        size_t n{};
         MatrixArrayDynamic<number> matrix;
 
         MatrixColumns columns{this};
