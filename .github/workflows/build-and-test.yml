@@ -1,57 +1,50 @@
 name: Build and Test
-
 on:
   push:
     branches: ["master"]
   pull_request:
     branches: ["master"]
-
 jobs:
-  build:
+  build-gcc:
     runs-on: ubuntu-latest
-
-    strategy:
-      fail-fast: false
-      matrix:
-        build_type: [Release]
-        build_tests: [ON]
-        compiler:
-          - {c: /usr/local/gcc-15/bin/gcc-15, cpp: /usr/local/gcc-15/bin/g++-15}
-          - {c: clang-20, cpp: clang++-20}
-
+    container:
+      image: gcc:16
     steps:
       - uses: actions/checkout@v4
-
       - name: Set reusable strings
         id: strings
         shell: bash
         run: |
           echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-
-      # Cache GCC 15 build
-      - name: Cache GCC 15
-        uses: actions/cache@v4
-        with:
-          path: /usr/local/gcc-15
-          key: ${{ runner.os }}-gcc-15
-
-      - name: Install GCC 15 (if not cached)
-        if: steps.cache.outputs.cache-hit != 'true' && matrix.compiler.c == '/usr/local/gcc-15/bin/gcc-15'
+      - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential wget tar xz-utils flex bison libgmp-dev libmpfr-dev libmpc-dev
+          apt-get update
+          apt-get install -y cmake catch2 libboost-all-dev
+      - name: Configure CMake
+        run: >
+          cmake -B ${{ steps.strings.outputs.build-output-dir }} -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc -DCMAKE_BUILD_TYPE=Release
+          -DTESTS=ON -DCMAKE_CXX_STANDARD=23 -S ${{ github.workspace }}
+      - name: Build
+        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Release
+      - name: Run Tests
+        working-directory: ${{ steps.strings.outputs.build-output-dir }}
+        run: ctest --build-config Release --output-on-failure
+      - name: Upload Build Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-gcc-16
+          path: ${{ steps.strings.outputs.build-output-dir }}
 
-          wget https://ftp.gnu.org/gnu/gcc/gcc-15.1.0/gcc-15.1.0.tar.xz
-          tar xf gcc-15.1.0.tar.xz
-          mkdir gcc-15.1.0-build && cd gcc-15.1.0-build
-          ../gcc-15.1.0/configure --prefix=/usr/local/gcc-15 --enable-languages=c,c++ --disable-multilib
-          make -j$(nproc)
-          sudo make install
-
-          /usr/local/gcc-15/bin/gcc-15 --version
-          /usr/local/gcc-15/bin/g++-15 --version
-
-      # Cache LLVM apt downloads
+  build-clang:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set reusable strings
+        id: strings
+        shell: bash
+        run: |
+          echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
       - name: Cache APT packages
         uses: actions/cache@v4
         with:
@@ -61,9 +54,7 @@ jobs:
           key: ${{ runner.os }}-apt-clang20
           restore-keys: |
             ${{ runner.os }}-apt-
-
       - name: Install Clang 20
-        if: matrix.compiler.c == 'clang-20'
         run: |
           sudo apt-get update
           sudo apt-get install -y wget software-properties-common lsb-release gnupg
@@ -72,32 +63,22 @@ jobs:
           sudo ./llvm.sh 20
           clang-20 --version
           clang++-20 --version
-
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y catch2 libboost-all-dev
-
       - name: Configure CMake
         run: >
-          cmake -B ${{ steps.strings.outputs.build-output-dir }}
-          -DCMAKE_CXX_COMPILER=${{ matrix.compiler.cpp }}
-          -DCMAKE_C_COMPILER=${{ matrix.compiler.c }}
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-          -DTESTS=${{ matrix.build_tests }}
-          -DCMAKE_CXX_STANDARD=23
-          -S ${{ github.workspace }}
-
+          cmake -B ${{ steps.strings.outputs.build-output-dir }} -DCMAKE_CXX_COMPILER=clang++-20 -DCMAKE_C_COMPILER=clang-20
+          -DCMAKE_BUILD_TYPE=Release -DTESTS=ON -DCMAKE_CXX_STANDARD=23 -S ${{ github.workspace }}
       - name: Build
-        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
-
+        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Release
       - name: Run Tests
         working-directory: ${{ steps.strings.outputs.build-output-dir }}
-        run: ctest --build-config ${{ matrix.build_type }} --output-on-failure
-
+        run: ctest --build-config Release --output-on-failure
       - name: Upload Build Artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: build-${{ matrix.compiler.c }}
+          name: build-clang-20
           path: ${{ steps.strings.outputs.build-output-dir }}
