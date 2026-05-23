@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           apt-get update
-          apt-get install -y cmake catch2 libboost-all-dev
+          apt-get install -y cmake catch2 libboost-dev
       - name: Configure CMake
         run: >
           cmake -B ${{ steps.strings.outputs.build-output-dir }} -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc -DCMAKE_BUILD_TYPE=Release
