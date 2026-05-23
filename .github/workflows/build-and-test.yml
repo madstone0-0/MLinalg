@@ -11,40 +11,30 @@ jobs:
       image: gcc:16
     steps:
       - uses: actions/checkout@v4
-      - name: Set reusable strings
-        id: strings
-        shell: bash
-        run: |
-          echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
       - name: Install dependencies
         run: |
           apt-get update
           apt-get install -y cmake catch2 libboost-dev
       - name: Configure CMake
         run: >
-          cmake -B ${{ steps.strings.outputs.build-output-dir }} -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc -DCMAKE_BUILD_TYPE=Release
-          -DTESTS=ON -DCMAKE_CXX_STANDARD=23 -S ${{ github.workspace }}
+          cmake -B build -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc -DCMAKE_BUILD_TYPE=Release -DTESTS=ON -DCMAKE_CXX_STANDARD=23
+          -S .
       - name: Build
-        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Release
+        run: cmake --build build --config Release
       - name: Run Tests
-        working-directory: ${{ steps.strings.outputs.build-output-dir }}
+        working-directory: build
         run: ctest --build-config Release --output-on-failure
       - name: Upload Build Artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: build-gcc-16
-          path: ${{ steps.strings.outputs.build-output-dir }}
+          path: build
 
   build-clang:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set reusable strings
-        id: strings
-        shell: bash
-        run: |
-          echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
       - name: Cache APT packages
         uses: actions/cache@v4
         with:
@@ -66,19 +56,19 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y catch2 libboost-all-dev
+          sudo apt-get install -y catch2 libboost-dev
       - name: Configure CMake
         run: >
-          cmake -B ${{ steps.strings.outputs.build-output-dir }} -DCMAKE_CXX_COMPILER=clang++-20 -DCMAKE_C_COMPILER=clang-20
-          -DCMAKE_BUILD_TYPE=Release -DTESTS=ON -DCMAKE_CXX_STANDARD=23 -S ${{ github.workspace }}
+          cmake -B build -DCMAKE_CXX_COMPILER=clang++-20 -DCMAKE_C_COMPILER=clang-20 -DCMAKE_BUILD_TYPE=Release -DTESTS=ON
+          -DCMAKE_CXX_STANDARD=23 -S .
       - name: Build
-        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Release
+        run: cmake --build build --config Release
       - name: Run Tests
-        working-directory: ${{ steps.strings.outputs.build-output-dir }}
+        working-directory: build
         run: ctest --build-config Release --output-on-failure
       - name: Upload Build Artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: build-clang-20
-          path: ${{ steps.strings.outputs.build-output-dir }}
+          path: build
