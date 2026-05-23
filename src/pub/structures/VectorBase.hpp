@@ -34,9 +34,9 @@ namespace mlinalg::structures {
         D& d() { return static_cast<D&>(*this); }
         constexpr const D& d() const { return static_cast<const D&>(*this); }
 
-        // Protected constructor - only derived classes can construct
+        // Only derived classes can construct
         VectorBase() = default;
-        virtual ~VectorBase() = default;
+        ~VectorBase() = default;
 
        public:
         using value_type = number;
@@ -454,7 +454,7 @@ namespace mlinalg::structures {
             return os;
         }
 
-        friend std::ostream& operator<<(std::ostream& os, const optional<VectorBase>& rowPot) {
+        friend std::ostream& operator<<(std::ostream& os, const optional<D>& rowPot) {
             if (!rowPot.has_value()) {
                 os << "Empty Vector";
                 return os;

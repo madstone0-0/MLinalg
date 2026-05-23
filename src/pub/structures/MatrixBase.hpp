@@ -55,7 +55,7 @@ namespace mlinalg::structures {
         D& d() { return static_cast<D&>(*this); }
         constexpr const D& d() const { return static_cast<const D&>(*this); }
 
-        // Protected constructor - only derived classes can construct
+        // Only derived classes can construct
         MatrixBase() = default;
         ~MatrixBase() = default;
 

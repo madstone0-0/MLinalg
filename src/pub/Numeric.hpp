@@ -38,22 +38,22 @@ namespace mlinalg {
     template <Number number>
     constexpr bool fuzzyCompare(const number& a, const number& b, double tolerance = EPSILON_FIXED) {
         // Check if either value is infinity.
-        const auto& absA{abs(a)};
-        const auto& absB{abs(b)};
-        if (isinf(absA) || isinf(absB)) {
+        const auto absA{abs(a)};
+        const auto absB{abs(b)};
+        if (std::isinf(absA) || std::isinf(absB)) {
             // They are equal only if both are infinite and have the same sign.
             return isinf(absA) && isinf(absB) && (std::signbit(absA) == std::signbit(absB));
         }
 
         if constexpr (!is_floating_point_or_complex<number>::value) {
             auto diff{static_cast<double>(a - b)};
-            if (abs(diff) <= EPSILON * std::max(abs(static_cast<double>(a)), abs(static_cast<double>(b))))
+            if (abs(diff) <= EPSILON * std::max(absA, absB))
                 return true;
             else
                 return abs(diff) <= tolerance;
         } else {
             auto diff{a - b};
-            if (abs(diff) <= EPSILON * std::max(abs(a), abs(b)))
+            if (abs(diff) <= EPSILON * std::max(absA, absB))
                 return true;
             else
                 return abs(diff) <= tolerance;

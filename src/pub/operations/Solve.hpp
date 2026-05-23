@@ -109,16 +109,6 @@ namespace mlinalg {
         return x;
     }
 
-    template <Number number, Dim m, Dim n>
-    auto nulspace(const Matrix<number, m, n>& A) {
-        const auto [nR, nC] = A.shape();
-        const auto& zero{vectorZeros<number, m>((int)nR)};
-        const auto& x0 = findSolutions(A, zero);
-        if (!x0.has_value()) throw StackError<runtime_error>{"Cannot solve Ax = 0"};
-        const auto& x = extractSolutionVector(x0.value());
-        return x;
-    }
-
     /**
      * @brief Solve a linear system of equations in the form:
      * \f[
@@ -391,6 +381,23 @@ namespace mlinalg {
                 throw StackError<std::invalid_argument>("Invalid solve mode should not happen");
         }
         return SolveResult(sols);
+    }
+
+    template <Number number, Dim m, Dim n>
+    auto nulspace(const Matrix<number, m, n>& A) {
+        const auto [nR, nC] = A.shape();
+        const auto& zero{vectorZeros<number, m>((int)nR)};
+        const auto& x0 = findSolutions(A, zero);
+        try {
+            const auto& exactSols = x0.exactSolutions();
+            if (!exactSols.has_value()) {
+                throw StackError<std::invalid_argument>("The null space is trivial");
+            }
+            const auto& x = extractSolutionVector(exactSols.value());
+            return x;
+        } catch (const std::exception& e) {
+            throw StackError<std::invalid_argument>("The null space is trivial");
+        }
     }
 
 }  // namespace mlinalg

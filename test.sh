@@ -7,6 +7,12 @@ test_release() {
 	ctest --test-dir "$LOCAL_OUT_DIR/src/test" --output-on-failure -j4 --output-on-failure
 }
 
+test_relwithdebinfo() {
+	echo "Testing Release"
+	LOCAL_OUT_DIR="$OUT_DIR-relwithdebinfo"
+	ctest --test-dir "$LOCAL_OUT_DIR/src/test" --output-on-failure -j4 --output-on-failure
+}
+
 test_debug() {
 	echo "Testing Debug"
 	ctest --test-dir "$OUT_DIR/src/test" --output-on-failure -j4 --output-on-failure
@@ -24,5 +30,8 @@ case $MODE in
 	;;
 "release")
 	test_release
+	;;
+"relwithdeb")
+	test_relwithdebinfo
 	;;
 esac
