@@ -1,9 +1,7 @@
 #include <format>
-#include <iostream>
 #include <print>
 
 #include "../pub/MLinalg.hpp"
-
 using namespace std;
 
 /*
